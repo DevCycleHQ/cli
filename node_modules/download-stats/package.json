@@ -1,0 +1,63 @@
+{
+  "name": "download-stats",
+  "description": "Get and calculate npm download stats for npm modules.",
+  "version": "0.3.4",
+  "homepage": "https://github.com/doowb/download-stats",
+  "author": "Brian Woodward (https://github.com/doowb)",
+  "repository": "doowb/download-stats",
+  "bugs": {
+    "url": "https://github.com/doowb/download-stats/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "lib"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "JSONStream": "^1.2.1",
+    "lazy-cache": "^2.0.1",
+    "moment": "^2.15.1"
+  },
+  "devDependencies": {
+    "gulp-format-md": "^0.1.10",
+    "mocha": "^3.0.2"
+  },
+  "keywords": [
+    "calculate",
+    "calculate-downloads",
+    "download",
+    "download-stats",
+    "downloads",
+    "get",
+    "get-downloads",
+    "stats"
+  ],
+  "verb": {
+    "toc": true,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "plugins": [
+      "gulp-format-md"
+    ],
+    "related": {
+      "list": [
+        {
+          "npm-info": true
+        }
+      ]
+    },
+    "reflinks": [
+      "verb",
+      "verb-generate-readme"
+    ]
+  }
+}

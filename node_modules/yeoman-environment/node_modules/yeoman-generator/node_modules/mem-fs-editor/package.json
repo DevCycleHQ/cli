@@ -1,0 +1,46 @@
+{
+  "name": "mem-fs-editor",
+  "version": "7.1.0",
+  "description": "File edition helpers working on top of mem-fs",
+  "scripts": {
+    "pretest": "eslint .",
+    "test": "jest"
+  },
+  "repository": "SBoudrias/mem-fs-editor",
+  "author": "Simon Boudrias",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "commondir": "^1.0.1",
+    "deep-extend": "^0.6.0",
+    "ejs": "^3.1.5",
+    "glob": "^7.1.4",
+    "globby": "^9.2.0",
+    "isbinaryfile": "^4.0.0",
+    "mkdirp": "^1.0.0",
+    "multimatch": "^4.0.0",
+    "rimraf": "^3.0.0",
+    "through2": "^3.0.2",
+    "vinyl": "^2.2.1"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.3",
+    "escape-regexp": "0.0.1",
+    "eslint": "^6.0.0",
+    "eslint-config-xo-space": "^0.21.0",
+    "jest": "^24.8.0",
+    "mem-fs": "^1.0.0",
+    "sinon": "^8.0.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "testEnvironment": "node"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  }
+}
