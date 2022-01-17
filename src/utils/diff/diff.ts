@@ -1,8 +1,8 @@
-import { execSync } from 'child_process'
+import {execSync} from 'node:child_process'
 import parse from 'parse-diff'
 
 export const executeDiff = (diffCommand: string) => {
-    const result = execSync(`git diff ${diffCommand}`)
+  const result = execSync(`git diff ${diffCommand}`)
 
-    return parse(result.toString())
+  return parse(result.toString())
 }

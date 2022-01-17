@@ -1,2 +1,2 @@
-import { Parser } from '../types';
-export declare const parseFile: Parser;
+import {Parser} from '../types'
+export declare const parseFile: Parser
