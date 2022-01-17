@@ -1,17 +1,12 @@
 import {expect, test} from '@oclif/test'
 
+jest.setTimeout(20000)
+
 describe('diff', () => {
   test
   .stdout()
   .command(['diff'])
-  .it('runs hello', ctx => {
+  .it('runs against a test file', ctx => {
     expect(ctx.stdout).to.contain('hello world')
-  })
-
-  test
-  .stdout()
-  .command(['diff', '--name', 'jeff'])
-  .it('runs hello --name jeff', ctx => {
-    expect(ctx.stdout).to.contain('hello jeff')
   })
 })

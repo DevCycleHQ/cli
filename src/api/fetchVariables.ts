@@ -6,7 +6,7 @@ export const fetchVariableKeys = async (token: string, project_id: string): Prom
     const response = await axios.get(url.href, {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `${token}`
+            'Authorization': token
         }
     })
 
