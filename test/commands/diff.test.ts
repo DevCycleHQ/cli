@@ -1,12 +1,10 @@
 import {expect, test} from '@oclif/test'
 
-jest.setTimeout(20000)
-
 describe('diff', () => {
   test
   .stdout()
-  .command(['diff'])
+  .command(['diff', '--file', './test/utils/diff/samples/nodeSampleDiff'])
   .it('runs against a test file', ctx => {
-    expect(ctx.stdout).to.contain('hello world')
+    expect(ctx.stdout).to.exist
   })
 })

@@ -1,2 +1,2 @@
-import parse from 'parse-diff';
-export declare const parseFiles: (files: parse.File[]) => Record<string, string[]>;
+import parse from 'parse-diff'
+export declare const parseFiles: (files: parse.File[]) => Record<string, string[]>
