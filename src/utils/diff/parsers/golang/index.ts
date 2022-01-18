@@ -1,9 +1,9 @@
 import { BaseParser } from '../common'
 
-const findVariableRegex = /dvcClient\.variable\([\s\w]*,\s*["']([^"']*)["']/
+const findVariableRegex = /DevcycleApi\.Variable\([\s\w]*,[\s\w]*,\s*["']([^"']*)["']/
 
-export class NodeParser extends BaseParser {
-    identity = 'nodejs'
+export class GolangParser extends BaseParser {
+    identity = 'golang'
 
     match(content: string): string | null {
         const match = findVariableRegex.exec(content)
