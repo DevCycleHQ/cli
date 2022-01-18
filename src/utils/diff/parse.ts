@@ -1,10 +1,13 @@
 import parse from 'parse-diff'
-import { parseFile as parseNode } from './parsers/nodejs'
-import { Parser, VariableMatch } from './parsers/types'
+import { NodeParser } from './parsers/nodejs'
+import { VariableMatch } from './parsers/types'
+import { BaseParser } from './parsers/common'
 
-const PARSERS: Record<string, Parser[]> = {
-    js: [parseNode],
-    ts: [parseNode]
+const nodeParser = new NodeParser()
+
+const PARSERS: Record<string, BaseParser[]> = {
+    js: [nodeParser],
+    ts: [nodeParser]
 }
 
 export const parseFiles = (files: parse.File[]): Record<string, VariableMatch[]> => {
