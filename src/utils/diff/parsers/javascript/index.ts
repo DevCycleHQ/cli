@@ -1,9 +1,9 @@
 import { BaseParser } from '../common'
 
-const findVariableRegex = /dvcClient\.variable\([\s\w]*,\s*["']([^"']*)["']/
+const findVariableRegex = /dvcClient\.variable\(\s*["']([^"']*)["']/
 
-export class NodeParser extends BaseParser {
-    identity = 'nodejs'
+export class JavascriptParser extends BaseParser {
+    identity = 'javascript'
 
     match(content: string): string | null {
         const match = findVariableRegex.exec(content)
