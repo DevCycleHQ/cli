@@ -1,9 +1,9 @@
 import { BaseParser } from '../common'
 
-const findVariableRegex = /dvcClient\.variable\([\s\w]*,\s*["']([^"']*)["']/
+const findVariableRegex = /dvcClient\.VariableAsync\([\s\w]*,\s*["']([^"']*)["']/
 
-export class NodeParser extends BaseParser {
-    identity = 'nodejs'
+export class CsharpParser extends BaseParser {
+    identity = 'csharp'
 
     match(content: string): string | null {
         const match = findVariableRegex.exec(content)
