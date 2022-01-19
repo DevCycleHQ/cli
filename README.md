@@ -18,7 +18,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/1.0.0 darwin-x64 node-v16.13.0
+@devcycle/cli/1.0.1 darwin-x64 node-v16.13.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -51,7 +51,7 @@ EXAMPLES
   $ dvc diff
 ```
 
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.0/dist/commands/diff/index.ts)_
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.1/dist/commands/diff/index.ts)_
 
 ## `dvc help [COMMAND]`
 
