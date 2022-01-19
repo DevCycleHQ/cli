@@ -2,7 +2,7 @@
   "name": "@devcycle/cli",
   "version": "0.0.0",
   "description": "DevCycle CLI Tool",
-  "author": "engineering@devcycle.com",
+  "author": "support@devcycle.com",
   "bin": {
     "dvc": "./bin/run"
   },
