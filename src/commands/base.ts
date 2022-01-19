@@ -2,6 +2,7 @@ import { Command, Flags } from '@oclif/core'
 import { authenticate } from '../api/authenticate'
 
 export default abstract class Base extends Command {
+    static hidden = true
     static flags = {
         client_id: Flags.string({ char: 'c', description: 'DevCycle Client Id', required: true }),
         client_secret: Flags.string({ char: 's', description: 'DevCycle Client Secret', required: true }),
