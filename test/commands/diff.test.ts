@@ -1,36 +1,35 @@
 import { expect, test } from '@oclif/test'
 
+const expected = `
+DevCycle Variable Changes:
+
+✅ 4 Variables Added
+❌ 1 Variable Removed
+
+✅ Added
+
+	1. simple-case
+	   Locations:
+	    - test/utils/diff/sampleDiff.js:L1
+	    - test/utils/diff/sampleDiff.js:L2
+	2. single-quotes
+	   Location: test/utils/diff/sampleDiff.js:L4
+	3. single-comment
+	   Location: test/utils/diff/sampleDiff.js:L16
+	4. multi-line-comment
+	   Location: test/utils/diff/sampleDiff.js:L19
+
+❌ Removed
+
+	1. simple-case
+	   Location: test/utils/diff/sampleDiff.js:L1
+`
+
 describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file', './test/utils/diff/samples/nodeSampleDiff'])
         .it('runs against a test file', (ctx) => {
-            expect(JSON.parse(ctx.stdout)).to.deep.equal({
-                nodejs: [
-                    {
-                        'fileName': 'test/utils/diff/sampleDiff.js',
-                        'line': 1,
-                        'mode': 'add',
-                        'name': 'simple-case'
-                    },
-                    {
-                        'fileName': 'test/utils/diff/sampleDiff.js',
-                        'line': 3,
-                        'mode': 'add',
-                        'name': 'single-quotes'
-                    },
-                    {
-                        'fileName': 'test/utils/diff/sampleDiff.js',
-                        'line': 15,
-                        'mode': 'add',
-                        'name': 'single-comment'
-                    },
-                    {
-                        'fileName': 'test/utils/diff/sampleDiff.js',
-                        'line': 18,
-                        'mode': 'add',
-                        'name': 'multi-line-comment'
-                    }]
-            })
+            expect(ctx.stdout).to.equal(expected)
         })
 })
