@@ -1,12 +1,12 @@
 import { BaseParser } from '../common'
 
-const findVariableRegex = /dvcClient\.variable\(\s*["']([^"']*)["']/
-
 export class JavascriptParser extends BaseParser {
     identity = 'javascript'
+    variableMethodPattern = /\.variable\(\s*/
+    variableNameCapturePattern = /["']([^"']*)["']/
 
     match(content: string): string | null {
-        const match = findVariableRegex.exec(content)
+        const match = this.buildRegexPattern().exec(content)
         return match ? match[1] : null
     }
 }
