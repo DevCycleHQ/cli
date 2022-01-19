@@ -21,6 +21,10 @@ export default class Diff extends Command {
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(Diff)
 
+        if (!flags.file && !args['diff-pattern']) {
+            throw new Error('Must provide a diff pattern')
+        }
+
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
         const matches = parseFiles(parsedDiff)
