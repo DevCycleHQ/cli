@@ -4,3 +4,7 @@ export type VariableMatch = {
     fileName: string,
     mode: 'add' | 'remove'
 }
+
+export type ParseOptions = {
+    clientName?: string
+}

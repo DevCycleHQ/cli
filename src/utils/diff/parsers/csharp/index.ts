@@ -1,12 +1,12 @@
 import { BaseParser } from '../common'
 
-const findVariableRegex = /dvcClient\.VariableAsync\([\s\w]*,\s*["']([^"']*)["']/
-
 export class CsharpParser extends BaseParser {
     identity = 'csharp'
+    variableMethodPattern = /\.VariableAsync\([\s\w]*,\s*/
+    variableNameCapturePattern = /["']([^"']*)["']/
 
     match(content: string): string | null {
-        const match = findVariableRegex.exec(content)
+        const match = this.buildRegexPattern().exec(content)
         return match ? match[1] : null
     }
 }

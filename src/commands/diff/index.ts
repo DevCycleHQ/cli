@@ -17,7 +17,8 @@ export default class Diff extends Command {
     ]
 
     static flags = {
-        file: Flags.string({ char: 'f', description: 'File path of existing diff file to inspect' }),
+        file: Flags.string({ char: 'f', description: 'File path of existing diff file to inspect.' }),
+        'client-name': Flags.string({ description: 'Name of the DevCycle client variable to match on.' }),
     }
 
     static args = [
@@ -33,7 +34,9 @@ export default class Diff extends Command {
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
-        const matchesBySdk = parseFiles(parsedDiff)
+        const matchesBySdk = parseFiles(parsedDiff, {
+            clientName: flags['client-name']
+        })
 
         const matchesByType: Record<string, Record<string, VariableMatch[]>> = {
             add: {},

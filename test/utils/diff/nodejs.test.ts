@@ -47,4 +47,17 @@ describe('nodejs', () => {
             }],
         })
     })
+
+    it('identifies the correct variables using an overridden client name', () => {
+        const parsedDiff = executeFileDiff(path.join(__dirname, './samples/nodeSampleDiff'))
+        const results = parseFiles(parsedDiff, { clientName: 'dvc' })
+        expect(results).to.deep.equal({
+            nodejs: [{
+                'fileName': 'test/utils/diff/sampleDiff.js',
+                'line': 23,
+                'mode': 'add',
+                'name': 'renamed-case'
+            }]
+        })
+    })
 })

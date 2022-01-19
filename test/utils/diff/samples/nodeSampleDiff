@@ -30,3 +30,4 @@ index 00000000..ed8ee4ab
 +
 +dvcClient.variable(user, VARIABLES.ENUM_VARIABLE)
 -dvcClient.variable(user, "simple-case")
++dvc.variable(user, "renamed-case")
