@@ -1,12 +1,12 @@
 import { BaseParser } from '../common'
 
-const findVariableRegex = /dvcClient\.variable\([\s\w]*,\s*["']([^"']*)["']/
-
-export class Ruby extends BaseParser {
+export class RubyParser extends BaseParser {
     identity = 'ruby'
+    variableMethodPattern = /\.variable\([\s\w]*,\s*/
+    variableNameCapturePattern = /["']([^"']*)["']/
 
     match(content: string): string | null {
-        const match = findVariableRegex.exec(content)
+        const match = this.buildRegexPattern().exec(content)
         return match ? match[1] : null
     }
 }

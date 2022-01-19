@@ -1,8 +1,23 @@
 import parse from 'parse-diff'
-import { VariableMatch } from './types'
+import { ParseOptions, VariableMatch } from './types'
 
 export abstract class BaseParser {
     abstract identity: string
+    clientName: string
+    abstract variableMethodPattern: RegExp
+    abstract variableNameCapturePattern: RegExp
+
+    constructor(protected options: ParseOptions) {
+        this.clientName = options.clientName ?? 'dvcClient'
+    }
+
+    buildRegexPattern() {
+        return new RegExp(
+            new RegExp(this.clientName).source
+            + this.variableMethodPattern.source
+            + this.variableNameCapturePattern.source
+        )
+    }
 
     formatMatch(name: string, file: parse.File, change: parse.Change): VariableMatch {
         return {
@@ -13,13 +28,13 @@ export abstract class BaseParser {
         }
     }
 
-    abstract match(content: string): string | null
+    abstract match(content: string, options: ParseOptions): string | null
 
-    parse(file: parse.File): VariableMatch[] {
+    parse(file: parse.File, options: ParseOptions = {}): VariableMatch[] {
         const results: VariableMatch[] = []
         for (const chunk of file.chunks) {
             for (const change of chunk.changes) {
-                const match = this.match(change.content)
+                const match = this.match(change.content, options)
                 if (match) {
                     results.push(this.formatMatch(match, file, change))
                 }
