@@ -20,7 +20,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/0.0.0 darwin-x64 node-v16.13.0
+@devcycle/cli/1.0.0 darwin-x64 node-v16.13.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -29,6 +29,8 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`dvc base`](#dvc-base)
+* [`dvc diff [DIFF-PATTERN]`](#dvc-diff-diff-pattern)
 * [`dvc help [COMMAND]`](#dvc-help-command)
 * [`dvc plugins`](#dvc-plugins)
 * [`dvc plugins:inspect PLUGIN...`](#dvc-pluginsinspect-plugin)
@@ -36,6 +38,43 @@ USAGE
 * [`dvc plugins:link PLUGIN`](#dvc-pluginslink-plugin)
 * [`dvc plugins:uninstall PLUGIN...`](#dvc-pluginsuninstall-plugin)
 * [`dvc plugins update`](#dvc-plugins-update)
+
+## `dvc base`
+
+```
+USAGE
+  $ dvc base -c <value> -s <value> -p <value>
+
+FLAGS
+  -c, --client_id=<value>      (required) DevCycle Client Id
+  -p, --project=<value>        (required) Project identifier (id or key)
+  -s, --client_secret=<value>  (required) DevCycle Client Secret
+```
+
+_See code: [dist/commands/base.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.0/dist/commands/base.ts)_
+
+## `dvc diff [DIFF-PATTERN]`
+
+Print a diff of DevCycle variable usage between two versions of your code.
+
+```
+USAGE
+  $ dvc diff [DIFF-PATTERN] [-f <value>]
+
+ARGUMENTS
+  DIFF-PATTERN  A "git diff"-compatible diff pattern, eg. "branch1 branch2"
+
+FLAGS
+  -f, --file=<value>  File path of existing diff file to inspect
+
+DESCRIPTION
+  Print a diff of DevCycle variable usage between two versions of your code.
+
+EXAMPLES
+  $ dvc diff
+```
+
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.0/dist/commands/diff/index.ts)_
 
 ## `dvc help [COMMAND]`
 
