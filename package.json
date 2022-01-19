@@ -21,6 +21,7 @@
     "@oclif/plugin-help": "^5",
     "axios": "^0.24.0",
     "cli-ux": "^6.0.8",
+    "node-emoji": "^1.11.0",
     "parse-diff": "^0.9.0"
   },
   "devDependencies": {
@@ -28,6 +29,7 @@
     "@types/chai": "^4",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.9.4",
+    "@types/node-emoji": "^1.8.1",
     "chai": "^4",
     "eslint": "^7.32.0",
     "eslint-config-oclif": "^4",

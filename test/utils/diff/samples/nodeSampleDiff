@@ -6,7 +6,8 @@ new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
 +++ b/test/utils/diff/sampleDiff.js
-@@ -0,0 +1,20 @@
+@@ -1,1 +1,21 @@
++dvcClient.variable(user, "simple-case")
 +dvcClient.variable(user, "simple-case")
 +
 +dvcClient.variable(user, 'single-quotes')
@@ -28,3 +29,4 @@ index 00000000..ed8ee4ab
 + */
 +
 +dvcClient.variable(user, VARIABLES.ENUM_VARIABLE)
+-dvcClient.variable(user, "simple-case")
