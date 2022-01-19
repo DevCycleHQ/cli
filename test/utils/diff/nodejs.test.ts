@@ -17,21 +17,33 @@ describe('nodejs', () => {
             },
             {
                 'fileName': 'test/utils/diff/sampleDiff.js',
-                'line': 3,
+                'line': 2,
+                'mode': 'add',
+                'name': 'simple-case'
+            },
+            {
+                'fileName': 'test/utils/diff/sampleDiff.js',
+                'line': 4,
                 'mode': 'add',
                 'name': 'single-quotes'
             },
             {
                 'fileName': 'test/utils/diff/sampleDiff.js',
-                'line': 15,
+                'line': 16,
                 'mode': 'add',
                 'name': 'single-comment'
             },
             {
                 'fileName': 'test/utils/diff/sampleDiff.js',
-                'line': 18,
+                'line': 19,
                 'mode': 'add',
                 'name': 'multi-line-comment'
+            },
+            {
+                'fileName': 'test/utils/diff/sampleDiff.js',
+                'line': 1,
+                'mode': 'remove',
+                'name': 'simple-case'
             }],
         })
     })
