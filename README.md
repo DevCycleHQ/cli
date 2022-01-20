@@ -36,13 +36,14 @@ Print a diff of DevCycle variable usage between two versions of your code.
 
 ```
 USAGE
-  $ dvc diff [DIFF-PATTERN] [-f <value>]
+  $ dvc diff [DIFF-PATTERN] [-f <value>] [--client-name <value>]
 
 ARGUMENTS
   DIFF-PATTERN  A "git diff"-compatible diff pattern, eg. "branch1 branch2"
 
 FLAGS
-  -f, --file=<value>  File path of existing diff file to inspect
+  -f, --file=<value>        File path of existing diff file to inspect.
+  --client-name=<value>...  Name(s) of the DevCycle client variable to match on. Accepts multiple values.
 
 DESCRIPTION
   Print a diff of DevCycle variable usage between two versions of your code.
