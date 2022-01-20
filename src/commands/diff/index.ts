@@ -14,12 +14,21 @@ export default class Diff extends Command {
 
     static examples = [
         '<%= config.bin %> <%= command.id %>',
+        '<%= config.bin %> <%= command.id %> ' +
+            '--match-pattern javascript="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
     ]
 
     static flags = {
         file: Flags.string({ char: 'f', description: 'File path of existing diff file to inspect.' }),
         'client-name': Flags.string({
             description: 'Name(s) of the DevCycle client variable to match on. Accepts multiple values.', multiple: true
+        }),
+        'match-pattern': Flags.string({
+            description: 'Additional full Regex pattern to use to match variable usages in your code.' +
+                ' Should contain exactly one capture group which matches on the key of the variable. ' +
+                'Must specify the file extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"',
+            multiple: true,
+            exclusive: ['client-name']
         })
     }
 
@@ -36,8 +45,17 @@ export default class Diff extends Command {
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
+        const matchPatterns = (flags['match-pattern'] || []).reduce((acc, value) => {
+            const [extension, pattern] = value.split('=')
+            if (!extension || !pattern) {
+                throw new Error(`Invalid match pattern: ${value}. Must be of the form "[FILE EXTENSION]=[PATTERN]`)
+            }
+            return { ...acc, [extension]: pattern }
+        }, {})
+
         const matchesBySdk = parseFiles(parsedDiff, {
-            clientNames: flags['client-name']
+            clientNames: flags['client-name'],
+            matchPatterns
         })
 
         const matchesByType: Record<string, Record<string, VariableMatch[]>> = {

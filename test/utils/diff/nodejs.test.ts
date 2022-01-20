@@ -77,4 +77,19 @@ describe('nodejs', () => {
                 }]
         })
     })
+
+    it('identifies the correct variables using a custom pattern', () => {
+        const parsedDiff = executeFileDiff(path.join(__dirname, './samples/nodeSampleDiff'))
+        const results = parseFiles(parsedDiff, { matchPatterns: { js: 'checkVariable\\(\\w*,\\s*"([^"\']*)"' } })
+        expect(results).to.deep.equal({
+            nodejs: nodeSimpleMatchResult,
+            custom: [
+                {
+                    'fileName': 'test/utils/diff/sampleDiff.js',
+                    'line': 6,
+                    'mode': 'add',
+                    'name': 'func-proxy'
+                }]
+        })
+    })
 })
