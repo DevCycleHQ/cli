@@ -3,17 +3,17 @@ import { ParseOptions, VariableMatch } from './types'
 
 export abstract class BaseParser {
     abstract identity: string
-    clientName: string
+    clientNames: string[]
     abstract variableMethodPattern: RegExp
     abstract variableNameCapturePattern: RegExp
 
     constructor(protected options: ParseOptions) {
-        this.clientName = options.clientName ?? 'dvcClient'
+        this.clientNames = options.clientNames ?? ['dvcClient']
     }
 
     buildRegexPattern() {
         return new RegExp(
-            new RegExp(this.clientName).source
+            new RegExp(`(?:${this.clientNames.join('|')})`).source
             + this.variableMethodPattern.source
             + this.variableNameCapturePattern.source
         )

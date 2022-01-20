@@ -6,5 +6,5 @@ export type VariableMatch = {
 }
 
 export type ParseOptions = {
-    clientName?: string
+    clientNames?: string[]
 }

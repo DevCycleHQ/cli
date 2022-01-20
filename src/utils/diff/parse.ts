@@ -5,7 +5,9 @@ import { ParseOptions, VariableMatch } from './parsers/types'
 
 const PARSERS: Record<string, (typeof NodeParser)[]> = {
     js: [NodeParser, ReactParser, JavascriptParser],
+    jsx: [ReactParser, JavascriptParser],
     ts: [NodeParser, ReactParser, JavascriptParser],
+    tsx: [ReactParser, JavascriptParser],
     java: [JavaParser, AndroidParser],
     kt: [JavaParser, AndroidParser],
     cs: [CsharpParser],
