@@ -7,7 +7,7 @@ export abstract class BaseParser {
     abstract variableMethodPattern: RegExp
     abstract variableNameCapturePattern: RegExp
 
-    constructor(protected options: ParseOptions) {
+    constructor(extension: string, protected options: ParseOptions) {
         this.clientNames = options.clientNames ?? ['dvcClient']
     }
 
