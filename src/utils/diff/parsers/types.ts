@@ -6,5 +6,6 @@ export type VariableMatch = {
 }
 
 export type ParseOptions = {
-    clientNames?: string[]
+    clientNames?: string[],
+    matchPatterns?: Record<string, string>
 }

@@ -2,6 +2,7 @@ import parse from 'parse-diff'
 import { AndroidParser, CsharpParser, GolangParser, IosParser, JavaParser,
     JavascriptParser, NodeParser, PhpParser, PythonParser, ReactParser, RubyParser } from './parsers'
 import { ParseOptions, VariableMatch } from './parsers/types'
+import { CustomParser } from './parsers/custom'
 
 const PARSERS: Record<string, (typeof NodeParser)[]> = {
     js: [NodeParser, ReactParser, JavascriptParser],
@@ -21,11 +22,17 @@ const PARSERS: Record<string, (typeof NodeParser)[]> = {
 export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Record<string, VariableMatch[]> => {
     const resultsByLanguage: Record<string, VariableMatch[]> = {}
 
+    const ALL_PARSERS = { ...PARSERS }
+
+    for (const extension in options.matchPatterns ?? {}) {
+        ALL_PARSERS[extension] = [...(ALL_PARSERS[extension] ?? []), CustomParser]
+    }
+
     for (const file of files) {
         const fileExtension = file.to?.split('.').pop() ?? ''
-        const Parsers = PARSERS[fileExtension] || []
+        const Parsers = ALL_PARSERS[fileExtension] || []
         for (const Parser of Parsers) {
-            const parser = new Parser(options)
+            const parser = new Parser(fileExtension, options)
             const result = parser.parse(file)
             if (result.length > 0) {
                 resultsByLanguage[parser.identity] ??= []
