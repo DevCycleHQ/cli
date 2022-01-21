@@ -3,31 +3,6 @@ import { expect, test } from '@oclif/test'
 const expected = `
 DevCycle Variable Changes:
 
-✅ 4 Variables Added
-❌ 1 Variable Removed
-
-✅ Added
-
-	1. simple-case
-	   Locations:
-	    - test/utils/diff/sampleDiff.js:L1
-	    - test/utils/diff/sampleDiff.js:L2
-	2. single-quotes
-	   Location: test/utils/diff/sampleDiff.js:L4
-	3. single-comment
-	   Location: test/utils/diff/sampleDiff.js:L16
-	4. multi-line-comment
-	   Location: test/utils/diff/sampleDiff.js:L19
-
-❌ Removed
-
-	1. simple-case
-	   Location: test/utils/diff/sampleDiff.js:L1
-`
-
-const customExpected = `
-DevCycle Variable Changes:
-
 ✅ 5 Variables Added
 ❌ 1 Variable Removed
 
@@ -39,11 +14,40 @@ DevCycle Variable Changes:
 	    - test/utils/diff/sampleDiff.js:L2
 	2. single-quotes
 	   Location: test/utils/diff/sampleDiff.js:L4
-	3. single-comment
+	3. multi-line
+	   Location: test/utils/diff/sampleDiff.js:L10
+	4. single-comment
 	   Location: test/utils/diff/sampleDiff.js:L16
-	4. multi-line-comment
+	5. multi-line-comment
 	   Location: test/utils/diff/sampleDiff.js:L19
-	5. func-proxy
+
+❌ Removed
+
+	1. simple-case
+	   Location: test/utils/diff/sampleDiff.js:L1
+`
+
+const customExpected = `
+DevCycle Variable Changes:
+
+✅ 6 Variables Added
+❌ 1 Variable Removed
+
+✅ Added
+
+	1. simple-case
+	   Locations:
+	    - test/utils/diff/sampleDiff.js:L1
+	    - test/utils/diff/sampleDiff.js:L2
+	2. single-quotes
+	   Location: test/utils/diff/sampleDiff.js:L4
+	3. multi-line
+	   Location: test/utils/diff/sampleDiff.js:L10
+	4. single-comment
+	   Location: test/utils/diff/sampleDiff.js:L16
+	5. multi-line-comment
+	   Location: test/utils/diff/sampleDiff.js:L19
+	6. func-proxy
 	   Location: test/utils/diff/sampleDiff.js:L6
 
 ❌ Removed

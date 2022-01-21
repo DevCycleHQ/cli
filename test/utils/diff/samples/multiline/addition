@@ -1,0 +1,34 @@
+diff --git a/services/api/src/organizations/organizations.controller.ts b/services/api/src/organizations/organizations.controller.ts
+index 429092e6..1ab6e8a1 100644
+--- a/services/api/src/organizations/organizations.controller.ts
++++ b/services/api/src/organizations/organizations.controller.ts
+@@ -26,6 +26,7 @@ import { UpdateOrganizationDTO } from './dto/update-organization.dto'
+ import { NoPersonalOrganizationGuard } from '../utils/guards'
+ import { RequireScopes, PermissionsGuard } from 'lib/nest/permissions-guard/src'
+ import { DeleteOrganizationsDTO } from './dto/delete-organization.dto'
++import { DVCClient } from 'sdk/nodejs-server-sdk/types'
+ @Controller({
+     path: '/organizations',
+     version: '1'
+@@ -36,7 +37,8 @@ export class OrganizationsController {
+     constructor(
+         private organizationsService: OrganizationsService,
+         private usersService: UsersService,
+-        private projectsService: ProjectsService
++        private projectsService: ProjectsService,
++        private dvcClient: DVCClient
+     ) { }
+ 
+     // Operations on the whole organizations collection
+@@ -171,6 +173,11 @@ export class OrganizationsController {
+         @User() user: RequestUser,
+         @Body() upgradeOrganizationDto: UpgradeOrganizationDTO
+     ) {
++        this.dvcClient.variable(
++            user,
++            'variable-key',
++            true
++        )
+         const organization = await this.organizationsService.create(user.sub, upgradeOrganizationDto)
+         await this.projectsService.migrate(user.sub, organization.id)
+         return organization
