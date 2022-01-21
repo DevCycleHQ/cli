@@ -54,12 +54,14 @@ describe('nodejs', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, './samples/nodeSampleDiff'))
         const results = parseFiles(parsedDiff, { clientNames: ['dvc'] })
         expect(results).to.deep.equal({
-            nodejs: [{
-                'fileName': 'test/utils/diff/sampleDiff.js',
-                'line': 23,
-                'mode': 'add',
-                'name': 'renamed-case'
-            }]
+            nodejs: [
+                ...nodeSimpleMatchResult,
+                {
+                    'fileName': 'test/utils/diff/sampleDiff.js',
+                    'line': 23,
+                    'mode': 'add',
+                    'name': 'renamed-case'
+                }]
         })
     })
 
@@ -80,7 +82,7 @@ describe('nodejs', () => {
 
     it('identifies the correct variables using a custom pattern', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, './samples/nodeSampleDiff'))
-        const results = parseFiles(parsedDiff, { matchPatterns: { js: 'checkVariable\\(\\w*,\\s*"([^"\']*)"' } })
+        const results = parseFiles(parsedDiff, { matchPatterns: { js: ['checkVariable\\(\\w*,\\s*"([^"\']*)"'] } })
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,
             custom: [

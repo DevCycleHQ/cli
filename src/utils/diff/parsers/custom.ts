@@ -5,7 +5,7 @@ export class CustomParser extends BaseParser {
     identity = 'custom'
     variableMethodPattern = new RegExp('')
     variableNameCapturePattern = new RegExp('')
-    customPattern: string
+    customPatterns: string[]
 
     constructor(extension: string, options: ParseOptions) {
         super(extension, options)
@@ -14,15 +14,15 @@ export class CustomParser extends BaseParser {
             throw new Error(`No match pattern for ${extension}`)
         }
 
-        this.customPattern = options.matchPatterns[extension]
-    }
-
-    override buildRegexPattern(): RegExp {
-        return new RegExp(this.customPattern)
+        this.customPatterns = options.matchPatterns[extension]
     }
 
     match(content: string): string | null {
-        const match = this.buildRegexPattern().exec(content)
-        return match ? match[1] : null
+        for (const pattern of this.customPatterns) {
+            const match = (new RegExp(pattern)).exec(content)
+            if (match) return match[1]
+        }
+
+        return null
     }
 }

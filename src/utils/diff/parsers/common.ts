@@ -8,7 +8,7 @@ export abstract class BaseParser {
     abstract variableNameCapturePattern: RegExp
 
     constructor(extension: string, protected options: ParseOptions) {
-        this.clientNames = options.clientNames ?? ['dvcClient']
+        this.clientNames = [...(options.clientNames || []), 'dvcClient']
     }
 
     buildRegexPattern() {
