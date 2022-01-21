@@ -17,10 +17,10 @@ export class CustomParser extends BaseParser {
         this.customPatterns = options.matchPatterns[extension]
     }
 
-    match(content: string): string | null {
+    match(content: string): RegExpExecArray | null {
         for (const pattern of this.customPatterns) {
             const match = (new RegExp(pattern)).exec(content)
-            if (match) return match[1]
+            if (match) return match
         }
 
         return null

@@ -5,8 +5,7 @@ export class GolangParser extends BaseParser {
     variableMethodPattern = /DevcycleApi\.Variable\([\s\w]*,[\s\w]*,\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
 
-    match(content: string): string | null {
-        const match = this.buildRegexPattern().exec(content)
-        return match ? match[1] : null
+    match(content: string): RegExpExecArray | null {
+        return this.buildRegexPattern().exec(content)
     }
 }

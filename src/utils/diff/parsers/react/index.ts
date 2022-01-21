@@ -7,8 +7,7 @@ export class ReactParser extends BaseParser {
     variableMethodPattern = /\.variable\(\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
 
-    match(content: string): string | null {
-        const match = this.buildRegexPattern().exec(content) ?? findVariableHookRegex.exec(content)
-        return match ? match[1] : null
+    match(content: string): RegExpExecArray | null {
+        return this.buildRegexPattern().exec(content) ?? findVariableHookRegex.exec(content)
     }
 }
