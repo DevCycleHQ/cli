@@ -31,6 +31,7 @@ export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Rec
     for (const file of files) {
         const fileExtension = file.to?.split('.').pop() ?? ''
         const Parsers = ALL_PARSERS[fileExtension] || []
+
         for (const Parser of Parsers) {
             const parser = new Parser(fileExtension, options)
             const result = parser.parse(file)
