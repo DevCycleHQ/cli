@@ -44,7 +44,7 @@ export default abstract class Base extends Command {
         return configParsed
     }
 
-    async init() {
+    async init(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
         this.configFromFile = this.loadConfig(flags['config-path'])
     }

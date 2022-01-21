@@ -1,5 +1,5 @@
 import { executeDiff } from '../../utils/diff/diff'
-import { Command, Flags } from '@oclif/core'
+import { Flags } from '@oclif/core'
 import * as emoji from 'node-emoji'
 import { executeFileDiff } from '../../utils/diff/fileDiff'
 import { parseFiles } from '../../utils/diff/parse'
