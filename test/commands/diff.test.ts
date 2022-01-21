@@ -59,6 +59,7 @@ describe('diff', () => {
         .it('runs against a test file', (ctx) => {
             expect(ctx.stdout).to.equal(expected)
         })
+
     test
         .stdout()
         .command(['diff', '--file',
@@ -66,4 +67,13 @@ describe('diff', () => {
         .it('runs against a test file with a custom matcher', (ctx) => {
             expect(ctx.stdout).to.equal(customExpected)
         })
+
+    test
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/nodeSampleDiff', '--config-path', './test/commands/fixtures/testConfig.yml'])
+        .it('runs against a test file with a custom matcher specified in a config file',
+            (ctx) => {
+                expect(ctx.stdout).to.equal(customExpected)
+            })
 })

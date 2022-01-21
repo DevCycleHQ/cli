@@ -4,12 +4,14 @@ import * as emoji from 'node-emoji'
 import { executeFileDiff } from '../../utils/diff/fileDiff'
 import { parseFiles } from '../../utils/diff/parse'
 import { VariableMatch } from '../../utils/diff/parsers/types'
+import Base from '../base'
 
 const EMOJI = {
     add: emoji.get('white_check_mark'),
     remove: emoji.get('x')
 }
-export default class Diff extends Command {
+
+export default class Diff extends Base {
     static description = 'Print a diff of DevCycle variable usage between two versions of your code.'
 
     static examples = [
@@ -19,6 +21,7 @@ export default class Diff extends Command {
     ]
 
     static flags = {
+        ...Base.flags,
         file: Flags.string({ char: 'f', description: 'File path of existing diff file to inspect.' }),
         'client-name': Flags.string({
             description: 'Name(s) of the DevCycle client variable to match on. Accepts multiple values.', multiple: true
@@ -27,8 +30,7 @@ export default class Diff extends Command {
             description: 'Additional full Regex pattern to use to match variable usages in your code.' +
                 ' Should contain exactly one capture group which matches on the key of the variable. ' +
                 'Must specify the file extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"',
-            multiple: true,
-            exclusive: ['client-name']
+            multiple: true
         })
     }
 
@@ -45,19 +47,26 @@ export default class Diff extends Command {
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
+        const matchPatternsFromConfig: Record<string, string[]> = this.configFromFile?.codeInsights?.matchPatterns || {}
+        const clientNamesFromConfig = this.configFromFile?.codeInsights?.clientNames || []
+
         const matchPatterns = (flags['match-pattern'] || []).reduce((acc, value) => {
             const [extension, pattern] = value.split('=')
             if (!extension || !pattern) {
                 throw new Error(`Invalid match pattern: ${value}. Must be of the form "[FILE EXTENSION]=[PATTERN]`)
             }
-            return { ...acc, [extension]: pattern }
-        }, {})
+            return { ...acc, [extension]: [...(acc[extension] || []), pattern] }
+        }, matchPatternsFromConfig)
 
         const matchesBySdk = parseFiles(parsedDiff, {
-            clientNames: flags['client-name'],
+            clientNames: [...clientNamesFromConfig, ...(flags['client-name'] || [])],
             matchPatterns
         })
 
+        this.formatOutput(matchesBySdk)
+    }
+
+    private formatOutput(matchesBySdk: Record<string, VariableMatch[]>) {
         const matchesByType: Record<string, Record<string, VariableMatch[]>> = {
             add: {},
             remove: {}
