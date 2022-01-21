@@ -36,20 +36,25 @@ Print a diff of DevCycle variable usage between two versions of your code.
 
 ```
 USAGE
-  $ dvc diff [DIFF-PATTERN] [-f <value>] [--client-name <value>]
+  $ dvc diff [DIFF-PATTERN] [-f <value>] [--match-pattern <value> | --client-name <value>]
 
 ARGUMENTS
   DIFF-PATTERN  A "git diff"-compatible diff pattern, eg. "branch1 branch2"
 
 FLAGS
-  -f, --file=<value>        File path of existing diff file to inspect.
-  --client-name=<value>...  Name(s) of the DevCycle client variable to match on. Accepts multiple values.
+  -f, --file=<value>          File path of existing diff file to inspect.
+  --client-name=<value>...    Name(s) of the DevCycle client variable to match on. Accepts multiple values.
+  --match-pattern=<value>...  Additional full Regex pattern to use to match variable usages in your code. Should contain
+                              exactly one capture group which matches on the key of the variable. Must specify the file
+                              extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"
 
 DESCRIPTION
   Print a diff of DevCycle variable usage between two versions of your code.
 
 EXAMPLES
   $ dvc diff
+
+  $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
 _See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.2/dist/commands/diff/index.ts)_
