@@ -1,20 +1,24 @@
 import parse from 'parse-diff'
 import { ParseOptions, VariableMatch } from './types'
 
+type Range = {
+    start: number
+    end: number
+}
+
 type MultilineChunk = {
     content: string
     changes: {
         change: parse.Change
-        range: {
-            start: number
-            end: number
-        }
+        range: Range
     }[]
 }
 
 type Match = {
+    // Variable name
     name: string
-    index: number
+    // Start/end indicies of matching substring
+    range: Range
 }
 
 export abstract class BaseParser {
@@ -37,10 +41,11 @@ export abstract class BaseParser {
 
     /**
      * Given a chunk from parse-diff, aggregate added and removed changes.
-     * Each resulting chunk includes the content as a single string, and an array of
-     * changes with a range describing the start/end of the substring.
+     * Each resulting chunk includes the multi-line content as a single string, 
+     * and an array of changes, each with a range object describing the start/end
+     * indicies of the substring within the content string.
      */
-    private splitChunks(chunk: parse.Chunk): { added: MultilineChunk, removed: MultilineChunk } {
+    private aggregateMultilineChunks(chunk: parse.Chunk): { added: MultilineChunk, removed: MultilineChunk } {
         const added: MultilineChunk = {
             content: '',
             changes: []
@@ -50,34 +55,24 @@ export abstract class BaseParser {
             changes: []
         }
 
-        const pushChangeToChunk = (chunk: MultilineChunk, change: parse.Change) => {
+        const pushChangeToMultilineChunk = (chunk: MultilineChunk, change: parse.Change) => {
             const range = { start: 0, end: 0 }
             range.start = chunk.content.length
             chunk.content += change.type === 'normal'
                 ? change.content.trim()
                 : change.content.slice(1).trim()
-            range.end = chunk.content.length
+            range.end = chunk.content.length - 1
             chunk.changes.push({ range, change })
         }
 
         for (const change of chunk.changes) {
             if (change.type === 'add') {
-                pushChangeToChunk(added, change)
+                pushChangeToMultilineChunk(added, change)
             } else if (change.type === 'del') {
-                pushChangeToChunk(removed, change)
+                pushChangeToMultilineChunk(removed, change)
             } else if (change.type === 'normal') {
-                pushChangeToChunk(added, {
-                    type: 'add',
-                    add: true,
-                    ln: change.ln2,
-                    content: change.content
-                })
-                pushChangeToChunk(removed, {
-                    type: 'del',
-                    del: true,
-                    ln: change.ln2,
-                    content: change.content
-                })
+                pushChangeToMultilineChunk(added, change)
+                pushChangeToMultilineChunk(removed, change)
             }
         }
         return { added, removed }
@@ -86,8 +81,9 @@ export abstract class BaseParser {
     abstract match(content: string, options: ParseOptions): RegExpExecArray | null
 
     /**
-     * Given a string, returns all matches and their index in the string.
-     * Each match includes the variable name and index of the substring
+     * Given a string, returns all matches found in the string.
+     * Each match includes the variable name and the character range of the
+     * matching substring.
      */
     private getAllMatches(content: string, options: ParseOptions): Match[] {
         const matches: Match[] = []
@@ -100,15 +96,32 @@ export abstract class BaseParser {
             if (!match) break
 
             const [matchContent, variableName] = match
+            const startIndex = cursorPosition + match.index
+            const endIndex = startIndex + matchContent.length
 
             matches.push({
                 name: variableName,
-                index: cursorPosition + match.index // start of match
+                range: {
+                    start: startIndex,
+                    end: endIndex
+                }
             })
-            cursorPosition += match.index + matchContent.length // end of match
+            cursorPosition = endIndex + 1
         }
 
         return matches
+    }
+
+    private formatChange(type: 'add' | 'del', change: parse.Change): parse.AddChange | parse.DeleteChange {
+        const baseChange = {
+            type,
+            ln: change.type === 'normal' ? change.ln2 : change.ln,
+            content: change.content
+        }
+        return type === 'add'
+            ? { ...baseChange, type, add: true }
+            : { ...baseChange, type, del: true }
+
     }
 
     private formatMatch(name: string, file: parse.File, change: parse.Change): VariableMatch {
@@ -120,30 +133,45 @@ export abstract class BaseParser {
         }
     }
 
+    /**
+     * Given an array of matches, find the first change object corresponding to the match.
+     * Also verify that the match is associated with at least one add/delete change object.
+     */
+    private formatMatches(file: parse.File, matches: Match[], { changes }: MultilineChunk) {
+        const results: VariableMatch[] = []
+
+        matches.forEach((match) => {
+            let firstChangeOfMatch = null
+            const { start: matchStartIndex, end: matchEndIndex } = match.range
+            for (const { range, change } of changes) {
+                const { start: changeStartIndex, end: changeEndIndex } = range
+                if (matchStartIndex >= changeStartIndex && matchStartIndex < changeEndIndex) {
+                    firstChangeOfMatch ||= change
+                }
+                if (matchEndIndex < changeStartIndex) break
+                if (firstChangeOfMatch && change.type !== 'normal') {
+                    const formattedChange = this.formatChange(change.type, firstChangeOfMatch)
+                    results.push(this.formatMatch(match.name, file, formattedChange))
+                    break
+                }   
+            }
+        })
+
+        return results
+    }
+
     parse(file: parse.File, options: ParseOptions = {}): VariableMatch[] {
         const results: VariableMatch[] = []
 
         for (const chunk of file.chunks) {
-            const { added: addedChunk, removed: removedChunk } = this.splitChunks(chunk)
+            const { added: addedChunk, removed: removedChunk } = this.aggregateMultilineChunks(chunk)
             const addedMatches = this.getAllMatches(addedChunk.content, options)
             const removedMatches = this.getAllMatches(removedChunk.content, options)
 
-            /**
-             * Given a match index, find the associated change object using the character range
-             */
-            const formatMatches = (matches: Match[], { changes }: MultilineChunk) => {
-                matches.forEach((match) => {
-                    const change = changes.find(({ range }) => (
-                        match.index >= range.start && match.index < range.end
-                    ))?.change
-                    if (change) {
-                        results.push(this.formatMatch(match.name, file, change))
-                    }
-                })
-            }
-
-            formatMatches(addedMatches, addedChunk)
-            formatMatches(removedMatches, removedChunk)
+            results.push(
+                ...this.formatMatches(file, addedMatches, addedChunk),
+                ...this.formatMatches(file, removedMatches, removedChunk)
+            )
         }
         return results
     }
