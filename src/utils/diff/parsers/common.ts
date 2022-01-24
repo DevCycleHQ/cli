@@ -58,11 +58,14 @@ export abstract class BaseParser {
         const pushChangeToMultilineChunk = (chunk: MultilineChunk, change: parse.Change) => {
             const range = { start: 0, end: 0 }
             range.start = chunk.content.length
-            chunk.content += change.type === 'normal'
+            const changeContent = change.type === 'normal'
                 ? change.content.trim()
                 : change.content.slice(1).trim()
+            chunk.content += changeContent
             range.end = chunk.content.length - 1
-            chunk.changes.push({ range, change })
+            if (changeContent.length) {
+                chunk.changes.push({ range, change })
+            }
         }
 
         for (const change of chunk.changes) {
@@ -97,7 +100,7 @@ export abstract class BaseParser {
 
             const [matchContent, variableName] = match
             const startIndex = cursorPosition + match.index
-            const endIndex = startIndex + matchContent.length
+            const endIndex = startIndex + matchContent.length - 1
 
             matches.push({
                 name: variableName,
@@ -141,19 +144,26 @@ export abstract class BaseParser {
         const results: VariableMatch[] = []
 
         matches.forEach((match) => {
-            let firstChangeOfMatch = null
             const { start: matchStartIndex, end: matchEndIndex } = match.range
-            for (const { range, change } of changes) {
+
+            // Get all changes within the range of the match
+            const matchingChanges = changes.filter(({ range }) => {
                 const { start: changeStartIndex, end: changeEndIndex } = range
-                if (matchStartIndex >= changeStartIndex && matchStartIndex < changeEndIndex) {
-                    firstChangeOfMatch ||= change
-                }
-                if (matchEndIndex < changeStartIndex) break
-                if (firstChangeOfMatch && change.type !== 'normal') {
-                    const formattedChange = this.formatChange(change.type, firstChangeOfMatch)
-                    results.push(this.formatMatch(match.name, file, formattedChange))
-                    break
-                }   
+                return (matchStartIndex >= changeStartIndex && matchStartIndex <= changeEndIndex)
+                    || (changeStartIndex >= matchStartIndex && changeStartIndex <= matchEndIndex)
+            })
+
+            // Remove "normal" change objects
+            const validChange = matchingChanges.find(({ change }) => change.type !== 'normal')?.change
+
+            // If we have an add/del change, update the starting change to have that type and push to results
+            if (validChange) {
+                const startingChange = matchingChanges[0].change
+                const formattedChange = this.formatChange(
+                    validChange.type as 'add' | 'del',
+                    startingChange
+                )
+                results.push(this.formatMatch(match.name, file, formattedChange))
             }
         })
 
