@@ -60,6 +60,7 @@ export abstract class BaseParser {
     abstract identity: string
     clientNames: string[]
     abstract variableMethodPattern: RegExp
+    variableMethodKeywordPattern : RegExp | null = null
     abstract variableNameCapturePattern: RegExp
     commentCharacters: string[] = ['//']
 
@@ -68,16 +69,20 @@ export abstract class BaseParser {
     }
 
     buildRegexPattern(): RegExp {
+        const variableRegex = this.variableMethodKeywordPattern ?
+            `(?:${this.variableMethodKeywordPattern.source}|${this.variableMethodPattern.source})` :
+            this.variableMethodPattern.source
+
         return new RegExp(
             new RegExp(`(?:${this.clientNames.join('|')})`).source
-            + this.variableMethodPattern.source
+            + new RegExp(variableRegex).source
             + this.variableNameCapturePattern.source
         )
     }
 
     /**
      * Given a chunk from parse-diff, aggregate added and removed changes.
-     * Each resulting chunk includes the multi-line content as a single string, 
+     * Each resulting chunk includes the multi-line content as a single string,
      * and an array of changes, each with a range object describing the start/end
      * indicies of the substring within the content string.
      */
@@ -99,7 +104,7 @@ export abstract class BaseParser {
 
             chunk.content += changeContent
             change.range.end = chunk.content.length - 1
-            
+
             chunk.changes.push(change)
         }
 
