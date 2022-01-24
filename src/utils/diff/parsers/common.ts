@@ -1,7 +1,7 @@
 import parse from 'parse-diff'
 import { ParseOptions, VariableMatch } from './types'
 
-type Chunk = {
+type MultilineChunk = {
     content: string
     changes: {
         change: parse.Change
@@ -40,17 +40,17 @@ export abstract class BaseParser {
      * Each resulting chunk includes the content as a single string, and an array of
      * changes with a range describing the start/end of the substring.
      */
-    private splitChunks(chunk: parse.Chunk): { added: Chunk, removed: Chunk } {
-        const added: Chunk = {
+    private splitChunks(chunk: parse.Chunk): { added: MultilineChunk, removed: MultilineChunk } {
+        const added: MultilineChunk = {
             content: '',
             changes: []
         }
-        const removed: Chunk = {
+        const removed: MultilineChunk = {
             content: '',
             changes: []
         }
 
-        const pushChangeToChunk = (chunk: Chunk, change: parse.Change) => {
+        const pushChangeToChunk = (chunk: MultilineChunk, change: parse.Change) => {
             const range = { start: 0, end: 0 }
             range.start = chunk.content.length
             chunk.content += change.type === 'normal'
@@ -89,25 +89,24 @@ export abstract class BaseParser {
      * Given a string, returns all matches and their index in the string.
      * Each match includes the variable name and index of the substring
      */
-    private getAllMatches(multiLineContent: string, options: ParseOptions): Match[] {
+    private getAllMatches(content: string, options: ParseOptions): Match[] {
         const matches: Match[] = []
+        let cursorPosition = 0
 
-        const getNextMatch = (content: string) => {
-            const match = this.match(content, options)
+        while (cursorPosition < content.length) {
+            const substring = content.slice(cursorPosition)
+            const match = this.match(substring, options)
 
-            if (match) {
-                const [fullStringMatch, variableName] = match
-                const remainingContent = content.slice(match.index + fullStringMatch.length)
+            if (!match) break
 
-                matches.push({
-                    name: variableName,
-                    index: multiLineContent.length - content.length + match.index
-                })
-                getNextMatch(remainingContent)
-            }
+            const [matchContent, variableName] = match
+
+            matches.push({
+                name: variableName,
+                index: cursorPosition + match.index // start of match
+            })
+            cursorPosition += match.index + matchContent.length // end of match
         }
-
-        getNextMatch(multiLineContent)
 
         return matches
     }
@@ -132,7 +131,7 @@ export abstract class BaseParser {
             /**
              * Given a match index, find the associated change object using the character range
              */
-            const formatMatches = (matches: Match[], { changes }: Chunk) => {
+            const formatMatches = (matches: Match[], { changes }: MultilineChunk) => {
                 matches.forEach((match) => {
                     const change = changes.find(({ range }) => (
                         match.index >= range.start && match.index < range.end
