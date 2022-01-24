@@ -1,0 +1,12 @@
+diff --git a/test/utils/diff/sampleDiff b/test/utils/diff/sampleDiff
+new file mode 100644
+index 00000000..e69de29b
+diff --git a/test/utils/diff/sampleDiff.py b/test/utils/diff/sampleDiff.py
+new file mode 100644
+index 00000000..ed8ee4ab
+--- /dev/null
++++ b/test/utils/diff/sampleDiff.py
+@@ -1,1 +1,21 @@
++dvcClient.variable(user, "simple-case")
++dvcClient.variable(user=user, key="named-case")
++dvcClient.variable(key="named-case-reversed", user=user)
