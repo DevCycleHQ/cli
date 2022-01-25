@@ -1,0 +1,14 @@
+diff --git a/services/api/src/organizations/organizations.controller.ts b/services/api/src/organizations/organizations.controller.ts
+index ed310f17..c917e8e3 100644
+--- a/services/api/src/organizations/organizations.controller.ts
++++ b/services/api/src/organizations/organizations.controller.ts
+@@ -176,7 +176,8 @@ export class OrganizationsController {
+         const dvcUser = { user_id: 'id' }
+         this.dvcClient.variable(
+             dvcUser,
+-            'variable-key',
++            'new-variable',
++            // 'variable-key',
+             true
+         )
+         
