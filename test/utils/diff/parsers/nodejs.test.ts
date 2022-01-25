@@ -31,12 +31,6 @@ describe('nodejs', () => {
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
-            'line': 16,
-            'mode': 'add',
-            'name': 'single-comment'
-        },
-        {
-            'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 19,
             'mode': 'add',
             'name': 'multi-line-comment'
