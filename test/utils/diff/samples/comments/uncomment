@@ -1,0 +1,13 @@
+diff --git a/services/api/src/organizations/organizations.controller.ts b/services/api/src/organizations/organizations.controller.ts
+index 2698d364..e009774e 100644
+--- a/services/api/src/organizations/organizations.controller.ts
++++ b/services/api/src/organizations/organizations.controller.ts
+@@ -174,7 +174,7 @@ export class OrganizationsController {
+         @Body() upgradeOrganizationDto: UpgradeOrganizationDTO
+     ) {
+         const dvcUser = { user_id: 'id' }
+-        // this.dvcClient.variable(dvcUser, 'variable-key', true)
++        this.dvcClient.variable(dvcUser, 'variable-key', true)
+         
+         const organization = await this.organizationsService.create(user.sub, upgradeOrganizationDto)
+         await this.projectsService.migrate(user.sub, organization.id)

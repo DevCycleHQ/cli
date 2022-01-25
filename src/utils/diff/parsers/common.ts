@@ -8,10 +8,7 @@ type Range = {
 
 type MultilineChunk = {
     content: string
-    changes: {
-        change: parse.Change
-        range: Range
-    }[]
+    changes: ParsedChange[]
 }
 
 type Match = {
@@ -21,11 +18,50 @@ type Match = {
     range: Range
 }
 
+class ParsedChange {
+    type: string
+    content: string
+    ln: number
+    range: Range = { start: 0, end: 0 }
+
+    constructor(change: parse.Change) {
+        this.type = change.type
+        this.content = change.content
+        this.ln = change.type === 'normal' ? change.ln2 : change.ln
+    }
+
+    parseContent() {
+        return this.type === 'normal'
+            ? this.content.trim()
+            : this.content.slice(1).trim()
+    }
+
+    isComment(commentCharacters: string[]) {
+        const changeContent = this.parseContent()
+        return commentCharacters
+            .map((char) => changeContent.indexOf(char) === 0)
+            .some(Boolean)
+    }
+
+    format(type: 'add' | 'del'): parse.AddChange | parse.DeleteChange {
+        const baseChange = {
+            type,
+            ln: this.ln,
+            content: this.content
+        }
+        return type === 'add'
+            ? { ...baseChange, type, add: true }
+            : { ...baseChange, type, del: true }
+
+    }
+}
+
 export abstract class BaseParser {
     abstract identity: string
     clientNames: string[]
     abstract variableMethodPattern: RegExp
     abstract variableNameCapturePattern: RegExp
+    commentCharacters: string[] = ['//']
 
     constructor(extension: string, protected options: ParseOptions) {
         this.clientNames = [...(options.clientNames || []), 'dvcClient']
@@ -55,27 +91,29 @@ export abstract class BaseParser {
             changes: []
         }
 
-        const pushChangeToMultilineChunk = (chunk: MultilineChunk, change: parse.Change) => {
-            const range = { start: 0, end: 0 }
-            range.start = chunk.content.length
-            const changeContent = change.type === 'normal'
-                ? change.content.trim()
-                : change.content.slice(1).trim()
+        const pushChangeToMultilineChunk = (chunk: MultilineChunk, change: ParsedChange) => {
+            change.range.start = chunk.content.length
+
+            const changeContent = change.parseContent()
+            if (!changeContent.length) return
+
             chunk.content += changeContent
-            range.end = chunk.content.length - 1
-            if (changeContent.length) {
-                chunk.changes.push({ range, change })
-            }
+            change.range.end = chunk.content.length - 1
+            
+            chunk.changes.push(change)
         }
 
         for (const change of chunk.changes) {
-            if (change.type === 'add') {
-                pushChangeToMultilineChunk(added, change)
-            } else if (change.type === 'del') {
-                pushChangeToMultilineChunk(removed, change)
-            } else if (change.type === 'normal') {
-                pushChangeToMultilineChunk(added, change)
-                pushChangeToMultilineChunk(removed, change)
+            const parsedChange = new ParsedChange(change)
+            if (parsedChange.isComment(this.commentCharacters)) continue
+
+            if (parsedChange.type === 'add') {
+                pushChangeToMultilineChunk(added, parsedChange)
+            } else if (parsedChange.type === 'del') {
+                pushChangeToMultilineChunk(removed, parsedChange)
+            } else if (parsedChange.type === 'normal') {
+                pushChangeToMultilineChunk(added, parsedChange)
+                pushChangeToMultilineChunk(removed, parsedChange)
             }
         }
         return { added, removed }
@@ -115,18 +153,6 @@ export abstract class BaseParser {
         return matches
     }
 
-    private formatChange(type: 'add' | 'del', change: parse.Change): parse.AddChange | parse.DeleteChange {
-        const baseChange = {
-            type,
-            ln: change.type === 'normal' ? change.ln2 : change.ln,
-            content: change.content
-        }
-        return type === 'add'
-            ? { ...baseChange, type, add: true }
-            : { ...baseChange, type, del: true }
-
-    }
-
     private formatMatch(name: string, file: parse.File, change: parse.Change): VariableMatch {
         return {
             name,
@@ -154,14 +180,12 @@ export abstract class BaseParser {
             })
 
             // Remove "normal" change objects
-            const validChange = matchingChanges.find(({ change }) => change.type !== 'normal')?.change
+            const validChange = matchingChanges.find(({ type }) => type !== 'normal')
 
             // If we have an add/del change, update the starting change to have that type and push to results
             if (validChange) {
-                const startingChange = matchingChanges[0].change
-                const formattedChange = this.formatChange(
-                    validChange.type as 'add' | 'del',
-                    startingChange
+                const formattedChange = matchingChanges[0].format(
+                    validChange.type as 'add' | 'del'
                 )
                 results.push(this.formatMatch(match.name, file, formattedChange))
             }

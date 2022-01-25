@@ -81,4 +81,63 @@ describe('parse', () => {
             })
         })
     })
+
+    describe('single comment', () => {
+        it('identifies no change when addition is commented', () => {
+            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/comments/add-comment'))
+            const results = parseFiles(parsedDiff)
+    
+            expect(results).to.deep.equal({})
+        })
+
+        it('identifies addition when line is uncommented', () => {
+            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/comments/uncomment'))
+            const results = parseFiles(parsedDiff)
+    
+            expect(results).to.deep.equal({
+                nodejs: [{
+                    'fileName': 'services/api/src/organizations/organizations.controller.ts',
+                    'line': 177,
+                    'mode': 'add',
+                    'name': 'variable-key'
+                }]
+            })
+        })
+
+        it('identifies deletion when line is commented', () => {
+            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/comments/comment'))
+            const results = parseFiles(parsedDiff)
+    
+            expect(results).to.deep.equal({
+                nodejs: [{
+                    'fileName': 'services/api/src/organizations/organizations.controller.ts',
+                    'line': 177,
+                    'mode': 'remove',
+                    'name': 'variable-key'
+                }]
+            })
+        })
+
+        it('identifies change when parameter is commented', () => {
+            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/comments/param-comment'))
+            const results = parseFiles(parsedDiff)
+    
+            expect(results).to.deep.equal({
+                nodejs: [
+                    {
+                        'fileName': 'services/api/src/organizations/organizations.controller.ts',
+                        'line': 177,
+                        'mode': 'add',
+                        'name': 'new-variable'
+                    },
+                    {
+                        'fileName': 'services/api/src/organizations/organizations.controller.ts',
+                        'line': 177,
+                        'mode': 'remove',
+                        'name': 'variable-key'
+                    }
+                ]
+            })
+        })
+    })
 })
