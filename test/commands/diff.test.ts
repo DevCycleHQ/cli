@@ -1,4 +1,5 @@
 import { expect, test } from '@oclif/test'
+import { AUTH_URL } from '../../src/api/common'
 
 const expected = `
 DevCycle Variable Changes:
@@ -59,7 +60,7 @@ DevCycle Variable Changes:
 describe('diff', () => {
     test
         .stdout()
-        .command(['diff', '--file', './test/utils/diff/samples/nodeSampleDiff'])
+        .command(['diff', '--file', './test/utils/diff/samples/nodeSampleDiff', '--no-api'])
         .it('runs against a test file', (ctx) => {
             expect(ctx.stdout).to.equal(expected)
         })
@@ -67,7 +68,8 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodeSampleDiff', '--match-pattern', 'js=checkVariable\\(\\w*,\\s*"([^"\']*)"'])
+            './test/utils/diff/samples/nodeSampleDiff',
+            '--match-pattern', 'js=checkVariable\\(\\w*,\\s*"([^"\']*)"', '--no-api'])
         .it('runs against a test file with a custom matcher', (ctx) => {
             expect(ctx.stdout).to.equal(customExpected)
         })
@@ -75,9 +77,45 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodeSampleDiff', '--config-path', './test/commands/fixtures/testConfig.yml'])
+            './test/utils/diff/samples/nodeSampleDiff',
+            '--config-path', './test/commands/fixtures/testConfig.yml', '--no-api'])
         .it('runs against a test file with a custom matcher specified in a config file',
             (ctx) => {
                 expect(ctx.stdout).to.equal(customExpected)
             })
+    test
+        .nock(AUTH_URL, (api) => {
+            api.post('/oauth/token', {
+                grant_type: 'client_credentials',
+                client_id: 'client',
+                client_secret: 'secret',
+                audience: 'https://api.devcycle.com/',
+            }).reply(200, {
+                access_token: 'token'
+            })
+        })
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/nodeSampleDiff',
+            '--client-id', 'client', '--client-secret', 'secret', '--project', 'project'])
+        .it('runs with successful api authorization',
+            (ctx) => {
+                expect(ctx.stdout).to.equal(expected)
+            })
+    test
+        .nock(AUTH_URL, (api) => {
+            api.post('/oauth/token', {
+                grant_type: 'client_credentials',
+                client_id: 'client',
+                client_secret: 'secret',
+                audience: 'https://api.devcycle.com/',
+            }).reply(403, {
+                message: 'Failed auth'
+            })
+        })
+        .command(['diff', '--file',
+            './test/utils/diff/samples/nodeSampleDiff',
+            '--client-id', 'client', '--client-secret', 'secret', '--project', 'project'])
+        .catch('Failed to authenticate with the DevCycle API. Check your credentials.')
+        .it('runs with failed api authorization')
 })
