@@ -3,7 +3,7 @@ import 'reflect-metadata'
 import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
 import jsYaml from 'js-yaml'
-import { ConfigFromFile } from './types'
+import { ConfigFromFile } from '../types'
 import { plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
 
