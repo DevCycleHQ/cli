@@ -49,4 +49,15 @@ export class ConfigFromFile {
     @IsOptional()
     @ValidateNested()
     codeInsights?: CodeInsights
+
+    @IsString()
+    @IsOptional()
+    project?: string
+}
+
+export class AuthFromFile {
+    @IsString()
+    client_id: string
+    @IsString()
+    client_secret: string
 }
