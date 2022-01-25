@@ -18,7 +18,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/1.0.3 darwin-x64 node-v16.13.0
+@devcycle/cli/1.0.4 darwin-x64 node-v16.13.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -27,37 +27,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`dvc diff [DIFF-PATTERN]`](#dvc-diff-diff-pattern)
 * [`dvc help [COMMAND]`](#dvc-help-command)
-
-## `dvc diff [DIFF-PATTERN]`
-
-Print a diff of DevCycle variable usage between two versions of your code.
-
-```
-USAGE
-  $ dvc diff [DIFF-PATTERN] [-f <value>] [--match-pattern <value> | --client-name <value>]
-
-ARGUMENTS
-  DIFF-PATTERN  A "git diff"-compatible diff pattern, eg. "branch1 branch2"
-
-FLAGS
-  -f, --file=<value>          File path of existing diff file to inspect.
-  --client-name=<value>...    Name(s) of the DevCycle client variable to match on. Accepts multiple values.
-  --match-pattern=<value>...  Additional full Regex pattern to use to match variable usages in your code. Should contain
-                              exactly one capture group which matches on the key of the variable. Must specify the file
-                              extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"
-
-DESCRIPTION
-  Print a diff of DevCycle variable usage between two versions of your code.
-
-EXAMPLES
-  $ dvc diff
-
-  $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
-```
-
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.3/dist/commands/diff/index.ts)_
 
 ## `dvc help [COMMAND]`
 
