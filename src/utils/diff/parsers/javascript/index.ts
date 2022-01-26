@@ -2,7 +2,7 @@ import { BaseParser } from '../common'
 
 export class JavascriptParser extends BaseParser {
     identity = 'javascript'
-    variableMethodPattern = /\.variable\(\s*/
+    variableMethodPattern = /\??\.variable\(\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
     commentCharacters = ['//', '/*']
 

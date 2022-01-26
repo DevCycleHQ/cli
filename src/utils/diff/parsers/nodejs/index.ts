@@ -2,7 +2,7 @@ import { BaseParser } from '../common'
 
 export class NodeParser extends BaseParser {
     identity = 'nodejs'
-    variableMethodPattern = /\.variable\([\s\w]*,\s*/
+    variableMethodPattern = /\??\.variable\([\s\w]*,\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
     commentCharacters = ['//', '/*']
 
