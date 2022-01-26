@@ -62,6 +62,7 @@ export abstract class BaseParser {
     abstract variableMethodPattern: RegExp
     variableMethodKeywordPattern : RegExp | null = null
     abstract variableNameCapturePattern: RegExp
+    abstract defaultValueCapturePattern: RegExp
     commentCharacters: string[] = ['//']
 
     constructor(extension: string, protected options: ParseOptions) {
@@ -77,6 +78,7 @@ export abstract class BaseParser {
             new RegExp(`(?:${this.clientNames.join('|')})`).source
             + new RegExp(variableRegex).source
             + this.variableNameCapturePattern.source
+            + this.defaultValueCapturePattern.source
         )
     }
 

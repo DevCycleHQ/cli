@@ -60,8 +60,7 @@ describe('parse', () => {
             })
         })
 
-        // Un-skip once regex matcher includes closing bracket
-        it.skip('identifies a default value change in a multi-line method call', () => {
+        it('identifies a default value change in a multi-line method call', () => {
             const parsedDiff = executeFileDiff(path.join(__dirname, './samples/multiline/default-modification'))
             const results = parseFiles(parsedDiff)
 

@@ -6,6 +6,7 @@ export class ReactParser extends BaseParser {
     identity = 'react'
     variableMethodPattern = /\??\.variable\(\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
+    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
     commentCharacters = ['//', '/*', '{/*']
 
     match(content: string): RegExpExecArray | null {

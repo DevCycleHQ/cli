@@ -5,6 +5,7 @@ export class PythonParser extends BaseParser {
     variableMethodPattern = /\.variable\([\s\w]*,\s*/
     variableMethodKeywordPattern = /\.variable\([\s\w=,]*key\s*=\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
+    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
     commentCharacters = ['#', '"""']
 
     match(content: string): RegExpExecArray | null {

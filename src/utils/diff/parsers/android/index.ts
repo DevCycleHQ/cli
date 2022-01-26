@@ -5,6 +5,7 @@ export class AndroidParser extends BaseParser {
     variableMethodPattern = /\??\.variable\(\s*/
     variableMethodKeywordPattern = /\??\.variable\(\s*key\s*=\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
+    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
     commentCharacters = ['//', '/**', '*', '<!--']
 
     match(content: string): RegExpExecArray | null {

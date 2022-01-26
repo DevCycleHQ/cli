@@ -5,6 +5,7 @@ export class CsharpParser extends BaseParser {
     variableMethodPattern = /\??\.VariableAsync\([\s\w]*,\s*/
     variableMethodKeywordPattern = /\??\.VariableAsync\([\s\w:,]*key\s*:\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
+    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
     commentCharacters = ['//', '/*']
 
     match(content: string): RegExpExecArray | null {
