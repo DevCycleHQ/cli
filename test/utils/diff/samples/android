@@ -1,0 +1,14 @@
+diff --git a/test/utils/diff/sampleDiff.java b/test/utils/diff/sampleDiff.java
+new file mode 100644
+index 00000000..ed8ee4ab
+--- /dev/null
++++ b/test/utils/diff/sampleDiff.java
+@@ -1,1 +1,8 @@
++dvcClient.variable("simple-case", false)
++
++dvcClient
++    .variable(
++        "multi-line",
++        true
++    )
++

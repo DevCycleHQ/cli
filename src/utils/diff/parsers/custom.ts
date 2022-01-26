@@ -5,6 +5,7 @@ export class CustomParser extends BaseParser {
     identity = 'custom'
     variableMethodPattern = new RegExp('')
     variableNameCapturePattern = new RegExp('')
+    defaultValueCapturePattern = new RegExp('')
     customPatterns: string[]
 
     constructor(extension: string, options: ParseOptions) {
