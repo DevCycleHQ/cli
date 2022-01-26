@@ -12,8 +12,9 @@ const EMOJI = {
 }
 
 export default class Diff extends Base {
-    static description = 'Print a diff of DevCycle variable usage between two versions of your code.'
+    static hidden = false
 
+    static description = 'Print a diff of DevCycle variable usage between two versions of your code.'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
         '<%= config.bin %> <%= command.id %> ' +
