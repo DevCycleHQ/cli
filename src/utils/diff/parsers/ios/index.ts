@@ -2,7 +2,7 @@ import { BaseParser } from '../common'
 
 export class IosParser extends BaseParser {
     identity = 'ios'
-    variableMethodPattern = /\.variable\(\s*key:\s*/
+    variableMethodPattern = /\??\.variable\(\s*key:\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
     commentCharacters = ['///', '/**']
 
