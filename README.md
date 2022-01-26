@@ -3,6 +3,8 @@ DevCycle CLI
 
 DevCycle CLI for interacting with DevCycle features from the command line.
 
+The CLI can be customized in several ways using command-line args or by creating a [configuration file](#configuration).
+
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/oclif-hello-world.svg)](https://npmjs.org/package/oclif-hello-world)
 [![License](https://img.shields.io/npm/l/oclif-hello-world.svg)](https://github.com/oclif/hello-world/blob/main/package.json)
@@ -10,6 +12,7 @@ DevCycle CLI for interacting with DevCycle features from the command line.
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
+* [Configuration](#configuration)
 <!-- tocstop -->
 # Usage
 <!-- usage -->
@@ -82,3 +85,26 @@ DESCRIPTION
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
 <!-- commandsstop -->
+# Configuration
+Many of the options available as command-line args can also be specified using a configuration file. The default
+location for this file is `<REPO ROOT>/.devcycle/config.yml`. It is also assumed that the CLI commands are run from the
+root of the repository.
+
+This location can be overridden using the `--config-path` flag.
+
+The configuration file format is documented below:
+
+```yml
+## block for configuring "code insights" features like diff and variable usage scanning
+## use this section to improve the detection of DevCycle usage within your code
+codeInsights:
+    ## add additional names to check for when looking for instances of DVCClient from an SDK
+    clientNames:
+        - "dvcClient"
+    ## fully override the regex patterns used to match variables for a specific file extension
+    ## each pattern should contain exactly one capture group which matches on the key of the variable
+    matchPatterns:
+        ## file extension to override for, containing a list of patterns to use
+        js:
+            - dvcClient\.variable\(\s*["']([^"']*)["']
+```
