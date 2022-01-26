@@ -1,0 +1,14 @@
+diff --git a/test/utils/diff/sampleDiff.php b/test/utils/diff/sampleDiff.php
+new file mode 100644
+index 00000000..ed8ee4ab
+--- /dev/null
++++ b/test/utils/diff/sampleDiff.php
+@@ -1,1 +1,8 @@
++$dvcClient->variable($user_data, "simple-case", "default")
++
++$dvcClient->variable(
++        $user_data,
++        "multi-line",
++        "default"
++    )
++

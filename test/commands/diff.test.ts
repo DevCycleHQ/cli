@@ -18,7 +18,7 @@ DevCycle Variable Changes:
 	3. multi-line
 	   Location: test/utils/diff/sampleDiff.js:L10
 	4. multi-line-comment
-	   Location: test/utils/diff/sampleDiff.js:L19
+	   Location: test/utils/diff/sampleDiff.js:L20
 
 ❌ Removed
 
@@ -43,7 +43,7 @@ DevCycle Variable Changes:
 	3. multi-line
 	   Location: test/utils/diff/sampleDiff.js:L10
 	4. multi-line-comment
-	   Location: test/utils/diff/sampleDiff.js:L19
+	   Location: test/utils/diff/sampleDiff.js:L20
 	5. func-proxy
 	   Location: test/utils/diff/sampleDiff.js:L6
 
@@ -56,7 +56,7 @@ DevCycle Variable Changes:
 describe('diff', () => {
     test
         .stdout()
-        .command(['diff', '--file', './test/utils/diff/samples/nodeSampleDiff', '--no-api'])
+        .command(['diff', '--file', './test/utils/diff/samples/nodejs', '--no-api'])
         .it('runs against a test file', (ctx) => {
             expect(ctx.stdout).to.equal(expected)
         })
@@ -64,7 +64,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodeSampleDiff',
+            './test/utils/diff/samples/nodejs',
             '--match-pattern', 'js=checkVariable\\(\\w*,\\s*"([^"\']*)"', '--no-api'])
         .it('runs against a test file with a custom matcher', (ctx) => {
             expect(ctx.stdout).to.equal(customExpected)
@@ -73,7 +73,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodeSampleDiff',
+            './test/utils/diff/samples/nodejs',
             '--config-path', './test/commands/fixtures/testConfig.yml', '--no-api'])
         .it('runs against a test file with a custom matcher specified in a config file',
             (ctx) => {
@@ -92,7 +92,7 @@ describe('diff', () => {
         })
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodeSampleDiff',
+            './test/utils/diff/samples/nodejs',
             '--client-id', 'client', '--client-secret', 'secret', '--project', 'project'])
         .it('runs with successful api authorization',
             (ctx) => {
@@ -110,7 +110,7 @@ describe('diff', () => {
             })
         })
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodeSampleDiff',
+            './test/utils/diff/samples/nodejs',
             '--client-id', 'client', '--client-secret', 'secret', '--project', 'project'])
         .catch('Failed to authenticate with the DevCycle API. Check your credentials.')
         .it('runs with failed api authorization')

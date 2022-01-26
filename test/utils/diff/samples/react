@@ -1,0 +1,13 @@
+diff --git a/test/utils/diff/sampleDiff.jsx b/test/utils/diff/sampleDiff.jsx
+new file mode 100644
+index 00000000..ed8ee4ab
+--- /dev/null
++++ b/test/utils/diff/sampleDiff.jsx
+@@ -1,1 +1,7 @@
++useVariable("simple-case", true)
++
++useVariable(
++        "multi-line",
++        true
++    )
++

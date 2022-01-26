@@ -31,7 +31,7 @@ describe('nodejs', () => {
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
-            'line': 19,
+            'line': 20,
             'mode': 'add',
             'name': 'multi-line-comment'
         }]
@@ -48,7 +48,7 @@ describe('nodejs', () => {
         ...nodeSimpleMatchRemoved
     ]
     it('identifies the correct variable usages in the NodeJS sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodeSampleDiff'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({
@@ -57,14 +57,14 @@ describe('nodejs', () => {
     })
 
     it('identifies the correct variables using an overridden client name', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodeSampleDiff'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
         const results = parseFiles(parsedDiff, { clientNames: ['dvc'] })
         expect(results).to.deep.equal({
             nodejs: [
                 ...nodeSimpleMatchAdded,
                 {
                     'fileName': 'test/utils/diff/sampleDiff.js',
-                    'line': 23,
+                    'line': 24,
                     'mode': 'add',
                     'name': 'renamed-case'
                 },
@@ -74,14 +74,14 @@ describe('nodejs', () => {
     })
 
     it('identifies the correct variables using multiple overridden client names', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodeSampleDiff'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
         const results = parseFiles(parsedDiff, { clientNames: ['dvc', 'dvcClient'] })
         expect(results).to.deep.equal({
             nodejs: [
                 ...nodeSimpleMatchAdded,
                 {
                     'fileName': 'test/utils/diff/sampleDiff.js',
-                    'line': 23,
+                    'line': 24,
                     'mode': 'add',
                     'name': 'renamed-case'
                 },
@@ -91,7 +91,7 @@ describe('nodejs', () => {
     })
 
     it('identifies the correct variables using a custom pattern', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodeSampleDiff'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
         const results = parseFiles(parsedDiff, { matchPatterns: { js: ['checkVariable\\(\\w*,\\s*"([^"\']*)"'] } })
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,

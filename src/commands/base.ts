@@ -44,7 +44,7 @@ export default abstract class Base extends Command {
 
     configFromFile: ConfigFromFile | null
 
-    reportValidationErrors(name: string, errors: ValidationError[]) {
+    reportValidationErrors(name: string, errors: ValidationError[]): void {
         if (errors.length) {
             let error = errors[0]
             while (error.children?.length) {
