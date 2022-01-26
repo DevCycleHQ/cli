@@ -4,7 +4,7 @@ const findVariableHookRegex = /useVariable\(\s*["']([^"']*)["']/
 
 export class ReactParser extends BaseParser {
     identity = 'react'
-    variableMethodPattern = /\.variable\(\s*/
+    variableMethodPattern = /\??\.variable\(\s*/
     variableNameCapturePattern = /["']([^"']*)["']/
     commentCharacters = ['//', '/*', '{/*']
 

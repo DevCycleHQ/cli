@@ -104,4 +104,19 @@ describe('nodejs', () => {
                 }]
         })
     })
+
+    it('identifies optional accessors', () => {
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/optional-accessor'))
+        const results = parseFiles(parsedDiff)
+        expect(results).to.deep.equal({
+            nodejs: [
+                {
+                    'fileName': 'services/api/src/organizations/organizations.controller.ts',
+                    'line': 177,
+                    'mode': 'add',
+                    'name': 'optional-accessor'
+                }
+            ]
+        })
+    })
 })
