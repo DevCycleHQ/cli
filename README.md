@@ -21,7 +21,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/1.0.5 darwin-x64 node-v16.13.0
+@devcycle/cli/1.0.6 darwin-x64 node-v16.13.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -39,7 +39,8 @@ Print a diff of DevCycle variable usage between two versions of your code.
 
 ```
 USAGE
-  $ dvc diff [DIFF-PATTERN] [--config-path <value>] [-f <value>] [--client-name <value>] [--match-pattern
+  $ dvc diff [DIFF-PATTERN] [--config-path <value>] [--auth-path <value>] [--client-id <value>]
+    [--client-secret <value>] [--project <value>] [--no-api] [-f <value>] [--client-name <value>] [--match-pattern
     <value>]
 
 ARGUMENTS
@@ -47,12 +48,18 @@ ARGUMENTS
 
 FLAGS
   -f, --file=<value>          File path of existing diff file to inspect.
+  --auth-path=<value>         [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
+  --client-id=<value>         Client ID to use for DevCycle API Authorization
   --client-name=<value>...    Name(s) of the DevCycle client variable to match on. Accepts multiple values.
+  --client-secret=<value>     Client Secret to use for DevCycle API Authorization
   --config-path=<value>       [default: .devcycle/config.yml] Override the default location to look for a config.yml
                               file
   --match-pattern=<value>...  Additional full Regex pattern to use to match variable usages in your code. Should contain
                               exactly one capture group which matches on the key of the variable. Must specify the file
                               extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"
+  --no-api                    Disable API-based enhancements for commands where authorization is optional. Suppresses
+                              warnings about missing credentials.
+  --project=<value>           Project key to use for the DevCycle API requests
 
 DESCRIPTION
   Print a diff of DevCycle variable usage between two versions of your code.
@@ -63,7 +70,7 @@ EXAMPLES
   $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.5/dist/commands/diff/index.ts)_
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.6/dist/commands/diff/index.ts)_
 
 ## `dvc help [COMMAND]`
 
