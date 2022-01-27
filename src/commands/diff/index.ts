@@ -5,6 +5,7 @@ import { executeFileDiff } from '../../utils/diff/fileDiff'
 import { parseFiles } from '../../utils/diff/parse'
 import { VariableMatch } from '../../utils/diff/parsers/types'
 import Base from '../base'
+import { sha256 } from 'js-sha256'
 
 const EMOJI = {
     add: emoji.get('white_check_mark'),
@@ -32,6 +33,10 @@ export default class Diff extends Base {
                 ' Should contain exactly one capture group which matches on the key of the variable. ' +
                 'Must specify the file extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"',
             multiple: true
+        }),
+        'pr-link': Flags.string({
+            hidden: true,
+            description: 'Link to the PR to use for formatting the line number outputs with clickable links.'
         })
     }
 
@@ -64,10 +69,10 @@ export default class Diff extends Base {
             matchPatterns
         })
 
-        this.formatOutput(matchesBySdk)
+        this.formatOutput(matchesBySdk, flags['pr-link'])
     }
 
-    private formatOutput(matchesBySdk: Record<string, VariableMatch[]>) {
+    private formatOutput(matchesBySdk: Record<string, VariableMatch[]>, prLink?: string) {
         const matchesByType: Record<string, Record<string, VariableMatch[]>> = {
             add: {},
             remove: {}
@@ -89,30 +94,43 @@ export default class Diff extends Base {
 
         if (totalAdditions) {
             this.log(`\n${EMOJI.add} Added\n`)
-            this.logMatches(matchesByType.add)
+            this.logMatches(matchesByType.add, 'add', prLink)
         }
 
         if (totalDeletions) {
             this.log(`\n${EMOJI.remove} Removed\n`)
-            this.logMatches(matchesByType.remove)
+            this.logMatches(matchesByType.remove, 'remove', prLink)
         }
     }
 
-    private logMatches(matchesByVariable: Record<string, VariableMatch[]>) {
+    private logMatches(matchesByVariable: Record<string, VariableMatch[]>, mode: 'add' | 'remove', prLink?: string) {
         Object.entries(matchesByVariable).forEach(([variableName, matches], idx) => {
-            this.log(`\t${idx + 1}. ${variableName}`)
+            this.log(`  ${idx + 1}. ${variableName}`)
             matches.sort((a, b) => {
                 if (a.fileName === b.fileName) return a.line > b.line ? 1 : -1
                 return a.fileName > b.fileName ? 1 : -1
             })
 
+            const formatPrLink = (fileName: string, line: number) => {
+                return `[${fileName}:L${line}](${
+                    prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line})`
+            }
+
             if (matches.length === 1) {
                 const { fileName, line } = matches[0]
-                this.log(`\t   Location: ${fileName}:L${line}`)
+                if (prLink) {
+                    this.log(`\t   Location: ${formatPrLink(fileName, line)}`)
+                } else {
+                    this.log(`\t   Location: ${fileName}:L${line}`)
+                }
             } else {
                 this.log('\t   Locations:')
                 matches.forEach(({ fileName, line }) => {
-                    this.log(`\t    - ${fileName}:L${line}`)
+                    if (prLink) {
+                        this.log(`\t    - ${formatPrLink(fileName, line)}`)
+                    } else {
+                        this.log(`\t    - ${fileName}:L${line}`)
+                    }
                 })
             }
         })
