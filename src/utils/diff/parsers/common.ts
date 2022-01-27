@@ -58,6 +58,7 @@ class ParsedChange {
 
 export abstract class BaseParser {
     abstract identity: string
+    matchClientName = true
     clientNames: string[]
     abstract variableMethodPattern: RegExp
     variableMethodKeywordPattern : RegExp | null = null
@@ -73,9 +74,10 @@ export abstract class BaseParser {
         const variableRegex = this.variableMethodKeywordPattern ?
             `(?:${this.variableMethodKeywordPattern.source}|${this.variableMethodPattern.source})` :
             this.variableMethodPattern.source
+        const clientNamePattern = this.matchClientName ? new RegExp(`(?:${this.clientNames.join('|')})`).source : ''
 
         return new RegExp(
-            new RegExp(`(?:${this.clientNames.join('|')})`).source
+            clientNamePattern
             + new RegExp(variableRegex).source
             + this.variableNameCapturePattern.source
             + this.defaultValueCapturePattern.source
