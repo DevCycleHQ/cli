@@ -21,7 +21,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/1.0.7 darwin-x64 node-v16.13.0
+@devcycle/cli/1.0.8 darwin-x64 node-v16.13.2
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -32,6 +32,7 @@ USAGE
 <!-- commands -->
 * [`dvc diff [DIFF-PATTERN]`](#dvc-diff-diff-pattern)
 * [`dvc help [COMMAND]`](#dvc-help-command)
+* [`dvc print-some-shit [FILE]`](#dvc-print-some-shit-file)
 
 ## `dvc diff [DIFF-PATTERN]`
 
@@ -70,7 +71,7 @@ EXAMPLES
   $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.7/dist/commands/diff/index.ts)_
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.8/dist/commands/diff/index.ts)_
 
 ## `dvc help [COMMAND]`
 
@@ -91,6 +92,27 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
+
+## `dvc print-some-shit [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ dvc print-some-shit [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ dvc print-some-shit
+```
+
+_See code: [dist/commands/print-some-shit.ts](https://github.com/DevCycleHQ/cli/blob/v1.0.8/dist/commands/print-some-shit.ts)_
 <!-- commandsstop -->
 # Configuration
 Many of the options available as command-line args can also be specified using a configuration file. The default
