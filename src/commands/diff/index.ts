@@ -6,14 +6,36 @@ import { parseFiles } from '../../utils/diff/parse'
 import { VariableMatch } from '../../utils/diff/parsers/types'
 import Base from '../base'
 import { sha256 } from 'js-sha256'
+import { fetchVariableByKey } from '../../api/variables'
+import { Variable } from '../../types/variable'
 
 const EMOJI = {
     add: emoji.get('white_check_mark'),
-    remove: emoji.get('x')
+    remove: emoji.get('x'),
+    notice: emoji.get('warning'),
+    cleanup: emoji.get('broom')
+}
+
+type MatchesByType = {
+    add: Record<string, VariableMatch[]>,
+    remove: Record<string, VariableMatch[]>
+}
+
+type MatchEnriched = {
+    variable: Variable | null,
+    matches: VariableMatch[]
+}
+
+type MatchesByTypeEnriched = {
+    add: Record<string, MatchEnriched>
+    remove: Record<string, MatchEnriched>,
+    notFoundAdd: Record<string, MatchEnriched>,
+    notFoundRemove: Record<string, MatchEnriched>
 }
 
 export default class Diff extends Base {
     static hidden = false
+    authSuggested = true
 
     static description = 'Print a diff of DevCycle variable usage between two versions of your code.'
     static examples = [
@@ -69,11 +91,19 @@ export default class Diff extends Base {
             matchPatterns
         })
 
-        this.formatOutput(matchesBySdk, flags['pr-link'])
+        const matchesByType = this.getMatchesByType(matchesBySdk)
+
+        const matchesByTypeEnriched = await this.fetchVariableData(matchesByType)
+
+        this.formatOutput(matchesByTypeEnriched, flags['pr-link'])
     }
 
-    private formatOutput(matchesBySdk: Record<string, VariableMatch[]>, prLink?: string) {
-        const matchesByType: Record<string, Record<string, VariableMatch[]>> = {
+    private useApi() {
+        return this.token && this.projectKey
+    }
+
+    private getMatchesByType(matchesBySdk: Record<string, VariableMatch[]>): MatchesByType {
+        const matchesByType: MatchesByType = {
             add: {},
             remove: {}
         }
@@ -84,55 +114,155 @@ export default class Diff extends Base {
                 matchesByType[match.mode][match.name].push(match)
             })
         })
+        return matchesByType
+    }
 
-        const totalAdditions = Object.keys(matchesByType.add).length
-        const totalDeletions = Object.keys(matchesByType.remove).length
+    private async fetchVariableData(matchesByType: MatchesByType): Promise<MatchesByTypeEnriched> {
+        const categories: MatchesByTypeEnriched = {
+            add: {},
+            remove: {},
+            notFoundAdd: {},
+            notFoundRemove: {}
+        }
+
+        const fetchAndCategorize = async (
+            matches: Record<string, VariableMatch[]>,
+            category: 'add' | 'remove'
+        ) => {
+            const keys = Object.keys(matches)
+            const variablesByKey: Record<string, Variable | null> = {}
+            let useApi = false
+
+            if (this.token && this.projectKey) {
+                useApi = true
+                const token = this.token
+                const projectKey = this.projectKey
+                await Promise.all(keys.map(async (key: string) => {
+                    variablesByKey[key] = await fetchVariableByKey(token, projectKey, key)
+                }))
+            }
+
+            for (const key of Object.keys(matches)) {
+                categories[category][key] = {
+                    variable: variablesByKey[key],
+                    matches: matches[key]
+                }
+                if (!variablesByKey[key] && useApi) {
+                    categories[category === 'add' ? 'notFoundAdd' : 'notFoundRemove'][key] = {
+                        variable: null,
+                        matches: matches[key]
+                    }
+                }
+            }
+        }
+
+        await Promise.all([
+            fetchAndCategorize(matchesByType.add, 'add'),
+            fetchAndCategorize(matchesByType.remove, 'remove')
+        ])
+
+        return categories
+    }
+
+    private formatOutput(matchesByTypeEnriched: MatchesByTypeEnriched, prLink?: string) {
+        const totalAdditions = Object.keys(matchesByTypeEnriched.add).length
+        const totalDeletions = Object.keys(matchesByTypeEnriched.remove).length
+        const totalNotices = Object.keys(matchesByTypeEnriched.notFoundAdd).length
+        const totalCleanup = Object.keys(matchesByTypeEnriched.notFoundRemove).length
 
         this.log('\nDevCycle Variable Changes:\n')
-        this.log(`${EMOJI.add} ${totalAdditions} Variable${totalAdditions === 1 ? '' : 's'} Added`)
-        this.log(`${EMOJI.remove} ${totalDeletions} Variable${totalDeletions === 1 ? '' : 's'} Removed`)
+        if (totalNotices) {
+            this.log(`${EMOJI.notice}   ${totalNotices} Variable${totalNotices === 1 ? '' : 's'} With Notices`)
+        }
+        this.log(`${EMOJI.add}  ${totalAdditions} Variable${totalAdditions === 1 ? '' : 's'} Added`)
+        this.log(`${EMOJI.remove}  ${totalDeletions} Variable${totalDeletions === 1 ? '' : 's'} Removed`)
+        if (totalCleanup) {
+            this.log(`${EMOJI.cleanup}  ${totalCleanup} Variable${totalCleanup === 1 ? '' : 's'} Cleaned up`)
+        }
+
+        if (totalNotices) {
+            this.log(`\n${EMOJI.notice}  Notices\n`)
+            this.logNotices(matchesByTypeEnriched)
+        }
 
         if (totalAdditions) {
             this.log(`\n${EMOJI.add} Added\n`)
-            this.logMatches(matchesByType.add, 'add', prLink)
+            this.logMatches(matchesByTypeEnriched.add, 'add', prLink)
         }
 
         if (totalDeletions) {
             this.log(`\n${EMOJI.remove} Removed\n`)
-            this.logMatches(matchesByType.remove, 'remove', prLink)
+            this.logMatches(matchesByTypeEnriched.remove, 'remove', prLink)
+        }
+
+        if (totalCleanup) {
+            this.log(`\n${EMOJI.cleanup} Cleaned Up\n`)
+            this.log('The following variables that do not exist in DevCycle were cleaned up:\n')
+            this.logCleanup(matchesByTypeEnriched)
         }
     }
 
-    private logMatches(matchesByVariable: Record<string, VariableMatch[]>, mode: 'add' | 'remove', prLink?: string) {
-        Object.entries(matchesByVariable).forEach(([variableName, matches], idx) => {
-            this.log(`  ${idx + 1}. ${variableName}`)
-            matches.sort((a, b) => {
-                if (a.fileName === b.fileName) return a.line > b.line ? 1 : -1
-                return a.fileName > b.fileName ? 1 : -1
-            })
-
-            const formatPrLink = (fileName: string, line: number) => {
-                return `[${fileName}:L${line}](${
-                    prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line})`
-            }
-
-            if (matches.length === 1) {
-                const { fileName, line } = matches[0]
-                if (prLink) {
-                    this.log(`\t   Location: ${formatPrLink(fileName, line)}`)
-                } else {
-                    this.log(`\t   Location: ${fileName}:L${line}`)
-                }
-            } else {
-                this.log('\t   Locations:')
-                matches.forEach(({ fileName, line }) => {
-                    if (prLink) {
-                        this.log(`\t    - ${formatPrLink(fileName, line)}`)
-                    } else {
-                        this.log(`\t    - ${fileName}:L${line}`)
-                    }
-                })
-            }
+    private logNotices(
+        matchesByTypeEnriched: MatchesByTypeEnriched
+    ) {
+        Object.entries(matchesByTypeEnriched.notFoundAdd).forEach(([variableName], idx) => {
+            this.log(`  ${idx + 1}. Variable "${variableName}" does not exist on DevCycle`)
         })
+    }
+
+    private logCleanup(
+        matchesByTypeEnriched: MatchesByTypeEnriched
+    ) {
+        Object.entries(matchesByTypeEnriched.notFoundRemove).forEach(([variableName], idx) => {
+            this.log(`  ${idx + 1}. ${variableName}`)
+        })
+    }
+
+    private logMatches(
+        matchesByVariable: Record<string, MatchEnriched>,
+        mode: 'add' | 'remove',
+        prLink?: string
+    ) {
+        Object.entries(matchesByVariable).forEach(([variableName, enriched], idx) => {
+            const matches = enriched.matches
+            const hasNotice = this.useApi() && !enriched.variable
+            this.log(`  ${idx + 1}. ${variableName}${
+                hasNotice ? ` ${mode === 'add' ? EMOJI.notice : EMOJI.cleanup}` : ''}`)
+            if (enriched.variable?.type) {
+                this.log(`\t   Type: ${enriched.variable.type}`)
+            }
+
+            this.logLocations(matches, mode, prLink)
+        })
+    }
+
+    private logLocations(matches: VariableMatch[], mode: 'add' | 'remove', prLink?: string) {
+        const formatPrLink = (fileName: string, line: number) => {
+            return `[${fileName}:L${line}](${
+                prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line})`
+        }
+
+        matches.sort((a, b) => {
+            if (a.fileName === b.fileName) return a.line > b.line ? 1 : -1
+            return a.fileName > b.fileName ? 1 : -1
+        })
+
+        if (matches.length === 1) {
+            const { fileName, line } = matches[0]
+            if (prLink) {
+                this.log(`\t   Location: ${formatPrLink(fileName, line)}`)
+            } else {
+                this.log(`\t   Location: ${fileName}:L${line}`)
+            }
+        } else {
+            this.log('\t   Locations:')
+            matches.forEach(({ fileName, line }) => {
+                if (prLink) {
+                    this.log(`\t    - ${formatPrLink(fileName, line)}`)
+                } else {
+                    this.log(`\t    - ${fileName}:L${line}`)
+                }
+            })
+        }
     }
 }

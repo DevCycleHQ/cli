@@ -78,7 +78,7 @@ export default abstract class Base extends Command {
             if (this.authRequired) {
                 this.error('You must provide a client ID, client secret and project key to use this command.')
             } else if (this.authSuggested && !flags['no-api']) {
-                this.warn('You should provide a client ID' +
+                this.warn('You should provide a client ID,' +
                     ' client secret and project key to use the additional API enrichment of this command.')
             }
             return
