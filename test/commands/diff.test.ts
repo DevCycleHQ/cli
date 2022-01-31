@@ -128,6 +128,29 @@ The following variables that do not exist in DevCycle were cleaned up:
   1. no-exists2
 `
 
+const unknownExpected = `
+DevCycle Variable Changes:
+
+⚠️   1 Variable With Notices
+✅  1 Variable Added
+❌  1 Variable Removed
+
+⚠️  Notices
+
+  1. Variable "SOME_ADDITION" could not be identified. Try adding an alias.
+  2. Variable "VARIABLES.SOME_REMOVAL" could not be identified. Try adding an alias.
+
+✅ Added
+
+  1. SOME_ADDITION ⚠️
+	   Location: test/utils/diff/sampleDiff.js:L1
+
+❌ Removed
+
+  1. VARIABLES.SOME_REMOVAL
+	   Location: test/utils/diff/sampleDiff.js:L1
+`
+
 describe('diff', () => {
     test
         .stdout()
@@ -212,4 +235,13 @@ describe('diff', () => {
         .it('enriches output with API data', (ctx) => {
             expect(ctx.stdout).to.equal(apiExpected)
         })
+
+    test
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/aliases/aliased', '--no-api'])
+        .it('identifies unknown variables and warns about them',
+            (ctx) => {
+                expect(ctx.stdout).to.equal(unknownExpected)
+            })
 })

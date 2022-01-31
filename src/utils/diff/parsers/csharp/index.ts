@@ -14,6 +14,8 @@ export class CsharpParser extends BaseParser {
         defaultValueCapturePattern
     ]
 
+    variableParamPosition = 1
+
     namedParameterPatternMap = {
         user: userCapturePattern,
         key: variableNameCapturePattern,

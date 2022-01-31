@@ -9,36 +9,42 @@ describe('csharp', () => {
             'fileName': 'test/utils/diff/sampleDiff.cs',
             'line': 1,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.cs',
             'line': 3,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'multi-line'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.cs',
             'line': 10,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'user-object'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.cs',
             'line': 11,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'named-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.cs',
             'line': 12,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'unordered-named-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.cs',
             'line': 13,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'default-value-object'
         }
     ]

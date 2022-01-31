@@ -14,6 +14,8 @@ export class PythonParser extends BaseParser {
         defaultValueCapturePattern
     ]
 
+    variableParamPosition = 1
+
     namedParameterDelimiter = '='
     namedParameterPatternMap = {
         key: variableNameCapturePattern,
