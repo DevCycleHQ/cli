@@ -14,4 +14,6 @@ export class IosParser extends BaseParser {
     }
 
     commentCharacters = ['///', '/**']
+
+    variableParamPosition = null
 }

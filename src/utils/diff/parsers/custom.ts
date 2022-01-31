@@ -1,10 +1,11 @@
 import { BaseParser } from './common'
-import { ParseOptions } from './types'
+import { MatchKind, ParseOptions } from './types'
 
 export class CustomParser extends BaseParser {
     identity = 'custom'
     variableMethodPattern = new RegExp('')
     customPatterns: string[]
+    variableParamPosition = null
 
     constructor(extension: string, options: ParseOptions) {
         super(extension, options)
@@ -16,12 +17,12 @@ export class CustomParser extends BaseParser {
         this.customPatterns = options.matchPatterns[extension]
     }
 
-    match(content: string): RegExpExecArray | null {
-        for (const pattern of this.customPatterns) {
-            const match = (new RegExp(pattern)).exec(content)
-            if (match) return match
-        }
-
-        return null
+    protected override buildRegexPatterns(): { pattern: RegExp, kind: MatchKind }[] {
+        return this.customPatterns.map((pattern) => {
+            return {
+                pattern: new RegExp(pattern),
+                kind: 'regular'
+            }
+        })
     }
 }

@@ -8,12 +8,14 @@ describe('ios', () => {
         {
             'fileName': 'test/utils/diff/sampleDiff.swift',
             'line': 1,
+            'kind': 'regular',
             'mode': 'add',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.swift',
             'line': 3,
+            'kind': 'regular',
             'mode': 'add',
             'name': 'multi-line'
         },
@@ -21,6 +23,7 @@ describe('ios', () => {
             'fileName': 'test/utils/diff/sampleDiff.swift',
             'line': 9,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'default-value-object'
         }
     ]

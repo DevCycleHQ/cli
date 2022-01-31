@@ -13,6 +13,7 @@ export class NodeParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
+    variableParamPosition: number | null = 1
 
     commentCharacters = ['//', '/*']
 }
