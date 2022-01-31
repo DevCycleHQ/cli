@@ -16,6 +16,30 @@ describe('csharp', () => {
             'line': 3,
             'mode': 'add',
             'name': 'multi-line'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.cs',
+            'line': 10,
+            'mode': 'add',
+            'name': 'user-object'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.cs',
+            'line': 11,
+            'mode': 'add',
+            'name': 'named-case'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.cs',
+            'line': 12,
+            'mode': 'add',
+            'name': 'unordered-named-case'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.cs',
+            'line': 13,
+            'mode': 'add',
+            'name': 'default-value-object'
         }
     ]
     it('identifies the correct variable usages in the C# sample diff', () => {

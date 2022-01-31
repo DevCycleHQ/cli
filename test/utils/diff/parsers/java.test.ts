@@ -16,6 +16,18 @@ describe('java', () => {
             'line': 3,
             'mode': 'add',
             'name': 'multi-line'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.java',
+            'line': 10,
+            'mode': 'add',
+            'name': 'user-object'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.java',
+            'line': 11,
+            'mode': 'add',
+            'name': 'hashmap-default-value'
         }
     ]
     it('identifies the correct variable usages in the Java sample diff', () => {

@@ -3,7 +3,7 @@ new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
 +++ b/test/utils/diff/sampleDiff.php
-@@ -1,1 +1,8 @@
+@@ -1,1 +1,11 @@
 +$dvcClient->variable($user_data, "simple-case", "default")
 +
 +$dvcClient->variable(
@@ -12,3 +12,6 @@ index 00000000..ed8ee4ab
 +        "default"
 +    )
 +
++$dvcClient->variable(user: $user_data, key: "named-case", defaultValue: "default")
++$dvcClient->variable(array("user_id"=>"foo"), "user-object", "default")
++$dvcClient->variable($user, "default-value-object", array("foo"=>"bar"))

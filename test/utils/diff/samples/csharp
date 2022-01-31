@@ -3,7 +3,7 @@ new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
 +++ b/test/utils/diff/sampleDiff.cs
-@@ -1,1 +1,9 @@
+@@ -1,1 +1,13 @@
 +dvcClient.VariableAsync(user, "simple-case", true)
 +
 +dvcClient
@@ -13,3 +13,7 @@ index 00000000..ed8ee4ab
 +        true
 +    )
 +
++dvcClient.VariableAsync(new User("user_id"), "user-object", true)
++dvcClient.VariableAsync(user=user, key="named-case", default=true)
++dvcClient.VariableAsync(key="unordered-named-case", default=true, user=user)
++dvcClient.VariableAsync(user, "default-value-object", new { Foo = "Bar" })

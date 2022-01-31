@@ -34,6 +34,24 @@ describe('nodejs', () => {
             'line': 20,
             'mode': 'add',
             'name': 'multi-line-comment'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.js',
+            'line': 23,
+            'mode': 'add',
+            'name': 'user-object'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.js',
+            'line': 24,
+            'mode': 'add',
+            'name': 'user-constructor'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.js',
+            'line': 25,
+            'mode': 'add',
+            'name': 'multi-line-user-object'
         }]
     const nodeSimpleMatchRemoved = [
         {
@@ -64,7 +82,7 @@ describe('nodejs', () => {
                 ...nodeSimpleMatchAdded,
                 {
                     'fileName': 'test/utils/diff/sampleDiff.js',
-                    'line': 24,
+                    'line': 34,
                     'mode': 'add',
                     'name': 'renamed-case'
                 },
@@ -81,7 +99,7 @@ describe('nodejs', () => {
                 ...nodeSimpleMatchAdded,
                 {
                     'fileName': 'test/utils/diff/sampleDiff.js',
-                    'line': 24,
+                    'line': 34,
                     'mode': 'add',
                     'name': 'renamed-case'
                 },

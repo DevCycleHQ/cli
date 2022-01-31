@@ -16,6 +16,30 @@ describe('android', () => {
             'line': 3,
             'mode': 'add',
             'name': 'multi-line'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.java',
+            'line': 9,
+            'mode': 'add',
+            'name': 'named-case'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.java',
+            'line': 10,
+            'mode': 'add',
+            'name': 'reversed-named-case'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.java',
+            'line': 11,
+            'mode': 'add',
+            'name': 'map-default-value'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.java',
+            'line': 12,
+            'mode': 'add',
+            'name': 'hashmap-default-value'
         }
     ]
     it('identifies the correct variable usages in the Android sample diff', () => {

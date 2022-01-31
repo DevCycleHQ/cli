@@ -1,14 +1,24 @@
 import { BaseParser } from '../common'
 
+const userCapturePattern = /(?:\w*|{[^})]*}|new[^)]*\))/
+const variableNameCapturePattern = /["']([^"']*)["']/
+const defaultValueCapturePattern = /(?:[^)]*)/
+
 export class CsharpParser extends BaseParser {
     identity = 'csharp'
-    variableMethodPattern = /\??\.VariableAsync\([\s\w]*,\s*/
-    variableMethodKeywordPattern = /\??\.VariableAsync\([\s\w:,]*key\s*:\s*/
-    variableNameCapturePattern = /["']([^"']*)["']/
-    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
-    commentCharacters = ['//', '/*']
+    variableMethodPattern = /\??\.VariableAsync\(/
 
-    match(content: string): RegExpExecArray | null {
-        return this.buildRegexPattern().exec(content)
+    orderedParameterPatterns = [
+        userCapturePattern,
+        variableNameCapturePattern,
+        defaultValueCapturePattern
+    ]
+
+    namedParameterPatternMap = {
+        user: userCapturePattern,
+        key: variableNameCapturePattern,
+        default: defaultValueCapturePattern
     }
+
+    commentCharacters = ['//', '/*']
 }

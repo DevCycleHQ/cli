@@ -1,13 +1,18 @@
 import { BaseParser } from '../common'
 
+const userCapturePattern = /(?:\w*|{[^})]*}|new[^)]*\))/
+const variableNameCapturePattern = /["']([^"']*)["']/
+const defaultValueCapturePattern = /(?:[^)]*)/
+
 export class NodeParser extends BaseParser {
     identity = 'nodejs'
-    variableMethodPattern = /\??\.variable\([\s\w]*,\s*/
-    variableNameCapturePattern = /["']([^"']*)["']/
-    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
-    commentCharacters = ['//', '/*']
 
-    match(content: string): RegExpExecArray | null {
-        return this.buildRegexPattern().exec(content)
-    }
+    variableMethodPattern = /\??\.variable\(\s*/
+    orderedParameterPatterns: RegExp[] | null = [
+        userCapturePattern,
+        variableNameCapturePattern,
+        defaultValueCapturePattern
+    ]
+
+    commentCharacters = ['//', '/*']
 }
