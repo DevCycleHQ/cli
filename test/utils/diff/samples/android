@@ -3,7 +3,7 @@ new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
 +++ b/test/utils/diff/sampleDiff.java
-@@ -1,1 +1,8 @@
+@@ -1,1 +1,12 @@
 +dvcClient.variable("simple-case", false)
 +
 +dvcClient
@@ -12,3 +12,7 @@ index 00000000..ed8ee4ab
 +        true
 +    )
 +
++dvcClient.variable(key="named-case", default=false)
++dvcClient.variable(default=false, key="reversed-named-case")
++dvcClient.variable("map-default-value", mapOf('foo' to 'bar'))
++dvcClient.variable("hashmap-default-value", new HashMap<String, String>())

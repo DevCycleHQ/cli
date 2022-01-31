@@ -16,6 +16,24 @@ describe('php', () => {
             'line': 3,
             'mode': 'add',
             'name': 'multi-line'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.php',
+            'line': 9,
+            'mode': 'add',
+            'name': 'named-case'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.php',
+            'line': 10,
+            'mode': 'add',
+            'name': 'user-object'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.php',
+            'line': 11,
+            'mode': 'add',
+            'name': 'default-value-object'
         }
     ]
     it('identifies the correct variable usages in the PHP sample diff', () => {

@@ -16,6 +16,12 @@ describe('ruby', () => {
             'line': 3,
             'mode': 'add',
             'name': 'multi-line'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.rb',
+            'line': 9,
+            'mode': 'add',
+            'name': 'user-object'
         }
     ]
     it('identifies the correct variable usages in the Ruby sample diff', () => {

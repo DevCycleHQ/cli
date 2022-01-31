@@ -29,6 +29,12 @@ describe('python', () => {
             'mode': 'add',
             'name': 'multi-line'
         },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.py',
+            'line': 10,
+            'mode': 'add',
+            'name': 'user-object'
+        }
     ]
 
     it('identifies the correct variable usages in the Python sample diff', () => {

@@ -1,13 +1,17 @@
 import { BaseParser } from '../common'
 
+const userCapturePattern = /(?:\w*|{[^})]*}|new[^)]*\))/
+const variableNameCapturePattern = /["']([^"']*)["']/
+const defaultValueCapturePattern = /(?:[^)]*)/
+
 export class JavaParser extends BaseParser {
     identity = 'java'
-    variableMethodPattern = /\.variable\([\s\w]*,\s*/
-    variableNameCapturePattern = /["']([^"']*)["']/
-    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
-    commentCharacters = ['/**', '*']
+    variableMethodPattern = /\.variable\(\s*/
+    orderedParameterPatterns = [
+        userCapturePattern,
+        variableNameCapturePattern,
+        defaultValueCapturePattern
+    ]
 
-    match(content: string): RegExpExecArray | null {
-        return this.buildRegexPattern().exec(content)
-    }
+    commentCharacters = ['/**', '*']
 }
