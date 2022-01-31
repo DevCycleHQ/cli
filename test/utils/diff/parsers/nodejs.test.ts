@@ -9,55 +9,72 @@ describe('nodejs', () => {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 1,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 2,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 4,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'single-quotes'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 10,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'multi-line'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 20,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'multi-line-comment'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 23,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'user-object'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 24,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'user-constructor'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 25,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'multi-line-user-object'
-        }]
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.js',
+            'line': 33,
+            'mode': 'add',
+            'kind': 'unknown',
+            'name': 'VARIABLES.ENUM_VARIABLE'
+        }
+    ]
     const nodeSimpleMatchRemoved = [
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 1,
             'mode': 'remove',
+            'kind': 'regular',
             'name': 'simple-case'
         }
     ]
@@ -84,6 +101,7 @@ describe('nodejs', () => {
                     'fileName': 'test/utils/diff/sampleDiff.js',
                     'line': 34,
                     'mode': 'add',
+                    'kind': 'regular',
                     'name': 'renamed-case'
                 },
                 ...nodeSimpleMatchRemoved
@@ -101,6 +119,7 @@ describe('nodejs', () => {
                     'fileName': 'test/utils/diff/sampleDiff.js',
                     'line': 34,
                     'mode': 'add',
+                    'kind': 'regular',
                     'name': 'renamed-case'
                 },
                 ...nodeSimpleMatchRemoved
@@ -118,6 +137,7 @@ describe('nodejs', () => {
                     'fileName': 'test/utils/diff/sampleDiff.js',
                     'line': 6,
                     'mode': 'add',
+                    'kind': 'regular',
                     'name': 'func-proxy'
                 }]
         })
@@ -132,7 +152,31 @@ describe('nodejs', () => {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 177,
                     'mode': 'add',
+                    'kind': 'regular',
                     'name': 'optional-accessor'
+                }
+            ]
+        })
+    })
+
+    it('identifies unknown variables', () => {
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/aliases/aliased'))
+        const results = parseFiles(parsedDiff)
+        expect(results).to.deep.equal({
+            nodejs: [
+                {
+                    'fileName': 'test/utils/diff/sampleDiff.js',
+                    'line': 1,
+                    'mode': 'add',
+                    'kind': 'unknown',
+                    'name': 'SOME_ADDITION'
+                },
+                {
+                    'fileName': 'test/utils/diff/sampleDiff.js',
+                    'line': 1,
+                    'mode': 'remove',
+                    'kind': 'unknown',
+                    'name': 'VARIABLES.SOME_REMOVAL'
                 }
             ]
         })

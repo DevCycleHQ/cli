@@ -12,6 +12,8 @@ export class AndroidParser extends BaseParser {
         defaultValueCapturePattern
     ]
 
+    variableParamPosition = 0
+
     namedParameterDelimiter = '='
     namedParameterPatternMap = {
         key: variableNameCapturePattern,

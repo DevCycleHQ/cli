@@ -14,6 +14,7 @@ export class GolangParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
+    variableParamPosition = 2
 
     commentCharacters = ['//', '/*']
 

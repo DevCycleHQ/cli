@@ -31,6 +31,5 @@ index 00000000..ed8ee4ab
 + * dvcClient.variable(user, "multi-line-comment", false)
 + */
 +
-+dvcClient.variable(user, VARIABLES.ENUM_VARIABLE, true)
 +dvc.variable(user, "renamed-case", true)
 +dvcClient.variable(user, "duplicate-same-line", false)dvcClient.variable(user, "duplicate-same-line", false)
