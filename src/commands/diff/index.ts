@@ -18,7 +18,10 @@ const EMOJI = {
 
 type MatchesByType = {
     add: Record<string, VariableMatch[]>,
-    remove: Record<string, VariableMatch[]>
+    remove: Record<string, VariableMatch[]>,
+    addUnknown: Record<string, VariableMatch[]>,
+    removeUnknown: Record<string, VariableMatch[]>
+
 }
 
 type MatchEnriched = {
@@ -30,7 +33,9 @@ type MatchesByTypeEnriched = {
     add: Record<string, MatchEnriched>
     remove: Record<string, MatchEnriched>,
     notFoundAdd: Record<string, MatchEnriched>,
-    notFoundRemove: Record<string, MatchEnriched>
+    notFoundRemove: Record<string, MatchEnriched>,
+    addUnknown: Record<string, MatchEnriched>,
+    removeUnknown: Record<string, MatchEnriched>
 }
 
 export default class Diff extends Base {
@@ -41,7 +46,7 @@ export default class Diff extends Base {
     static examples = [
         '<%= config.bin %> <%= command.id %>',
         '<%= config.bin %> <%= command.id %> ' +
-            '--match-pattern javascript="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
+        '--match-pattern javascript="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
     ]
 
     static flags = {
@@ -105,13 +110,16 @@ export default class Diff extends Base {
     private getMatchesByType(matchesBySdk: Record<string, VariableMatch[]>): MatchesByType {
         const matchesByType: MatchesByType = {
             add: {},
-            remove: {}
+            remove: {},
+            addUnknown: {},
+            removeUnknown: {}
         }
         Object.values(matchesBySdk).forEach((matches) => {
             matches.forEach((match) => {
-                matchesByType[match.mode] ??= {}
-                matchesByType[match.mode][match.name] ??= []
-                matchesByType[match.mode][match.name].push(match)
+                const mode: keyof MatchesByType = `${match.mode}${match.kind === 'unknown' ? 'Unknown' : ''}`
+                matchesByType[mode] ??= {}
+                matchesByType[mode][match.name] ??= []
+                matchesByType[mode][match.name].push(match)
             })
         })
         return matchesByType
@@ -122,7 +130,9 @@ export default class Diff extends Base {
             add: {},
             remove: {},
             notFoundAdd: {},
-            notFoundRemove: {}
+            notFoundRemove: {},
+            addUnknown: {},
+            removeUnknown: {}
         }
 
         const fetchAndCategorize = async (
@@ -161,13 +171,37 @@ export default class Diff extends Base {
             fetchAndCategorize(matchesByType.remove, 'remove')
         ])
 
+        const enrichedAddUnknown: Record<string, MatchEnriched> = {}
+        const enrichedRemoveUnknown: Record<string, MatchEnriched> = {}
+
+        for (const key of Object.keys(matchesByType.addUnknown)) {
+            enrichedAddUnknown[key] = {
+                variable: null,
+                matches: matchesByType.addUnknown[key]
+            }
+        }
+
+        for (const key of Object.keys(matchesByType.removeUnknown)) {
+            enrichedRemoveUnknown[key] = {
+                variable: null,
+                matches: matchesByType.removeUnknown[key]
+            }
+        }
+
+        categories.addUnknown = enrichedAddUnknown
+        categories.removeUnknown = enrichedRemoveUnknown
+
         return categories
     }
 
     private formatOutput(matchesByTypeEnriched: MatchesByTypeEnriched, prLink?: string) {
-        const totalAdditions = Object.keys(matchesByTypeEnriched.add).length
-        const totalDeletions = Object.keys(matchesByTypeEnriched.remove).length
+
+        const additions = { ...matchesByTypeEnriched.add, ...matchesByTypeEnriched.addUnknown }
+        const deletions = { ...matchesByTypeEnriched.remove, ...matchesByTypeEnriched.removeUnknown }
+        const totalAdditions = Object.keys(additions).length
+        const totalDeletions = Object.keys(deletions).length
         const totalNotices = Object.keys(matchesByTypeEnriched.notFoundAdd).length
+            + Object.keys(matchesByTypeEnriched.addUnknown).length
         const totalCleanup = Object.keys(matchesByTypeEnriched.notFoundRemove).length
 
         this.log('\nDevCycle Variable Changes:\n')
@@ -187,12 +221,12 @@ export default class Diff extends Base {
 
         if (totalAdditions) {
             this.log(`\n${EMOJI.add} Added\n`)
-            this.logMatches(matchesByTypeEnriched.add, 'add', prLink)
+            this.logMatches(additions, 'add', prLink)
         }
 
         if (totalDeletions) {
             this.log(`\n${EMOJI.remove} Removed\n`)
-            this.logMatches(matchesByTypeEnriched.remove, 'remove', prLink)
+            this.logMatches(deletions, 'remove', prLink)
         }
 
         if (totalCleanup) {
@@ -205,9 +239,17 @@ export default class Diff extends Base {
     private logNotices(
         matchesByTypeEnriched: MatchesByTypeEnriched
     ) {
+        let offset = 0
         Object.entries(matchesByTypeEnriched.notFoundAdd).forEach(([variableName], idx) => {
             this.log(`  ${idx + 1}. Variable "${variableName}" does not exist on DevCycle`)
+            offset = idx + 1
         })
+
+        Object.entries({ ...matchesByTypeEnriched.addUnknown, ...matchesByTypeEnriched.removeUnknown })
+            .forEach(([variableName], idx) => {
+                this.log(`  ${offset + idx + 1}. Variable "${
+                    variableName}" could not be identified. Try adding an alias.`)
+            })
     }
 
     private logCleanup(
@@ -225,9 +267,15 @@ export default class Diff extends Base {
     ) {
         Object.entries(matchesByVariable).forEach(([variableName, enriched], idx) => {
             const matches = enriched.matches
-            const hasNotice = this.useApi() && !enriched.variable
+            const hasNotice = mode === 'add' && ((this.useApi() && !enriched.variable)
+                || enriched.matches.some((match) => match.kind === 'unknown'))
+
+            const hasCleanup = mode === 'remove' && this.useApi() && !enriched.variable
+
             this.log(`  ${idx + 1}. ${variableName}${
-                hasNotice ? ` ${mode === 'add' ? EMOJI.notice : EMOJI.cleanup}` : ''}`)
+                hasNotice ? ` ${EMOJI.notice}` : ''}${
+                hasCleanup ? ` ${EMOJI.cleanup}` : ''}`)
+
             if (enriched.variable?.type) {
                 this.log(`\t   Type: ${enriched.variable.type}`)
             }

@@ -9,24 +9,28 @@ describe('golang', () => {
             'fileName': 'test/utils/diff/sampleDiff.go',
             'line': 1,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.go',
             'line': 3,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'multi-line'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.go',
             'line': 11,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'user-object'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.go',
             'line': 12,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'user-named-object'
         }
     ]

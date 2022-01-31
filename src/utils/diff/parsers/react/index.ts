@@ -11,6 +11,7 @@ export class ReactParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
+    variableParamPosition = 0
 
     commentCharacters = ['//', '/*', '{/*']
 }

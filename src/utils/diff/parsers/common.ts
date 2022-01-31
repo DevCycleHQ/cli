@@ -1,5 +1,5 @@
 import parse from 'parse-diff'
-import { ParseOptions, VariableMatch } from './types'
+import { MatchKind, ParseOptions, VariableMatch } from './types'
 
 type Range = {
     start: number
@@ -16,6 +16,7 @@ type Match = {
     name: string
     // Start/end indicies of matching substring
     range: Range
+    kind: MatchKind
 }
 
 class ParsedChange {
@@ -58,33 +59,45 @@ class ParsedChange {
 
 export abstract class BaseParser {
     abstract identity: string
+    // whether to add the client name (eg. dvcClient) at the beginning of the pattern
     matchClientName = true
+
+    // list of custom client names to also match against
     clientNames: string[]
 
+    // regex pattern to use to match the start of the "variable" method call, eg. `.variable(`
     abstract variableMethodPattern: RegExp
+
+    // a list of patterns to use to match each positional parameter expected in the variable call,
+    // and the closing bracket, eg. user, variable, default)
     orderedParameterPatterns: RegExp[] | null = null
+
+    // delimiter to use when detecting "named" parameters, eg. dvcClient.variable(variable=variable, default=default)
     namedParameterDelimiter = '='
+
+    // a map of named parameter names to the patterns used to detect them eg. {user: /someregex/}
     namedParameterPatternMap: Record<string, RegExp> | null = null
 
+    // comment characters to look for when matching. Varies by language.
     commentCharacters: string[] = ['//']
+
+    // index position of the "variable" parameter in positional calls.
+    abstract variableParamPosition: number | null
+
+    // pattern to use to detect variables that are not plain strings (eg. MY_VARIABLE)
+    variableIsUnknownCapturePattern = /([^,'")]*)/
 
     constructor(extension: string, protected options: ParseOptions) {
         this.clientNames = [...(options.clientNames || []), 'dvcClient']
     }
 
-    buildRegexPattern(): RegExp {
-        const clientNamePattern = this.matchClientName
-            ? new RegExp(`(?:${this.clientNames.join('|')})`).source
-            : ''
-        const orderedParameters = this.orderedParameterPatterns
-            ? this.orderedParameterPatterns
-                .map((p) => p.source)
-                .join(/\s*,\s*/.source)
-                .concat(/\)/.source)
-            : null
-        const namedParameters = this.namedParameterPatternMap
+    private buildParameterPattern(
+        namedParameterPatternMap: Record<string, RegExp> | null,
+        orderedParameterPatterns: RegExp[] | null
+    ) {
+        const namedParameters = namedParameterPatternMap
             ? Object
-                .entries(this.namedParameterPatternMap)
+                .entries(namedParameterPatternMap)
                 .map(([key, pattern]) =>
                     new RegExp(
                         `(?=.*?${key}${this.namedParameterDelimiter}\\s*${pattern.source})`
@@ -94,15 +107,70 @@ export abstract class BaseParser {
                 .concat(/[^)]*\)/.source)
             : null
 
-        const parameterPattern = orderedParameters && namedParameters
+        const orderedParameters = orderedParameterPatterns
+            ? orderedParameterPatterns
+                .map((p) => p.source)
+                .join(/\s*,\s*/.source)
+                .concat(/\)/.source)
+            : null
+
+        return orderedParameters && namedParameters
             ? new RegExp(`(?:(?:${orderedParameters})|(?:${namedParameters}))`).source
             : orderedParameters || namedParameters
+    }
+
+    private buildClientNamePattern() {
+        return this.matchClientName
+            ? new RegExp(`(?:${this.clientNames.join('|')})`).source
+            : ''
+    }
+
+    private buildRegexPatternForUnknown() {
+        const clientNamePattern = this.buildClientNamePattern()
+
+        const unknownOrderedParameters = this.orderedParameterPatterns && [...this.orderedParameterPatterns]
+        if (unknownOrderedParameters && this.variableParamPosition) {
+            unknownOrderedParameters[this.variableParamPosition] = this.variableIsUnknownCapturePattern
+        }
+
+        const unknownNamedParameterMap = this.namedParameterPatternMap
+            && { ...this.namedParameterPatternMap, key: this.variableIsUnknownCapturePattern }
+
+        const unknownParameterPattern = this.buildParameterPattern(unknownNamedParameterMap, unknownOrderedParameters)
+
+        return new RegExp(
+            clientNamePattern
+            + this.variableMethodPattern.source
+            + unknownParameterPattern
+        )
+    }
+
+    private buildRegexPattern() {
+        const clientNamePattern = this.buildClientNamePattern()
+
+        const parameterPattern = this.buildParameterPattern(
+            this.namedParameterPatternMap,
+            this.orderedParameterPatterns
+        )
 
         return new RegExp(
             clientNamePattern
             + this.variableMethodPattern.source
             + parameterPattern
         )
+    }
+
+    protected buildRegexPatterns(): {pattern: RegExp, kind: MatchKind}[] {
+        return [
+            {
+                pattern: this.buildRegexPattern(),
+                kind: 'regular'
+            },
+            {
+                pattern: this.buildRegexPatternForUnknown(),
+                kind: 'unknown'
+            }
+        ]
     }
 
     /**
@@ -149,8 +217,32 @@ export abstract class BaseParser {
         return { added, removed }
     }
 
-    match(content: string): RegExpExecArray | null {
-        return this.buildRegexPattern().exec(content)
+    match(content: string): {
+        matches: RegExpExecArray,
+        kind: MatchKind
+    } | null {
+        const patterns = this.buildRegexPatterns()
+
+        let minIndex: number = Number.MAX_SAFE_INTEGER
+        let minMatch: {
+            matches: RegExpExecArray,
+            kind: MatchKind
+        } | null = null
+
+        for (const { pattern, kind } of patterns) {
+            const matches = pattern.exec(content)
+            if (matches) {
+                if (minIndex > matches.index) {
+                    minIndex = matches.index
+                    minMatch = {
+                        kind,
+                        matches: matches
+                    }
+                }
+            }
+        }
+
+        return minMatch
     }
 
     /**
@@ -159,7 +251,7 @@ export abstract class BaseParser {
      * matching substring.
      */
     private getAllMatches(content: string): Match[] {
-        const matches: Match[] = []
+        const allMatches: Match[] = []
         let cursorPosition = 0
 
         while (cursorPosition < content.length) {
@@ -168,13 +260,16 @@ export abstract class BaseParser {
 
             if (!match) break
 
-            const [matchContent] = match
-            const variableName = match[1] || match[2] // position or named parameter match
-            const startIndex = cursorPosition + match.index
+            const { matches, kind } = match
+
+            const [matchContent] = matches
+            const variableName = matches[1] || matches[2] // position or named parameter match
+            const startIndex = cursorPosition + matches.index
             const endIndex = startIndex + matchContent.length - 1
 
-            matches.push({
+            allMatches.push({
                 name: variableName,
+                kind,
                 range: {
                     start: startIndex,
                     end: endIndex
@@ -183,12 +278,13 @@ export abstract class BaseParser {
             cursorPosition = endIndex + 1
         }
 
-        return matches
+        return allMatches
     }
 
-    private formatMatch(name: string, file: parse.File, change: parse.Change): VariableMatch {
+    private formatMatch(name: string, file: parse.File, change: parse.Change, kind: MatchKind): VariableMatch {
         return {
             name,
+            kind,
             fileName: file.to ?? '',
             line: change.type === 'normal' ? change.ln1 : change.ln,
             mode: change.type === 'add' ? 'add' : 'remove'
@@ -220,7 +316,7 @@ export abstract class BaseParser {
                 const formattedChange = matchingChanges[0].format(
                     validChange.type as 'add' | 'del'
                 )
-                results.push(this.formatMatch(match.name, file, formattedChange))
+                results.push(this.formatMatch(match.name, file, formattedChange, match.kind))
             }
         })
 

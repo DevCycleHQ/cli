@@ -12,6 +12,7 @@ export class JavaParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
+    variableParamPosition = 1
 
     commentCharacters = ['/**', '*']
 }

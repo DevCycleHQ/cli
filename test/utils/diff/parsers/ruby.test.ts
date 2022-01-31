@@ -9,18 +9,21 @@ describe('ruby', () => {
             'fileName': 'test/utils/diff/sampleDiff.rb',
             'line': 1,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.rb',
             'line': 3,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'multi-line'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.rb',
             'line': 9,
             'mode': 'add',
+            'kind': 'regular',
             'name': 'user-object'
         }
     ]

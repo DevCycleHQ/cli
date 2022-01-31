@@ -12,6 +12,7 @@ export class PhpParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
+    variableParamPosition = 1
 
     namedParameterDelimiter = ':'
     namedParameterPatternMap = {

@@ -10,6 +10,7 @@ export class JavascriptParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
+    variableParamPosition = 0
 
     commentCharacters = ['//', '/*']
 }
