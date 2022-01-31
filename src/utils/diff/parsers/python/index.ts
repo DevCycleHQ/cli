@@ -1,14 +1,25 @@
 import { BaseParser } from '../common'
 
+const userCapturePattern = /(?:\w*|{[^})]*}|\w*\([^)]*\))/
+const variableNameCapturePattern = /["']([^"']*)["']/
+const defaultValueCapturePattern = /(?:[^)]*)/
+
 export class PythonParser extends BaseParser {
     identity = 'python'
-    variableMethodPattern = /\.variable\([\s\w]*,\s*/
-    variableMethodKeywordPattern = /\.variable\([\s\w=,]*key\s*=\s*/
-    variableNameCapturePattern = /["']([^"']*)["']/
-    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
-    commentCharacters = ['#', '"""']
+    variableMethodPattern = /\.variable\(\s*/
 
-    match(content: string): RegExpExecArray | null {
-        return this.buildRegexPattern().exec(content)
+    orderedParameterPatterns = [
+        userCapturePattern,
+        variableNameCapturePattern,
+        defaultValueCapturePattern
+    ]
+
+    namedParameterDelimiter = '='
+    namedParameterPatternMap = {
+        key: variableNameCapturePattern,
+        user: userCapturePattern,
+        defaultValue: defaultValueCapturePattern
     }
+
+    commentCharacters = ['#', '"""']
 }

@@ -1,14 +1,24 @@
 import { BaseParser } from '../common'
 
+const userCapturePattern = /(?:\$\w*|{[^})]*}|new[^)]*\)|array\([^)]*\))/
+const variableNameCapturePattern = /["']([^"']*)["']/
+const defaultValueCapturePattern = /(?:[^)]*)/
+
 export class PhpParser extends BaseParser {
     identity = 'php'
-    variableMethodPattern = /\??->variable\([\s\w$]*,\s*/
-    variableMethodKeywordPattern = /\??->variable\([\s\w$:,]*key\s*:\s*/
-    variableNameCapturePattern = /["']([^"']*)["']/
-    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
-    commentCharacters = ['//', '#', '/*']
+    variableMethodPattern = /\??->variable\(\s*/
+    orderedParameterPatterns = [
+        userCapturePattern,
+        variableNameCapturePattern,
+        defaultValueCapturePattern
+    ]
 
-    match(content: string): RegExpExecArray | null {
-        return this.buildRegexPattern().exec(content)
+    namedParameterDelimiter = ':'
+    namedParameterPatternMap = {
+        key: variableNameCapturePattern,
+        user: userCapturePattern,
+        defaultValue: defaultValueCapturePattern
     }
+
+    commentCharacters = ['//', '#', '/*']
 }

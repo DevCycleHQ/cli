@@ -7,21 +7,23 @@ process.env = {}
 const expected = `
 DevCycle Variable Changes:
 
-✅  4 Variables Added
+✅  5 Variables Added
 ❌  1 Variable Removed
 
 ✅ Added
 
   1. simple-case
+	   Location: test/utils/diff/sampleDiff.js:L1
+  2. duplicate-case
 	   Locations:
-	    - test/utils/diff/sampleDiff.js:L1
 	    - test/utils/diff/sampleDiff.js:L2
-  2. single-quotes
-	   Location: test/utils/diff/sampleDiff.js:L4
-  3. multi-line
-	   Location: test/utils/diff/sampleDiff.js:L10
-  4. multi-line-comment
-	   Location: test/utils/diff/sampleDiff.js:L20
+	    - test/utils/diff/sampleDiff.js:L3
+  3. single-quotes
+	   Location: test/utils/diff/sampleDiff.js:L5
+  4. multi-line
+	   Location: test/utils/diff/sampleDiff.js:L11
+  5. multi-line-comment
+	   Location: test/utils/diff/sampleDiff.js:L21
 
 ❌ Removed
 
@@ -32,23 +34,25 @@ DevCycle Variable Changes:
 const customExpected = `
 DevCycle Variable Changes:
 
-✅  5 Variables Added
+✅  6 Variables Added
 ❌  1 Variable Removed
 
 ✅ Added
 
   1. simple-case
+	   Location: test/utils/diff/sampleDiff.js:L1
+  2. duplicate-case
 	   Locations:
-	    - test/utils/diff/sampleDiff.js:L1
 	    - test/utils/diff/sampleDiff.js:L2
-  2. single-quotes
-	   Location: test/utils/diff/sampleDiff.js:L4
-  3. multi-line
-	   Location: test/utils/diff/sampleDiff.js:L10
-  4. multi-line-comment
-	   Location: test/utils/diff/sampleDiff.js:L20
-  5. func-proxy
-	   Location: test/utils/diff/sampleDiff.js:L6
+	    - test/utils/diff/sampleDiff.js:L3
+  3. single-quotes
+	   Location: test/utils/diff/sampleDiff.js:L5
+  4. multi-line
+	   Location: test/utils/diff/sampleDiff.js:L11
+  5. multi-line-comment
+	   Location: test/utils/diff/sampleDiff.js:L21
+  6. func-proxy
+\t   Location: test/utils/diff/sampleDiff.js:L7
 
 ❌ Removed
 
@@ -59,21 +63,23 @@ DevCycle Variable Changes:
 const linkedExpected = `
 DevCycle Variable Changes:
 
-✅  4 Variables Added
+✅  5 Variables Added
 ❌  1 Variable Removed
 
 ✅ Added
 
   1. simple-case
+	   Location: [test/utils/diff/sampleDiff.js:L1](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R1)
+  2. duplicate-case
 	   Locations:
-	    - [test/utils/diff/sampleDiff.js:L1](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R1)
 	    - [test/utils/diff/sampleDiff.js:L2](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R2)
-  2. single-quotes
-	   Location: [test/utils/diff/sampleDiff.js:L4](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R4)
-  3. multi-line
-	   Location: [test/utils/diff/sampleDiff.js:L10](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R10)
-  4. multi-line-comment
-	   Location: [test/utils/diff/sampleDiff.js:L20](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R20)
+	    - [test/utils/diff/sampleDiff.js:L3](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R3)
+  3. single-quotes
+	   Location: [test/utils/diff/sampleDiff.js:L5](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R5)
+  4. multi-line
+	   Location: [test/utils/diff/sampleDiff.js:L11](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R11)
+  5. multi-line-comment
+	   Location: [test/utils/diff/sampleDiff.js:L21](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R21)
 
 ❌ Removed
 
@@ -119,7 +125,7 @@ The following variables that do not exist in DevCycle were cleaned up:
 describe('diff', () => {
     test
         .stdout()
-        .command(['diff', '--file', './test/utils/diff/samples/nodejs', '--no-api'])
+        .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api'])
         .it('runs against a test file', (ctx) => {
             expect(ctx.stdout).to.equal(expected)
         })
@@ -127,7 +133,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodejs',
+            './test/utils/diff/samples/e2e',
             '--match-pattern', 'js=checkVariable\\(\\w*,\\s*"([^"\']*)"', '--no-api'])
         .it('runs against a test file with a custom matcher', (ctx) => {
             expect(ctx.stdout).to.equal(customExpected)
@@ -136,7 +142,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodejs',
+            './test/utils/diff/samples/e2e',
             '--config-path', './test/commands/fixtures/testConfig.yml', '--no-api'])
         .it('runs against a test file with a custom matcher specified in a config file',
             (ctx) => {
@@ -155,14 +161,14 @@ describe('diff', () => {
             })
         })
         .command(['diff', '--file',
-            './test/utils/diff/samples/nodejs',
+            './test/utils/diff/samples/e2e',
             '--client-id', 'client', '--client-secret', 'secret', '--project', 'project'])
         .catch('Failed to authenticate with the DevCycle API. Check your credentials.')
         .it('runs with failed api authorization')
 
     test
         .stdout()
-        .command(['diff', '--file', './test/utils/diff/samples/nodejs', '--no-api', '--pr-link', 'https://example.com'])
+        .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api', '--pr-link', 'https://example.com'])
         .it('runs against a test file and linkifies the output', (ctx) => {
             expect(ctx.stdout).to.equal(linkedExpected)
         })

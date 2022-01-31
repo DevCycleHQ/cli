@@ -60,10 +60,12 @@ export abstract class BaseParser {
     abstract identity: string
     matchClientName = true
     clientNames: string[]
+
     abstract variableMethodPattern: RegExp
-    variableMethodKeywordPattern : RegExp | null = null
-    abstract variableNameCapturePattern: RegExp
-    abstract defaultValueCapturePattern: RegExp
+    orderedParameterPatterns: RegExp[] | null = null
+    namedParameterDelimiter = '='
+    namedParameterPatternMap: Record<string, RegExp> | null = null
+
     commentCharacters: string[] = ['//']
 
     constructor(extension: string, protected options: ParseOptions) {
@@ -71,16 +73,35 @@ export abstract class BaseParser {
     }
 
     buildRegexPattern(): RegExp {
-        const variableRegex = this.variableMethodKeywordPattern ?
-            `(?:${this.variableMethodKeywordPattern.source}|${this.variableMethodPattern.source})` :
-            this.variableMethodPattern.source
-        const clientNamePattern = this.matchClientName ? new RegExp(`(?:${this.clientNames.join('|')})`).source : ''
+        const clientNamePattern = this.matchClientName
+            ? new RegExp(`(?:${this.clientNames.join('|')})`).source
+            : ''
+        const orderedParameters = this.orderedParameterPatterns
+            ? this.orderedParameterPatterns
+                .map((p) => p.source)
+                .join(/\s*,\s*/.source)
+                .concat(/\)/.source)
+            : null
+        const namedParameters = this.namedParameterPatternMap
+            ? Object
+                .entries(this.namedParameterPatternMap)
+                .map(([key, pattern]) =>
+                    new RegExp(
+                        `(?=.*?${key}${this.namedParameterDelimiter}\\s*${pattern.source})`
+                    ).source
+                )
+                .join('')
+                .concat(/[^)]*\)/.source)
+            : null
+
+        const parameterPattern = orderedParameters && namedParameters
+            ? new RegExp(`(?:(?:${orderedParameters})|(?:${namedParameters}))`).source
+            : orderedParameters || namedParameters
 
         return new RegExp(
             clientNamePattern
-            + new RegExp(variableRegex).source
-            + this.variableNameCapturePattern.source
-            + this.defaultValueCapturePattern.source
+            + this.variableMethodPattern.source
+            + parameterPattern
         )
     }
 
@@ -128,24 +149,27 @@ export abstract class BaseParser {
         return { added, removed }
     }
 
-    abstract match(content: string, options: ParseOptions): RegExpExecArray | null
+    match(content: string): RegExpExecArray | null {
+        return this.buildRegexPattern().exec(content)
+    }
 
     /**
      * Given a string, returns all matches found in the string.
      * Each match includes the variable name and the character range of the
      * matching substring.
      */
-    private getAllMatches(content: string, options: ParseOptions): Match[] {
+    private getAllMatches(content: string): Match[] {
         const matches: Match[] = []
         let cursorPosition = 0
 
         while (cursorPosition < content.length) {
             const substring = content.slice(cursorPosition)
-            const match = this.match(substring, options)
+            const match = this.match(substring)
 
             if (!match) break
 
-            const [matchContent, variableName] = match
+            const [matchContent] = match
+            const variableName = match[1] || match[2] // position or named parameter match
             const startIndex = cursorPosition + match.index
             const endIndex = startIndex + matchContent.length - 1
 
@@ -203,13 +227,13 @@ export abstract class BaseParser {
         return results
     }
 
-    parse(file: parse.File, options: ParseOptions = {}): VariableMatch[] {
+    parse(file: parse.File): VariableMatch[] {
         const results: VariableMatch[] = []
 
         for (const chunk of file.chunks) {
             const { added: addedChunk, removed: removedChunk } = this.aggregateMultilineChunks(chunk)
-            const addedMatches = this.getAllMatches(addedChunk.content, options)
-            const removedMatches = this.getAllMatches(removedChunk.content, options)
+            const addedMatches = this.getAllMatches(addedChunk.content)
+            const removedMatches = this.getAllMatches(removedChunk.content)
 
             results.push(
                 ...this.formatMatches(file, addedMatches, addedChunk),

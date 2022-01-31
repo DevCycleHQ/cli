@@ -1,14 +1,22 @@
 import { BaseParser } from '../common'
 
+const variableNameCapturePattern = /["']([^"']*)["']/
+const defaultValueCapturePattern = /(?:[^)]*)/
+
 export class AndroidParser extends BaseParser {
     identity = 'android'
-    variableMethodPattern = /\??\.variable\(\s*/
-    variableMethodKeywordPattern = /\??\.variable\(\s*key\s*=\s*/
-    variableNameCapturePattern = /["']([^"']*)["']/
-    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
-    commentCharacters = ['//', '/**', '*', '<!--']
+    variableMethodPattern = /\??\.variable\(/
 
-    match(content: string): RegExpExecArray | null {
-        return this.buildRegexPattern().exec(content)
+    orderedParameterPatterns = [
+        variableNameCapturePattern,
+        defaultValueCapturePattern
+    ]
+
+    namedParameterDelimiter = '='
+    namedParameterPatternMap = {
+        key: variableNameCapturePattern,
+        default: defaultValueCapturePattern
     }
+
+    commentCharacters = ['//', '/**', '*', '<!--']
 }

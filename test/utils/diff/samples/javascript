@@ -1,0 +1,14 @@
+diff --git a/test/utils/diff/sampleDiff.js b/test/utils/diff/sampleDiff.js
+new file mode 100644
+index 00000000..ed8ee4ab
+--- /dev/null
++++ b/test/utils/diff/sampleDiff.js
+@@ -1,1 +1,8 @@
++dvcClient.variable("simple-case", true)
++
++dvcClient.variable(
++        "multi-line",
++        true
++    )
++
++dvcClient.variable("default-value-object", { key: "value", foo: "bar" })

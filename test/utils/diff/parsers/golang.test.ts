@@ -16,6 +16,18 @@ describe('golang', () => {
             'line': 3,
             'mode': 'add',
             'name': 'multi-line'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.go',
+            'line': 11,
+            'mode': 'add',
+            'name': 'user-object'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.go',
+            'line': 12,
+            'mode': 'add',
+            'name': 'user-named-object'
         }
     ]
     it('identifies the correct variable usages in the Go sample diff', () => {

@@ -1,13 +1,17 @@
 import { BaseParser } from '../common'
 
+const variableNameCapturePattern = /["']([^"']*)["']/
+const defaultValueCapturePattern = /(?:[^)]*)/
+
 export class IosParser extends BaseParser {
     identity = 'ios'
-    variableMethodPattern = /\??\.variable\(\s*key:\s*/
-    variableNameCapturePattern = /["']([^"']*)["']/
-    defaultValueCapturePattern = /\s*,\s*([^)]*)\)/
-    commentCharacters = ['///', '/**']
+    variableMethodPattern = /\??\.variable\(/
 
-    match(content: string): RegExpExecArray | null {
-        return this.buildRegexPattern().exec(content)
+    namedParameterDelimiter = ':'
+    namedParameterPatternMap = {
+        key: variableNameCapturePattern,
+        defaultValue: defaultValueCapturePattern
     }
+
+    commentCharacters = ['///', '/**']
 }
