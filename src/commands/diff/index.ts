@@ -1,6 +1,7 @@
 import { executeDiff } from '../../utils/diff/diff'
 import { Flags } from '@oclif/core'
 import * as emoji from 'node-emoji'
+import { uniqBy } from 'lodash'
 import { executeFileDiff } from '../../utils/diff/fileDiff'
 import { parseFiles } from '../../utils/diff/parse'
 import { VariableMatch } from '../../utils/diff/parsers/types'
@@ -112,6 +113,10 @@ export default class Diff extends Base {
                 matchesByType[match.mode] ??= {}
                 matchesByType[match.mode][match.name] ??= []
                 matchesByType[match.mode][match.name].push(match)
+                matchesByType[match.mode][match.name] = uniqBy(
+                    matchesByType[match.mode][match.name],
+                    (m) => `${m.fileName}:${m.line}`
+                )
             })
         })
         return matchesByType
