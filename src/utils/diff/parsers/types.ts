@@ -3,7 +3,8 @@ export type VariableMatch = {
     line: number,
     fileName: string,
     mode: 'add' | 'remove',
-    isUnknown?: boolean
+    isUnknown?: boolean,
+    alias?: string
 }
 
 export type ParseOptions = {

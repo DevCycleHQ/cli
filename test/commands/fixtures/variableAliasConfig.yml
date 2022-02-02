@@ -1,0 +1,4 @@
+codeInsights:
+  variableAliases:
+    SOME_ADDITION: some-addition
+    VARIABLES.SOME_REMOVAL: some-removal

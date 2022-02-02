@@ -21,7 +21,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/1.0.8 darwin-x64 node-v16.13.2
+@devcycle/cli/1.0.8 darwin-x64 node-v16.13.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -41,7 +41,7 @@ Print a diff of DevCycle variable usage between two versions of your code.
 USAGE
   $ dvc diff [DIFF-PATTERN] [--config-path <value>] [--auth-path <value>] [--client-id <value>]
     [--client-secret <value>] [--project <value>] [--no-api] [-f <value>] [--client-name <value>] [--match-pattern
-    <value>]
+    <value>] [--var-alias <value>]
 
 ARGUMENTS
   DIFF-PATTERN  A "git diff"-compatible diff pattern, eg. "branch1 branch2"
@@ -60,6 +60,8 @@ FLAGS
   --no-api                    Disable API-based enhancements for commands where authorization is optional. Suppresses
                               warnings about missing credentials.
   --project=<value>           Project key to use for the DevCycle API requests
+  --var-alias=<value>...      Aliases to use when identifying variables in your code. Should contain a code reference
+                              mapped to a DevCycle variable key, eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"
 
 DESCRIPTION
   Print a diff of DevCycle variable usage between two versions of your code.
@@ -108,6 +110,9 @@ codeInsights:
     ## add additional names to check for when looking for instances of DVCClient from an SDK
     clientNames:
         - "dvcClient"
+    ## map the values used in your code to the corresponding variable key in DevCycle
+    variableAliases:
+      'VARIABLES.ENABLE_V1': 'enable-v1'
     ## fully override the regex patterns used to match variables for a specific file extension
     ## each pattern should contain exactly one capture group which matches on the key of the variable
     matchPatterns:
