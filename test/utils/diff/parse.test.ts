@@ -21,7 +21,6 @@ describe('parse', () => {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 176,
                     'mode': 'add',
-                    'kind': 'regular',
                     'name': 'variable-key'
                 }],
             })
@@ -36,7 +35,6 @@ describe('parse', () => {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 176,
                     'mode': 'remove',
-                    'kind': 'regular',
                     'name': 'variable-key'
                 }],
             })
@@ -51,14 +49,12 @@ describe('parse', () => {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 176,
                     'mode': 'add',
-                    'kind': 'regular',
                     'name': 'new-variable'
                 },
                 {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 176,
                     'mode': 'remove',
-                    'kind': 'regular',
                     'name': 'variable-key'
                 }],
             })
@@ -73,14 +69,12 @@ describe('parse', () => {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 176,
                     'mode': 'add',
-                    'kind': 'regular',
                     'name': 'variable-key'
                 },
                 {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 176,
                     'mode': 'remove',
-                    'kind': 'regular',
                     'name': 'variable-key'
                 }],
             })
@@ -104,7 +98,6 @@ describe('parse', () => {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 177,
                     'mode': 'add',
-                    'kind': 'regular',
                     'name': 'variable-key'
                 }]
             })
@@ -119,7 +112,6 @@ describe('parse', () => {
                     'fileName': 'services/api/src/organizations/organizations.controller.ts',
                     'line': 177,
                     'mode': 'remove',
-                    'kind': 'regular',
                     'name': 'variable-key'
                 }]
             })
@@ -135,14 +127,12 @@ describe('parse', () => {
                         'fileName': 'services/api/src/organizations/organizations.controller.ts',
                         'line': 177,
                         'mode': 'add',
-                        'kind': 'regular',
                         'name': 'new-variable'
                     },
                     {
                         'fileName': 'services/api/src/organizations/organizations.controller.ts',
                         'line': 177,
                         'mode': 'remove',
-                        'kind': 'regular',
                         'name': 'variable-key'
                     }
                 ]

@@ -1,10 +1,9 @@
-export type MatchKind = 'regular' | 'unknown'
 export type VariableMatch = {
     name: string,
     line: number,
     fileName: string,
     mode: 'add' | 'remove',
-    kind: MatchKind
+    isUnknown?: boolean
 }
 
 export type ParseOptions = {

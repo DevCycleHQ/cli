@@ -1,8 +1,8 @@
 import { BaseParser } from '../common'
 
 const userCapturePattern = /(?:\w*|{[^})]*}|new[^)]*\))/
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)]*)/
+const defaultValueCapturePattern = /(?:[^),]*|new[^)]*\))/
 
 export class JavaParser extends BaseParser {
     identity = 'java'
@@ -12,7 +12,6 @@ export class JavaParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
-    variableParamPosition = 1
 
     commentCharacters = ['/**', '*']
 }

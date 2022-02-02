@@ -179,17 +179,17 @@ export default class Diff extends Base {
         const enrichedAddUnknown: Record<string, MatchEnriched> = {}
         const enrichedRemoveUnknown: Record<string, MatchEnriched> = {}
 
-        for (const key of Object.keys(matchesByType.addUnknown)) {
+        for (const [key, matches] of Object.entries(matchesByType.addUnknown)) {
             enrichedAddUnknown[key] = {
                 variable: null,
-                matches: matchesByType.addUnknown[key]
+                matches
             }
         }
 
-        for (const key of Object.keys(matchesByType.removeUnknown)) {
+        for (const [key, matches] of Object.entries(matchesByType.removeUnknown)) {
             enrichedRemoveUnknown[key] = {
                 variable: null,
-                matches: matchesByType.removeUnknown[key]
+                matches
             }
         }
 
@@ -207,6 +207,7 @@ export default class Diff extends Base {
         const totalDeletions = Object.keys(deletions).length
         const totalNotices = Object.keys(matchesByTypeEnriched.notFoundAdd).length
             + Object.keys(matchesByTypeEnriched.addUnknown).length
+            + Object.keys(matchesByTypeEnriched.removeUnknown).length
         const totalCleanup = Object.keys(matchesByTypeEnriched.notFoundRemove).length
 
         this.log('\nDevCycle Variable Changes:\n')
@@ -272,10 +273,10 @@ export default class Diff extends Base {
     ) {
         Object.entries(matchesByVariable).forEach(([variableName, enriched], idx) => {
             const matches = enriched.matches
-            const hasNotice = mode === 'add' && ((this.useApi() && !enriched.variable)
-                || enriched.matches.some((match) => match.isUnknown))
-
-            const hasCleanup = mode === 'remove' && this.useApi() && !enriched.variable
+            const notFound = this.useApi() && !enriched.variable
+            const isUnknown = enriched.matches.some((match) => match.isUnknown)
+            const hasNotice = (mode === 'add' && (notFound || isUnknown)) || mode === 'remove' && isUnknown
+            const hasCleanup = mode === 'remove' && notFound
 
             this.log(`  ${idx + 1}. ${variableName}${
                 hasNotice ? ` ${EMOJI.notice}` : ''}${
