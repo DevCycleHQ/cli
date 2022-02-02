@@ -62,6 +62,12 @@ export default class Diff extends Base {
                 'Must specify the file extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"',
             multiple: true
         }),
+        'var-alias': Flags.string({
+            description: 'Aliases to use when identifying variables in your code.' +
+            ' Should contain a code reference mapped to a DevCycle variable key,' +
+            ' eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"',
+            multiple: true
+        }),
         'pr-link': Flags.string({
             hidden: true,
             description: 'Link to the PR to use for formatting the line number outputs with clickable links.'
@@ -74,15 +80,18 @@ export default class Diff extends Base {
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(Diff)
-
+ 
         if (!flags.file && !args['diff-pattern']) {
             throw new Error('Must provide a diff pattern')
         }
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
-        const matchPatternsFromConfig: Record<string, string[]> = this.configFromFile?.codeInsights?.matchPatterns || {}
-        const clientNamesFromConfig = this.configFromFile?.codeInsights?.clientNames || []
+        const codeInsightsConfig = this.configFromFile?.codeInsights || {}
+
+        const matchPatternsFromConfig: Record<string, string[]> = codeInsightsConfig.matchPatterns || {}
+        const clientNamesFromConfig = codeInsightsConfig.clientNames || []
+        const variableAliasesFromConfig = codeInsightsConfig.variableAliases || {}
 
         const matchPatterns = (flags['match-pattern'] || []).reduce((acc, value) => {
             const [extension, pattern] = value.split('=')
@@ -97,7 +106,15 @@ export default class Diff extends Base {
             matchPatterns
         })
 
-        const matchesByType = this.getMatchesByType(matchesBySdk)
+        const variableAliases = (flags['var-alias'] || []).reduce((map, value) => {
+            const [codeRef, variableName] = value.trim().split('=')
+            if (!codeRef || !variableName) {
+                throw new Error(`Invalid variable alias: ${value}. Must be of the form "[CODE REF]=[VARIABLE KEY]`)
+            }
+            return { ...map, [codeRef]: variableName }
+        }, variableAliasesFromConfig)
+
+        const matchesByType = this.getMatchesByType(matchesBySdk, variableAliases)
 
         const matchesByTypeEnriched = await this.fetchVariableData(matchesByType)
 
@@ -108,7 +125,10 @@ export default class Diff extends Base {
         return this.token && this.projectKey
     }
 
-    private getMatchesByType(matchesBySdk: Record<string, VariableMatch[]>): MatchesByType {
+    private getMatchesByType(
+        matchesBySdk: Record<string, VariableMatch[]>,
+        aliasMap: Record<string, string>
+    ): MatchesByType {
         const matchesByType: MatchesByType = {
             add: {},
             remove: {},
@@ -116,7 +136,14 @@ export default class Diff extends Base {
             removeUnknown: {}
         }
         Object.values(matchesBySdk).forEach((matches) => {
-            matches.forEach((match) => {
+            matches.forEach((m) => {
+                const match = { ...m }
+                const aliasedName = aliasMap[match.name]
+                if (match.isUnknown && aliasedName) {
+                    match.alias = match.name
+                    match.name = aliasedName
+                    delete match.isUnknown
+                }
                 const mode: keyof MatchesByType = `${match.mode}${match.isUnknown ? 'Unknown' : ''}`
                 matchesByType[mode] ??= {}
                 matchesByType[mode][match.name] ??= []

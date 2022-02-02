@@ -151,6 +151,23 @@ DevCycle Variable Changes:
 	   Location: test/utils/diff/sampleDiff.js:L1
 `
 
+const aliasExpected = `
+DevCycle Variable Changes:
+
+✅  1 Variable Added
+❌  1 Variable Removed
+
+✅ Added
+
+  1. some-addition
+	   Location: test/utils/diff/sampleDiff.js:L1
+
+❌ Removed
+
+  1. some-removal
+	   Location: test/utils/diff/sampleDiff.js:L1
+`
+
 describe('diff', () => {
     test
         .stdout()
@@ -172,7 +189,7 @@ describe('diff', () => {
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/e2e',
-            '--config-path', './test/commands/fixtures/testConfig.yml', '--no-api'])
+            '--config-path', './test/commands/fixtures/customMatcherConfig.yml', '--no-api'])
         .it('runs against a test file with a custom matcher specified in a config file',
             (ctx) => {
                 expect(ctx.stdout).to.equal(customExpected)
@@ -243,5 +260,27 @@ describe('diff', () => {
         .it('identifies unknown variables and warns about them',
             (ctx) => {
                 expect(ctx.stdout).to.equal(unknownExpected)
+            })
+
+    test
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/aliases/aliased', '--no-api',
+            '--var-alias', 'SOME_ADDITION=some-addition', 'VARIABLES.SOME_REMOVAL=some-removal'
+        ])
+        .it('identifies aliased variables',
+            (ctx) => {
+                expect(ctx.stdout).to.equal(aliasExpected)
+            })
+
+    test
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/aliases/aliased', '--no-api',
+            '--config-path', './test/commands/fixtures/variableAliasConfig.yml'
+        ])
+        .it('identifies aliased variables specified in config file',
+            (ctx) => {
+                expect(ctx.stdout).to.equal(aliasExpected)
             })
 })
