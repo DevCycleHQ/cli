@@ -1,5 +1,5 @@
 import parse from 'parse-diff'
-import { MatchKind, ParseOptions, VariableMatch } from './types'
+import { ParseOptions, VariableMatch } from './types'
 
 type Range = {
     start: number
@@ -11,12 +11,19 @@ type MultilineChunk = {
     changes: ParsedChange[]
 }
 
-type Match = {
+type MatchWithRange = {
     // Variable name
     name: string
     // Start/end indicies of matching substring
     range: Range
-    kind: MatchKind
+    isUnknown?: boolean
+}
+
+export type MatchResult = {
+    isUnknown?: boolean
+    content: string,
+    name: string,
+    index: number
 }
 
 class ParsedChange {
@@ -81,12 +88,6 @@ export abstract class BaseParser {
     // comment characters to look for when matching. Varies by language.
     commentCharacters: string[] = ['//']
 
-    // index position of the "variable" parameter in positional calls.
-    abstract variableParamPosition: number | null
-
-    // pattern to use to detect variables that are not plain strings (eg. MY_VARIABLE)
-    variableIsUnknownCapturePattern = /([^,'")]*)/
-
     constructor(extension: string, protected options: ParseOptions) {
         this.clientNames = [...(options.clientNames || []), 'dvcClient']
     }
@@ -125,26 +126,6 @@ export abstract class BaseParser {
             : ''
     }
 
-    private buildRegexPatternForUnknown() {
-        const clientNamePattern = this.buildClientNamePattern()
-
-        const unknownOrderedParameters = this.orderedParameterPatterns && [...this.orderedParameterPatterns]
-        if (unknownOrderedParameters && this.variableParamPosition) {
-            unknownOrderedParameters[this.variableParamPosition] = this.variableIsUnknownCapturePattern
-        }
-
-        const unknownNamedParameterMap = this.namedParameterPatternMap
-            && { ...this.namedParameterPatternMap, key: this.variableIsUnknownCapturePattern }
-
-        const unknownParameterPattern = this.buildParameterPattern(unknownNamedParameterMap, unknownOrderedParameters)
-
-        return new RegExp(
-            clientNamePattern
-            + this.variableMethodPattern.source
-            + unknownParameterPattern
-        )
-    }
-
     private buildRegexPattern() {
         const clientNamePattern = this.buildClientNamePattern()
 
@@ -158,19 +139,6 @@ export abstract class BaseParser {
             + this.variableMethodPattern.source
             + parameterPattern
         )
-    }
-
-    protected buildRegexPatterns(): {pattern: RegExp, kind: MatchKind}[] {
-        return [
-            {
-                pattern: this.buildRegexPattern(),
-                kind: 'regular'
-            },
-            {
-                pattern: this.buildRegexPatternForUnknown(),
-                kind: 'unknown'
-            }
-        ]
     }
 
     /**
@@ -217,32 +185,22 @@ export abstract class BaseParser {
         return { added, removed }
     }
 
-    match(content: string): {
-        matches: RegExpExecArray,
-        kind: MatchKind
-    } | null {
-        const patterns = this.buildRegexPatterns()
+    match(content: string): MatchResult | null {
+        const pattern = this.buildRegexPattern()
 
-        let minIndex: number = Number.MAX_SAFE_INTEGER
-        let minMatch: {
-            matches: RegExpExecArray,
-            kind: MatchKind
-        } | null = null
-
-        for (const { pattern, kind } of patterns) {
-            const matches = pattern.exec(content)
-            if (matches) {
-                if (minIndex > matches.index) {
-                    minIndex = matches.index
-                    minMatch = {
-                        kind,
-                        matches: matches
-                    }
-                }
+        const matches = pattern.exec(content)
+        if (matches) {
+            const varName = matches[1] || matches[2]
+            return {
+                isUnknown: !varName.match(/^["'].*["']$/),
+                // position or named parameter match
+                name: varName.replace(/^["']|["']$/g, ''),
+                content: matches[0],
+                index: matches.index
             }
         }
 
-        return minMatch
+        return null
     }
 
     /**
@@ -250,26 +208,24 @@ export abstract class BaseParser {
      * Each match includes the variable name and the character range of the
      * matching substring.
      */
-    private getAllMatches(content: string): Match[] {
-        const allMatches: Match[] = []
+    private getAllMatches(matchString: string): MatchWithRange[] {
+        const allMatches: MatchWithRange[] = []
         let cursorPosition = 0
 
-        while (cursorPosition < content.length) {
-            const substring = content.slice(cursorPosition)
+        while (cursorPosition < matchString.length) {
+            const substring = matchString.slice(cursorPosition)
             const match = this.match(substring)
 
             if (!match) break
 
-            const { matches, kind } = match
+            const { content, index, name, isUnknown } = match
 
-            const [matchContent] = matches
-            const variableName = matches[1] || matches[2] // position or named parameter match
-            const startIndex = cursorPosition + matches.index
-            const endIndex = startIndex + matchContent.length - 1
+            const startIndex = cursorPosition + index
+            const endIndex = startIndex + content.length - 1
 
             allMatches.push({
-                name: variableName,
-                kind,
+                name,
+                isUnknown,
                 range: {
                     start: startIndex,
                     end: endIndex
@@ -281,13 +237,13 @@ export abstract class BaseParser {
         return allMatches
     }
 
-    private formatMatch(name: string, file: parse.File, change: parse.Change, kind: MatchKind): VariableMatch {
+    private formatMatch(name: string, file: parse.File, change: parse.Change, isUnknown?: boolean): VariableMatch {
         return {
             name,
-            kind,
             fileName: file.to ?? '',
             line: change.type === 'normal' ? change.ln1 : change.ln,
-            mode: change.type === 'add' ? 'add' : 'remove'
+            mode: change.type === 'add' ? 'add' : 'remove',
+            ...(isUnknown ? { isUnknown: true } : {})
         }
     }
 
@@ -295,7 +251,7 @@ export abstract class BaseParser {
      * Given an array of matches, find the first change object corresponding to the match.
      * Also verify that the match is associated with at least one add/delete change object.
      */
-    private formatMatches(file: parse.File, matches: Match[], { changes }: MultilineChunk) {
+    private formatMatches(file: parse.File, matches: MatchWithRange[], { changes }: MultilineChunk) {
         const results: VariableMatch[] = []
 
         matches.forEach((match) => {
@@ -316,7 +272,7 @@ export abstract class BaseParser {
                 const formattedChange = matchingChanges[0].format(
                     validChange.type as 'add' | 'del'
                 )
-                results.push(this.formatMatch(match.name, file, formattedChange, match.kind))
+                results.push(this.formatMatch(match.name, file, formattedChange, match.isUnknown))
             }
         })
 

@@ -1,7 +1,7 @@
 import { BaseParser } from '../common'
 
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)=]*)/
+const defaultValueCapturePattern = /(?:[^),]*|new[^)]*\))/
 
 export class AndroidParser extends BaseParser {
     identity = 'android'
@@ -11,8 +11,6 @@ export class AndroidParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
-
-    variableParamPosition = 0
 
     namedParameterDelimiter = '='
     namedParameterPatternMap = {

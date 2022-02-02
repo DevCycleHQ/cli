@@ -131,7 +131,7 @@ The following variables that do not exist in DevCycle were cleaned up:
 const unknownExpected = `
 DevCycle Variable Changes:
 
-⚠️   1 Variable With Notices
+⚠️   2 Variables With Notices
 ✅  1 Variable Added
 ❌  1 Variable Removed
 
@@ -147,7 +147,7 @@ DevCycle Variable Changes:
 
 ❌ Removed
 
-  1. VARIABLES.SOME_REMOVAL
+  1. VARIABLES.SOME_REMOVAL ⚠️
 	   Location: test/utils/diff/sampleDiff.js:L1
 `
 

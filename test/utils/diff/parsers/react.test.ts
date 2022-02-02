@@ -9,14 +9,12 @@ describe('react', () => {
             'fileName': 'test/utils/diff/sampleDiff.jsx',
             'line': 1,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.jsx',
             'line': 3,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'multi-line'
         }
     ]

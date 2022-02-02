@@ -9,21 +9,18 @@ describe('javascript', () => {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 1,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 3,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'multi-line'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.js',
             'line': 8,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'default-value-object'
         }
     ]
