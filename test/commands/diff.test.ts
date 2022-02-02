@@ -168,6 +168,18 @@ DevCycle Variable Changes:
 	   Location: test/utils/diff/sampleDiff.js:L1
 `
 
+const formattedExpected = `
+## DevCycle Variable Changes:
+
+✅  1 Variable Added
+❌  0 Variables Removed
+
+### ✅ Added
+
+  1. **optional-accessor**
+\t   Location: services/api/src/organizations/organizations.controller.ts:L177
+`
+
 describe('diff', () => {
     test
         .stdout()
@@ -282,5 +294,14 @@ describe('diff', () => {
         .it('identifies aliased variables specified in config file',
             (ctx) => {
                 expect(ctx.stdout).to.equal(aliasExpected)
+            })
+    test
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown'
+        ])
+        .it('formats the output as markdown',
+            (ctx) => {
+                expect(ctx.stdout).to.equal(formattedExpected)
             })
 })
