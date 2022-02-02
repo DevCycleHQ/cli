@@ -71,6 +71,11 @@ export default class Diff extends Base {
         'pr-link': Flags.string({
             hidden: true,
             description: 'Link to the PR to use for formatting the line number outputs with clickable links.'
+        }),
+        'format': Flags.string({
+            default: 'console',
+            options: ['console', 'markdown'],
+            description: 'Format to output the diff results in.'
         })
     }
 
@@ -78,12 +83,16 @@ export default class Diff extends Base {
         { name: 'diff-pattern', description: 'A "git diff"-compatible diff pattern, eg. "branch1 branch2"' },
     ]
 
+    useMarkdown = false
+
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(Diff)
- 
+
         if (!flags.file && !args['diff-pattern']) {
             throw new Error('Must provide a diff pattern')
         }
+
+        this.useMarkdown = flags.format === 'markdown'
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
@@ -237,7 +246,10 @@ export default class Diff extends Base {
             + Object.keys(matchesByTypeEnriched.removeUnknown).length
         const totalCleanup = Object.keys(matchesByTypeEnriched.notFoundRemove).length
 
-        this.log('\nDevCycle Variable Changes:\n')
+        const headerPrefix = this.useMarkdown ? '## ' : ''
+        const subHeaderPrefix = this.useMarkdown ? '### ' : ''
+
+        this.log(`\n${headerPrefix}DevCycle Variable Changes:\n`)
         if (totalNotices) {
             this.log(`${EMOJI.notice}   ${totalNotices} Variable${totalNotices === 1 ? '' : 's'} With Notices`)
         }
@@ -248,22 +260,22 @@ export default class Diff extends Base {
         }
 
         if (totalNotices) {
-            this.log(`\n${EMOJI.notice}  Notices\n`)
+            this.log(`\n${subHeaderPrefix}${EMOJI.notice}  Notices\n`)
             this.logNotices(matchesByTypeEnriched)
         }
 
         if (totalAdditions) {
-            this.log(`\n${EMOJI.add} Added\n`)
+            this.log(`\n${subHeaderPrefix}${EMOJI.add} Added\n`)
             this.logMatches(additions, 'add', prLink)
         }
 
         if (totalDeletions) {
-            this.log(`\n${EMOJI.remove} Removed\n`)
+            this.log(`\n${subHeaderPrefix}${EMOJI.remove} Removed\n`)
             this.logMatches(deletions, 'remove', prLink)
         }
 
         if (totalCleanup) {
-            this.log(`\n${EMOJI.cleanup} Cleaned Up\n`)
+            this.log(`\n${subHeaderPrefix}${EMOJI.cleanup} Cleaned Up\n`)
             this.log('The following variables that do not exist in DevCycle were cleaned up:\n')
             this.logCleanup(matchesByTypeEnriched)
         }
@@ -305,7 +317,9 @@ export default class Diff extends Base {
             const hasNotice = (mode === 'add' && (notFound || isUnknown)) || mode === 'remove' && isUnknown
             const hasCleanup = mode === 'remove' && notFound
 
-            this.log(`  ${idx + 1}. ${variableName}${
+            const formattedName = this.useMarkdown ? `**${variableName}**` : variableName
+
+            this.log(`  ${idx + 1}. ${formattedName}${
                 hasNotice ? ` ${EMOJI.notice}` : ''}${
                 hasCleanup ? ` ${EMOJI.cleanup}` : ''}`)
 
