@@ -6,7 +6,7 @@ new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
 +++ b/test/utils/diff/sampleDiff.js
-@@ -1,1 +1,25 @@
+@@ -1,1 +1,26 @@
 -dvcClient.variable(user, "simple-case", true)
 +dvcClient.variable(user, "simple-case", true)
 +dvcClient.variable(user, "duplicate-case", true)
@@ -33,3 +33,4 @@ index 00000000..ed8ee4ab
 +
 +dvcClient.variable(user, VARIABLES.ENUM_VARIABLE, true)
 +dvc.variable(user, "renamed-case", true)
++dvcClient.variable(user, "duplicate-same-line", false)dvcClient.variable(user, "duplicate-same-line", false)

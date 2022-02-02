@@ -7,33 +7,6 @@ process.env = {}
 const expected = `
 DevCycle Variable Changes:
 
-✅  5 Variables Added
-❌  1 Variable Removed
-
-✅ Added
-
-  1. simple-case
-	   Location: test/utils/diff/sampleDiff.js:L1
-  2. duplicate-case
-	   Locations:
-	    - test/utils/diff/sampleDiff.js:L2
-	    - test/utils/diff/sampleDiff.js:L3
-  3. single-quotes
-	   Location: test/utils/diff/sampleDiff.js:L5
-  4. multi-line
-	   Location: test/utils/diff/sampleDiff.js:L11
-  5. multi-line-comment
-	   Location: test/utils/diff/sampleDiff.js:L21
-
-❌ Removed
-
-  1. simple-case
-	   Location: test/utils/diff/sampleDiff.js:L1
-`
-
-const customExpected = `
-DevCycle Variable Changes:
-
 ✅  6 Variables Added
 ❌  1 Variable Removed
 
@@ -51,7 +24,38 @@ DevCycle Variable Changes:
 	   Location: test/utils/diff/sampleDiff.js:L11
   5. multi-line-comment
 	   Location: test/utils/diff/sampleDiff.js:L21
-  6. func-proxy
+  6. duplicate-same-line
+\t   Location: test/utils/diff/sampleDiff.js:L26
+
+❌ Removed
+
+  1. simple-case
+	   Location: test/utils/diff/sampleDiff.js:L1
+`
+
+const customExpected = `
+DevCycle Variable Changes:
+
+✅  7 Variables Added
+❌  1 Variable Removed
+
+✅ Added
+
+  1. simple-case
+	   Location: test/utils/diff/sampleDiff.js:L1
+  2. duplicate-case
+	   Locations:
+	    - test/utils/diff/sampleDiff.js:L2
+	    - test/utils/diff/sampleDiff.js:L3
+  3. single-quotes
+	   Location: test/utils/diff/sampleDiff.js:L5
+  4. multi-line
+	   Location: test/utils/diff/sampleDiff.js:L11
+  5. multi-line-comment
+	   Location: test/utils/diff/sampleDiff.js:L21
+  6. duplicate-same-line
+\t   Location: test/utils/diff/sampleDiff.js:L26
+  7. func-proxy
 \t   Location: test/utils/diff/sampleDiff.js:L7
 
 ❌ Removed
@@ -63,7 +67,7 @@ DevCycle Variable Changes:
 const linkedExpected = `
 DevCycle Variable Changes:
 
-✅  5 Variables Added
+✅  6 Variables Added
 ❌  1 Variable Removed
 
 ✅ Added
@@ -80,6 +84,8 @@ DevCycle Variable Changes:
 	   Location: [test/utils/diff/sampleDiff.js:L11](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R11)
   5. multi-line-comment
 	   Location: [test/utils/diff/sampleDiff.js:L21](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R21)
+  6. duplicate-same-line
+\t   Location: [test/utils/diff/sampleDiff.js:L26](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R26)
 
 ❌ Removed
 
