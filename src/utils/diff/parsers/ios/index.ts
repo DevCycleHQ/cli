@@ -1,7 +1,7 @@
 import { BaseParser } from '../common'
 
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)]*)/
+const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class IosParser extends BaseParser {
     identity = 'ios'
@@ -14,6 +14,5 @@ export class IosParser extends BaseParser {
     }
 
     commentCharacters = ['///', '/**']
-
-    variableParamPosition = null
+    
 }

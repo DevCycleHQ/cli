@@ -9,35 +9,30 @@ describe('python', () => {
             'fileName': 'test/utils/diff/sampleDiff.py',
             'line': 1,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'simple-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.py',
             'line': 2,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'named-case'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.py',
             'line': 3,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'named-case-reversed'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.py',
             'line': 4,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'multi-line'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.py',
             'line': 10,
             'mode': 'add',
-            'kind': 'regular',
             'name': 'user-object'
         }
     ]

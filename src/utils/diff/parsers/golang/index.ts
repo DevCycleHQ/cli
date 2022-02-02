@@ -2,8 +2,8 @@ import { BaseParser } from '../common'
 
 const authPattern = /\w*/
 const userCapturePattern = /(?:\w*|[\w\s.]*{[^})]*})/
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)]*)/
+const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class GolangParser extends BaseParser {
     identity = 'golang'
@@ -14,7 +14,6 @@ export class GolangParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
-    variableParamPosition = 2
 
     commentCharacters = ['//', '/*']
 

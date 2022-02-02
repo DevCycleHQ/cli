@@ -1,8 +1,8 @@
 import { BaseParser } from '../common'
 
 const userCapturePattern = /(?:\$\w*|{[^})]*}|new[^)]*\)|array\([^)]*\))/
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)]*)/
+const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class PhpParser extends BaseParser {
     identity = 'php'
@@ -12,7 +12,6 @@ export class PhpParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
-    variableParamPosition = 1
 
     namedParameterDelimiter = ':'
     namedParameterPatternMap = {

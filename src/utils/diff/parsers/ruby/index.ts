@@ -1,8 +1,8 @@
 import { BaseParser } from '../common'
 
 const userCapturePattern = /(?:[\s\w]*|{[^})]*}|[\w.:]*new\({[^)}]*}\))/
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)]*)/
+const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class RubyParser extends BaseParser {
     identity = 'ruby'
@@ -12,7 +12,6 @@ export class RubyParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
-    variableParamPosition = 1
 
     commentCharacters = ['#']
 }

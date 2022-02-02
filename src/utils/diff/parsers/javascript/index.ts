@@ -1,7 +1,7 @@
 import { BaseParser } from '../common'
 
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)]*)/
+const defaultValueCapturePattern = /(?:[^),]*|{[^}]*})/
 
 export class JavascriptParser extends BaseParser {
     identity = 'javascript'
@@ -10,7 +10,6 @@ export class JavascriptParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
-    variableParamPosition = 0
 
     commentCharacters = ['//', '/*']
 }

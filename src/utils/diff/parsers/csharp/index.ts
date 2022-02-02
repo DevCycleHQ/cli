@@ -1,8 +1,8 @@
 import { BaseParser } from '../common'
 
 const userCapturePattern = /(?:\w*|{[^})]*}|new[^)]*\))/
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)]*)/
+const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class CsharpParser extends BaseParser {
     identity = 'csharp'
@@ -13,8 +13,6 @@ export class CsharpParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
-
-    variableParamPosition = 1
 
     namedParameterPatternMap = {
         user: userCapturePattern,

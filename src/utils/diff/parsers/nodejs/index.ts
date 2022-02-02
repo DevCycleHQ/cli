@@ -1,8 +1,8 @@
 import { BaseParser } from '../common'
 
 const userCapturePattern = /(?:\w*|{[^})]*}|new[^)]*\))/
-const variableNameCapturePattern = /["']([^"']*)["']/
-const defaultValueCapturePattern = /(?:[^)]*)/
+const variableNameCapturePattern = /([^,)]*)/
+const defaultValueCapturePattern = /(?:[^),]*|{[^}]*})/
 
 export class NodeParser extends BaseParser {
     identity = 'nodejs'
@@ -13,7 +13,6 @@ export class NodeParser extends BaseParser {
         variableNameCapturePattern,
         defaultValueCapturePattern
     ]
-    variableParamPosition: number | null = 1
 
     commentCharacters = ['//', '/*']
 }
