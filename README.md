@@ -122,3 +122,11 @@ codeInsights:
         js:
             - dvcClient\.variable\(\s*["']([^"']*)["']
 ```
+
+# Development
+
+## Publishing a new version
+1. Checkout a new branch and bump the CLI version, `npm version patch`. Make note of the tag created.
+2. Publish to NPM, `npm publish --access public`
+3. Push the tag created in Step 1, `git push origin vX.X.X`
+
