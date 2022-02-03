@@ -76,6 +76,9 @@ export default class Diff extends Base {
             default: 'console',
             options: ['console', 'markdown'],
             description: 'Format to output the diff results in.'
+        }),
+        'show-regex': Flags.boolean({
+            description: 'Output the regex pattern used to find variable usage'
         })
     }
 
@@ -112,7 +115,8 @@ export default class Diff extends Base {
 
         const matchesBySdk = parseFiles(parsedDiff, {
             clientNames: [...clientNamesFromConfig, ...(flags['client-name'] || [])],
-            matchPatterns
+            matchPatterns,
+            printPatterns: flags['show-regex']
         })
 
         const variableAliases = (flags['var-alias'] || []).reduce((map, value) => {

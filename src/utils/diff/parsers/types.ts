@@ -9,6 +9,7 @@ export type VariableMatch = {
 
 export type ParseOptions = {
     clientNames?: string[],
-    matchPatterns?: Record<string, string[]>
+    matchPatterns?: Record<string, string[]>,
+    printPatterns?: boolean
 }
 
