@@ -41,7 +41,7 @@ Print a diff of DevCycle variable usage between two versions of your code.
 USAGE
   $ dvc diff [DIFF-PATTERN] [--config-path <value>] [--auth-path <value>] [--client-id <value>]
     [--client-secret <value>] [--project <value>] [--no-api] [-f <value>] [--client-name <value>] [--match-pattern
-    <value>] [--var-alias <value>] [--format console|markdown]
+    <value>] [--var-alias <value>] [--format console|markdown] [--show-regex]
 
 ARGUMENTS
   DIFF-PATTERN  A "git diff"-compatible diff pattern, eg. "branch1 branch2"
@@ -62,6 +62,7 @@ FLAGS
   --no-api                    Disable API-based enhancements for commands where authorization is optional. Suppresses
                               warnings about missing credentials.
   --project=<value>           Project key to use for the DevCycle API requests
+  --show-regex                Output the regex pattern used to find variable usage
   --var-alias=<value>...      Aliases to use when identifying variables in your code. Should contain a code reference
                               mapped to a DevCycle variable key, eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"
 
