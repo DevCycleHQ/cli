@@ -169,7 +169,7 @@ DevCycle Variable Changes:
 `
 
 const formattedExpected = `
-## DevCycle Variable Changes:
+## <img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg" height="31px" align="center"/> DevCycle Variable Changes:
 
 🟢  1 Variable Added
 🔴  0 Variables Removed

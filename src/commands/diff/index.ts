@@ -250,10 +250,14 @@ export default class Diff extends Base {
             + Object.keys(matchesByTypeEnriched.removeUnknown).length
         const totalCleanup = Object.keys(matchesByTypeEnriched.notFoundRemove).length
 
-        const headerPrefix = this.useMarkdown ? '## ' : ''
         const subHeaderPrefix = this.useMarkdown ? '### ' : ''
 
-        this.log(`\n${headerPrefix}DevCycle Variable Changes:\n`)
+        if (this.useMarkdown) {
+            this.log('\n## <img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg" ' +
+                'height="31px" align="center"/> DevCycle Variable Changes:\n')
+        } else {
+            this.log('\nDevCycle Variable Changes:\n')
+        }
         if (totalNotices) {
             this.log(`${EMOJI.notice}   ${totalNotices} Variable${totalNotices === 1 ? '' : 's'} With Notices`)
         }
