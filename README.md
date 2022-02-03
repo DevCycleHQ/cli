@@ -10,11 +10,49 @@ The CLI can be customized in several ways using command-line args or by creating
 [![License](https://img.shields.io/npm/l/@devcycle/cli.svg)](https://github.com/DevCycleHQ/cli/blob/main/package.json)
 
 <!-- toc -->
+* [Setup](#setup)
 * [Usage](#usage)
 * [Commands](#commands)
 * [Configuration](#configuration)
 * [Development](#development)
 <!-- tocstop -->
+# Setup
+## Install the CLI:
+```sh-session
+$ npm install -g @devcycle/cli
+```
+## Set up DevCycle API Credentials
+Many of the CLI commands require DevCycle API authorization. Your DevCycle organization's client ID and secret must
+be provided. They can be obtained from the [settings page](https://app.devcycle.com/settings) of the DevCycle dashboard.
+
+There are several ways to provide these credentials:
+### Credentials File
+Create a subdirectory inside the directory where you're running the CLI called `.devcycle`, then inside that directory
+create an `auth.yml` file with the following contents:
+
+```yaml
+client_id: <your client id>
+client_secret: <your client secret>
+```
+This file should **not** be checked in to version control.
+
+You also need to specify the default project ID for the CLI to use. This can be set in the [configuration](#configuration) file:
+```yaml
+project: <your project id>
+```
+
+### Environment Variables
+Set the following environment variables:
+```sh-session
+$ export DVC_CLIENT_ID=<your client id>
+$ export DVC_CLIENT_SECRET=<your client secret>
+$ export DVC_PROJECT_KEY=<your project key>
+```
+### Command-Line Arguments
+The CLI can be run with the following arguments:
+```sh-session
+$ dvc --client-id=<your client id> --client-secret=<your client secret> --project=<your project key>
+
 # Usage
 <!-- usage -->
 ```sh-session
@@ -123,11 +161,13 @@ codeInsights:
         ## file extension to override for, containing a list of patterns to use
         js:
             - dvcClient\.variable\(\s*["']([^"']*)["']
+## the default project key to use for commands that interact with the DevCycle API.
+project: my-project
 ```
 
 # Development
 
 ## Publishing a new version
-1. Checkout a new branch and bump the CLI version, `npm version patch`. Make note of the tag created.
-2. Publish to NPM, `npm publish --access public`
-3. Push the tag created in Step 1, `git push origin vX.X.X`
+1. Checkout the latest `main` branch and bump the CLI version, `npm version patch`. Make note of the tag created.
+2. Push the tag and version commit that were created, `git push && git push origin vX.X.X`
+3. Publish to NPM, `npm publish --access public`
