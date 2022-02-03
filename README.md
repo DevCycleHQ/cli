@@ -21,7 +21,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/2.0.0 darwin-x64 node-v16.13.0
+@devcycle/cli/2.0.1 darwin-x64 node-v16.13.2
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -41,7 +41,7 @@ Print a diff of DevCycle variable usage between two versions of your code.
 USAGE
   $ dvc diff [DIFF-PATTERN] [--config-path <value>] [--auth-path <value>] [--client-id <value>]
     [--client-secret <value>] [--project <value>] [--no-api] [-f <value>] [--client-name <value>] [--match-pattern
-    <value>] [--var-alias <value>]
+    <value>] [--var-alias <value>] [--format console|markdown]
 
 ARGUMENTS
   DIFF-PATTERN  A "git diff"-compatible diff pattern, eg. "branch1 branch2"
@@ -54,6 +54,8 @@ FLAGS
   --client-secret=<value>     Client Secret to use for DevCycle API Authorization
   --config-path=<value>       [default: .devcycle/config.yml] Override the default location to look for a config.yml
                               file
+  --format=<option>           [default: console] Format to output the diff results in.
+                              <options: console|markdown>
   --match-pattern=<value>...  Additional full Regex pattern to use to match variable usages in your code. Should contain
                               exactly one capture group which matches on the key of the variable. Must specify the file
                               extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"
@@ -72,7 +74,7 @@ EXAMPLES
   $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.0.0/dist/commands/diff/index.ts)_
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.0.1/dist/commands/diff/index.ts)_
 
 ## `dvc help [COMMAND]`
 
