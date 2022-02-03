@@ -13,6 +13,7 @@ The CLI can be customized in several ways using command-line args or by creating
 * [Usage](#usage)
 * [Commands](#commands)
 * [Configuration](#configuration)
+* [Development](#development)
 <!-- tocstop -->
 # Usage
 <!-- usage -->
@@ -21,7 +22,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/2.0.1 darwin-x64 node-v16.13.2
+@devcycle/cli/2.0.2 darwin-x64 node-v16.13.2
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -75,7 +76,7 @@ EXAMPLES
   $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.0.1/dist/commands/diff/index.ts)_
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.0.2/dist/commands/diff/index.ts)_
 
 ## `dvc help [COMMAND]`
 
@@ -130,4 +131,3 @@ codeInsights:
 1. Checkout a new branch and bump the CLI version, `npm version patch`. Make note of the tag created.
 2. Publish to NPM, `npm publish --access public`
 3. Push the tag created in Step 1, `git push origin vX.X.X`
-
