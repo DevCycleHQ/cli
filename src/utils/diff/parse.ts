@@ -28,12 +28,20 @@ export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Rec
         ALL_PARSERS[extension] = [...(ALL_PARSERS[extension] ?? []), CustomParser]
     }
 
+    const printed: Record<string, boolean> = {}
+
     for (const file of files) {
         const fileExtension = file.to?.split('.').pop() ?? ''
         const Parsers = ALL_PARSERS[fileExtension] || []
 
         for (const Parser of Parsers) {
             const parser = new Parser(fileExtension, options)
+
+            if (options.printPatterns && !printed[parser.identity]) {
+                printed[parser.identity] = true
+                parser.printRegexPattern()
+            }
+
             const result = parser.parse(file)
             if (result.length > 0) {
                 resultsByLanguage[parser.identity] ??= []

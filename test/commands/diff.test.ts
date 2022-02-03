@@ -304,4 +304,16 @@ describe('diff', () => {
             (ctx) => {
                 expect(ctx.stdout).to.equal(formattedExpected)
             })
+    test
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/optional-accessor', '--no-api', '--show-regex'
+        ])
+        .it('outputs the regex patterns used for matching',
+            (ctx) => {
+                expect(ctx.stdout).to.contain('Pattern for nodejs parser')
+                expect(ctx.stdout).to.contain('Pattern for react parser')
+                expect(ctx.stdout).to.contain('Pattern for javascript parser')
+
+            })
 })
