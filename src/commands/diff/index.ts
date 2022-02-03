@@ -11,8 +11,8 @@ import { fetchVariableByKey } from '../../api/variables'
 import { Variable } from '../../types/variable'
 
 const EMOJI = {
-    add: emoji.get('white_check_mark'),
-    remove: emoji.get('x'),
+    add: emoji.get('large_green_circle'),
+    remove: emoji.get('red_circle'),
     notice: emoji.get('warning'),
     cleanup: emoji.get('broom')
 }

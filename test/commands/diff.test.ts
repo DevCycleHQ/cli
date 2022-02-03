@@ -7,10 +7,10 @@ process.env = {}
 const expected = `
 DevCycle Variable Changes:
 
-✅  6 Variables Added
-❌  1 Variable Removed
+🟢  6 Variables Added
+🔴  1 Variable Removed
 
-✅ Added
+🟢 Added
 
   1. simple-case
 	   Location: test/utils/diff/sampleDiff.js:L1
@@ -27,7 +27,7 @@ DevCycle Variable Changes:
   6. duplicate-same-line
 \t   Location: test/utils/diff/sampleDiff.js:L26
 
-❌ Removed
+🔴 Removed
 
   1. simple-case
 	   Location: test/utils/diff/sampleDiff.js:L1
@@ -36,10 +36,10 @@ DevCycle Variable Changes:
 const customExpected = `
 DevCycle Variable Changes:
 
-✅  7 Variables Added
-❌  1 Variable Removed
+🟢  7 Variables Added
+🔴  1 Variable Removed
 
-✅ Added
+🟢 Added
 
   1. simple-case
 	   Location: test/utils/diff/sampleDiff.js:L1
@@ -58,7 +58,7 @@ DevCycle Variable Changes:
   7. func-proxy
 \t   Location: test/utils/diff/sampleDiff.js:L7
 
-❌ Removed
+🔴 Removed
 
   1. simple-case
 	   Location: test/utils/diff/sampleDiff.js:L1
@@ -67,10 +67,10 @@ DevCycle Variable Changes:
 const linkedExpected = `
 DevCycle Variable Changes:
 
-✅  6 Variables Added
-❌  1 Variable Removed
+🟢  6 Variables Added
+🔴  1 Variable Removed
 
-✅ Added
+🟢 Added
 
   1. simple-case
 	   Location: [test/utils/diff/sampleDiff.js:L1](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R1)
@@ -87,7 +87,7 @@ DevCycle Variable Changes:
   6. duplicate-same-line
 \t   Location: [test/utils/diff/sampleDiff.js:L26](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R26)
 
-❌ Removed
+🔴 Removed
 
   1. simple-case
 	   Location: [test/utils/diff/sampleDiff.js:L1](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3L1)
@@ -97,15 +97,15 @@ const apiExpected = `
 DevCycle Variable Changes:
 
 ⚠️   1 Variable With Notices
-✅  2 Variables Added
-❌  2 Variables Removed
+🟢  2 Variables Added
+🔴  2 Variables Removed
 🧹  1 Variable Cleaned up
 
 ⚠️  Notices
 
   1. Variable "no-exists" does not exist on DevCycle
 
-✅ Added
+🟢 Added
 
   1. exists
 	   Type: String
@@ -113,7 +113,7 @@ DevCycle Variable Changes:
   2. no-exists ⚠️
 	   Location: test/utils/diff/sampleDiff.js:L2
 
-❌ Removed
+🔴 Removed
 
   1. exists2
 	   Type: String
@@ -132,20 +132,20 @@ const unknownExpected = `
 DevCycle Variable Changes:
 
 ⚠️   2 Variables With Notices
-✅  1 Variable Added
-❌  1 Variable Removed
+🟢  1 Variable Added
+🔴  1 Variable Removed
 
 ⚠️  Notices
 
   1. Variable "SOME_ADDITION" could not be identified. Try adding an alias.
   2. Variable "VARIABLES.SOME_REMOVAL" could not be identified. Try adding an alias.
 
-✅ Added
+🟢 Added
 
   1. SOME_ADDITION ⚠️
 	   Location: test/utils/diff/sampleDiff.js:L1
 
-❌ Removed
+🔴 Removed
 
   1. VARIABLES.SOME_REMOVAL ⚠️
 	   Location: test/utils/diff/sampleDiff.js:L1
@@ -154,15 +154,15 @@ DevCycle Variable Changes:
 const aliasExpected = `
 DevCycle Variable Changes:
 
-✅  1 Variable Added
-❌  1 Variable Removed
+🟢  1 Variable Added
+🔴  1 Variable Removed
 
-✅ Added
+🟢 Added
 
   1. some-addition
 	   Location: test/utils/diff/sampleDiff.js:L1
 
-❌ Removed
+🔴 Removed
 
   1. some-removal
 	   Location: test/utils/diff/sampleDiff.js:L1
@@ -171,10 +171,10 @@ DevCycle Variable Changes:
 const formattedExpected = `
 ## DevCycle Variable Changes:
 
-✅  1 Variable Added
-❌  0 Variables Removed
+🟢  1 Variable Added
+🔴  0 Variables Removed
 
-### ✅ Added
+### 🟢 Added
 
   1. **optional-accessor**
 \t   Location: services/api/src/organizations/organizations.controller.ts:L177
