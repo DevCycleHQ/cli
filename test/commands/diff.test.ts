@@ -64,6 +64,18 @@ DevCycle Variable Changes:
 	   Location: test/utils/diff/sampleDiff.js:L1
 `
 
+const aliasedCustomExpected = `
+DevCycle Variable Changes:
+
+🟢  1 Variable Added
+🔴  0 Variables Removed
+
+🟢 Added
+
+  1. my-variable
+	   Location: test/utils/diff/sampleDiff.jsx:L1
+`
+
 const linkedExpected = `
 DevCycle Variable Changes:
 
@@ -192,7 +204,7 @@ describe('diff', () => {
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/e2e',
-            '--match-pattern', 'js=checkVariable\\(\\w*,\\s*"([^"\']*)"', '--no-api'])
+            '--match-pattern', 'js=checkVariable\\(\\w*,\\s*([^,)]*)', '--no-api'])
         .it('runs against a test file with a custom matcher', (ctx) => {
             expect(ctx.stdout).to.equal(customExpected)
         })
@@ -206,6 +218,17 @@ describe('diff', () => {
             (ctx) => {
                 expect(ctx.stdout).to.equal(customExpected)
             })
+
+    test
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/custom-pattern',
+            '--match-pattern', 'jsx=useDVCVariable\\(\\s*([^,)]*)\\s*,\\s*(?:[^),]*|{[^}]*})\\)',
+            '--var-alias', 'ALIASED_VARIABLE=my-variable',
+            '--no-api'])
+        .it('identifies an aliased variable with a custom matcher', (ctx) => {
+            expect(ctx.stdout).to.equal(aliasedCustomExpected)
+        })
 
     test
         .nock(AUTH_URL, (api) => {

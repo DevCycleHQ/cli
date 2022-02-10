@@ -1,4 +1,4 @@
 codeInsights:
   matchPatterns:
     js:
-      - checkVariable\(\w*,\s*"([^"']*)"
+      - checkVariable\(\w*,\s*([^,)]*)

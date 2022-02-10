@@ -157,6 +157,7 @@ codeInsights:
       'VARIABLES.ENABLE_V1': 'enable-v1'
     ## fully override the regex patterns used to match variables for a specific file extension
     ## each pattern should contain exactly one capture group which matches on the key of the variable
+    ## make sure the captured value contains the entire key parameter (including quotes, if applicable)
     matchPatterns:
         ## file extension to override for, containing a list of patterns to use
         js:
@@ -164,10 +165,3 @@ codeInsights:
 ## the default project key to use for commands that interact with the DevCycle API.
 project: my-project
 ```
-
-# Development
-
-## Publishing a new version
-1. Checkout the latest `main` branch and bump the CLI version, `npm version patch`. Make note of the tag created.
-2. Push the tag and version commit that were created, `git push && git push origin vX.X.X`
-3. Publish to NPM, `npm publish --access public`

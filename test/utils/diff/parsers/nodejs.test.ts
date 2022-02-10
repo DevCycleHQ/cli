@@ -118,7 +118,7 @@ describe('nodejs', () => {
 
     it('identifies the correct variables using a custom pattern', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
-        const results = parseFiles(parsedDiff, { matchPatterns: { js: ['checkVariable\\(\\w*,\\s*"([^"\']*)"'] } })
+        const results = parseFiles(parsedDiff, { matchPatterns: { js: ['checkVariable\\(\\w*,\\s*([^,)]*)\\s*'] } })
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,
             custom: [
@@ -134,7 +134,7 @@ describe('nodejs', () => {
     it('identifies the correct variables using multiple custom patterns that match out-of-order', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
         const results = parseFiles(parsedDiff, { matchPatterns: {
-            js: ['myClient.variable\\(\\w*,\\s*"([^"\']*)"', 'checkVariable\\(\\w*,\\s*"([^"\']*)"']
+            js: ['myClient.variable\\(\\w*,\\s*([^,)]*)\\s*', 'checkVariable\\(\\w*,\\s*([^,)]*)\\s*']
         } })
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,

@@ -16,13 +16,18 @@ type MatchWithRange = {
     name: string
     // Start/end indicies of matching substring
     range: Range
+    // true if the found key is not wrapped in quotes
     isUnknown?: boolean
 }
 
 export type MatchResult = {
+    // true if the found key is not wrapped in quotes
     isUnknown?: boolean
-    content: string,
-    name: string,
+    // content matching the pattern
+    content: string
+    // variable key found within match
+    name: string
+    // index of matching substring within parent string
     index: number
 }
 
@@ -194,7 +199,7 @@ export abstract class BaseParser {
 
         const matches = pattern.exec(content)
         if (matches) {
-            const varName = matches[1] || matches[2]
+            const varName = (matches[1] || matches[2]).trim()
             return {
                 isUnknown: !varName.match(/^["'].*["']$/),
                 // position or named parameter match
@@ -241,13 +246,13 @@ export abstract class BaseParser {
         return allMatches
     }
 
-    private formatMatch(name: string, file: parse.File, change: parse.Change, isUnknown?: boolean): VariableMatch {
+    private formatMatch(match: MatchWithRange, file: parse.File, change: parse.Change): VariableMatch {
         return {
-            name,
+            name: match.name,
             fileName: file.to ?? '',
             line: change.type === 'normal' ? change.ln1 : change.ln,
             mode: change.type === 'add' ? 'add' : 'remove',
-            ...(isUnknown ? { isUnknown: true } : {})
+            ...(match.isUnknown ? { isUnknown: true } : {})
         }
     }
 
@@ -276,7 +281,7 @@ export abstract class BaseParser {
                 const formattedChange = matchingChanges[0].format(
                     validChange.type as 'add' | 'del'
                 )
-                results.push(this.formatMatch(match.name, file, formattedChange, match.isUnknown))
+                results.push(this.formatMatch(match, file, formattedChange))
             }
         })
 
