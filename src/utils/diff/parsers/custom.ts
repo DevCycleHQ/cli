@@ -24,8 +24,9 @@ export class CustomParser extends BaseParser {
             const matches = new RegExp(pattern).exec(content)
             if (matches && minIndex > matches.index) {
                 minIndex = matches.index
-                const varName = matches[1] || matches[2]
+                const varName = (matches[1] || matches[2]).trim()
                 minMatch = {
+                    isUnknown: !varName.match(/^["'].*["']$/),
                     // position or named parameter match
                     name: varName.replace(/["']/g, ''),
                     content: matches[0],

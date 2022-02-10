@@ -16,6 +16,13 @@ describe('react', () => {
             'line': 3,
             'mode': 'add',
             'name': 'multi-line'
+        },
+        {
+            'fileName': 'test/utils/diff/sampleDiff.jsx',
+            'isUnknown': true,
+            'line': 8,
+            'mode': 'add',
+            'name': 'ALIASED_VARIABLE'
         }
     ]
     it('identifies the correct variable usages in the React sample diff', () => {
