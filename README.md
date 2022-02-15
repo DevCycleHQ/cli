@@ -14,7 +14,6 @@ The CLI can be customized in several ways using command-line args or by creating
 * [Usage](#usage)
 * [Commands](#commands)
 * [Configuration](#configuration)
-* [Development](#development)
 <!-- tocstop -->
 # Setup
 ## Install the CLI:
@@ -60,7 +59,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/2.0.2 darwin-x64 node-v16.13.2
+@devcycle/cli/2.0.3 darwin-x64 node-v16.13.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -114,7 +113,7 @@ EXAMPLES
   $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.0.2/dist/commands/diff/index.ts)_
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.0.3/dist/commands/diff/index.ts)_
 
 ## `dvc help [COMMAND]`
 
