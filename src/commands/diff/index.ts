@@ -253,8 +253,15 @@ export default class Diff extends Base {
         const subHeaderPrefix = this.useMarkdown ? '### ' : ''
 
         if (this.useMarkdown) {
-            this.log('\n## <img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg" ' +
-                'height="31px" align="center"/> DevCycle Variable Changes:\n')
+            const lightTogglebot = 'togglebot.svg#gh-light-mode-only'
+            const darkTogglebot = 'togglebot-white.svg#gh-dark-mode-only'
+            const buildIcon = (icon: string) => (
+                `<img src="https://github.com/DevCycleHQ/cli/raw/main/assets/${icon}" height="31px" align="center"/>`
+            )
+            this.log(
+                `\n## ${buildIcon(lightTogglebot)}${buildIcon(darkTogglebot)}` +
+                ' DevCycle Variable Changes:\n'
+            )
         } else {
             this.log('\nDevCycle Variable Changes:\n')
         }
