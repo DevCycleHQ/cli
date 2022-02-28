@@ -7,6 +7,12 @@ export type VariableMatch = {
     alias?: string
 }
 
+export type FileMatch = {
+    fileName: string,
+    line: number,
+    variableName: string,
+}
+
 export type ParseOptions = {
     clientNames?: string[],
     matchPatterns?: Record<string, string[]>,
