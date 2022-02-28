@@ -4,7 +4,7 @@ import * as emoji from 'node-emoji'
 import { uniqBy } from 'lodash'
 import { executeFileDiff } from '../../utils/diff/fileDiff'
 import { parseFiles } from '../../utils/diff/parse'
-import { VariableMatch } from '../../utils/parsers/types'
+import { VariableDiffMatch } from '../../utils/parsers/types'
 import Base from '../base'
 import { sha256 } from 'js-sha256'
 import { fetchVariableByKey } from '../../api/variables'
@@ -18,16 +18,15 @@ const EMOJI = {
 }
 
 type MatchesByType = {
-    add: Record<string, VariableMatch[]>,
-    remove: Record<string, VariableMatch[]>,
-    addUnknown: Record<string, VariableMatch[]>,
-    removeUnknown: Record<string, VariableMatch[]>
-
+    add: Record<string, VariableDiffMatch[]>,
+    remove: Record<string, VariableDiffMatch[]>,
+    addUnknown: Record<string, VariableDiffMatch[]>,
+    removeUnknown: Record<string, VariableDiffMatch[]>
 }
 
 type MatchEnriched = {
     variable: Variable | null,
-    matches: VariableMatch[]
+    matches: VariableDiffMatch[]
 }
 
 type MatchesByTypeEnriched = {
@@ -139,7 +138,7 @@ export default class Diff extends Base {
     }
 
     private getMatchesByType(
-        matchesBySdk: Record<string, VariableMatch[]>,
+        matchesBySdk: Record<string, VariableDiffMatch[]>,
         aliasMap: Record<string, string>
     ): MatchesByType {
         const matchesByType: MatchesByType = {
@@ -181,7 +180,7 @@ export default class Diff extends Base {
         }
 
         const fetchAndCategorize = async (
-            matches: Record<string, VariableMatch[]>,
+            matches: Record<string, VariableDiffMatch[]>,
             category: 'add' | 'remove'
         ) => {
             const keys = Object.keys(matches)
@@ -346,7 +345,7 @@ export default class Diff extends Base {
         })
     }
 
-    private logLocations(matches: VariableMatch[], mode: 'add' | 'remove', prLink?: string) {
+    private logLocations(matches: VariableDiffMatch[], mode: 'add' | 'remove', prLink?: string) {
         const formatPrLink = (fileName: string, line: number) => {
             return `[${fileName}:L${line}](${
                 prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line})`
