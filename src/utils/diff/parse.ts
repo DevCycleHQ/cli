@@ -1,7 +1,7 @@
 import parse from 'parse-diff'
 import { AndroidParser, CsharpParser, GolangParser, IosParser, JavaParser,
     JavascriptParser, NodeParser, PhpParser, PythonParser, ReactParser, RubyParser } from '../parsers'
-import { ParseOptions, VariableMatch } from '../parsers/types'
+import { ParseOptions, VariableDiffMatch } from '../parsers/types'
 import { CustomParser } from '../parsers/custom'
 
 const PARSERS: Record<string, (typeof NodeParser)[]> = {
@@ -19,8 +19,8 @@ const PARSERS: Record<string, (typeof NodeParser)[]> = {
     php: [PhpParser]
 }
 
-export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Record<string, VariableMatch[]> => {
-    const resultsByLanguage: Record<string, VariableMatch[]> = {}
+export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Record<string, VariableDiffMatch[]> => {
+    const resultsByLanguage: Record<string, VariableDiffMatch[]> = {}
 
     const ALL_PARSERS = { ...PARSERS }
 
