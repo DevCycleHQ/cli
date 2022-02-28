@@ -2,15 +2,12 @@ export type VariableMatch = {
     name: string,
     line: number,
     fileName: string,
-    mode: 'add' | 'remove',
     isUnknown?: boolean,
     alias?: string
 }
 
-export type FileMatch = {
-    fileName: string,
-    line: number,
-    variableName: string,
+export type VariableDiffMatch = VariableMatch & {
+    mode: 'add' | 'remove',
 }
 
 export type ParseOptions = {

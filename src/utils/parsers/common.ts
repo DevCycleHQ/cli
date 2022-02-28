@@ -1,5 +1,5 @@
 import parse from 'parse-diff'
-import { FileMatch, ParseOptions, VariableMatch } from './types'
+import { VariableMatch, ParseOptions, VariableDiffMatch } from './types'
 import * as usage from '../../commands/usages/types'
 
 type Range = {
@@ -247,7 +247,7 @@ export abstract class BaseParser {
         return allMatches
     }
 
-    private formatMatch(match: MatchWithRange, file: parse.File, change: parse.Change): VariableMatch {
+    private formatMatch(match: MatchWithRange, file: parse.File, change: parse.Change): VariableDiffMatch {
         return {
             name: match.name,
             fileName: file.to ?? '',
@@ -262,7 +262,7 @@ export abstract class BaseParser {
      * Also verify that the match is associated with at least one add/delete change object.
      */
     private formatMatches(file: parse.File, matches: MatchWithRange[], { changes }: MultilineChunk) {
-        const results: VariableMatch[] = []
+        const results: VariableDiffMatch[] = []
 
         matches.forEach((match) => {
             const { start: matchStartIndex, end: matchEndIndex } = match.range
@@ -289,8 +289,8 @@ export abstract class BaseParser {
         return results
     }
 
-    parseDiffs(file: parse.File): VariableMatch[] {
-        const results: VariableMatch[] = []
+    parseDiffs(file: parse.File): VariableDiffMatch[] {
+        const results: VariableDiffMatch[] = []
 
         for (const chunk of file.chunks) {
 
@@ -306,16 +306,16 @@ export abstract class BaseParser {
         return results
     }
 
-    parseFile(_file: usage.File): FileMatch[] {
-        const results: FileMatch[] = []
+    parseFile(file: usage.File): VariableMatch[] {
+        const results: VariableMatch[] = []
 
-        for (const line of _file.lines) {
+        for (const line of file.lines) {
             const matches = this.getAllMatches(line.content)
             for (const match of matches) {
                 results.push({
-                    fileName: _file.name,
+                    fileName: file.name,
                     line: match.range.start,
-                    variableName: match.name
+                    name: match.name
                 })
             }
         }
