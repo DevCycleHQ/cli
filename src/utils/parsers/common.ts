@@ -1,5 +1,5 @@
 import parse from 'parse-diff'
-import { ParseOptions, VariableMatch } from './types'
+import { FileMatch, ParseOptions, VariableMatch } from './types'
 import * as usage from '../../commands/usages/types'
 
 type Range = {
@@ -306,7 +306,20 @@ export abstract class BaseParser {
         return results
     }
 
-    parseFile(_file: usage.File) {
-        return []
+    parseFile(_file: usage.File): FileMatch[] {
+        const results: FileMatch[] = []
+
+        for (const line of _file.lines) {
+            const matches = this.getAllMatches(line.content)
+            for (const match of matches) {
+                results.push({
+                    fileName: _file.name,
+                    line: match.range.start,
+                    variableName: match.name
+                })
+            }
+        }
+
+        return results
     }
 }
