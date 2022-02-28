@@ -289,10 +289,11 @@ export abstract class BaseParser {
         return results
     }
 
-    parse(file: parse.File): VariableMatch[] {
+    parseDiffs(file: parse.File): VariableMatch[] {
         const results: VariableMatch[] = []
 
         for (const chunk of file.chunks) {
+
             const { added: addedChunk, removed: removedChunk } = this.aggregateMultilineChunks(chunk)
             const addedMatches = this.getAllMatches(addedChunk.content)
             const removedMatches = this.getAllMatches(removedChunk.content)
