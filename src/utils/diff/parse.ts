@@ -43,6 +43,7 @@ export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Rec
             }
 
             const result = parser.parse(file)
+
             if (result.length > 0) {
                 resultsByLanguage[parser.identity] ??= []
                 resultsByLanguage[parser.identity].push(...result)
