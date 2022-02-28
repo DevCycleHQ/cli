@@ -42,7 +42,7 @@ export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Rec
                 parser.printRegexPattern()
             }
 
-            const result = parser.parse(file)
+            const result = parser.parseDiffs(file)
 
             if (result.length > 0) {
                 resultsByLanguage[parser.identity] ??= []
