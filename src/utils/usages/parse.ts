@@ -1,8 +1,8 @@
-import parse from 'parse-diff'
 import { AndroidParser, CsharpParser, GolangParser, IosParser, JavaParser,
     JavascriptParser, NodeParser, PhpParser, PythonParser, ReactParser, RubyParser } from '../parsers'
 import { ParseOptions, VariableMatch } from '../parsers/types'
 import { CustomParser } from '../parsers/custom'
+import { File } from '../../commands/usages/types'
 
 const PARSERS: Record<string, (typeof NodeParser)[]> = {
     js: [NodeParser, ReactParser, JavascriptParser],
@@ -19,7 +19,7 @@ const PARSERS: Record<string, (typeof NodeParser)[]> = {
     php: [PhpParser]
 }
 
-export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Record<string, VariableMatch[]> => {
+export const parseFiles = (files: File[], options: ParseOptions = {}): Record<string, VariableMatch[]> => {
     const resultsByLanguage: Record<string, VariableMatch[]> = {}
 
     const ALL_PARSERS = { ...PARSERS }
@@ -31,7 +31,7 @@ export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Rec
     const printed: Record<string, boolean> = {}
 
     for (const file of files) {
-        const fileExtension = file.to?.split('.').pop() ?? ''
+        const fileExtension = file.name?.split('.').pop() ?? ''
         const Parsers = ALL_PARSERS[fileExtension] || []
 
         for (const Parser of Parsers) {
@@ -42,7 +42,7 @@ export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Rec
                 parser.printRegexPattern()
             }
 
-            const result = parser.parse(file)
+            const result = parser.parseFile(file)
             if (result.length > 0) {
                 resultsByLanguage[parser.identity] ??= []
                 resultsByLanguage[parser.identity].push(...result)
