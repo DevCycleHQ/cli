@@ -65,7 +65,7 @@ export default class Diff extends Base {
         'format': Flags.string({
             default: 'console',
             options: ['console', 'markdown'],
-            description: 'Format to output the diff results in.'
+            description: 'Format to use when outputting the diff results.'
         }),
         'show-regex': ShowRegexFlag
     }
@@ -206,7 +206,6 @@ export default class Diff extends Base {
     }
 
     private formatOutput(matchesByTypeEnriched: MatchesByTypeEnriched, prLink?: string) {
-
         const additions = { ...matchesByTypeEnriched.add, ...matchesByTypeEnriched.addUnknown }
         const deletions = { ...matchesByTypeEnriched.remove, ...matchesByTypeEnriched.removeUnknown }
         const totalAdditions = Object.keys(additions).length
