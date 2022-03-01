@@ -7,10 +7,11 @@ import { parseFiles } from '../../utils/diff/parse'
 import { VariableDiffMatch } from '../../utils/parsers/types'
 import Base from '../base'
 import { sha256 } from 'js-sha256'
-import {
-    Variable,
-    fetchVariableByKey
-} from '../../api/variables'
+import { fetchVariableByKey, Variable } from '../../api/variables'
+import ClientNameFlag, { getClientNames } from '../../flags/client-name'
+import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
+import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
+import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 
 const EMOJI = {
     add: emoji.get('large_green_circle'),
@@ -54,21 +55,9 @@ export default class Diff extends Base {
     static flags = {
         ...Base.flags,
         file: Flags.string({ char: 'f', description: 'File path of existing diff file to inspect.' }),
-        'client-name': Flags.string({
-            description: 'Name(s) of the DevCycle client variable to match on. Accepts multiple values.', multiple: true
-        }),
-        'match-pattern': Flags.string({
-            description: 'Additional full Regex pattern to use to match variable usages in your code.' +
-                ' Should contain exactly one capture group which matches on the key of the variable. ' +
-                'Must specify the file extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"',
-            multiple: true
-        }),
-        'var-alias': Flags.string({
-            description: 'Aliases to use when identifying variables in your code.' +
-            ' Should contain a code reference mapped to a DevCycle variable key,' +
-            ' eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"',
-            multiple: true
-        }),
+        'client-name': ClientNameFlag,
+        'match-pattern': MatchPatternFlag,
+        'var-alias': VarAliasFlag,
         'pr-link': Flags.string({
             hidden: true,
             description: 'Link to the PR to use for formatting the line number outputs with clickable links.'
@@ -78,9 +67,7 @@ export default class Diff extends Base {
             options: ['console', 'markdown'],
             description: 'Format to output the diff results in.'
         }),
-        'show-regex': Flags.boolean({
-            description: 'Output the regex pattern used to find variable usage'
-        })
+        'show-regex': ShowRegexFlag
     }
 
     static args = [
@@ -100,33 +87,13 @@ export default class Diff extends Base {
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
-        const codeInsightsConfig = this.configFromFile?.codeInsights || {}
-
-        const matchPatternsFromConfig: Record<string, string[]> = codeInsightsConfig.matchPatterns || {}
-        const clientNamesFromConfig = codeInsightsConfig.clientNames || []
-        const variableAliasesFromConfig = codeInsightsConfig.variableAliases || {}
-
-        const matchPatterns = (flags['match-pattern'] || []).reduce((acc, value) => {
-            const [extension, pattern] = value.split('=')
-            if (!extension || !pattern) {
-                throw new Error(`Invalid match pattern: ${value}. Must be of the form "[FILE EXTENSION]=[PATTERN]`)
-            }
-            return { ...acc, [extension]: [...(acc[extension] || []), pattern] }
-        }, matchPatternsFromConfig)
-
         const matchesBySdk = parseFiles(parsedDiff, {
-            clientNames: [...clientNamesFromConfig, ...(flags['client-name'] || [])],
-            matchPatterns,
-            printPatterns: flags['show-regex']
+            clientNames: getClientNames(flags, this.configFromFile),
+            matchPatterns: getMatchPatterns(flags, this.configFromFile),
+            printPatterns: showRegex(flags)
         })
 
-        const variableAliases = (flags['var-alias'] || []).reduce((map, value) => {
-            const [codeRef, variableName] = value.trim().split('=')
-            if (!codeRef || !variableName) {
-                throw new Error(`Invalid variable alias: ${value}. Must be of the form "[CODE REF]=[VARIABLE KEY]`)
-            }
-            return { ...map, [codeRef]: variableName }
-        }, variableAliasesFromConfig)
+        const variableAliases = getVariableAliases(flags, this.configFromFile)
 
         const matchesByType = this.getMatchesByType(matchesBySdk, variableAliases)
 
