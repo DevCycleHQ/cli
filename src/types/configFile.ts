@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer'
 import {
+    IsArray,
     IsObject,
     IsOptional,
     IsString,
@@ -72,6 +73,16 @@ class CodeInsights {
     @IsObject()
     @ValidateMatchPatterns()
     matchPatterns?: Record<string, string[]>
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    includeFiles?: string[]
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    excludeFiles?: string[]
 }
 
 export class ConfigFromFile {
