@@ -73,7 +73,7 @@ export default class Usages extends Base {
                 lines = fs
                     .readFileSync(filepath, 'utf8')
                     .split('\n')
-                    .map((content, ln) => ({ content, ln }))
+                    .map((content, idx) => ({ content, ln: idx + 1 }))
             } catch (err) {
                 this.warn(`Error parsing file ${filepath}`)
                 this.debug(err)
@@ -90,6 +90,7 @@ export default class Usages extends Base {
 
         if (!files.length) {
             this.warn('No files found to process.')
+            return
         }
 
         const matchesBySdk = parseFiles(files, {
@@ -135,7 +136,7 @@ export default class Usages extends Base {
     }
 
     private formatConsoleOutput(matchesByVariable: Record<string, VariableMatch[]>) {
-        this.log('DevCycle Variable Usage:')
+        this.log('\nDevCycle Variable Usage:\n')
         Object.entries(matchesByVariable).forEach(([variableName, matches], idx) => {
             this.log(`${idx + 1}. ${variableName}`)
 
