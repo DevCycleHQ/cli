@@ -1,6 +1,6 @@
-import { executeFileDiff } from '../../../../src/utils/diff/fileDiff'
+import { executeFileDiff } from '../../../src/utils/diff/fileDiff'
 import * as path from 'node:path'
-import { parseFiles } from '../../../../src/utils/diff/parse'
+import { parseFiles } from '../../../src/utils/diff/parse'
 import { expect } from '@oclif/test'
 
 describe('nodejs', () => {
@@ -74,7 +74,7 @@ describe('nodejs', () => {
         ...nodeSimpleMatchRemoved
     ]
     it('identifies the correct variable usages in the NodeJS sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/nodejs'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({
@@ -83,7 +83,7 @@ describe('nodejs', () => {
     })
 
     it('identifies the correct variables using an overridden client name', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/nodejs'))
         const results = parseFiles(parsedDiff, { clientNames: ['dvc'] })
         expect(results).to.deep.equal({
             nodejs: [
@@ -100,7 +100,7 @@ describe('nodejs', () => {
     })
 
     it('identifies the correct variables using multiple overridden client names', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/nodejs'))
         const results = parseFiles(parsedDiff, { clientNames: ['dvc', 'dvcClient'] })
         expect(results).to.deep.equal({
             nodejs: [
@@ -117,7 +117,7 @@ describe('nodejs', () => {
     })
 
     it('identifies the correct variables using a custom pattern', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/nodejs'))
         const results = parseFiles(parsedDiff, { matchPatterns: { js: ['checkVariable\\(\\w*,\\s*([^,)]*)\\s*'] } })
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,
@@ -132,7 +132,7 @@ describe('nodejs', () => {
     })
 
     it('identifies the correct variables using multiple custom patterns that match out-of-order', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/nodejs'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/nodejs'))
         const results = parseFiles(parsedDiff, { matchPatterns: {
             js: ['myClient.variable\\(\\w*,\\s*([^,)]*)\\s*', 'checkVariable\\(\\w*,\\s*([^,)]*)\\s*']
         } })
@@ -156,7 +156,7 @@ describe('nodejs', () => {
     })
 
     it('identifies optional accessors', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/optional-accessor'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/optional-accessor'))
         const results = parseFiles(parsedDiff)
         expect(results).to.deep.equal({
             nodejs: [
@@ -171,7 +171,7 @@ describe('nodejs', () => {
     })
 
     it('identifies unknown variables', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/aliases/aliased'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/aliases/aliased'))
         const results = parseFiles(parsedDiff)
         expect(results).to.deep.equal({
             nodejs: [
