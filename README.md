@@ -161,6 +161,12 @@ codeInsights:
         ## file extension to override for, containing a list of patterns to use
         js:
             - dvcClient\.variable\(\s*["']([^"']*)["']
+    ## an array of file glob patterns to include in usage scan
+    includeFiles:
+        - '*.[jt]s'
+    ## an array of file glob patterns to exclude from usage scan
+    excludeFiles:
+        - 'dist/*'
 ## the default project key to use for commands that interact with the DevCycle API.
 project: my-project
 ```
