@@ -164,8 +164,8 @@ export abstract class BaseParser {
 
         return {
             content: lines.reduce((prev, curr) => prev + curr.content, ''),
-            start: lines[0].ln,
-            end: lines[lines.length - 1].ln
+            start: lines.length ? lines[0].ln : -1,
+            end: lines.length ? lines[lines.length - 1].ln : -1
         }
     }
 
@@ -339,12 +339,14 @@ export abstract class BaseParser {
 
         for (const match of matches) {
             const usage = this.extractUsageInformation(file, match)
-            result.push({
-                name: match.name,
-                line: usage.start,
-                fileName: file.name,
-                content: usage.content
-            })
+            if (usage.start !== -1 && usage.end !== -1) {
+                result.push({
+                    name: match.name,
+                    line: usage.start,
+                    fileName: file.name,
+                    content: usage.content
+                })
+            }
         }
 
         return result
