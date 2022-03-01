@@ -6,8 +6,26 @@ export type VariableMatch = {
     alias?: string
 }
 
+export type VariableUsageMatch = VariableMatch & {
+    content: string
+}
+
 export type VariableDiffMatch = VariableMatch & {
     mode: 'add' | 'remove',
+}
+
+export type Range = {
+    start: number
+    end: number
+}
+
+export type  MultilineChunk = {
+    content: string
+}
+
+export type MultilineUsageChunk = MultilineChunk & {
+    start: number
+    end: number
 }
 
 export type ParseOptions = {
