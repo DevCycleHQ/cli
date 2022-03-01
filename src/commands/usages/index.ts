@@ -5,6 +5,10 @@ import { Flags } from '@oclif/core'
 import { parseFiles } from '../../utils/usages/parse'
 import Base from '../base'
 import { File, LineItem } from './types'
+import ClientNameFlag, { getClientNames } from '../../flags/client-name'
+import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
+import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
+import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 
 export default class Usages extends Base {
     static hidden = false
@@ -28,29 +32,15 @@ export default class Usages extends Base {
                 'Accepts multiple glob patterns.',
             multiple: true
         }),
-        'client-name': Flags.string({
-            description: 'Name(s) of the DevCycle client variable to match on. Accepts multiple values.', multiple: true
-        }),
-        'match-pattern': Flags.string({
-            description: 'Additional full Regex pattern to use to match variable usages in your code.' +
-                ' Should contain exactly one capture group which matches on the key of the variable. ' +
-                'Must specify the file extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"',
-            multiple: true
-        }),
-        'var-alias': Flags.string({
-            description: 'Aliases to use when identifying variables in your code.' +
-            ' Should contain a code reference mapped to a DevCycle variable key,' +
-            ' eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"',
-            multiple: true
-        }),
+        'client-name': ClientNameFlag,
+        'match-pattern': MatchPatternFlag,
+        'var-alias': VarAliasFlag,
         'format': Flags.string({
             default: 'console',
             options: ['console', 'markdown'],
             description: 'Format to output the diff results in.'
         }),
-        'show-regex': Flags.boolean({
-            description: 'Output the regex pattern used to find variable usage'
-        })
+        'show-regex': ShowRegexFlag
     }
 
     useMarkdown = false
@@ -100,22 +90,15 @@ export default class Usages extends Base {
             this.warn('No files found to process.')
         }
 
-        const matchPatternsFromConfig: Record<string, string[]> = codeInsightsConfig.matchPatterns || {}
-        const clientNamesFromConfig = codeInsightsConfig.clientNames || []
-
-        const matchPatterns = (flags['match-pattern'] || []).reduce((acc, value) => {
-            const [extension, pattern] = value.split('=')
-            if (!extension || !pattern) {
-                throw new Error(`Invalid match pattern: ${value}. Must be of the form "[FILE EXTENSION]=[PATTERN]`)
-            }
-            return { ...acc, [extension]: [...(acc[extension] || []), pattern] }
-        }, matchPatternsFromConfig)
-
         const matchesBySdk = parseFiles(files, {
-            clientNames: [...clientNamesFromConfig, ...(flags['client-name'] || [])],
-            matchPatterns,
-            printPatterns: flags['show-regex']
+            clientNames: getClientNames(flags, this.configFromFile),
+            matchPatterns: getMatchPatterns(flags, this.configFromFile),
+            printPatterns: showRegex(flags)
         })
+
+        const variableAliases = getVariableAliases(flags, this.configFromFile)
+        
+        const matchesByType = this.getMatchesByType(matchesBySdk, variableAliases)
         this.log(JSON.stringify(matchesBySdk))
     }
 }
