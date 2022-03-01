@@ -1,13 +1,8 @@
 import parse from 'parse-diff'
-import { VariableMatch, ParseOptions, VariableDiffMatch } from './types'
+import { VariableMatch, ParseOptions, VariableDiffMatch, Range, MultilineChunk, MultilineUsageChunk, VariableUsageMatch } from './types'
 import * as usage from '../../commands/usages/types'
 
-type Range = {
-    start: number
-    end: number
-}
-
-type MultilineChunk = {
+type MultilineDiffChunk = {
     content: string
     changes: ParsedChange[]
 }
@@ -147,23 +142,41 @@ export abstract class BaseParser {
         )
     }
 
+    private extractUsageInformation(file: usage.File, match: MatchWithRange): MultilineUsageChunk {
+        const lines: usage.LineItem[] = []
+        let index = 0
+        
+        for (const line of file.lines) {
+            index += line.content.length - 1
+            if (index >= match.range.start && index <= match.range.end) {
+                lines.push(line)
+            }
+        }
+
+        return {
+            content: lines.reduce((prev, curr) => prev + curr.content, ''),
+            start: lines[0].ln,
+            end: lines[lines.length - 1].ln
+        }
+    }
+
     /**
      * Given a chunk from parse-diff, aggregate added and removed changes.
      * Each resulting chunk includes the multi-line content as a single string,
      * and an array of changes, each with a range object describing the start/end
      * indicies of the substring within the content string.
      */
-    private aggregateMultilineChunks(chunk: parse.Chunk): { added: MultilineChunk, removed: MultilineChunk } {
-        const added: MultilineChunk = {
+    private aggregateMultilineChunks(chunk: parse.Chunk): { added: MultilineDiffChunk, removed: MultilineDiffChunk } {
+        const added: MultilineDiffChunk = {
             content: '',
             changes: []
         }
-        const removed: MultilineChunk = {
+        const removed: MultilineDiffChunk = {
             content: '',
             changes: []
         }
 
-        const pushChangeToMultilineChunk = (chunk: MultilineChunk, change: ParsedChange) => {
+        const pushChangeToMultilineDiffChunk = (chunk: MultilineDiffChunk, change: ParsedChange) => {
             change.range.start = chunk.content.length
 
             const changeContent = change.parseContent()
@@ -180,12 +193,12 @@ export abstract class BaseParser {
             if (parsedChange.isComment(this.commentCharacters)) continue
 
             if (parsedChange.type === 'add') {
-                pushChangeToMultilineChunk(added, parsedChange)
+                pushChangeToMultilineDiffChunk(added, parsedChange)
             } else if (parsedChange.type === 'del') {
-                pushChangeToMultilineChunk(removed, parsedChange)
+                pushChangeToMultilineDiffChunk(removed, parsedChange)
             } else if (parsedChange.type === 'normal') {
-                pushChangeToMultilineChunk(added, parsedChange)
-                pushChangeToMultilineChunk(removed, parsedChange)
+                pushChangeToMultilineDiffChunk(added, parsedChange)
+                pushChangeToMultilineDiffChunk(removed, parsedChange)
             }
         }
         return { added, removed }
@@ -261,7 +274,7 @@ export abstract class BaseParser {
      * Given an array of matches, find the first change object corresponding to the match.
      * Also verify that the match is associated with at least one add/delete change object.
      */
-    private formatMatches(file: parse.File, matches: MatchWithRange[], { changes }: MultilineChunk) {
+    private formatMatches(file: parse.File, matches: MatchWithRange[], { changes }: MultilineDiffChunk) {
         const results: VariableDiffMatch[] = []
 
         matches.forEach((match) => {
@@ -306,20 +319,25 @@ export abstract class BaseParser {
         return results
     }
 
-    parseFile(file: usage.File): VariableMatch[] {
-        const results: VariableMatch[] = []
-
+    parseFile(file: usage.File): VariableUsageMatch[] {
+        const result: VariableUsageMatch[] = []
+        let fileContent = ''
         for (const line of file.lines) {
-            const matches = this.getAllMatches(line.content)
-            for (const match of matches) {
-                results.push({
-                    fileName: file.name,
-                    line: match.range.start,
-                    name: match.name
-                })
-            }
+           fileContent = fileContent.concat(line.content) 
         }
 
-        return results
+        const matches = this.getAllMatches(fileContent)
+
+        for (const match of matches) {
+            const usage = this.extractUsageInformation(file, match)
+            result.push({
+                name: match.name,
+                line: usage.start,
+                fileName: file.name,
+                content: usage.content
+            })
+        }
+
+        return result
     }
 }
