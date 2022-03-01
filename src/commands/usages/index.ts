@@ -1,7 +1,8 @@
 import fs from 'fs'
+import { uniqBy } from 'lodash'
 import minimatch from 'minimatch'
-import { lsFiles } from '../../utils/git/ls-files'
 import { Flags } from '@oclif/core'
+import { lsFiles } from '../../utils/git/ls-files'
 import { parseFiles } from '../../utils/usages/parse'
 import Base from '../base'
 import { File, LineItem } from './types'
@@ -9,6 +10,7 @@ import ClientNameFlag, { getClientNames } from '../../flags/client-name'
 import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
+import { VariableMatch } from '../../utils/parsers/types'
 
 export default class Usages extends Base {
     static hidden = false
@@ -37,8 +39,8 @@ export default class Usages extends Base {
         'var-alias': VarAliasFlag,
         'format': Flags.string({
             default: 'console',
-            options: ['console', 'markdown'],
-            description: 'Format to output the diff results in.'
+            options: ['console', 'json'],
+            description: 'Format to use when outputting the usage results.'
         }),
         'show-regex': ShowRegexFlag
     }
@@ -98,7 +100,53 @@ export default class Usages extends Base {
 
         const variableAliases = getVariableAliases(flags, this.configFromFile)
         
-        const matchesByType = this.getMatchesByType(matchesBySdk, variableAliases)
-        this.log(JSON.stringify(matchesBySdk))
+        const matchesByVariable = this.getMatchesByVariable(matchesBySdk, variableAliases)
+        
+        if (flags['format'] === 'json') {
+            this.log(JSON.stringify(matchesByVariable))
+        } else {
+            this.formatConsoleOutput(matchesByVariable)
+        }
+    }
+
+    private getMatchesByVariable(
+        matchesBySdk: Record<string, VariableMatch[]>,
+        aliasMap: Record<string, string>
+    ) {
+        const matchesByVariable: Record<string, VariableMatch[]> = {}
+        Object.values(matchesBySdk).forEach((matches) => {
+            matches.forEach((m) => {
+                const match = { ...m }
+                const aliasedName = aliasMap[match.name]
+                if (match.isUnknown && aliasedName) {
+                    match.alias = match.name
+                    match.name = aliasedName
+                    delete match.isUnknown
+                }
+                matchesByVariable[match.name] ??= []
+                matchesByVariable[match.name].push(match)
+                matchesByVariable[match.name] = uniqBy(
+                    matchesByVariable[match.name],
+                    (m) => `${m.fileName}:${m.line}`
+                )
+            })
+        })
+        return matchesByVariable
+    }
+
+    private formatConsoleOutput(matchesByVariable: Record<string, VariableMatch[]>) {
+        this.log('DevCycle Variable Usage:')
+        Object.entries(matchesByVariable).forEach(([variableName, matches], idx) => {
+            this.log(`${idx + 1}. ${variableName}`)
+
+            matches.sort((a, b) => {
+                if (a.fileName === b.fileName) return a.line > b.line ? 1 : -1
+                return a.fileName > b.fileName ? 1 : -1
+            })
+
+            matches.forEach(({ fileName, line }) => {
+                this.log(`\t- ${fileName}:L${line}`)
+            })
+        })
     }
 }
