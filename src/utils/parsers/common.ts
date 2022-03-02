@@ -142,11 +142,11 @@ export abstract class BaseParser {
         )
     }
 
-    private extractUsageInformation(file:usage.File, filteredFile: usage.File, match: MatchWithRange): MultilineUsageChunk {
+    private extractUsageInformation(file: usage.File, match: MatchWithRange): MultilineUsageChunk {
         const lines: usage.LineItem[] = []
         let index = 0
     
-        for (const line of filteredFile.lines) {
+        for (const line of file.lines) {
             const trimmedContent = line.content.trim()
             if (!trimmedContent.length) continue
 
@@ -162,16 +162,8 @@ export abstract class BaseParser {
             index = lineEndIndex + 1
         }
 
-        const buffer = 3
-        const start = lines[0].ln
-        const end = lines[lines.length - 1].ln
-        const content = file.lines
-            .filter((line) => start - buffer <= line.ln && end + buffer >= line.ln)
-            .map(line => line.content)
-            .join('\n')
-
         return {
-            content,
+            content: lines.map(line => line.content).join('\n'),
             start: lines[0].ln,
             end: lines[lines.length - 1].ln
         }
@@ -357,6 +349,7 @@ export abstract class BaseParser {
     }
 
     parseFile(file: usage.File): VariableUsageMatch[] {
+        const buffer = 3
         const result: VariableUsageMatch[] = []
         const filteredFile = this.getFilteredFile(file)
         let fileContent = ''
@@ -367,12 +360,19 @@ export abstract class BaseParser {
         const matches = this.getAllMatches(fileContent)
 
         for (const match of matches) {
-            const usage = this.extractUsageInformation(file, filteredFile, match)
+            const usage = this.extractUsageInformation(filteredFile, match)
+
+            const bufferedContent = file.lines
+                .filter((line) => usage.start - buffer <= line.ln && usage.end + buffer >= line.ln)
+                .map(line => line.content)
+                .join('\n')
+            
             result.push({
                 name: match.name,
                 line: usage.start,
                 fileName: file.name,
-                content: usage.content
+                content: usage.content,
+                bufferedContent
             })
         }
 
