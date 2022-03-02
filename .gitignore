@@ -1,4 +1,5 @@
 .DS_Store
 .idea
+.devcycle
 node_modules
 dist

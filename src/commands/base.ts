@@ -2,11 +2,13 @@ import 'reflect-metadata'
 
 import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
+import path from 'path'
 import jsYaml from 'js-yaml'
-import { AuthFromFile, ConfigFromFile } from '../types'
+import { ConfigFromFile } from '../types'
 import { plainToClass } from 'class-transformer'
-import { validateSync, ValidationError } from 'class-validator'
-import { authenticate } from '../api/authenticate'
+import { validateSync } from 'class-validator'
+import { reportValidationErrors } from '../utils/reportValidationErrors'
+import { getToken } from '../auth/getToken'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -44,47 +46,18 @@ export default abstract class Base extends Command {
 
     configFromFile: ConfigFromFile | null
 
-    reportValidationErrors(name: string, errors: ValidationError[]): void {
-        if (errors.length) {
-            let error = errors[0]
-            while (error.children?.length) {
-                error = error.children[0]
-            }
-
-            this.error(`${name} file failed validation at property "${error.property}": ` +
-                `${Object.values(error.constraints ?? {})[0]}`)
-        }
-    }
-
-    private async authorizeApi(projectFromConfig?: string): Promise<void> {
+    private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
 
-        let clientId = flags['client-id'] || process.env.DVC_CLIENT_ID
-        let clientSecret = flags['client-secret'] || process.env.DVC_CLIENT_SECRET
-        this.projectKey = flags['project'] || process.env.DVC_PROJECT_KEY || projectFromConfig || null
-        const path = flags['auth-path']
-
-        if (fs.existsSync(path) && !(clientId && clientSecret)) {
-            const authorization = jsYaml.load(fs.readFileSync(path, 'utf8'))
-            const authorizationParsed = plainToClass(AuthFromFile, authorization)
-            const errors = validateSync(authorizationParsed)
-            this.reportValidationErrors('Authorization', errors)
-
-            clientId = authorizationParsed.client_id
-            clientSecret = authorizationParsed.client_secret
-        }
-
-        if (!(clientId && clientSecret && this.projectKey)) {
+        this.token = await getToken(flags)
+        if (!this.token) {
             if (this.authRequired) {
-                this.error('You must provide a client ID, client secret and project key to use this command.')
+                throw new Error('Authorization is required to use this command.')
             } else if (this.authSuggested && !flags['no-api']) {
-                this.warn('You should provide a client ID,' +
-                    ' client secret and project key to use the additional API enrichment of this command.')
+                throw new Error('This command has limited functionality without Authorization. Use the "--no-api" flag to suppress this error')
             }
             return
         }
-
-        this.token = await authenticate(clientId, clientSecret)
     }
 
     private loadConfig(path: string): ConfigFromFile | null {
@@ -93,19 +66,43 @@ export default abstract class Base extends Command {
         }
 
         const config = jsYaml.load(fs.readFileSync(path, 'utf8'))
-
         const configParsed = plainToClass(ConfigFromFile, config)
-
         const errors = validateSync(configParsed)
-
-        this.reportValidationErrors('Config', errors)
+        reportValidationErrors('Config', errors)
 
         return configParsed
+    }
+
+    async updateConfig(
+        changes:Partial<ConfigFromFile>
+    ): Promise<ConfigFromFile | null> {
+        const { flags } = await this.parse(this.constructor as typeof Base)
+        const configPath = flags['config-path']
+
+        let config = this.loadConfig(configPath)
+        if (!config) {
+            const configDir = path.dirname(configPath)
+            fs.mkdirSync(configDir, { recursive: true })
+            config = new ConfigFromFile()
+        }
+
+        config = {
+            ...config,
+            ...changes
+        }
+
+        fs.writeFileSync(configPath, jsYaml.dump(config))
+
+        return config
     }
 
     async init(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
         this.configFromFile = this.loadConfig(flags['config-path'])
-        await this.authorizeApi(this.configFromFile?.project)
+        this.projectKey = flags['project']
+            || process.env.DVC_PROJECT_KEY
+            || this.configFromFile?.project
+            || null
+        await this.authorizeApi()
     }
 }
