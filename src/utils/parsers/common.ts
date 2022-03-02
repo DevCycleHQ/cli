@@ -147,6 +147,7 @@ export abstract class BaseParser {
         let index = 0
     
         for (const line of file.lines) {
+<<<<<<< HEAD
             const trimmedContent = line.content.trim()
             if (!trimmedContent.length) continue
 
@@ -157,6 +158,17 @@ export abstract class BaseParser {
                 (matchStartIndex >= lineStartIndex && matchStartIndex <= lineEndIndex)
                 || (lineStartIndex >= matchStartIndex && lineStartIndex <= matchEndIndex)
             ) {
+=======
+            index += line.content.length - 1
+            let isComment = false
+            for (const commentChar of this.commentCharacters) {
+                if (line.content.trim().startsWith(commentChar)) {
+                    isComment = true
+                }
+            }
+            if (isComment) continue
+            if (index >= match.range.start && index <= match.range.end) {
+>>>>>>> chore: fix index of line numbers to be correct when outputting
                 lines.push(line)
             }
             index = lineEndIndex + 1
@@ -164,8 +176,8 @@ export abstract class BaseParser {
 
         return {
             content: lines.reduce((prev, curr) => prev + curr.content, ''),
-            start: lines.length ? lines[0].ln : -1,
-            end: lines.length ? lines[lines.length - 1].ln : -1
+            start: lines.length ? lines[0].ln + 1 : -1,
+            end: lines.length ? lines[lines.length - 1].ln + 1 : -1
         }
     }
 
