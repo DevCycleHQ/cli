@@ -8,6 +8,7 @@ export type VariableMatch = {
 
 export type VariableUsageMatch = VariableMatch & {
     content: string
+    bufferedContent: string
 }
 
 export type VariableDiffMatch = VariableMatch & {
