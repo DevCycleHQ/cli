@@ -164,8 +164,8 @@ export abstract class BaseParser {
 
         return {
             content: lines.reduce((prev, curr) => prev + (prev ? '\n' : '') + curr.content, ''),
-            start: lines.length ? lines[0].ln + 1 : -1,
-            end: lines.length ? lines[lines.length - 1].ln + 1 : -1
+            start: lines[0].ln,
+            end: lines[lines.length - 1].ln
         }
     }
 
@@ -269,6 +269,26 @@ export abstract class BaseParser {
         return allMatches
     }
 
+    /**
+     * Filters a File object from any lines that are commented out
+     * @param file 
+     * @returns Filtered 
+     */
+    private getFilteredFile(file: usage.File) : usage.File {
+        const filteredLines = file.lines.filter((line) => {
+            for (const commentChar of this.commentCharacters) {
+                if (line.content.trim().startsWith(commentChar)) {
+                    return false
+                }
+            }
+            return true
+        })
+        return {
+            ...file,
+            lines: filteredLines
+        }
+    }
+
     private formatMatch(match: MatchWithRange, file: parse.File, change: parse.Change): VariableDiffMatch {
         return {
             name: match.name,
@@ -330,23 +350,22 @@ export abstract class BaseParser {
 
     parseFile(file: usage.File): VariableUsageMatch[] {
         const result: VariableUsageMatch[] = []
+        const filteredFile = this.getFilteredFile(file)
         let fileContent = ''
-        for (const line of file.lines) {
-            fileContent = fileContent.concat(line.content.trim()) 
+        for (const line of filteredFile.lines) {
+            fileContent = fileContent.concat(line.content)
         }
 
         const matches = this.getAllMatches(fileContent)
 
         for (const match of matches) {
-            const usage = this.extractUsageInformation(file, match)
-            if (usage.start !== -1 && usage.end !== -1) {
-                result.push({
-                    name: match.name,
-                    line: usage.start,
-                    fileName: file.name,
-                    content: usage.content
-                })
-            }
+            const usage = this.extractUsageInformation(filteredFile, match)
+            result.push({
+                name: match.name,
+                line: usage.start,
+                fileName: file.name,
+                content: usage.content
+            })
         }
 
         return result
