@@ -163,7 +163,7 @@ export abstract class BaseParser {
         }
 
         return {
-            content: lines.reduce((prev, curr) => prev + (prev ? '\n' : '') + curr.content, ''),
+            content: lines.map((line) => line.content).join('\n'),
             start: lines[0].ln,
             end: lines[lines.length - 1].ln
         }
@@ -353,7 +353,7 @@ export abstract class BaseParser {
         const filteredFile = this.getFilteredFile(file)
         let fileContent = ''
         for (const line of filteredFile.lines) {
-            fileContent = fileContent.concat(line.content)
+            fileContent = fileContent.concat(line.content.trim())
         }
 
         const matches = this.getAllMatches(fileContent)
