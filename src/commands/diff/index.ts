@@ -7,8 +7,10 @@ import { parseFiles } from '../../utils/diff/parse'
 import { VariableMatch } from '../../utils/diff/parsers/types'
 import Base from '../base'
 import { sha256 } from 'js-sha256'
-import { fetchVariableByKey } from '../../api/variables'
-import { Variable } from '../../types/variable'
+import {
+    Variable,
+    fetchVariableByKey
+} from '../../api/variables'
 
 const EMOJI = {
     add: emoji.get('large_green_circle'),

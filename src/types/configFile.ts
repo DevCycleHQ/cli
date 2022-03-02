@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer'
 import {
+    IsIn,
     IsObject,
     IsOptional,
     IsString,
@@ -86,8 +87,20 @@ export class ConfigFromFile {
 }
 
 export class AuthFromFile {
+    @IsIn(['sso','rest-api'])
     @IsString()
-    client_id: string
+    @IsOptional()
+    type?: string = 'rest-api'
+
     @IsString()
-    client_secret: string
+    @IsOptional()
+    client_id?: string
+
+    @IsString()
+    @IsOptional()
+    client_secret?: string
+
+    @IsString()
+    @IsOptional()
+    accessToken?: string
 }
