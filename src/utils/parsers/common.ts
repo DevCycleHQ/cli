@@ -370,10 +370,10 @@ export abstract class BaseParser {
                 name: match.name,
                 line: range.start,
                 fileName: file.name,
-                content: bufferedContent
+                content: bufferedContent,
+                language: this.identity
             })
         }
-
         return result
     }
 }
