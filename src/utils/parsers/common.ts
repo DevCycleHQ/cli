@@ -365,7 +365,7 @@ export abstract class BaseParser {
             const bufferedEnd = Math.min(range.end + buffer, file.lines.length)
             const bufferedContent = file.lines
                 .filter((line) => range.start - buffer <= line.ln && range.end + buffer >= line.ln)
-                .map(line => line.content)
+                .map((line) => line.content)
                 .join('\n')
             
             result.push({
