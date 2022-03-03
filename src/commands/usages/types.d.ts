@@ -1,4 +1,4 @@
-import { Range } from "../../utils/parsers/types"
+import { Range } from '../../utils/parsers/types'
 
 export type File = {
     name: string
