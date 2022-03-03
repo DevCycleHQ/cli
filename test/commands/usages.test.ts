@@ -10,17 +10,15 @@ DevCycle Variable Usage:
 \t- test/utils/usages/samples/nodejs.js:L4
 3. multi-line
 \t- test/utils/usages/samples/nodejs.js:L10
-4. single-comment
-\t- test/utils/usages/samples/nodejs.js:L17
-5. multi-line-comment
+4. multi-line-comment
 \t- test/utils/usages/samples/nodejs.js:L20
-6. user-object
+5. user-object
 \t- test/utils/usages/samples/nodejs.js:L23
-7. user-constructor
+6. user-constructor
 \t- test/utils/usages/samples/nodejs.js:L24
-8. multi-line-user-object
+7. multi-line-user-object
 \t- test/utils/usages/samples/nodejs.js:L25
-9. VARIABLES.ENUM_VARIABLE
+8. VARIABLES.ENUM_VARIABLE
 \t- test/utils/usages/samples/nodejs.js:L33
 `
 
