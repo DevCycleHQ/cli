@@ -1,5 +1,5 @@
 import parse from 'parse-diff'
-import { ParseOptions, VariableDiffMatch, Range, MultilineUsageChunk, VariableUsageMatch } from './types'
+import { ParseOptions, VariableDiffMatch, Range, VariableUsageMatch } from './types'
 import * as usage from '../../commands/usages/types'
 
 type MultilineDiffChunk = {
@@ -142,7 +142,7 @@ export abstract class BaseParser {
         )
     }
 
-    private extractUsageInformation(file: usage.File, match: MatchWithRange): MultilineUsageChunk {
+    private extractUsageRange(file: usage.File, match: MatchWithRange): Range {
         const lines: usage.LineItem[] = []
         let index = 0
     
@@ -163,7 +163,6 @@ export abstract class BaseParser {
         }
 
         return {
-            content: lines.map(line => line.content).join('\n'),
             start: lines[0].ln,
             end: lines[lines.length - 1].ln
         }
@@ -360,16 +359,16 @@ export abstract class BaseParser {
         const matches = this.getAllMatches(fileContent)
 
         for (const match of matches) {
-            const usage = this.extractUsageInformation(filteredFile, match)
+            const range = this.extractUsageRange(filteredFile, match)
 
             const bufferedContent = file.lines
-                .filter((line) => usage.start - buffer <= line.ln && usage.end + buffer >= line.ln)
+                .filter((line) => range.start - buffer <= line.ln && range.end + buffer >= line.ln)
                 .map(line => line.content)
                 .join('\n')
             
             result.push({
                 name: match.name,
-                line: usage.start,
+                line: range.start,
                 fileName: file.name,
                 content: bufferedContent
             })
