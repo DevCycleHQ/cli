@@ -148,10 +148,10 @@ export default class Usages extends Base {
                 language: match.language
             }
         }
-        return Object.keys(matches).map(key => {
+        return Object.keys(matches).map((key) => {
             return {
                 key,
-                references: matches[key].map(match => formatVariableMatchToReference(match)) 
+                references: matches[key].map((match) => formatVariableMatchToReference(match)) 
             }
         })
     }
