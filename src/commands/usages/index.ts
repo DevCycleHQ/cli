@@ -5,12 +5,12 @@ import { Flags } from '@oclif/core'
 import { lsFiles } from '../../utils/git/ls-files'
 import { parseFiles } from '../../utils/usages/parse'
 import Base from '../base'
-import { File, LineItem } from './types'
+import { File, JSONMatch, LineItem, VariableReference } from './types'
 import ClientNameFlag, { getClientNames } from '../../flags/client-name'
 import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
-import { VariableMatch } from '../../utils/parsers/types'
+import { VariableMatch, VariableUsageMatch } from '../../utils/parsers/types'
 
 export default class Usages extends Base {
     static hidden = false
@@ -104,17 +104,18 @@ export default class Usages extends Base {
         const matchesByVariable = this.getMatchesByVariable(matchesBySdk, variableAliases)
         
         if (flags['format'] === 'json') {
-            this.log(JSON.stringify(matchesByVariable))
+            const matchesByVariableJSON = this.formatMatchesToJSON(matchesByVariable)
+            this.log(JSON.stringify(matchesByVariableJSON))
         } else {
             this.formatConsoleOutput(matchesByVariable)
         }
     }
 
     private getMatchesByVariable(
-        matchesBySdk: Record<string, VariableMatch[]>,
+        matchesBySdk: Record<string, VariableUsageMatch[]>,
         aliasMap: Record<string, string>
     ) {
-        const matchesByVariable: Record<string, VariableMatch[]> = {}
+        const matchesByVariable: Record<string, VariableUsageMatch[]> = {}
         Object.values(matchesBySdk).forEach((matches) => {
             matches.forEach((m) => {
                 const match = { ...m }
@@ -133,6 +134,26 @@ export default class Usages extends Base {
             })
         })
         return matchesByVariable
+    }
+
+    private formatMatchesToJSON(matches: Record<string, VariableUsageMatch[]>): JSONMatch[] {
+        const formatVariableMatchToReference = (match: VariableUsageMatch): VariableReference => {
+            return {
+                codeSnippet: {
+                    content: match.content,
+                    lineNumbers: match.bufferedLines
+                },
+                lineNumbers: match.lines,
+                fileName: match.fileName,
+                language: match.language
+            }
+        }
+        return Object.keys(matches).map(key => {
+            return {
+                key,
+                references: matches[key].map(match => formatVariableMatchToReference(match)) 
+            }
+        })
     }
 
     private formatConsoleOutput(matchesByVariable: Record<string, VariableMatch[]>) {
