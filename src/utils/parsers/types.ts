@@ -7,6 +7,8 @@ export type VariableMatch = {
 }
 
 export type VariableUsageMatch = VariableMatch & {
+    lines: Range
+    bufferedLines: Range
     content: string
     language: string
 }
