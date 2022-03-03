@@ -371,8 +371,7 @@ export abstract class BaseParser {
                 name: match.name,
                 line: usage.start,
                 fileName: file.name,
-                content: usage.content,
-                bufferedContent
+                content: bufferedContent
             })
         }
 
