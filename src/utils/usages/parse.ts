@@ -1,6 +1,6 @@
 import { AndroidParser, CsharpParser, GolangParser, IosParser, JavaParser,
     JavascriptParser, NodeParser, PhpParser, PythonParser, ReactParser, RubyParser } from '../parsers'
-import { ParseOptions, VariableMatch } from '../parsers/types'
+import { ParseOptions, VariableMatch, VariableUsageMatch } from '../parsers/types'
 import { CustomParser } from '../parsers/custom'
 import { File } from '../../commands/usages/types'
 
@@ -19,8 +19,8 @@ const PARSERS: Record<string, (typeof NodeParser)[]> = {
     php: [PhpParser]
 }
 
-export const parseFiles = (files: File[], options: ParseOptions = {}): Record<string, VariableMatch[]> => {
-    const resultsByLanguage: Record<string, VariableMatch[]> = {}
+export const parseFiles = (files: File[], options: ParseOptions = {}): Record<string, VariableUsageMatch[]> => {
+    const resultsByLanguage: Record<string, VariableUsageMatch[]> = {}
 
     const ALL_PARSERS = { ...PARSERS }
 
