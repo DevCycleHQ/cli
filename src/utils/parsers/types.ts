@@ -23,11 +23,6 @@ export type  MultilineChunk = {
     content: string
 }
 
-export type MultilineUsageChunk = MultilineChunk & {
-    start: number
-    end: number
-}
-
 export type ParseOptions = {
     clientNames?: string[],
     matchPatterns?: Record<string, string[]>,
