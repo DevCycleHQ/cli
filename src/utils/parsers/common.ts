@@ -361,8 +361,8 @@ export abstract class BaseParser {
         for (const match of matches) {
             const range = this.extractUsageRange(filteredFile, match)
 
-            const bufferedStart = (range.start - buffer) < 0 ? 0 : range.start - buffer
-            const bufferedEnd = (range.end + buffer) > file.lines.length ? file.lines.length : range.end + buffer
+            const bufferedStart = Math.max(range.start - buffer, 0)
+            const bufferedEnd = Math.min(range.end + buffer, file.lines.length)
             const bufferedContent = file.lines
                 .filter((line) => range.start - buffer <= line.ln && range.end + buffer >= line.ln)
                 .map(line => line.content)
