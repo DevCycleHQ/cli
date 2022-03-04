@@ -18,9 +18,7 @@ DevCycle Variable Usage:
 \t- test/utils/usages/samples/nodejs.js:L24
 7. multi-line-user-object
 \t- test/utils/usages/samples/nodejs.js:L25
-8. VARIABLES.ENUM_VARIABLE
-\t- test/utils/usages/samples/nodejs.js:L33
-9. multiline-extra-comma
+8. multiline-extra-comma
 \t- test/utils/usages/samples/nodejs.js:L36
 `
 
