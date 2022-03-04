@@ -125,12 +125,14 @@ export default class Usages extends Base {
                     match.name = aliasedName
                     delete match.isUnknown
                 }
-                matchesByVariable[match.name] ??= []
-                matchesByVariable[match.name].push(match)
-                matchesByVariable[match.name] = uniqBy(
-                    matchesByVariable[match.name],
-                    (m) => `${m.fileName}:${m.line}`
-                )
+                if (!match.isUnknown) {
+                    matchesByVariable[match.name] ??= []
+                    matchesByVariable[match.name].push(match)
+                    matchesByVariable[match.name] = uniqBy(
+                        matchesByVariable[match.name],
+                        (m) => `${m.fileName}:${m.line}`
+                    )
+                }
             })
         })
         return matchesByVariable
