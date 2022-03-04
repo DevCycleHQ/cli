@@ -159,6 +159,11 @@ export default class Usages extends Base {
     }
 
     private formatConsoleOutput(matchesByVariable: Record<string, VariableMatch[]>) {
+        if (!Object.keys(matchesByVariable).length) {
+            this.log('\nNo DevCycle Variable Usages Found\n')
+            return
+        }
+
         this.log('\nDevCycle Variable Usage:\n')
         Object.entries(matchesByVariable).forEach(([variableName, matches], idx) => {
             this.log(`${idx + 1}. ${variableName}`)
