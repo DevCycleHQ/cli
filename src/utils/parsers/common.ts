@@ -378,7 +378,8 @@ export abstract class BaseParser {
                 },
                 fileName: file.name,
                 content: bufferedContent,
-                language: this.identity
+                language: this.identity,
+                ...(match.isUnknown ? { isUnknown: true } : {})
             })
         }
         return result
