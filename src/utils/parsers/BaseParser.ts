@@ -113,7 +113,7 @@ export abstract class BaseParser {
             ? orderedParameterPatterns
                 .map((p) => p.source)
                 .join(/\s*,\s*/.source)
-                .concat(/\)/.source)
+                .concat(/[,\s]*\)/.source)
             : null
 
         return orderedParameters && namedParameters

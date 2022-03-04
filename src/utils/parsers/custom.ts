@@ -1,4 +1,4 @@
-import { BaseParser, MatchResult } from './common'
+import { BaseParser, MatchResult } from './BaseParser'
 import { ParseOptions } from './types'
 
 export class CustomParser extends BaseParser {
