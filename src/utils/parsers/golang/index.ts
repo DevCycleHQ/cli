@@ -1,4 +1,4 @@
-import { BaseParser } from '../common'
+import { BaseParser } from '../BaseParser'
 
 const authPattern = /\w*/
 const userCapturePattern = /(?:\w*|[\w\s.]*{[^})]*})/
