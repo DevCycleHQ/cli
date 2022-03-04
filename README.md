@@ -69,7 +69,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/2.1.0-alpha.0 darwin-x64 node-v16.14.0
+@devcycle/cli/2.1.0-alpha.1 darwin-x64 node-v16.14.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -124,7 +124,7 @@ EXAMPLES
   $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.1.0-alpha.0/dist/commands/diff/index.ts)_
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.1.0-alpha.1/dist/commands/diff/index.ts)_
 
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
 * [`dvc features`](docs/features.md) - Access or modify Features with the Management API
@@ -178,7 +178,7 @@ EXAMPLES
   $ dvc usages --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/usages/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.1.0-alpha.0/dist/commands/usages/index.ts)_
+_See code: [dist/commands/usages/index.ts](https://github.com/DevCycleHQ/cli/blob/v2.1.0-alpha.1/dist/commands/usages/index.ts)_
 <!-- commandsstop -->
 # Configuration
 Many of the options available as command-line args can also be specified using a configuration file. The default
