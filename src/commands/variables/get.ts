@@ -1,5 +1,5 @@
 import { Flags } from "@oclif/core"
-import { fetchVariables, Variable } from "../../api/variables"
+import { fetchVariables } from "../../api/variables"
 import Base from "../base"
 
 export default class DetailedVariables extends Base {
@@ -16,12 +16,7 @@ export default class DetailedVariables extends Base {
         const { flags } = await this.parse(DetailedVariables)
         const keys = flags['keys']?.split(',')
 
-        if(!this.token) {
-            throw new Error('No auth')
-        }
-        if(!this.projectKey) {
-            throw new Error('no project key')
-        }
+        await this.requireProject()
 
         let variables = await fetchVariables(this.token, this.projectKey)
         if(keys) {

@@ -1,5 +1,5 @@
 import { fetchProjects } from "../../api/projects"
-import { promptForProject } from "../../ux/promptForProject"
+import { promptForProject } from "../../ui/promptForProject"
 
 import Base from "../base"
 export default class ListVariables extends Base {
