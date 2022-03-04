@@ -1,23 +1,7 @@
-import { AndroidParser, CsharpParser, GolangParser, IosParser, JavaParser,
-    JavascriptParser, NodeParser, PhpParser, PythonParser, ReactParser, RubyParser } from '../parsers'
-import { ParseOptions, VariableMatch, VariableUsageMatch } from '../parsers/types'
+import { PARSERS } from '../parsers'
+import { ParseOptions, VariableUsageMatch } from '../parsers/types'
 import { CustomParser } from '../parsers/custom'
 import { File } from '../../commands/usages/types'
-
-const PARSERS: Record<string, (typeof NodeParser)[]> = {
-    js: [NodeParser, ReactParser, JavascriptParser],
-    jsx: [ReactParser, JavascriptParser],
-    ts: [NodeParser, ReactParser, JavascriptParser],
-    tsx: [ReactParser, JavascriptParser],
-    java: [JavaParser, AndroidParser],
-    kt: [JavaParser, AndroidParser],
-    cs: [CsharpParser],
-    rb: [RubyParser],
-    py: [PythonParser],
-    go: [GolangParser],
-    swift: [IosParser],
-    php: [PhpParser]
-}
 
 export const parseFiles = (files: File[], options: ParseOptions = {}): Record<string, VariableUsageMatch[]> => {
     const resultsByLanguage: Record<string, VariableUsageMatch[]> = {}
