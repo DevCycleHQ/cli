@@ -5,9 +5,9 @@ import {
 import Base from '../base'
 import { storeAccessToken } from '../../auth/config'
 import SSOAuth from '../../api/ssoAuth'
-import { promptForOrganization } from "../../ux/promptForOrganization"
+import { promptForOrganization } from "../../ui/promptForOrganization"
 import { fetchProjects } from "../../api/projects"
-import { promptForProject } from "../../ux/promptForProject"
+import { promptForProject } from "../../ui/promptForProject"
 export default class SelectOrganization extends Base {
     static description = 'Select which organization to access through the API'
     static hidden = false
