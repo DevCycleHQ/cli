@@ -9,11 +9,26 @@ import { successMessage } from '../ui/output'
 
 const CLI_CLIENT_ID='Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
 
+type OauthResponse = {
+    data: {
+        access_token: string
+    }
+}
+
+type OauthParams = {
+    grant_type: string,
+    client_id: string,
+    code_verifier: string,
+    code: string,
+    redirect_uri: string,
+    scope: string
+}
+
 export default class SSOAuth {
     private organization: Organization|null
     private server: http.Server
     private codeVerifier: string
-    private accessToken: string
+    private accessToken: string|null|undefined
 
     public async getAccessToken(organization:Organization|null = null): Promise<string> {
         this.organization = organization
@@ -22,10 +37,10 @@ export default class SSOAuth {
     }
 
     private async waitForToken():Promise<string> {
-        if(this.accessToken) {
+        if (this.accessToken) {
             return this.accessToken
         } else {
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            await new Promise((resolve) => setTimeout(resolve, 1000))
             return this.waitForToken()
         }
     }
@@ -39,7 +54,7 @@ export default class SSOAuth {
 
         this.server = http.createServer(this.handleAuthRedirect.bind(this))
         // prevents keep-alive connections from keeping the server running after close()
-        this.server.on('connection', function (socket) { socket.unref(); });
+        this.server.on('connection', function(socket) { socket.unref() })
         this.server.listen(port, host, () => {
             console.log('Opening browser for authentication...')
             cli.open(authorizeUrl)
@@ -74,7 +89,7 @@ export default class SSOAuth {
         const authHost = 'auth.devcycle.com'
         const host = 'localhost'
         const port = 5000
-        const data = {
+        const data:OauthParams = {
             grant_type: 'authorization_code',
             client_id: CLI_CLIENT_ID,
             code_verifier: this.codeVerifier,
@@ -83,14 +98,15 @@ export default class SSOAuth {
             scope: 'offline_access'
         }
 
-        const response:any = await axios.post(`https://${authHost}/oauth/token`, data)
-        .catch(function (error) {
-            console.error(error)
-        })
+        const authUrl = `https://${authHost}/oauth/token`
+        const response = await axios.post<OauthParams, OauthResponse>(authUrl, data)
+            .catch(function(error) {
+                console.error(error)
+            })
 
         this.server.close()
-        this.accessToken = response.data.access_token
-        if(this.organization) {
+        this.accessToken = response?.data.access_token
+        if (this.organization) {
             successMessage(`Access token retrieved for "${this.organization.display_name}" organization`)
         } else {
             successMessage('Personal access token retrieved')
@@ -115,11 +131,11 @@ export default class SSOAuth {
         url.searchParams.append('code_challenge', code_challenge)
         url.searchParams.append('code_challenge_method', 'S256')
         url.searchParams.append('audience', 'https://api.devcycle.com/')
-        if(this.organization) {
+        if (this.organization) {
             url.searchParams.append('organization', this.organization.id)
         }
 
-        return url.toString();
+        return url.toString()
     }
 
     private createRandomString() {
@@ -133,5 +149,6 @@ export default class SSOAuth {
 <p>${resultMessage}. You may close this browser window.</p>
 <button type="button" onclick="javascript:window.close()">Close Window</button>
 </body></html>
-`}
+`
+    }
 }

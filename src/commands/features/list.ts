@@ -1,5 +1,5 @@
-import { fetchFeatures } from "../../api/features"
-import Base from "../base"
+import { fetchFeatures } from '../../api/features'
+import Base from '../base'
 
 export default class ListFeatures extends Base {
     static hidden = false

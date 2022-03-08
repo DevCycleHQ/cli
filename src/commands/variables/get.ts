@@ -1,6 +1,6 @@
-import { Flags } from "@oclif/core"
-import { fetchVariables } from "../../api/variables"
-import Base from "../base"
+import { Flags } from '@oclif/core'
+import { fetchVariables } from '../../api/variables'
+import Base from '../base'
 
 export default class DetailedVariables extends Base {
     static hidden = false
@@ -19,8 +19,8 @@ export default class DetailedVariables extends Base {
         await this.requireProject()
 
         let variables = await fetchVariables(this.token, this.projectKey)
-        if(keys) {
-            variables = variables.filter(variable => keys.includes(variable.key))
+        if (keys) {
+            variables = variables.filter((variable) => keys.includes(variable.key))
         }
         console.log(variables)
     }

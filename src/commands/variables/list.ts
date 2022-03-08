@@ -1,5 +1,5 @@
-import { fetchVariables } from "../../api/variables"
-import Base from "../base"
+import { fetchVariables } from '../../api/variables'
+import Base from '../base'
 
 export default class ListVariables extends Base {
     static hidden = false

@@ -10,6 +10,7 @@ import {
 } from 'class-validator'
 
 function ValidateMatchPatterns(validationOptions?: ValidationOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function(object: any, propertyName: string) {
         registerDecorator({
             name: 'ValidateMatchPatterns',
@@ -35,6 +36,7 @@ function ValidateMatchPatterns(validationOptions?: ValidationOptions) {
 }
 
 function ValidateVariableAliases(validationOptions?: ValidationOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function(object: any, propertyName: string) {
         registerDecorator({
             name: 'ValidateVariableAliases',
