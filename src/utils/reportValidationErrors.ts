@@ -1,4 +1,4 @@
-import { ValidationError } from "class-validator"
+import { ValidationError } from 'class-validator'
 
 export function reportValidationErrors(name: string, errors: ValidationError[]): void {
     if (errors.length) {

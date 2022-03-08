@@ -1,10 +1,10 @@
 import jsYaml from 'js-yaml'
 import fs from 'fs'
-import { plainToClass } from "class-transformer"
-import { validateSync } from "class-validator"
-import { AuthConfig } from "./config"
-import { clientCredentialsAuth } from "../api/clientCredentialsAuth"
-import { reportValidationErrors } from "../utils/reportValidationErrors"
+import { plainToClass } from 'class-transformer'
+import { validateSync } from 'class-validator'
+import { AuthConfig } from './config'
+import { clientCredentialsAuth } from '../api/clientCredentialsAuth'
+import { reportValidationErrors } from '../utils/reportValidationErrors'
 
 type SupportedFlags = {
     'client-id'?: string
@@ -13,8 +13,8 @@ type SupportedFlags = {
 }
 
 export async function getToken(flags: SupportedFlags): Promise<string> {
-    let client_id = flags['client-id'] || process.env.DVC_CLIENT_ID
-    let client_secret = flags['client-secret'] || process.env.DVC_CLIENT_SECRET
+    const client_id = flags['client-id'] || process.env.DVC_CLIENT_ID
+    const client_secret = flags['client-secret'] || process.env.DVC_CLIENT_SECRET
     const authPath = flags['auth-path']
 
     if (client_id && client_secret) {

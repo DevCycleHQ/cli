@@ -6,7 +6,7 @@ export class Feature {
     name?: string
     description?: string
     key: string
-    type: 'release'|'experiment'|'permission'|'ops'
+    type: 'release' | 'experiment' | 'permission' | 'ops'
     tags: string[]
     createdAt: Date
     updatedAt: Date
@@ -35,6 +35,7 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
         })
 
         return response.data
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         if (e.response?.status === 404) {
             return null

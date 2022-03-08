@@ -63,7 +63,8 @@ export default abstract class Base extends Command {
             if (this.authRequired) {
                 throw new Error('Authorization is required to use this command.')
             } else if (this.authSuggested && !flags['no-api']) {
-                console.warn('This command has limited functionality without Authorization. Use the "--no-api" flag to suppress this warning')
+                console.warn('This command has limited functionality without Authorization.' +
+                    'Use the "--no-api" flag to suppress this warning')
             }
             return
         }
@@ -83,7 +84,7 @@ export default abstract class Base extends Command {
     }
 
     async updateConfig(
-        changes:Partial<ConfigFromFile>
+        changes: Partial<ConfigFromFile>
     ): Promise<ConfigFromFile | null> {
         const { flags } = await this.parse(this.constructor as typeof Base)
         const configPath = flags['config-path']

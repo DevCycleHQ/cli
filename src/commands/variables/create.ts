@@ -1,18 +1,18 @@
-import inquirer from "inquirer"
-import { Feature, fetchFeatures } from "../../api/features"
-import { createVariable, CreateVariableParams } from "../../api/variables"
-import Base from "../base"
+import inquirer from 'inquirer'
+import { Feature, fetchFeatures } from '../../api/features'
+import { createVariable, CreateVariableParams } from '../../api/variables'
+import Base from '../base'
 
 export default class CreateVariable extends Base {
     static hidden = false
-    static description = `Create a new Variable for an existing Feature.`
+    static description = 'Create a new Variable for an existing Feature.'
     authRequired = true
 
     public async run(): Promise<void> {
         await this.requireProject()
         const features: (Feature | null)[] = await fetchFeatures(this.token, this.projectKey)
         const featureOptions = features.map((feature) => {
-            console.log({feature})
+            console.log({ feature })
             return {
                 name: feature?.name || feature?.key,
                 value: feature?._id

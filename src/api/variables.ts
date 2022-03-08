@@ -19,7 +19,11 @@ export type CreateVariableParams = {
     type: 'String' | 'Boolean' | 'Number' | 'JSON'
 }
 
-export const createVariable = async (token: string, project_id: string, params: CreateVariableParams): Promise<Variable> => {
+export const createVariable = async (
+    token: string,
+    project_id: string,
+    params: CreateVariableParams
+): Promise<Variable> => {
     const url = new URL(`/v1/projects/${project_id}/variables`, BASE_URL)
     const response = await axios.post(url.href,
         params,
@@ -56,6 +60,7 @@ export const fetchVariableByKey = async (token: string, project_id: string, key:
         })
 
         return response.data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         if (e.response?.status === 404) {
             return null
