@@ -63,13 +63,25 @@
     ],
     "topicSeparator": " ",
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
+      "login": {
+        "description": "Log in to DevCycle"
+      },
+      "features": {
+        "description": "Access or modify Features with the Management API"
+      },
+      "variables": {
+        "description": "Access or modify Variables with the Management API"
+      },
+      "projects": {
+        "description": "Access Projects with the Management API"
+      },
+      "org": {
+        "description": "Switch organizations"
       }
     }
   },
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -rf dist && tsc -b && oclif readme --multi",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
