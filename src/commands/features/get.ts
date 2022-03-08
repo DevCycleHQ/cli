@@ -1,6 +1,6 @@
-import { Flags } from "@oclif/core"
-import { fetchFeatures } from "../../api/features"
-import Base from "../base"
+import { Flags } from '@oclif/core'
+import { fetchFeatures } from '../../api/features'
+import Base from '../base'
 
 export default class DetailedFeatures extends Base {
     static hidden = false
@@ -24,8 +24,8 @@ export default class DetailedFeatures extends Base {
         await this.requireProject()
 
         let features = await fetchFeatures(this.token, this.projectKey)
-        if(keys) {
-            features = features.filter(feature => keys.includes(feature.key))
+        if (keys) {
+            features = features.filter((feature) => keys.includes(feature.key))
         }
         console.log(features)
     }

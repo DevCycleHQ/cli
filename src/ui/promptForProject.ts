@@ -1,5 +1,5 @@
-import inquirer from "inquirer";
-import { Project } from "../api/projects";
+import inquirer from 'inquirer'
+import { Project } from '../api/projects'
 
 export async function promptForProject(projects:Project[]):Promise<Project> {
     const projectOptions = projects.map((project) => {
@@ -8,7 +8,7 @@ export async function promptForProject(projects:Project[]):Promise<Project> {
             value: project
         }
     })
-    let responses: any = await inquirer.prompt([{
+    const responses = await inquirer.prompt([{
         name: 'project',
         message: 'Which project do you want to use?',
         type: 'list',

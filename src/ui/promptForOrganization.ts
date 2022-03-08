@@ -1,5 +1,5 @@
-import inquirer from "inquirer"
-import { Organization } from "../api/organizations"
+import inquirer from 'inquirer'
+import { Organization } from '../api/organizations'
 
 export async function promptForOrganization(organizations:Organization[]):Promise<Organization> {
     const organizationOptions = organizations.map((organization) => {
@@ -8,7 +8,7 @@ export async function promptForOrganization(organizations:Organization[]):Promis
             value: organization
         }
     })
-    let responses: any = await inquirer.prompt([{
+    const responses = await inquirer.prompt([{
         name: 'organization',
         message: 'Which organization do you want to use?',
         type: 'list',
