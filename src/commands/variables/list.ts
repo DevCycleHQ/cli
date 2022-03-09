@@ -1,4 +1,5 @@
 import { fetchVariables } from '../../api/variables'
+import { showResults } from '../../ui/output'
 import Base from '../base'
 
 export default class ListVariables extends Base {
@@ -9,6 +10,6 @@ export default class ListVariables extends Base {
         await this.requireProject()
         const variables = await fetchVariables(this.token, this.projectKey)
         const variableKeys = variables.map((variable) => variable.key)
-        console.log(variableKeys)
+        showResults(variableKeys)
     }
 }
