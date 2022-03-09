@@ -1,5 +1,6 @@
 import { Flags } from '@oclif/core'
 import { fetchFeatures } from '../../api/features'
+import { showResults } from '../../ui/output'
 import Base from '../base'
 
 export default class DetailedFeatures extends Base {
@@ -27,6 +28,6 @@ export default class DetailedFeatures extends Base {
         if (keys) {
             features = features.filter((feature) => keys.includes(feature.key))
         }
-        console.log(features)
+        showResults(features)
     }
 }

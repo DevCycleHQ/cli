@@ -129,11 +129,11 @@ export default abstract class Base extends Command {
             type: 'confirm'
         }])
         if (shouldSave) {
-            await this.updateConfig({ project:this.projectKey })
+            await this.updateConfig({ project: this.projectKey })
         }
     }
 
-    hasToken():boolean {
+    hasToken(): boolean {
         return this.token !== ''
     }
 }
