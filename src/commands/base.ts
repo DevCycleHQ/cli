@@ -18,24 +18,30 @@ export default abstract class Base extends Command {
     static flags = {
         'config-path': Flags.string({
             description: 'Override the default location to look for a config.yml file',
-            default: '.devcycle/config.yml'
+            default: '.devcycle/config.yml',
+            helpGroup: 'Global'
         }),
         'auth-path': Flags.string({
             description: 'Override the default location to look for an auth.yml file',
-            default: '.devcycle/auth.yml'
+            default: '.devcycle/auth.yml',
+            helpGroup: 'Global'
         }),
         'client-id': Flags.string({
             description: 'Client ID to use for DevCycle API Authorization',
+            helpGroup: 'Global'
         }),
         'client-secret': Flags.string({
             description: 'Client Secret to use for DevCycle API Authorization',
+            helpGroup: 'Global'
         }),
         'project': Flags.string({
             description: 'Project key to use for the DevCycle API requests',
+            helpGroup: 'Global'
         }),
         'no-api': Flags.boolean({
             description: 'Disable API-based enhancements for commands where authorization is optional. Suppresses ' +
-                'warnings about missing credentials.'
+                'warnings about missing credentials.',
+            helpGroup: 'Global'
         })
     }
 
@@ -57,7 +63,7 @@ export default abstract class Base extends Command {
             if (this.authRequired) {
                 throw new Error('Authorization is required to use this command.')
             } else if (this.authSuggested && !flags['no-api']) {
-                throw new Error('This command has limited functionality without Authorization. Use the "--no-api" flag to suppress this error')
+                console.warn('This command has limited functionality without Authorization. Use the "--no-api" flag to suppress this warning')
             }
             return
         }
