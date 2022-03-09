@@ -137,7 +137,7 @@ export default class Diff extends Base {
     }
 
     private useApi() {
-        return this.token && this.projectKey
+        return this.hasToken() && this.projectKey !== ''
     }
 
     private getMatchesByType(
@@ -188,10 +188,8 @@ export default class Diff extends Base {
         ) => {
             const keys = Object.keys(matches)
             const variablesByKey: Record<string, Variable | null> = {}
-            let useApi = false
 
-            if (this.token && this.projectKey) {
-                useApi = true
+            if (this.useApi()) {
                 const token = this.token
                 const projectKey = this.projectKey
                 await Promise.all(keys.map(async (key: string) => {
@@ -204,7 +202,7 @@ export default class Diff extends Base {
                     variable: variablesByKey[key],
                     matches: matches[key]
                 }
-                if (!variablesByKey[key] && useApi) {
+                if (!variablesByKey[key] && this.useApi()) {
                     categories[category === 'add' ? 'notFoundAdd' : 'notFoundRemove'][key] = {
                         variable: null,
                         matches: matches[key]

@@ -9,6 +9,9 @@ import { plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
 import { reportValidationErrors } from '../utils/reportValidationErrors'
 import { getToken } from '../auth/getToken'
+import { fetchProjects } from '../api/projects'
+import { promptForProject } from '../ui/promptForProject'
+import inquirer from 'inquirer'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -36,8 +39,8 @@ export default abstract class Base extends Command {
         })
     }
 
-    token: string | null = null
-    projectKey: string | null = null
+    token = ''
+    projectKey = ''
 
     // Override to true in commands that must be authorized in order to function
     authRequired = false
@@ -50,7 +53,7 @@ export default abstract class Base extends Command {
         const { flags } = await this.parse(this.constructor as typeof Base)
 
         this.token = await getToken(flags)
-        if (!this.token) {
+        if (!this.hasToken()) {
             if (this.authRequired) {
                 throw new Error('Authorization is required to use this command.')
             } else if (this.authSuggested && !flags['no-api']) {
@@ -102,7 +105,28 @@ export default abstract class Base extends Command {
         this.projectKey = flags['project']
             || process.env.DVC_PROJECT_KEY
             || this.configFromFile?.project
-            || null
+            || ''
         await this.authorizeApi()
+    }
+
+    async requireProject(): Promise<void> {
+        if (this.projectKey !== '') {
+            return
+        }
+        const projects = await fetchProjects(this.token)
+        const project = await promptForProject(projects)
+        this.projectKey = project.key
+        const { shouldSave } = await inquirer.prompt([{
+            name: 'shouldSave',
+            message: 'Do you want to use this project for all future commands?',
+            type: 'confirm'
+        }])
+        if (shouldSave) {
+            await this.updateConfig({ project:this.projectKey })
+        }
+    }
+
+    hasToken():boolean {
+        return this.token !== ''
     }
 }
