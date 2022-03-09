@@ -1,5 +1,5 @@
 import parse from 'parse-diff'
-import { ParseOptions, VariableDiffMatch, Range, VariableUsageMatch } from './types'
+import { ParseOptions, VariableDiffMatch, Range, VariableUsageMatch, VariableMatch } from './types'
 import * as usage from '../../commands/usages/types'
 
 type MultilineDiffChunk = {
@@ -7,7 +7,7 @@ type MultilineDiffChunk = {
     changes: ParsedChange[]
 }
 
-type MatchWithRange = {
+export type MatchWithRange = {
     // Variable name
     name: string
     // Start/end indicies of matching substring
@@ -142,31 +142,31 @@ export abstract class BaseParser {
         )
     }
 
-    private extractUsageRange(file: usage.File, match: MatchWithRange): Range {
-        const lines: usage.LineItem[] = []
-        let index = 0
+    // private extractUsageRange(file: usage.File, match: MatchWithRange): Range {
+    //     const lines: usage.LineItem[] = []
+    //     let index = 0
     
-        for (const line of file.lines) {
-            const trimmedContent = line.content.trim()
-            if (!trimmedContent.length) continue
+    //     for (const line of file.lines) {
+    //         const trimmedContent = line.content.trim()
+    //         if (!trimmedContent.length) continue
 
-            const { start: matchStartIndex, end: matchEndIndex } = match.range
-            const lineStartIndex = index
-            const lineEndIndex = lineStartIndex + trimmedContent.length - 1
-            if (
-                (matchStartIndex >= lineStartIndex && matchStartIndex <= lineEndIndex)
-                || (lineStartIndex >= matchStartIndex && lineStartIndex <= matchEndIndex)
-            ) {
-                lines.push(line)
-            }
-            index = lineEndIndex + 1
-        }
+    //         const { start: matchStartIndex, end: matchEndIndex } = match.range
+    //         const lineStartIndex = index
+    //         const lineEndIndex = lineStartIndex + trimmedContent.length - 1
+    //         if (
+    //             (matchStartIndex >= lineStartIndex && matchStartIndex <= lineEndIndex)
+    //             || (lineStartIndex >= matchStartIndex && lineStartIndex <= matchEndIndex)
+    //         ) {
+    //             lines.push(line)
+    //         }
+    //         index = lineEndIndex + 1
+    //     }
 
-        return {
-            start: lines[0].ln,
-            end: lines[lines.length - 1].ln
-        }
-    }
+    //     return {
+    //         start: lines[0].ln,
+    //         end: lines[lines.length - 1].ln
+    //     }
+    // }
 
     /**
      * Given a chunk from parse-diff, aggregate added and removed changes.
@@ -239,7 +239,7 @@ export abstract class BaseParser {
      * Each match includes the variable name and the character range of the
      * matching substring.
      */
-    private getAllMatches(matchString: string): MatchWithRange[] {
+    getAllMatches(matchString: string): MatchWithRange[] {
         const allMatches: MatchWithRange[] = []
         let cursorPosition = 0
 
@@ -273,20 +273,20 @@ export abstract class BaseParser {
      * @param file 
      * @returns Filtered 
      */
-    private getFilteredFile(file: usage.File) : usage.File {
-        const filteredLines = file.lines.filter((line) => {
-            for (const commentChar of this.commentCharacters) {
-                if (line.content.trim().startsWith(commentChar)) {
-                    return false
-                }
-            }
-            return true
-        })
-        return {
-            ...file,
-            lines: filteredLines
-        }
-    }
+    // private getFilteredFile(file: usage.File) : usage.File {
+    //     const filteredLines = file.lines.filter((line) => {
+    //         for (const commentChar of this.commentCharacters) {
+    //             if (line.content.trim().startsWith(commentChar)) {
+    //                 return false
+    //             }
+    //         }
+    //         return true
+    //     })
+    //     return {
+    //         ...file,
+    //         lines: filteredLines
+    //     }
+    // }
 
     private formatMatch(match: MatchWithRange, file: parse.File, change: parse.Change): VariableDiffMatch {
         return {
@@ -347,41 +347,43 @@ export abstract class BaseParser {
         return results
     }
 
-    parseFile(file: usage.File): VariableUsageMatch[] {
-        const buffer = 3
-        const result: VariableUsageMatch[] = []
-        const filteredFile = this.getFilteredFile(file)
-        let fileContent = ''
-        for (const line of filteredFile.lines) {
-            fileContent = fileContent.concat(line.content.trim())
-        }
+    // parseFile(file: usage.File): VariableUsageMatch[] {
+    //     const buffer = 3
+    //     const result: VariableUsageMatch[] = []
+    //     const filteredFile = this.getFilteredFile(file)
+    //     let fileContent = ''
+    //     for (const line of filteredFile.lines) {
+    //         fileContent = fileContent.concat(line.content.trim())
+    //     }
 
-        const matches = this.getAllMatches(fileContent)
+    //     const matches = this.getAllMatches(fileContent)
 
-        for (const match of matches) {
-            const range = this.extractUsageRange(filteredFile, match)
+    //     for (const match of matches) {
+    //         const range = this.extractUsageRange(filteredFile, match)
 
-            const bufferedStart = Math.max(range.start - buffer, 0)
-            const bufferedEnd = Math.min(range.end + buffer, file.lines.length)
-            const bufferedContent = file.lines
-                .filter((line) => range.start - buffer <= line.ln && range.end + buffer >= line.ln)
-                .map((line) => line.content)
-                .join('\n')
+    //         const bufferedStart = Math.max(range.start - buffer, 0)
+    //         const bufferedEnd = Math.min(range.end + buffer, file.lines.length)
+    //         const bufferedContent = file.lines
+    //             .filter((line) => range.start - buffer <= line.ln && range.end + buffer >= line.ln)
+    //             .map((line) => line.content)
+    //             .join('\n')
             
-            result.push({
-                name: match.name,
-                line: range.start,
-                lines: range,
-                bufferedLines: {
-                    start: bufferedStart,
-                    end: bufferedEnd
-                },
-                fileName: file.name,
-                content: bufferedContent,
-                language: this.identity,
-                ...(match.isUnknown ? { isUnknown: true } : {})
-            })
-        }
-        return result
-    }
+    //         result.push({
+    //             name: match.name,
+    //             line: range.start,
+    //             lines: range,
+    //             bufferedLines: {
+    //                 start: bufferedStart,
+    //                 end: bufferedEnd
+    //             },
+    //             fileName: file.name,
+    //             content: bufferedContent,
+    //             language: this.identity,
+    //             ...(match.isUnknown ? { isUnknown: true } : {})
+    //         })
+    //     }
+    //     return result
+    // }
+
+    abstract parse(file: any): VariableMatch[]
 }

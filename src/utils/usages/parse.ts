@@ -26,7 +26,7 @@ export const parseFiles = (files: File[], options: ParseOptions = {}): Record<st
                 parser.printRegexPattern()
             }
 
-            const result = parser.parseFile(file)
+            const result = parser.parse(file)
 
             if (result.length > 0) {
                 resultsByLanguage[parser.identity] ??= []
