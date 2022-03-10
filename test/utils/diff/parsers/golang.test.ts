@@ -1,6 +1,6 @@
-import { executeFileDiff } from '../../../src/utils/diff/fileDiff'
+import { executeFileDiff } from '../../../../src/utils/diff/fileDiff'
 import * as path from 'node:path'
-import { parseFiles } from '../../../src/utils/diff/parse'
+import { parseFiles } from '../../../../src/utils/diff/parse'
 import { expect } from '@oclif/test'
 
 describe('golang', () => {
@@ -31,7 +31,7 @@ describe('golang', () => {
         }
     ]
     it('identifies the correct variable usages in the Go sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/golang'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/golang'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({
