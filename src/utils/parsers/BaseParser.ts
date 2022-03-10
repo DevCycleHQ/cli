@@ -212,7 +212,9 @@ export abstract class BaseParser {
     /**
      * Filter unused lines and build an object containing lines and content
      */
-    private filterAndReduceLines<T>(lines: ParsedLine[]): { content: string, lines: T[] } {
+    private filterAndReduceLines(lines: ParsedChangeLine[]): { content: string, lines: ParsedChangeLine[] };
+    private filterAndReduceLines(lines: ParsedLine[]): { content: string, lines: ParsedLine[] };
+    private filterAndReduceLines(lines: ParsedLine[]): { content: string, lines: ParsedLine[] } {
         return lines
             .filter((line) => !line.isComment(this.commentCharacters) && !line.isEmpty())
             .reduce((acc, line) => {
@@ -221,23 +223,25 @@ export abstract class BaseParser {
                 acc.content += line.parsedContent
                 line.range.end = acc.content.length - 1
 
-                acc.lines.push(line as unknown as T)
+                acc.lines.push(line)
                 
                 return acc
-            }, { content: '', lines: [] } as { content: string, lines: T[] })
+            }, { content: '', lines: [] } as { content: string, lines: ParsedLine[] })
     }
 
     /**
      * Get all lines within the range of the match
      */
-    private getMatchingLines<T>(match: MatchWithRange, lines: ParsedLine[]): T[] {
+    private getMatchingLines(match: MatchWithRange, lines: ParsedChangeLine[]): ParsedChangeLine[];
+    private getMatchingLines(match: MatchWithRange, lines: ParsedLine[]): ParsedLine[];
+    private getMatchingLines(match: MatchWithRange, lines: ParsedLine[]): ParsedLine[] {
         const { start: matchStartIndex, end: matchEndIndex } = match.range
 
         return lines.filter(({ range }) => {
             const { start: lineStartIndex, end: lineEndIndex } = range
             return (matchStartIndex >= lineStartIndex && matchStartIndex <= lineEndIndex)
                 || (lineStartIndex >= matchStartIndex && lineStartIndex <= matchEndIndex)
-        }) as unknown[] as T[]
+        })
     }
 
     /**
@@ -247,7 +251,7 @@ export abstract class BaseParser {
         const results: VariableDiffMatch[] = []
 
         const validateAndFormatMatch = (match: MatchWithRange, lines: ParsedChangeLine[]) => {
-            const matchingLines = this.getMatchingLines<ParsedChangeLine>(match, lines)
+            const matchingLines = this.getMatchingLines(match, lines)
 
             // Remove "normal" lines
             const validChange = matchingLines.find(({ type }) => type !== 'normal')
@@ -269,13 +273,13 @@ export abstract class BaseParser {
             const lineChanges = chunk.changes.map((change) => new ParsedChangeLine(change))
 
             const addedLines = lineChanges.filter((line) => ['add', 'normal'].includes(line.type))
-            const added = this.filterAndReduceLines<ParsedChangeLine>(addedLines)
+            const added = this.filterAndReduceLines(addedLines)
             const addedMatches = this.getAllMatches(added.content)
 
             addedMatches.forEach((match) => validateAndFormatMatch(match, added.lines))
 
             const removedLines = lineChanges.filter((line) => ['del', 'normal'].includes(line.type))
-            const removed = this.filterAndReduceLines<ParsedChangeLine>(removedLines)
+            const removed = this.filterAndReduceLines(removedLines)
             const removedMatches = this.getAllMatches(removed.content)
             
             removedMatches.forEach((match) => validateAndFormatMatch(match, removed.lines))
@@ -291,11 +295,11 @@ export abstract class BaseParser {
         const results: VariableUsageMatch[] = []
 
         const parsedLines = file.lines.map((line) => new ParsedLine(line))
-        const { lines, content } = this.filterAndReduceLines<ParsedLine>(parsedLines)
+        const { lines, content } = this.filterAndReduceLines(parsedLines)
         const matches = this.getAllMatches(content)
 
         matches.forEach((match) => {
-            const matchingLines = this.getMatchingLines<ParsedLine>(match, lines)
+            const matchingLines = this.getMatchingLines(match, lines)
 
             const range = {
                 start: matchingLines[0].ln,
