@@ -1,5 +1,4 @@
 import fs from 'fs'
-import { uniqBy } from 'lodash'
 import minimatch from 'minimatch'
 import { Flags } from '@oclif/core'
 import { lsFiles } from '../../utils/git/ls-files'
@@ -115,7 +114,7 @@ export default class Usages extends Base {
         matchesBySdk: Record<string, VariableUsageMatch[]>,
         aliasMap: Record<string, string>
     ) {
-        const matchesByVariable: Record<string, VariableUsageMatch[]> = {}
+        const matchesByVariable: Record<string, Record<string, VariableUsageMatch>> = {}
         Object.values(matchesBySdk).forEach((matches) => {
             matches.forEach((m) => {
                 const match = { ...m }
@@ -126,16 +125,20 @@ export default class Usages extends Base {
                     delete match.isUnknown
                 }
                 if (!match.isUnknown) {
-                    matchesByVariable[match.name] ??= []
-                    matchesByVariable[match.name].push(match)
-                    matchesByVariable[match.name] = uniqBy(
-                        matchesByVariable[match.name],
-                        (m) => `${m.fileName}:${m.line}`
-                    )
+                    matchesByVariable[match.name] ??= {}
+                    matchesByVariable[match.name][`${match.fileName}:${match.line}`] = match
                 }
             })
         })
-        return matchesByVariable
+
+        // Convert each mapped entry back to an array of matches
+        return Object.entries(matchesByVariable).reduce((
+            map: Record<string, VariableUsageMatch[]>,
+            [variableName, matchesByLine]
+        ) => {
+            map[variableName] = Object.values(matchesByLine)
+            return map
+        }, {})
     }
 
     private formatMatchesToJSON(matches: Record<string, VariableUsageMatch[]>): JSONMatch[] {
