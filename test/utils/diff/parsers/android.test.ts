@@ -43,7 +43,7 @@ describe('android', () => {
         }
     ]
     it('identifies the correct variable usages in the Android sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/android'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/android'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({

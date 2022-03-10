@@ -37,7 +37,7 @@ describe('php', () => {
         }
     ]
     it('identifies the correct variable usages in the PHP sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../diff/samples/php'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../samples/php'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({
