@@ -32,10 +32,10 @@ class ParsedLine {
     // Start/end of content within full content string
     range: Range = { start: 0, end: 0 }
 
-    constructor(line: usage.LineItem | parse.Change) {
+    constructor(line: usage.LineItem) {
         this.content = line.content
         this.parsedContent = this.content.trim()
-        this.ln = (line as usage.LineItem).ln
+        this.ln = line.ln
     }
 
     isComment(commentCharacters: string[]) {
@@ -54,7 +54,7 @@ class ParsedChangeLine extends ParsedLine {
     type: string
 
     constructor(changeLine: parse.Change) {
-        super(changeLine)
+        super(changeLine as usage.LineItem)
         this.type = changeLine.type
         this.content = changeLine.content
         this.parsedContent = this.type === 'normal'

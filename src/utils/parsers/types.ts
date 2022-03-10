@@ -1,3 +1,4 @@
+// Base object describing a variable match
 export type VariableMatch = {
     name: string,
     line: number,
@@ -6,6 +7,7 @@ export type VariableMatch = {
     alias?: string
 }
 
+// Object describing a variable match specific to code usage
 export type VariableUsageMatch = VariableMatch & {
     lines: Range
     bufferedLines: Range
@@ -13,6 +15,7 @@ export type VariableUsageMatch = VariableMatch & {
     language: string
 }
 
+// Object describing a variable match specific to a git diff
 export type VariableDiffMatch = VariableMatch & {
     mode: 'add' | 'remove',
 }
