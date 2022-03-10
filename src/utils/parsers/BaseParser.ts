@@ -2,11 +2,6 @@ import parse from 'parse-diff'
 import { ParseOptions, VariableDiffMatch, Range, VariableUsageMatch } from './types'
 import * as usage from '../../commands/usages/types'
 
-type MultilineDiffChunk = {
-    content: string
-    changes: ParsedChange[]
-}
-
 type MatchWithRange = {
     // Variable name
     name: string
@@ -27,29 +22,45 @@ export type MatchResult = {
     index: number
 }
 
-class ParsedChange {
-    type: string
+class ParsedLine {
+    // Line content
     content: string
+    // Trimmed line content
+    parsedContent: string
+    //  Line number
     ln: number
+    // Start/end of content within full content string
     range: Range = { start: 0, end: 0 }
 
-    constructor(change: parse.Change) {
-        this.type = change.type
-        this.content = change.content
-        this.ln = change.type === 'normal' ? change.ln2 : change.ln
-    }
-
-    parseContent() {
-        return this.type === 'normal'
-            ? this.content.trim()
-            : this.content.slice(1).trim()
+    constructor(line: usage.LineItem | parse.Change) {
+        this.content = line.content
+        this.parsedContent = this.content.trim()
+        this.ln = (line as usage.LineItem).ln
     }
 
     isComment(commentCharacters: string[]) {
-        const changeContent = this.parseContent()
         return commentCharacters
-            .map((char) => changeContent.indexOf(char) === 0)
+            .map((char) => this.parsedContent.indexOf(char) === 0)
             .some(Boolean)
+    }
+
+    isEmpty() {
+        return this.parsedContent.length === 0
+    }
+}
+
+class ParsedChangeLine extends ParsedLine {
+    // Type of change
+    type: string
+
+    constructor(changeLine: parse.Change) {
+        super(changeLine)
+        this.type = changeLine.type
+        this.content = changeLine.content
+        this.parsedContent = this.type === 'normal'
+            ? this.content.trim()
+            : this.content.slice(1).trim()
+        this.ln = changeLine.type === 'normal' ? changeLine.ln2 : changeLine.ln
     }
 
     format(type: 'add' | 'del'): parse.AddChange | parse.DeleteChange {
@@ -142,76 +153,6 @@ export abstract class BaseParser {
         )
     }
 
-    private extractUsageRange(file: usage.File, match: MatchWithRange): Range {
-        const lines: usage.LineItem[] = []
-        let index = 0
-    
-        for (const line of file.lines) {
-            const trimmedContent = line.content.trim()
-            if (!trimmedContent.length) continue
-
-            const { start: matchStartIndex, end: matchEndIndex } = match.range
-            const lineStartIndex = index
-            const lineEndIndex = lineStartIndex + trimmedContent.length - 1
-            if (
-                (matchStartIndex >= lineStartIndex && matchStartIndex <= lineEndIndex)
-                || (lineStartIndex >= matchStartIndex && lineStartIndex <= matchEndIndex)
-            ) {
-                lines.push(line)
-            }
-            index = lineEndIndex + 1
-        }
-
-        return {
-            start: lines[0].ln,
-            end: lines[lines.length - 1].ln
-        }
-    }
-
-    /**
-     * Given a chunk from parse-diff, aggregate added and removed changes.
-     * Each resulting chunk includes the multi-line content as a single string,
-     * and an array of changes, each with a range object describing the start/end
-     * indicies of the substring within the content string.
-     */
-    private aggregateMultilineChunks(chunk: parse.Chunk): { added: MultilineDiffChunk, removed: MultilineDiffChunk } {
-        const added: MultilineDiffChunk = {
-            content: '',
-            changes: []
-        }
-        const removed: MultilineDiffChunk = {
-            content: '',
-            changes: []
-        }
-
-        const pushChangeToMultilineDiffChunk = (chunk: MultilineDiffChunk, change: ParsedChange) => {
-            change.range.start = chunk.content.length
-
-            const changeContent = change.parseContent()
-            if (!changeContent.length) return
-
-            chunk.content += changeContent
-            change.range.end = chunk.content.length - 1
-
-            chunk.changes.push(change)
-        }
-
-        for (const change of chunk.changes) {
-            const parsedChange = new ParsedChange(change)
-            if (parsedChange.isComment(this.commentCharacters)) continue
-
-            if (parsedChange.type === 'add') {
-                pushChangeToMultilineDiffChunk(added, parsedChange)
-            } else if (parsedChange.type === 'del') {
-                pushChangeToMultilineDiffChunk(removed, parsedChange)
-            } else if (parsedChange.type === 'normal') {
-                pushChangeToMultilineDiffChunk(added, parsedChange)
-                pushChangeToMultilineDiffChunk(removed, parsedChange)
-            }
-        }
-        return { added, removed }
-    }
-
     printRegexPattern(): void {
         console.log(`Pattern for ${this.identity} parser: ${this.buildRegexPattern().source}`)
     }
@@ -269,97 +210,97 @@ export abstract class BaseParser {
     }
 
     /**
-     * Filters a File object from any lines that are commented out
-     * @param file 
-     * @returns Filtered 
+     * Filter unused lines and build an object containing lines and content
      */
-    private getFilteredFile(file: usage.File) : usage.File {
-        const filteredLines = file.lines.filter((line) => {
-            for (const commentChar of this.commentCharacters) {
-                if (line.content.trim().startsWith(commentChar)) {
-                    return false
-                }
-            }
-            return true
-        })
-        return {
-            ...file,
-            lines: filteredLines
-        }
-    }
+    private filterAndReduceLines<T>(lines: ParsedLine[]): { content: string, lines: T[] } {
+        return lines
+            .filter((line) => !line.isComment(this.commentCharacters) && !line.isEmpty())
+            .reduce((acc, line) => {
+                line.range.start = acc.content.length
 
-    private formatMatch(match: MatchWithRange, file: parse.File, change: parse.Change): VariableDiffMatch {
-        return {
-            name: match.name,
-            fileName: file.to ?? '',
-            line: change.type === 'normal' ? change.ln1 : change.ln,
-            mode: change.type === 'add' ? 'add' : 'remove',
-            ...(match.isUnknown ? { isUnknown: true } : {})
-        }
+                acc.content += line.parsedContent
+                line.range.end = acc.content.length - 1
+
+                acc.lines.push(line as unknown as T)
+                
+                return acc
+            }, { content: '', lines: [] } as { content: string, lines: T[] })
     }
 
     /**
-     * Given an array of matches, find the first change object corresponding to the match.
-     * Also verify that the match is associated with at least one add/delete change object.
+     * Get all lines within the range of the match
      */
-    private formatMatches(file: parse.File, matches: MatchWithRange[], { changes }: MultilineDiffChunk) {
-        const results: VariableDiffMatch[] = []
+    private getMatchingLines<T>(match: MatchWithRange, lines: ParsedLine[]): T[] {
+        const { start: matchStartIndex, end: matchEndIndex } = match.range
 
-        matches.forEach((match) => {
-            const { start: matchStartIndex, end: matchEndIndex } = match.range
-
-            // Get all changes within the range of the match
-            const matchingChanges = changes.filter(({ range }) => {
-                const { start: changeStartIndex, end: changeEndIndex } = range
-                return (matchStartIndex >= changeStartIndex && matchStartIndex <= changeEndIndex)
-                    || (changeStartIndex >= matchStartIndex && changeStartIndex <= matchEndIndex)
-            })
-
-            // Remove "normal" change objects
-            const validChange = matchingChanges.find(({ type }) => type !== 'normal')
-
-            // If we have an add/del change, update the starting change to have that type and push to results
-            if (validChange) {
-                const formattedChange = matchingChanges[0].format(
-                    validChange.type as 'add' | 'del'
-                )
-                results.push(this.formatMatch(match, file, formattedChange))
-            }
-        })
-
-        return results
+        return lines.filter(({ range }) => {
+            const { start: lineStartIndex, end: lineEndIndex } = range
+            return (matchStartIndex >= lineStartIndex && matchStartIndex <= lineEndIndex)
+                || (lineStartIndex >= matchStartIndex && lineStartIndex <= matchEndIndex)
+        }) as unknown[] as T[]
     }
 
+    /**
+     * Parse a git diff for variable changes
+     */
     parseDiffs(file: parse.File): VariableDiffMatch[] {
         const results: VariableDiffMatch[] = []
 
+        const validateAndFormatMatch = (match: MatchWithRange, lines: ParsedChangeLine[]) => {
+            const matchingLines = this.getMatchingLines<ParsedChangeLine>(match, lines)
+
+            // Remove "normal" lines
+            const validChange = matchingLines.find(({ type }) => type !== 'normal')
+
+            // If we have an add/del change, update the starting line to have that type and push to results
+            if (validChange) {
+                const line = matchingLines[0].format(validChange.type as 'add' | 'del')
+                results.push({
+                    name: match.name,
+                    fileName: file.to ?? '',
+                    line: line.ln,
+                    mode: line.type === 'add' ? 'add' : 'remove',
+                    ...(match.isUnknown ? { isUnknown: true } : {})
+                })
+            }
+        }
+
         for (const chunk of file.chunks) {
+            const lineChanges = chunk.changes.map((change) => new ParsedChangeLine(change))
 
-            const { added: addedChunk, removed: removedChunk } = this.aggregateMultilineChunks(chunk)
-            const addedMatches = this.getAllMatches(addedChunk.content)
-            const removedMatches = this.getAllMatches(removedChunk.content)
+            const addedLines = lineChanges.filter((line) => ['add', 'normal'].includes(line.type))
+            const added = this.filterAndReduceLines<ParsedChangeLine>(addedLines)
+            const addedMatches = this.getAllMatches(added.content)
 
-            results.push(
-                ...this.formatMatches(file, addedMatches, addedChunk),
-                ...this.formatMatches(file, removedMatches, removedChunk)
-            )
+            addedMatches.forEach((match) => validateAndFormatMatch(match, added.lines))
+
+            const removedLines = lineChanges.filter((line) => ['del', 'normal'].includes(line.type))
+            const removed = this.filterAndReduceLines<ParsedChangeLine>(removedLines)
+            const removedMatches = this.getAllMatches(removed.content)
+            
+            removedMatches.forEach((match) => validateAndFormatMatch(match, removed.lines))
         }
         return results
     }
 
+    /**
+     * Parse an entire file for code references
+     */
     parseFile(file: usage.File): VariableUsageMatch[] {
         const buffer = 3
-        const result: VariableUsageMatch[] = []
-        const filteredFile = this.getFilteredFile(file)
-        let fileContent = ''
-        for (const line of filteredFile.lines) {
-            fileContent = fileContent.concat(line.content.trim())
-        }
+        const results: VariableUsageMatch[] = []
 
-        const matches = this.getAllMatches(fileContent)
+        const parsedLines = file.lines.map((line) => new ParsedLine(line))
+        const { lines, content } = this.filterAndReduceLines<ParsedLine>(parsedLines)
+        const matches = this.getAllMatches(content)
 
-        for (const match of matches) {
-            const range = this.extractUsageRange(filteredFile, match)
+        matches.forEach((match) => {
+            const matchingLines = this.getMatchingLines<ParsedLine>(match, lines)
+
+            const range = {
+                start: matchingLines[0].ln,
+                end: matchingLines[matchingLines.length - 1].ln
+            }
 
             const bufferedStart = Math.max(range.start - buffer, 0)
             const bufferedEnd = Math.min(range.end + buffer, file.lines.length)
@@ -368,7 +309,7 @@ export abstract class BaseParser {
                 .map((line) => line.content)
                 .join('\n')
             
-            result.push({
+            results.push({
                 name: match.name,
                 line: range.start,
                 lines: range,
@@ -381,7 +322,8 @@ export abstract class BaseParser {
                 language: this.identity,
                 ...(match.isUnknown ? { isUnknown: true } : {})
             })
-        }
-        return result
+        })
+
+        return results
     }
 }
