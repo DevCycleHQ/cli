@@ -104,7 +104,7 @@ export default class Usages extends Base {
         
         if (flags['format'] === 'json') {
             const matchesByVariableJSON = this.formatMatchesToJSON(matchesByVariable)
-            this.log(JSON.stringify(matchesByVariableJSON))
+            this.log(JSON.stringify(matchesByVariableJSON, null, 2))
         } else {
             this.formatConsoleOutput(matchesByVariable)
         }
