@@ -14,6 +14,14 @@ type OauthResponse = {
         access_token: string
     }
 }
+const SUPPORTED_PORTS = [
+    80,
+    8080,
+    2194,
+    2195, 
+    2196
+]
+const PORT = Number.parseInt(process.env.PORT || '2194')
 
 type OauthParams = {
     grant_type: string,
@@ -47,7 +55,10 @@ export default class SSOAuth {
 
     private startLocalServer() {
         const host = 'localhost'
-        const port = 5000
+
+        if (!SUPPORTED_PORTS.includes(PORT)) {
+            throw new Error(`Invalid PORT. Only ${SUPPORTED_PORTS.join(', ')} are supported`)
+        }
 
         this.codeVerifier = this.createRandomString()
         const authorizeUrl = this.buildAuthorizeUrl()
@@ -55,7 +66,7 @@ export default class SSOAuth {
         this.server = http.createServer(this.handleAuthRedirect.bind(this))
         // prevents keep-alive connections from keeping the server running after close()
         this.server.on('connection', function(socket) { socket.unref() })
-        this.server.listen(port, host, () => {
+        this.server.listen(PORT, host, () => {
             console.log('Opening browser for authentication...')
             cli.open(authorizeUrl)
         })
@@ -88,13 +99,12 @@ export default class SSOAuth {
     private async retrieveAccessToken(code: string) {
         const authHost = 'auth.devcycle.com'
         const host = 'localhost'
-        const port = 5000
         const data:OauthParams = {
             grant_type: 'authorization_code',
             client_id: CLI_CLIENT_ID,
             code_verifier: this.codeVerifier,
             code,
-            redirect_uri: `http://${host}:${port}/callback`,
+            redirect_uri: `http://${host}:${PORT}/callback`,
             scope: 'offline_access'
         }
 
@@ -116,7 +126,6 @@ export default class SSOAuth {
     public buildAuthorizeUrl(): string {
         const authHost = 'auth.devcycle.com'
         const host = 'localhost'
-        const port = 5000
 
         const state = this.createRandomString()
         const code_challenge = createHash('sha256')
@@ -126,7 +135,7 @@ export default class SSOAuth {
         const url = new URL(`https://${authHost}/authorize`)
         url.searchParams.append('response_type', 'code')
         url.searchParams.append('client_id', CLI_CLIENT_ID)
-        url.searchParams.append('redirect_uri', `http://${host}:${port}/callback`)
+        url.searchParams.append('redirect_uri', `http://${host}:${PORT}/callback`)
         url.searchParams.append('state', state)
         url.searchParams.append('code_challenge', code_challenge)
         url.searchParams.append('code_challenge_method', 'S256')
