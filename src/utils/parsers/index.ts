@@ -36,3 +36,18 @@ export const PARSERS: Record<string, (typeof NodeParser)[]> = {
     swift: [IosParser],
     php: [PhpParser]
 }
+
+export const LANGUAGE_MAP: Record<string, string> = {
+    js: 'javascript',
+    jsx: 'jsx',
+    ts: 'typescript',
+    tsx: 'tsx',
+    java: 'java',
+    kt: 'kotlin',
+    cs: 'csharp',
+    rb: 'ruby',
+    py: 'python',
+    go: 'go',
+    swift: 'swift',
+    php: 'php'
+}

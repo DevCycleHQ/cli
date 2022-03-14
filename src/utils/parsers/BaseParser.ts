@@ -1,6 +1,7 @@
 import parse from 'parse-diff'
 import { ParseOptions, VariableDiffMatch, Range, VariableUsageMatch } from './types'
 import * as usage from '../../commands/usages/types'
+import { LANGUAGE_MAP } from '../parsers'
 
 type MatchWithRange = {
     // Variable name
@@ -293,6 +294,7 @@ export abstract class BaseParser {
     parseFile(file: usage.File): VariableUsageMatch[] {
         const buffer = 3
         const results: VariableUsageMatch[] = []
+        const fileExtension = file.name?.split('.').pop() ?? ''
 
         const parsedLines = file.lines.map((line) => new ParsedLine(line))
         const { lines, content } = this.filterAndReduceLines(parsedLines)
@@ -323,7 +325,7 @@ export abstract class BaseParser {
                 },
                 fileName: file.name,
                 content: bufferedContent,
-                language: this.identity,
+                language: LANGUAGE_MAP[fileExtension],
                 ...(match.isUnknown ? { isUnknown: true } : {})
             })
         })
