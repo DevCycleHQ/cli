@@ -44,7 +44,7 @@ This file should **not** be checked in to version control.
 
 You also need to specify the default project ID for the CLI to use. 
 
-This can be set using the [project select command](docs/project.md#dvc-projects-select) or by manually updating the [configuration](#configuration) file:
+This can be set using the [project select command](docs/projects.md#dvc-projects-select) or by manually updating the [configuration](#configuration) file:
 ```yaml
 project: <your project id>
 ```
