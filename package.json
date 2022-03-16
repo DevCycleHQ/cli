@@ -91,7 +91,7 @@
     "version": "oclif readme && git add README.md"
   },
   "engines": {
-    "node": ">=14.18.0"
+    "node": ">=14.18.0 <17.0.0"
   },
   "bugs": "https://github.com/DevCycleHQ/cli/issues",
   "keywords": [
