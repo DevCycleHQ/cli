@@ -20,8 +20,10 @@ export default class Login extends Base {
         storeAccessToken(token, flags['auth-path'])
 
         const organizations = await fetchOrganizations(token)
-        const selectedOrg = await promptForOrganization(organizations)
-        token = await this.selectOrganization(selectedOrg)
+        if (organizations.length > 0) {
+            const selectedOrg = await promptForOrganization(organizations)
+            token = await this.selectOrganization(selectedOrg)
+        }
 
         const projects = await fetchProjects(token)
         const selectedProject = await promptForProject(projects)

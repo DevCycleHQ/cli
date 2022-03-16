@@ -15,6 +15,10 @@ export default class SelectOrganization extends Base {
 
     public async run(): Promise<void> {
         const organizations = await fetchOrganizations(this.token)
+        if (organizations.length === 0) {
+            console.error('You are not a member of any organizations')
+            return
+        }
         const selected = await promptForOrganization(organizations)
         const token = await this.selectOrganization(selected)
 
