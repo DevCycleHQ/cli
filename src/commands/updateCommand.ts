@@ -27,7 +27,10 @@ export default abstract class UpdateCommand<ResourceType> extends Base {
         const whichFields = await this.chooseFields()
         const prompts = this.prompts.filter((prompt) => whichFields.includes(prompt.name))
 
-        return inquirer.prompt(prompts)
+        return inquirer.prompt(prompts, {
+            token: this.token,
+            projectKey: this.projectKey
+        })
     }
 
     private async chooseFields():Promise<string[]> {
