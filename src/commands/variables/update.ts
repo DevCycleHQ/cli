@@ -6,6 +6,7 @@ import {
 import { showResults } from '../../ui/output'
 import {
     descriptionPrompt,
+    featurePrompt,
     namePrompt,
     variablePrompt
 } from '../../ui/prompts'
@@ -17,7 +18,8 @@ export default class UpdateVariable extends UpdateCommand<CreateVariableParams> 
 
     prompts = [
         namePrompt,
-        descriptionPrompt
+        descriptionPrompt,
+        featurePrompt
     ]
 
     public async run(): Promise<void> {
