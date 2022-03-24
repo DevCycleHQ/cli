@@ -9,13 +9,11 @@ import { reportValidationErrors } from '../utils/reportValidationErrors'
 type SupportedFlags = {
     'client-id'?: string
     'client-secret'?: string
-    'auth-path'?: string
 }
 
-export async function getToken(flags: SupportedFlags): Promise<string> {
+export async function getToken(authPath:string, flags: SupportedFlags): Promise<string> {
     const client_id = flags['client-id'] || process.env.DVC_CLIENT_ID
     const client_secret = flags['client-secret'] || process.env.DVC_CLIENT_SECRET
-    const authPath = flags['auth-path']
 
     if (client_id && client_secret) {
         return clientCredentialsAuth(client_id, client_secret)
