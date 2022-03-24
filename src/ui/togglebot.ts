@@ -31,3 +31,18 @@ export const togglebotWink = chalk.blue(`
                              
          \`-.___.-\`
 `)
+
+export const togglebotSleep = chalk.blue(`
+            _~_   Z
+           (   )    Z
+            |||  Z
+  ,.~-------+-+-------~.,
+ /                       \\
+!                         !
+|     _____     _____     |
+!                         !
+ \\                       /
+  "-.,_______________,.-"
+                             
+         \`-.___.-\`
+`)
