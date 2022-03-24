@@ -14,10 +14,9 @@ export default class Login extends Base {
     static examples = []
 
     public async run(): Promise<void> {
-        const { flags } = await this.parse(Login)
         const ssoAuth = new SSOAuth()
         let token = await ssoAuth.getAccessToken()
-        storeAccessToken(token, flags['auth-path'])
+        storeAccessToken(token, this.authPath)
 
         const organizations = await fetchOrganizations(token)
         if (organizations.length > 0) {
@@ -36,10 +35,9 @@ export default class Login extends Base {
     }
 
     private async selectOrganization(organization: Organization) {
-        const { flags } = await this.parse(Login)
         const ssoAuth = new SSOAuth()
         const token = await ssoAuth.getAccessToken(organization)
-        storeAccessToken(token, flags['auth-path'])
+        storeAccessToken(token, this.authPath)
         return token
     }
 }
