@@ -28,10 +28,9 @@ export default class SelectOrganization extends Base {
     }
 
     private async selectOrganization(organization:Organization) {
-        const { flags } = await this.parse(SelectOrganization)
         const ssoAuth = new SSOAuth()
         const token = await ssoAuth.getAccessToken(organization)
-        storeAccessToken(token, flags['auth-path'])
+        storeAccessToken(token, this.authPath)
         return token
     }
 }

@@ -18,12 +18,10 @@ export default abstract class Base extends Command {
     static flags = {
         'config-path': Flags.string({
             description: 'Override the default location to look for a config.yml file',
-            default: '.devcycle/config.yml',
             helpGroup: 'Global'
         }),
         'auth-path': Flags.string({
             description: 'Override the default location to look for an auth.yml file',
-            default: '.devcycle/auth.yml',
             helpGroup: 'Global'
         }),
         'client-id': Flags.string({
@@ -47,6 +45,8 @@ export default abstract class Base extends Command {
 
     token = ''
     projectKey = ''
+    authPath = path.join(this.config.configDir, 'auth.yml')
+    configPath = path.join(this.config.configDir, 'config.yml')
 
     // Override to true in commands that must be authorized in order to function
     authRequired = false
@@ -58,7 +58,7 @@ export default abstract class Base extends Command {
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
 
-        this.token = await getToken(flags)
+        this.token = await getToken(this.authPath, flags)
         if (!this.hasToken()) {
             if (this.authRequired) {
                 throw new Error('Authorization is required to use this command.')
@@ -86,12 +86,9 @@ export default abstract class Base extends Command {
     async updateConfig(
         changes: Partial<ConfigFromFile>
     ): Promise<ConfigFromFile | null> {
-        const { flags } = await this.parse(this.constructor as typeof Base)
-        const configPath = flags['config-path']
-
-        let config = this.loadConfig(configPath)
+        let config = this.loadConfig(this.configPath)
         if (!config) {
-            const configDir = path.dirname(configPath)
+            const configDir = path.dirname(this.configPath)
             fs.mkdirSync(configDir, { recursive: true })
             config = new ConfigFromFile()
         }
@@ -101,14 +98,23 @@ export default abstract class Base extends Command {
             ...changes
         }
 
-        fs.writeFileSync(configPath, jsYaml.dump(config))
+        fs.writeFileSync(this.configPath, jsYaml.dump(config))
 
         return config
     }
 
     async init(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
-        this.configFromFile = this.loadConfig(flags['config-path'])
+
+        if (flags['auth-path']) {
+            this.authPath = flags['auth-path']
+        }
+
+        if (flags['config-path']) {
+            this.configPath = flags['config-path']
+        }
+
+        this.configFromFile = this.loadConfig(this.configPath)
         this.projectKey = flags['project']
             || process.env.DVC_PROJECT_KEY
             || this.configFromFile?.project
