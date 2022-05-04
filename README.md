@@ -128,6 +128,4 @@ project: my-project
 ```
 
 #Development
-To test local development changes, run `yarn build`. This will build the library locally into the `dist` directory. Once that is done, you can run commands from the `bin` directory.
-
-e.g. `bin/run diff origin/main...`
+To test local changes, run `yarn build`
