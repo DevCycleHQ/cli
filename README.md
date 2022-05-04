@@ -14,6 +14,7 @@ The CLI can be customized in several ways using command-line args or by creating
 * [Authentication](#authentication)
 * [Usage](#usage)
 * [Commands](#commands)
+* [Command Topics](#command-topics)
 * [Configuration](#configuration)
 <!-- tocstop -->
 # Setup
@@ -68,7 +69,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/3.0.1 darwin-x64 node-v16.14.0
+@devcycle/cli/3.0.1 darwin-x64 node-v16.13.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -77,319 +78,18 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`dvc diff [DIFF-PATTERN]`](#dvc-diff-diff-pattern)
-* [`dvc features get`](#dvc-features-get)
-* [`dvc features list`](#dvc-features-list)
-* [`dvc help [COMMAND]`](#dvc-help-command)
-* [`dvc login sso`](#dvc-login-sso)
-* [`dvc org`](#dvc-org)
-* [`dvc projects select`](#dvc-projects-select)
-* [`dvc usages`](#dvc-usages)
-* [`dvc variables create`](#dvc-variables-create)
-* [`dvc variables get`](#dvc-variables-get)
-* [`dvc variables list`](#dvc-variables-list)
-* [`dvc variables update`](#dvc-variables-update)
+# Command Topics
+
+* [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
+* [`dvc features`](docs/features.md) - Access or modify Features with the Management API
+* [`dvc help`](docs/help.md) - Display help for dvc.
+* [`dvc login`](docs/login.md) - Log in to DevCycle
+* [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
+* [`dvc org`](docs/org.md) - Switch organizations
+* [`dvc projects`](docs/projects.md) - Access Projects with the Management API
+* [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
+* [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API
 
-## `dvc diff [DIFF-PATTERN]`
-
-Print a diff of DevCycle variable usage between two versions of your code.
-
-```
-USAGE
-  $ dvc diff [DIFF-PATTERN] [--config-path <value>] [--auth-path <value>] [--client-id <value>]
-    [--client-secret <value>] [--project <value>] [--no-api] [-f <value>] [--client-name <value>] [--match-pattern
-    <value>] [--var-alias <value>] [--format console|markdown] [--show-regex]
-
-ARGUMENTS
-  DIFF-PATTERN  A "git diff"-compatible diff pattern, eg. "branch1 branch2"
-
-FLAGS
-  -f, --file=<value>          File path of existing diff file to inspect.
-  --client-name=<value>...    Name(s) of the DevCycle client variable to match on. Accepts multiple values.
-  --format=<option>           [default: console] Format to use when outputting the diff results.
-                              <options: console|markdown>
-  --match-pattern=<value>...  Additional full Regex pattern to use to match variable usages in your code. Should contain
-                              exactly one capture group which matches on the key of the variable. Must specify the file
-                              extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"
-  --show-regex                Output the regex pattern used to find variable usage
-  --var-alias=<value>...      Aliases to use when identifying variables in your code. Should contain a code reference
-                              mapped to a DevCycle variable key, eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-
-DESCRIPTION
-  Print a diff of DevCycle variable usage between two versions of your code.
-
-EXAMPLES
-  $ dvc diff
-
-  $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
-```
-
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/diff/index.ts)_
-
-## `dvc features get`
-
-Retrieve Features from the management API
-
-```
-USAGE
-  $ dvc features get [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api] [--keys <value>]
-
-FLAGS
-  --keys=<value>  Comma-separated list of feature keys to fetch details for
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-
-DESCRIPTION
-  Retrieve Features from the management API
-
-EXAMPLES
-  $ dvc features get
-
-  $ dvc features get --keys=feature-one,feature-two
-```
-
-## `dvc features list`
-
-```
-USAGE
-  $ dvc features list [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api]
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-```
-
-## `dvc help [COMMAND]`
-
-Display help for dvc.
-
-```
-USAGE
-  $ dvc help [COMMAND] [-n]
-
-ARGUMENTS
-  COMMAND  Command to show help for.
-
-FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
-
-DESCRIPTION
-  Display help for dvc.
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
-
-## `dvc login sso`
-
-Log in through the DevCycle Universal Login. This will open a browser window
-
-```
-USAGE
-  $ dvc login sso [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api]
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-
-DESCRIPTION
-  Log in through the DevCycle Universal Login. This will open a browser window
-```
-
-## `dvc org`
-
-Select which organization to access through the API
-
-```
-USAGE
-  $ dvc org [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api]
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-
-DESCRIPTION
-  Select which organization to access through the API
-```
-
-_See code: [dist/commands/org/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/org/index.ts)_
-
-## `dvc projects select`
-
-```
-USAGE
-  $ dvc projects select [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api]
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-```
-
-## `dvc usages`
-
-Print all DevCycle variable usages in the current version of your code.
-
-```
-USAGE
-  $ dvc usages [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api] [--include <value>] [--exclude <value>] [--client-name <value>] [--match-pattern
-    <value>] [--var-alias <value>] [--format console|json] [--show-regex]
-
-FLAGS
-  --client-name=<value>...    Name(s) of the DevCycle client variable to match on. Accepts multiple values.
-  --exclude=<value>...        Files to exclude when scanning for usages. By default all files are included. Accepts
-                              multiple glob patterns.
-  --format=<option>           [default: console] Format to use when outputting the usage results.
-                              <options: console|json>
-  --include=<value>...        Files to include when scanning for usages. By default all files are included. Accepts
-                              multiple glob patterns.
-  --match-pattern=<value>...  Additional full Regex pattern to use to match variable usages in your code. Should contain
-                              exactly one capture group which matches on the key of the variable. Must specify the file
-                              extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"
-  --show-regex                Output the regex pattern used to find variable usage
-  --var-alias=<value>...      Aliases to use when identifying variables in your code. Should contain a code reference
-                              mapped to a DevCycle variable key, eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-
-DESCRIPTION
-  Print all DevCycle variable usages in the current version of your code.
-
-EXAMPLES
-  $ dvc usages
-
-  $ dvc usages --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
-```
-
-_See code: [dist/commands/usages/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/usages/index.ts)_
-
-## `dvc variables create`
-
-Create a new Variable for an existing Feature.
-
-```
-USAGE
-  $ dvc variables create [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api]
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-
-DESCRIPTION
-  Create a new Variable for an existing Feature.
-```
-
-## `dvc variables get`
-
-```
-USAGE
-  $ dvc variables get [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api] [--keys <value>]
-
-FLAGS
-  --keys=<value>  Comma-separated list of variable keys to fetch details for
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-```
-
-## `dvc variables list`
-
-```
-USAGE
-  $ dvc variables list [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api]
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-```
-
-## `dvc variables update`
-
-Update a Variable.
-
-```
-USAGE
-  $ dvc variables update [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
-    [--project <value>] [--no-api]
-
-GLOBAL FLAGS
-  --auth-path=<value>      [default: .devcycle/auth.yml] Override the default location to look for an auth.yml file
-  --client-id=<value>      Client ID to use for DevCycle API Authorization
-  --client-secret=<value>  Client Secret to use for DevCycle API Authorization
-  --config-path=<value>    [default: .devcycle/config.yml] Override the default location to look for a config.yml file
-  --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
-                           warnings about missing credentials.
-  --project=<value>        Project key to use for the DevCycle API requests
-
-DESCRIPTION
-  Update a Variable.
-```
 <!-- commandsstop -->
 # Configuration
 Many of the options available as command-line args can also be specified using a configuration file. The default
@@ -426,3 +126,8 @@ codeInsights:
 ## the default project key to use for commands that interact with the DevCycle API.
 project: my-project
 ```
+
+#Development
+To test local development changes, run `yarn build`. This will build the library locally into the `dist` directory. Once that is done, you can run commands from the `bin` directory.
+
+e.g. `bin/run diff origin/main...`
