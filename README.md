@@ -453,4 +453,5 @@ project: my-project
 ```
 
 #Development
-To test local changes, run `yarn build`
+To test local changes, run `yarn build`. From there, you can run commands from the `bin` folder.
+e.g. `bin/run diff origin/main...`
