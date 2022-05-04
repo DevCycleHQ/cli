@@ -1,15 +1,17 @@
-`dvc projects`
-==============
+`dvc logout`
+============
 
-Access Projects with the Management API
+Discards any auth configuration that has been stored in the auth configuration file.
 
-* [`dvc projects select`](#dvc-projects-select)
+* [`dvc logout`](#dvc-logout)
 
-## `dvc projects select`
+## `dvc logout`
+
+Discards any auth configuration that has been stored in the auth configuration file.
 
 ```
 USAGE
-  $ dvc projects select [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
+  $ dvc logout [--config-path <value>] [--auth-path <value>] [--client-id <value>] [--client-secret <value>]
     [--project <value>] [--no-api]
 
 GLOBAL FLAGS
@@ -20,4 +22,9 @@ GLOBAL FLAGS
   --no-api                 Disable API-based enhancements for commands where authorization is optional. Suppresses
                            warnings about missing credentials.
   --project=<value>        Project key to use for the DevCycle API requests
+
+DESCRIPTION
+  Discards any auth configuration that has been stored in the auth configuration file.
 ```
+
+_See code: [dist/commands/logout/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/logout/index.ts)_
