@@ -27,4 +27,4 @@ DESCRIPTION
   Discards any auth configuration that has been stored in the auth configuration file.
 ```
 
-_See code: [dist/commands/logout/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/logout/index.ts)_
+_See code: [dist/commands/logout/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.3/dist/commands/logout/index.ts)_
