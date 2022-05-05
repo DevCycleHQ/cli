@@ -68,7 +68,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/3.0.1 darwin-x64 node-v16.13.0
+@devcycle/cli/3.0.3 darwin-x64 node-v16.13.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -134,7 +134,7 @@ EXAMPLES
   $ dvc diff --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/diff/index.ts)_
+_See code: [dist/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.3/dist/commands/diff/index.ts)_
 
 ## `dvc features get`
 
@@ -247,7 +247,7 @@ DESCRIPTION
   Discards any auth configuration that has been stored in the auth configuration file.
 ```
 
-_See code: [dist/commands/logout/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/logout/index.ts)_
+_See code: [dist/commands/logout/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.3/dist/commands/logout/index.ts)_
 
 ## `dvc org`
 
@@ -271,7 +271,7 @@ DESCRIPTION
   Select which organization to access through the API
 ```
 
-_See code: [dist/commands/org/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/org/index.ts)_
+_See code: [dist/commands/org/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.3/dist/commands/org/index.ts)_
 
 ## `dvc projects select`
 
@@ -333,7 +333,7 @@ EXAMPLES
   $ dvc usages --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [dist/commands/usages/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.1/dist/commands/usages/index.ts)_
+_See code: [dist/commands/usages/index.ts](https://github.com/DevCycleHQ/cli/blob/v3.0.3/dist/commands/usages/index.ts)_
 
 ## `dvc variables create`
 
