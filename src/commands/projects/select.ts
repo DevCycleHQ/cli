@@ -9,6 +9,6 @@ export default class ListVariables extends Base {
     public async run(): Promise<void> {
         const projects = await fetchProjects(this.token)
         const selected = await promptForProject(projects)
-        await this.updateConfig({ project:selected.key })
+        await this.updateUserConfig({ project:selected.key })
     }
 }

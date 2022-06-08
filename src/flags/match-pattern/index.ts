@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core'
-import { ConfigFromFile } from '../../types'
+import { RepoConfigFromFile } from '../../types'
 
 export default Flags.string({
     description: 'Additional full Regex pattern to use to match variable usages in your code.' +
@@ -8,7 +8,7 @@ export default Flags.string({
     multiple: true
 })
 
-export function getMatchPatterns(flags: Record<string, any>, config: ConfigFromFile | null) {
+export function getMatchPatterns(flags: Record<string, any>, config: RepoConfigFromFile | null) {
     const matchPatternsFromConfig = config?.codeInsights?.matchPatterns || {}
 
     return (flags['match-pattern'] || []).reduce((map: Record<string, string>, value: string) => {
