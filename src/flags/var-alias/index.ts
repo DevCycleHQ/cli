@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core'
-import { ConfigFromFile } from '../../types'
+import { RepoConfigFromFile } from '../../types'
 
 export default Flags.string({
     description: 'Aliases to use when identifying variables in your code.' +
@@ -8,7 +8,7 @@ export default Flags.string({
     multiple: true
 })
 
-export function getVariableAliases(flags: Record<string, any>, config: ConfigFromFile | null) {
+export function getVariableAliases(flags: Record<string, any>, config: RepoConfigFromFile | null) {
     const variableAliasesFromConfig = config?.codeInsights?.variableAliases || {}
 
     return (flags['var-alias'] || []).reduce((map: Record<string, string>, value: string) => {

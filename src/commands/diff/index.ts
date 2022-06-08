@@ -44,6 +44,7 @@ type MatchesByTypeEnriched = {
 export default class Diff extends Base {
     static hidden = false
     authSuggested = true
+    runsInRepo = true
 
     static description = 'Print a diff of DevCycle variable usage between two versions of your code.'
     static examples = [
@@ -88,12 +89,12 @@ export default class Diff extends Base {
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
         const matchesBySdk = parseFiles(parsedDiff, {
-            clientNames: getClientNames(flags, this.configFromFile),
-            matchPatterns: getMatchPatterns(flags, this.configFromFile),
+            clientNames: getClientNames(flags, this.repoConfig),
+            matchPatterns: getMatchPatterns(flags, this.repoConfig),
             printPatterns: showRegex(flags)
         })
 
-        const variableAliases = getVariableAliases(flags, this.configFromFile)
+        const variableAliases = getVariableAliases(flags, this.repoConfig)
 
         const matchesByType = this.getMatchesByType(matchesBySdk, variableAliases)
 

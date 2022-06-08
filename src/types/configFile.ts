@@ -88,15 +88,21 @@ class CodeInsights {
     excludeFiles?: string[]
 }
 
-export class ConfigFromFile {
+export class UserConfigFromFile {
+    @IsString()
+    @IsOptional()
+    project?: string
+}
+
+export class RepoConfigFromFile {
+    @IsString()
+    @IsOptional()
+    project?: string
+    
     @Type(() => CodeInsights)
     @IsOptional()
     @ValidateNested()
     codeInsights?: CodeInsights
-
-    @IsString()
-    @IsOptional()
-    project?: string
 }
 
 export class AuthFromFile {

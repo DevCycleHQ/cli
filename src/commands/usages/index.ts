@@ -13,6 +13,7 @@ import { VariableMatch, VariableUsageMatch } from '../../utils/parsers/types'
 
 export default class Usages extends Base {
     static hidden = false
+    runsInRepo = true
 
     static description = 'Print all DevCycle variable usages in the current version of your code.'
     static examples = [
@@ -48,7 +49,7 @@ export default class Usages extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(Usages)
-        const codeInsightsConfig = this.configFromFile?.codeInsights || {}
+        const codeInsightsConfig = this.repoConfig?.codeInsights || {}
 
         this.useMarkdown = flags.format === 'markdown'
 
@@ -93,12 +94,12 @@ export default class Usages extends Base {
         }
 
         const matchesBySdk = parseFiles(files, {
-            clientNames: getClientNames(flags, this.configFromFile),
-            matchPatterns: getMatchPatterns(flags, this.configFromFile),
+            clientNames: getClientNames(flags, this.repoConfig),
+            matchPatterns: getMatchPatterns(flags, this.repoConfig),
             printPatterns: showRegex(flags)
         })
 
-        const variableAliases = getVariableAliases(flags, this.configFromFile)
+        const variableAliases = getVariableAliases(flags, this.repoConfig)
         
         const matchesByVariable = this.getMatchesByVariable(matchesBySdk, variableAliases)
         

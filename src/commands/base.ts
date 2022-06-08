@@ -4,7 +4,7 @@ import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import jsYaml from 'js-yaml'
-import { ConfigFromFile } from '../types'
+import { RepoConfigFromFile, UserConfigFromFile } from '../types'
 import { plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
 import { reportValidationErrors } from '../utils/reportValidationErrors'
@@ -12,16 +12,21 @@ import { getToken } from '../auth/getToken'
 import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
+import { successMessage } from '../ui/output'
 
 export default abstract class Base extends Command {
     static hidden = true
     static flags = {
         'config-path': Flags.string({
-            description: 'Override the default location to look for a config.yml file',
+            description: 'Override the default location to look for the user.yml file',
             helpGroup: 'Global'
         }),
         'auth-path': Flags.string({
             description: 'Override the default location to look for an auth.yml file',
+            helpGroup: 'Global'
+        }),
+        'repo-config-path': Flags.string({
+            description: 'Override the default location to look for the repo config.yml file',
             helpGroup: 'Global'
         }),
         'client-id': Flags.string({
@@ -46,14 +51,18 @@ export default abstract class Base extends Command {
     token = ''
     projectKey = ''
     authPath = path.join(this.config.configDir, 'auth.yml')
-    configPath = path.join(this.config.configDir, 'config.yml')
+    configPath = path.join(this.config.configDir, 'user.yml')
+    repoConfigPath = '.devcycle/config.yml'
 
     // Override to true in commands that must be authorized in order to function
     authRequired = false
     // Override to true in commands that have "enhanced" functionality enabled by API access
     authSuggested = false
+    // Override to trye in commands that expect to run in the repo
+    runsInRepo = false
 
-    configFromFile: ConfigFromFile | null
+    userConfig: UserConfigFromFile | null
+    repoConfig: RepoConfigFromFile | null
 
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
@@ -70,27 +79,40 @@ export default abstract class Base extends Command {
         }
     }
 
-    private loadConfig(path: string): ConfigFromFile | null {
+    private loadUserConfig(path: string): UserConfigFromFile | null {
         if (!fs.existsSync(path)) {
             return null
         }
 
         const config = jsYaml.load(fs.readFileSync(path, 'utf8'))
-        const configParsed = plainToClass(ConfigFromFile, config)
+        const configParsed = plainToClass(UserConfigFromFile, config)
         const errors = validateSync(configParsed)
         reportValidationErrors('Config', errors)
 
         return configParsed
     }
 
-    async updateConfig(
-        changes: Partial<ConfigFromFile>
-    ): Promise<ConfigFromFile | null> {
-        let config = this.loadConfig(this.configPath)
+    private loadRepoConfig(path: string): RepoConfigFromFile | null {
+        if (!fs.existsSync(path)) {
+            return null
+        }
+
+        const config = jsYaml.load(fs.readFileSync(path, 'utf8'))
+        const configParsed = plainToClass(RepoConfigFromFile, config)
+        const errors = validateSync(configParsed)
+        reportValidationErrors('Config', errors)
+
+        return configParsed
+    }
+
+    async updateUserConfig(
+        changes: Partial<UserConfigFromFile>
+    ): Promise<UserConfigFromFile | null> {
+        let config = this.loadUserConfig(this.configPath)
         if (!config) {
             const configDir = path.dirname(this.configPath)
             fs.mkdirSync(configDir, { recursive: true })
-            config = new ConfigFromFile()
+            config = new UserConfigFromFile()
         }
 
         config = {
@@ -99,6 +121,7 @@ export default abstract class Base extends Command {
         }
 
         fs.writeFileSync(this.configPath, jsYaml.dump(config))
+        successMessage(`Configuration saved to ${this.configPath}`)
 
         return config
     }
@@ -114,10 +137,16 @@ export default abstract class Base extends Command {
             this.configPath = flags['config-path']
         }
 
-        this.configFromFile = this.loadConfig(this.configPath)
+        if (flags['repo-config-path']) {
+            this.repoConfigPath = flags['repo-config-path']
+        }
+
+        this.userConfig = this.loadUserConfig(this.configPath)
+        this.repoConfig = this.loadRepoConfig(this.repoConfigPath)
         this.projectKey = flags['project']
             || process.env.DVC_PROJECT_KEY
-            || this.configFromFile?.project
+            || this.runsInRepo && this.repoConfig?.project
+            || this.userConfig?.project
             || ''
         await this.authorizeApi()
     }
@@ -135,7 +164,7 @@ export default abstract class Base extends Command {
             type: 'confirm'
         }])
         if (shouldSave) {
-            await this.updateConfig({ project: this.projectKey })
+            await this.updateUserConfig({ project: this.projectKey })
         }
     }
 

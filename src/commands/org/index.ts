@@ -24,7 +24,7 @@ export default class SelectOrganization extends Base {
 
         const projects = await fetchProjects(token)
         const selectedProject = await promptForProject(projects)
-        await this.updateConfig({ project:selectedProject.key })
+        await this.updateUserConfig({ project:selectedProject.key })
     }
 
     private async selectOrganization(organization:Organization) {
