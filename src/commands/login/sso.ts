@@ -26,7 +26,7 @@ export default class Login extends Base {
 
         const projects = await fetchProjects(token)
         const selectedProject = await promptForProject(projects)
-        await this.updateConfig({ project: selectedProject.key })
+        await this.updateUserConfig({ project: selectedProject.key })
 
         console.log('')
         successMessage('Successfully logged in to DevCycle')

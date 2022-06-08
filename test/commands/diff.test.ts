@@ -213,7 +213,7 @@ describe('diff', () => {
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/e2e',
-            '--config-path', './test/commands/fixtures/customMatcherConfig.yml', '--no-api'])
+            '--repo-config-path', './test/commands/fixtures/customMatcherConfig.yml', '--no-api'])
         .it('runs against a test file with a custom matcher specified in a config file',
             (ctx) => {
                 expect(ctx.stdout).to.equal(customExpected)
@@ -312,7 +312,7 @@ describe('diff', () => {
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/aliases/aliased', '--no-api',
-            '--config-path', './test/commands/fixtures/variableAliasConfig.yml'
+            '--repo-config-path', './test/commands/fixtures/variableAliasConfig.yml'
         ])
         .it('identifies aliased variables specified in config file',
             (ctx) => {
