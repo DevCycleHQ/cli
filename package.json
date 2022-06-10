@@ -78,6 +78,9 @@
       },
       "org": {
         "description": "Switch organizations"
+      },
+      "status": {
+        "description": "Check CLI status"
       }
     }
   },
