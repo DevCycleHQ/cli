@@ -26,14 +26,14 @@ $ npm install -g @devcycle/cli
 Many of the CLI commands require DevCycle API authorization. There are several ways to provide these credentials.
 ## Using Access Tokens
 ### Login Command (preferred)
-By using the [login sso command](docs/login.md#dvc-login-sso), the CLI will retrieve and store an access token, which is valid for 24 hours.
+By using the [`login sso` command](docs/login.md#dvc-login-sso), the CLI will retrieve and store an access token, which is valid for 24 hours.
 
 This process will open browser windows to interact with the DevCycle universal login page. It will first obtain a personal access token, then prompt you to choose an organization. A second browser window is used to authenticate the CLI with your chosen organization.
 
 To switch organizations once logged in, the [org command](docs/org.md) can be used.
 ## Using Client Credentials
-### Credentials File
-Check the [oclif docs](https://oclif.io/docs/config) to find where the default `configDir` is located. Within that directory, create a `devcycle` directory, if it does not already exist. Inside of the `devcycle` directory, create an `auth.yml` file with the following contents:
+### Client Credentials in Auth File
+Use the [`dvc status` command](docs/status.md#dvc-status) to find the configuration file location for your platform. The credentials can be stored in the file pointed to by the Auth config path. Create the file if it does not exist, with the following contents.
 
 ```yaml
 clientCredentials:
@@ -41,6 +41,10 @@ clientCredentials:
   client_secret: <your client secret>
 ```
 This file should **not** be checked in to version control.
+
+The default location is based on the [oclif configDir](https://oclif.io/docs/config)
+
+If you intend to run the CLI using options that override config file locations, the [`dvc status` command](docs/status.md#dvc-status) command can be run with those options to confirm that the file locations are as expected.
 ## Project Selection
 
 You also need to specify the default project ID for the CLI to use.
@@ -88,6 +92,7 @@ USAGE
 * [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
 * [`dvc org`](docs/org.md) - Switch organizations
 * [`dvc projects`](docs/projects.md) - Access Projects with the Management API
+* [`dvc status`](docs/status.md) - Check CLI status
 * [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
 * [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API
 
