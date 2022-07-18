@@ -19,7 +19,7 @@ export default class Usages extends Base {
     static examples = [
         '<%= config.bin %> <%= command.id %>',
         '<%= config.bin %> <%= command.id %> ' +
-        '--match-pattern javascript="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
+        '--match-pattern js="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
     ]
 
     static flags = {
