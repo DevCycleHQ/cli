@@ -1,14 +1,10 @@
-import { fetchProjects } from '../../api/projects'
-import { promptForProject } from '../../ui/promptForProject'
-
-import Base from '../base'
-export default class ListVariables extends Base {
+import AuthCommand from '../authCommand'
+export default class SelectProject extends AuthCommand {
+    static description = 'Select which project to access through the API'
     static hidden = false
     authRequired = true
 
     public async run(): Promise<void> {
-        const projects = await fetchProjects(this.token)
-        const selected = await promptForProject(projects)
-        await this.updateUserConfig({ project:selected.key })
+        await this.setProject()
     }
 }

@@ -2,7 +2,6 @@ import {
     createVariable,
     CreateVariableParams
 } from '../../api/variables'
-import { showResults } from '../../ui/output'
 import {
     descriptionPrompt,
     keyPrompt,
@@ -28,6 +27,6 @@ export default class CreateVariable extends CreateCommand<CreateVariableParams> 
         await this.requireProject()
         const params = await this.populateParameters(CreateVariableParams)
         const result = await createVariable(this.token, this.projectKey, params)
-        showResults(result)
+        this.writer.showResults(result)
     }
 }

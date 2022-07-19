@@ -1,6 +1,5 @@
 import { Flags } from '@oclif/core'
 import { fetchVariables } from '../../api/variables'
-import { showResults } from '../../ui/output'
 import Base from '../base'
 
 export default class DetailedVariables extends Base {
@@ -23,6 +22,6 @@ export default class DetailedVariables extends Base {
         if (keys) {
             variables = variables.filter((variable) => keys.includes(variable.key))
         }
-        showResults(variables)
+        this.writer.showResults(variables)
     }
 }
