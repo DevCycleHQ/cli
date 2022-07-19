@@ -35,20 +35,31 @@ type OauthParams = {
 export default class SSOAuth {
     private organization: Organization|null
     private server: http.Server
+    private done: boolean
     private codeVerifier: string
     private accessToken: string|null|undefined
 
     public async getAccessToken(organization:Organization|null = null): Promise<string> {
         this.organization = organization
         this.startLocalServer()
+        await this.waitForServerClosed()
         return this.waitForToken()
+    }
+
+    private async waitForServerClosed():Promise<void> {
+        if (this.done) {
+            return
+        } else {
+            await new Promise((resolve) => setTimeout(resolve, 100))
+            return this.waitForServerClosed()
+        }
     }
 
     private async waitForToken():Promise<string> {
         if (this.accessToken) {
             return this.accessToken
         } else {
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            await new Promise((resolve) => setTimeout(resolve, 100))
             return this.waitForToken()
         }
     }
@@ -64,12 +75,20 @@ export default class SSOAuth {
         const authorizeUrl = this.buildAuthorizeUrl()
 
         this.server = http.createServer(this.handleAuthRedirect.bind(this))
+        this.server.on('error', function(e) {
+            console.error(`Local server error ${e}`)
+        })
         // prevents keep-alive connections from keeping the server running after close()
         this.server.on('connection', function(socket) { socket.unref() })
         this.server.listen(PORT, host, () => {
             console.log('Opening browser for authentication...')
             cli.open(authorizeUrl)
         })
+        this.server.on('close', this.handleServerClosed.bind(this))
+    }
+
+    private handleServerClosed() {
+        this.done = true
     }
 
     private handleAuthRedirect(req: IncomingMessage, res: ServerResponse) {
