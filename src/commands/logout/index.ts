@@ -1,5 +1,4 @@
 import fs from 'fs'
-import { togglebotSleep } from '../../ui/togglebot'
 import Base from '../base'
 
 export default class Logout extends Base {
@@ -11,6 +10,6 @@ export default class Logout extends Base {
         if (fs.existsSync(this.authPath)) {
             fs.rmSync(this.authPath)
         }
-        console.log(togglebotSleep) 
+        this.writer.showTogglebotSleep()
     }
 }

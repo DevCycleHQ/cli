@@ -12,7 +12,7 @@ import { getToken } from '../auth/getToken'
 import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
-import { successMessage } from '../ui/output'
+import Writer from '../ui/writer'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -45,7 +45,11 @@ export default abstract class Base extends Command {
             description: 'Disable API-based enhancements for commands where authorization is optional. Suppresses ' +
                 'warnings about missing credentials.',
             helpGroup: 'Global'
-        })
+        }),
+        'headless': Flags.boolean({
+            description: 'Disable all interactive flows and format output for easy parsing.',
+            helpGroup: 'Global'
+        }),
     }
 
     token = ''
@@ -63,6 +67,7 @@ export default abstract class Base extends Command {
 
     userConfig: UserConfigFromFile | null
     repoConfig: RepoConfigFromFile | null
+    writer: Writer = new Writer()
 
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
@@ -121,13 +126,14 @@ export default abstract class Base extends Command {
         }
 
         fs.writeFileSync(this.configPath, jsYaml.dump(config))
-        successMessage(`Configuration saved to ${this.configPath}`)
+        this.writer.successMessage(`Configuration saved to ${this.configPath}`)
 
         return config
     }
 
     async init(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
+        this.writer.headless = flags.headless
 
         if (flags['auth-path']) {
             this.authPath = flags['auth-path']

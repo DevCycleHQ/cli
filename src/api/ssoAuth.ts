@@ -5,7 +5,7 @@ import url, { URL } from 'url'
 import { cli } from 'cli-ux'
 import axios from 'axios'
 import { Organization } from './organizations'
-import { successMessage } from '../ui/output'
+import Writer from '../ui/writer'
 
 const CLI_CLIENT_ID='Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
 
@@ -38,6 +38,11 @@ export default class SSOAuth {
     private done: boolean
     private codeVerifier: string
     private accessToken: string|null|undefined
+    private writer:Writer
+
+    constructor(writer:Writer) {
+        this.writer = writer
+    }
 
     public async getAccessToken(organization:Organization|null = null): Promise<string> {
         this.organization = organization
@@ -81,7 +86,7 @@ export default class SSOAuth {
         // prevents keep-alive connections from keeping the server running after close()
         this.server.on('connection', function(socket) { socket.unref() })
         this.server.listen(PORT, host, () => {
-            console.log('Opening browser for authentication...')
+            this.writer.statusMessage('Opening browser for authentication...')
             cli.open(authorizeUrl)
         })
         this.server.on('close', this.handleServerClosed.bind(this))
@@ -136,9 +141,9 @@ export default class SSOAuth {
         this.server.close()
         this.accessToken = response?.data.access_token
         if (this.organization) {
-            successMessage(`Access token retrieved for "${this.organization.display_name}" organization`)
+            this.writer.successMessage(`Access token retrieved for "${this.organization.display_name}" organization`)
         } else {
-            successMessage('Personal access token retrieved')
+            this.writer.successMessage('Personal access token retrieved')
         }
     }
 

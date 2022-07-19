@@ -3,7 +3,6 @@ import {
     updateVariable,
     CreateVariableParams
 } from '../../api/variables'
-import { showResults } from '../../ui/output'
 import {
     descriptionPrompt,
     featurePrompt,
@@ -29,10 +28,10 @@ export default class UpdateVariable extends UpdateCommand<CreateVariableParams> 
             projectKey: this.projectKey
         })
 
-        console.log('')
-        console.log('Current values:')
-        console.log(JSON.stringify(variable, null, 2))
-        console.log('')
+        this.writer.blankLine()
+        this.writer.statusMessage('Current values:')
+        this.writer.statusMessage(JSON.stringify(variable, null, 2))
+        this.writer.blankLine()
 
         const params = await this.populateParameters(CreateVariableParams)
         const result = await updateVariable(
@@ -41,6 +40,6 @@ export default class UpdateVariable extends UpdateCommand<CreateVariableParams> 
             variable.key,
             params
         )
-        showResults(result)
+        this.writer.showResults(result)
     }
 }
