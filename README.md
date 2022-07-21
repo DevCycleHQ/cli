@@ -74,7 +74,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/4.0.0 darwin-x64 node-v16.13.0
+@devcycle/cli/4.0.0 darwin-x64 node-v16.15.1
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -85,6 +85,7 @@ USAGE
 <!-- commands -->
 # Command Topics
 
+* [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code.
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
 * [`dvc features`](docs/features.md) - Access or modify Features with the Management API
 * [`dvc help`](docs/help.md) - Display help for dvc.
