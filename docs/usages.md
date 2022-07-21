@@ -46,7 +46,7 @@ DESCRIPTION
 EXAMPLES
   $ dvc usages
 
-  $ dvc usages --match-pattern javascript="dvcClient\.variable\(\s*["']([^"']*)["']"
+  $ dvc usages --match-pattern js="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
 _See code: [dist/commands/usages/index.ts](https://github.com/DevCycleHQ/cli/blob/v4.0.0/dist/commands/usages/index.ts)_

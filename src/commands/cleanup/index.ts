@@ -1,0 +1,103 @@
+import minimatch from 'minimatch'
+import { Flags } from '@oclif/core'
+import { lsFiles } from '../../utils/git/ls-files'
+import Base from '../base'
+import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
+import { RefactorEngine, EngineOptions } from '../../utils/refactor/RefactorEngine'
+import { Variable } from './types'
+
+export default class Cleanup extends Base {
+    static hidden = false
+    runsInRepo = true
+
+    static description = 'Replace a DevCycle variable with a static value in the current version of your code.'
+    static examples = [
+        '<%= config.bin %> <%= command.id %> my-variable-key --value true --type Boolean',
+        '<%= config.bin %> <%= command.id %> some-var --value "My Custom Name" --type String',
+    ]
+
+    static args = [
+        {
+            name: 'key',
+            description: 'Key of variable to replace.',
+            required: true
+        }
+    ]
+
+    static flags = {
+        ...Base.flags,
+        'value': Flags.string({
+            description: 'Value to use in place of variable.',
+            required: true
+        }),
+        'type': Flags.string({
+            description: 'The type of the value that will be replacing the variable. ' +
+                'Valid values include: String, Boolean, Number, JSON',
+            options: ['String', 'Boolean', 'Number', 'JSON'],
+            required: true
+        }),
+        'include': Flags.string({
+            description: 'Files to include when scanning for variables to cleanup. ' +
+                'By default all files are included. ' +
+                'Accepts multiple glob patterns.',
+            multiple: true
+        }),
+        'exclude': Flags.string({
+            description: 'Files to exclude when scanning for variables to cleanup. ' +
+                'By default all files are included. ' +
+                'Accepts multiple glob patterns.',
+            multiple: true
+        }),
+        'output': Flags.string({
+            description: 'Where the refactored code will be output. By default it overwrites the source file.',
+            options: ['console', 'file'],
+            default: 'file'
+        }),
+        'var-alias': VarAliasFlag
+    }
+
+    public async run(): Promise<void> {
+        const { flags, args } = await this.parse(Cleanup)
+        const codeInsightsConfig = this.repoConfig?.codeInsights || {}
+
+        const includeFile = (filepath: string) => {
+            const includeGlobs = flags['include'] || codeInsightsConfig.includeFiles
+            return includeGlobs
+                ? includeGlobs.some((glob) => minimatch(filepath, glob, { matchBase: true }))
+                : true
+        }
+
+        const excludeFile = (filepath: string) => {
+            const excludeGlobs = flags['exclude'] || codeInsightsConfig.excludeFiles
+            return excludeGlobs
+                ? excludeGlobs.some((glob) => minimatch(filepath, glob, { matchBase: true }))
+                : false
+        }
+
+        const aliases = new Set()
+        Object.entries(getVariableAliases(flags, this.repoConfig)).forEach(([alias, variableKey]) => {
+            if (variableKey === args.key) aliases.add(alias)
+        })
+
+        const files = lsFiles()
+            .filter((filepath) => includeFile(filepath) && !excludeFile(filepath))
+            .map((filepath) => {
+                const variable = {
+                    key: args.key,
+                    value: flags.value,
+                    type: flags.type
+                } as Variable
+                const options = {
+                    output: flags.output || 'file',
+                    aliases
+                } as EngineOptions
+                const engine = new RefactorEngine(filepath, variable, options)
+                engine.refactor()
+            })
+
+        if (!files.length) {
+            this.warn('No files found to process.')
+            return
+        }
+    }
+}
