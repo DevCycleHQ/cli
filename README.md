@@ -85,7 +85,19 @@ USAGE
 <!-- commands -->
 # Command Topics
 
+* [`dvc alias`](docs/alias.md) - Add a variable alias to the repo configuration
+* [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
+* [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
+* [`dvc features`](docs/features.md) - Access or modify Features with the Management API
 * [`dvc help`](docs/help.md) - Display help for dvc.
+* [`dvc login`](docs/login.md) - Log in to DevCycle
+* [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
+* [`dvc org`](docs/org.md) - Switch organizations
+* [`dvc projects`](docs/projects.md) - Access Projects with the Management API
+* [`dvc repo`](docs/repo.md) - Create the repo configuration file. This will open a browser window.
+* [`dvc status`](docs/status.md) - Check CLI status
+* [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
+* [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API
 
 <!-- commandsstop -->
 # Repo Configuration

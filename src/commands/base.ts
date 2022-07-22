@@ -131,6 +131,27 @@ export default abstract class Base extends Command {
         return config
     }
 
+    async updateRepoConfig(
+        changes: Partial<RepoConfigFromFile>
+    ): Promise<RepoConfigFromFile | null> {
+        let config = this.loadRepoConfig(this.repoConfigPath)
+        if (!config) {
+            const configDir = path.dirname(this.repoConfigPath)
+            fs.mkdirSync(configDir, { recursive: true })
+            config = new RepoConfigFromFile()
+        }
+
+        config = {
+            ...config,
+            ...changes
+        }
+
+        fs.writeFileSync(this.repoConfigPath, jsYaml.dump(config))
+        this.writer.successMessage(`Repo configuration saved to ${this.repoConfigPath}`)
+
+        return config
+    }
+
     async init(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
         this.writer.headless = flags.headless

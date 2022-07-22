@@ -8,6 +8,8 @@ Access Projects with the Management API
 
 ## `dvc projects list`
 
+List the keys of all projects in the current Organization
+
 ```
 USAGE
   $ dvc projects list [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
@@ -23,11 +25,14 @@ GLOBAL FLAGS
                               warnings about missing credentials.
   --project=<value>           Project key to use for the DevCycle API requests
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
+
+DESCRIPTION
+  List the keys of all projects in the current Organization
 ```
 
 ## `dvc projects select`
 
-Select which organization to access through the API
+Select which project to access through the API
 
 ```
 USAGE
@@ -49,5 +54,5 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 
 DESCRIPTION
-  Select which organization to access through the API
+  Select which project to access through the API
 ```
