@@ -35,10 +35,18 @@ export default abstract class AuthCommand extends Base {
             return this.writer.showResults(projects.map((project) => project.key))
         }
         const selectedProject = await this.retrieveProject(projects)
-        await this.updateUserConfig({ project:selectedProject.key })
+        if (this.repoConfig) {
+            await this.updateRepoConfig({ project: selectedProject.key })
+        } else {
+            await this.updateUserConfig({ project: selectedProject.key })
+        }
     }
 
-    private async retrieveProject(projects:Project[]):Promise<Project> {
+    public async retrieveProjectFromConfig(): Promise<string | undefined> {
+        return this.repoConfig?.project || this.userConfig?.project
+    }
+
+    private async retrieveProject(projects: Project[]): Promise<Project> {
         const { flags } = await this.parse(AuthCommand)
         if (flags.project) {
             const matchingProject = projects.find((project) => project.key === flags.project)
@@ -46,13 +54,25 @@ export default abstract class AuthCommand extends Base {
                 throw (new Error(`There is no project with the key ${flags.project} in this organization`))
             }
             return matchingProject
+        } else {
+            const savedProject = await this.retrieveProjectFromConfig()
+            if (savedProject) {
+                const matchingProject = projects.find((project) => project.key === savedProject)
+                if (matchingProject) {
+                    return matchingProject
+                }
+            }
         }
         return promptForProject(projects)
     }
 
-    private async retrieveOrganization(organizations:Organization[]):Promise<Organization> {
+    public async retrieveOrganizationFromConfig(): Promise<Organization | undefined> {
+        return this.repoConfig?.org || this.userConfig?.org
+    }
+
+    private async retrieveOrganization(organizations: Organization[]): Promise<Organization> {
         const { flags } = await this.parse(AuthCommand)
-        
+
         if (organizations.length === 0) {
             throw (new Error('You are not a member of any organizations'))
         }
@@ -67,10 +87,14 @@ export default abstract class AuthCommand extends Base {
         }
     }
 
-    private async selectOrganization(organization:Organization):Promise<string> {
+    async selectOrganization(organization: Organization):Promise<string> {
         const ssoAuth = new SSOAuth(this.writer)
         const token = await ssoAuth.getAccessToken(organization)
+        const { id, name, display_name } = organization
         storeAccessToken(token, this.authPath)
+        if (this.repoConfig) {
+            this.updateRepoConfig({ org: { id, name, display_name } })
+        }
         return token
     }
 }
