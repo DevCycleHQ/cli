@@ -85,7 +85,7 @@ USAGE
 <!-- commands -->
 # Command Topics
 
-* [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code.
+* [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
 * [`dvc features`](docs/features.md) - Access or modify Features with the Management API
 * [`dvc help`](docs/help.md) - Display help for dvc.

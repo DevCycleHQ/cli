@@ -1,16 +1,19 @@
 import minimatch from 'minimatch'
 import { Flags } from '@oclif/core'
+import chalk from 'chalk'
 import { lsFiles } from '../../utils/git/ls-files'
 import Base from '../base'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
-import { RefactorEngine, EngineOptions } from '../../utils/refactor/RefactorEngine'
+import { EngineOptions } from '../../utils/refactor/RefactorEngine'
 import { Variable } from './types'
+import { ENGINES } from '../../utils/refactor'
 
 export default class Cleanup extends Base {
     static hidden = false
     runsInRepo = true
 
-    static description = 'Replace a DevCycle variable with a static value in the current version of your code.'
+    static description = 'Replace a DevCycle variable with a static value in the current version of your code. ' +
+        'Currently only JavaScript is supported.' 
     static examples = [
         '<%= config.bin %> <%= command.id %> my-variable-key --value true --type Boolean',
         '<%= config.bin %> <%= command.id %> some-var --value "My Custom Name" --type String',
@@ -79,25 +82,35 @@ export default class Cleanup extends Base {
             if (variableKey === args.key) aliases.add(alias)
         })
 
-        const files = lsFiles()
-            .filter((filepath) => includeFile(filepath) && !excludeFile(filepath))
-            .map((filepath) => {
-                const variable = {
-                    key: args.key,
-                    value: flags.value,
-                    type: flags.type
-                } as Variable
-                const options = {
-                    output: flags.output || 'file',
-                    aliases
-                } as EngineOptions
-                const engine = new RefactorEngine(filepath, variable, options)
-                engine.refactor()
-            })
+        const files = lsFiles().filter((filepath) => includeFile(filepath) && !excludeFile(filepath))
 
         if (!files.length) {
             this.warn('No files found to process.')
             return
         }
+
+        files.forEach((filepath) => {
+            const variable = {
+                key: args.key,
+                value: flags.value,
+                type: flags.type
+            } as Variable
+            const options = {
+                output: flags.output || 'file',
+                aliases
+            } as EngineOptions
+
+            const fileExtension = filepath?.split('.').pop() ?? ''
+            if (!ENGINES[fileExtension]) return
+            ENGINES[fileExtension].forEach((RefactorEngine) => {
+                try {
+                    const engine = new RefactorEngine(filepath, variable, options)
+                    engine.refactor()
+                } catch (err: any) {
+                    console.warn(chalk.yellow(`Error refactoring ${filepath}`))
+                    console.warn(`\t${err.message}`)
+                }
+            })
+        })
     }
 }
