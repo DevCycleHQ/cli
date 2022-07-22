@@ -62,6 +62,17 @@ function ValidateVariableAliases(validationOptions?: ValidationOptions) {
     }
 }
 
+class SavedOrganization {
+    @IsString()
+    id: string
+
+    @IsString()
+    name: string
+
+    @IsString()
+    display_name: string
+}
+
 class CodeInsights {
     @IsString({ each: true })
     @IsOptional()
@@ -89,12 +100,20 @@ class CodeInsights {
 }
 
 export class UserConfigFromFile {
+    @Type(() => SavedOrganization)
+    @IsOptional()
+    org?: SavedOrganization
+    
     @IsString()
     @IsOptional()
     project?: string
 }
 
 export class RepoConfigFromFile {
+    @Type(() => SavedOrganization)
+    @IsOptional()
+    org?: SavedOrganization
+
     @IsString()
     @IsOptional()
     project?: string
