@@ -1,13 +1,13 @@
 `dvc cleanup`
 =============
 
-Replace a DevCycle variable with a static value in the current version of your code.
+Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 
 * [`dvc cleanup KEY`](#dvc-cleanup-key)
 
 ## `dvc cleanup KEY`
 
-Replace a DevCycle variable with a static value in the current version of your code.
+Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 
 ```
 USAGE
@@ -44,7 +44,8 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 
 DESCRIPTION
-  Replace a DevCycle variable with a static value in the current version of your code.
+  Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is
+  supported.
 
 EXAMPLES
   $ dvc cleanup my-variable-key --value true --type Boolean

@@ -20,6 +20,8 @@ console.log('obj.value === true')
 console.log('obj.value is truthy')
 
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log(true)
 `
 
 const expectedFalse = `console.log('isDefaulted: ' + true)
@@ -33,6 +35,8 @@ console.log({
 const x = 0
 
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log(false)
 `
 
 const expectedNumber = `const simpleCaseValue = 3
@@ -63,6 +67,8 @@ const x = simpleCaseValue ? 1 : 0
 console.log('obj.value is truthy')
 
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log(3)
 `
 
 const expectedString = `const simpleCaseValue = "My String"
@@ -93,6 +99,8 @@ const x = simpleCaseValue ? 1 : 0
 console.log('obj.value is truthy')
 
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log("My String")
 `
 
 const expectedJSON = `const simpleCaseValue = { "foo": "bar" }
@@ -123,6 +131,8 @@ const x = simpleCaseValue ? 1 : 0
 console.log('obj.value is truthy')
 
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log({ "foo": "bar" })
 `
 
 const expectedAlias = `console.log('isDefaulted: ' + true)
@@ -136,6 +146,8 @@ console.log({
 const x = 0
 
 console.log(false)
+
+console.log(false)
 `
 
 describe('cleanup', () => {
@@ -145,7 +157,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', 'true',
             '--type', 'Boolean',
-            '--include', 'test/commands/fixtures/cleanup/nodejs/test.js',
+            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value=true', (ctx) => {
@@ -158,7 +170,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', 'false',
             '--type', 'Boolean',
-            '--include', 'test/commands/fixtures/cleanup/nodejs/test.js',
+            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value=false', (ctx) => {
@@ -171,7 +183,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', '3',
             '--type', 'Number',
-            '--include', 'test/commands/fixtures/cleanup/nodejs/test.js',
+            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value is a number', (ctx) => {
@@ -184,7 +196,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', 'My String',
             '--type', 'String',
-            '--include', 'test/commands/fixtures/cleanup/nodejs/test.js',
+            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value is a string', (ctx) => {
@@ -197,7 +209,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', '{ "foo": "bar" }',
             '--type', 'JSON',
-            '--include', 'test/commands/fixtures/cleanup/nodejs/test.js',
+            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value is JSON', (ctx) => {
@@ -210,7 +222,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', 'false',
             '--type', 'Boolean',
-            '--include', 'test/commands/fixtures/cleanup/nodejs/test.js',
+            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
             '--var-alias', 'SIMPLE_CASE=simple-case',
             '--output', 'console'
         ])
