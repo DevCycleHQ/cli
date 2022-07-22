@@ -1,6 +1,7 @@
 import fs from 'fs'
 import * as recast from 'recast'
 import estraverse from 'estraverse'
+import chalk from 'chalk'
 import { Literal, Expression, Identifier, ObjectExpression, Property } from 'estree'
 import { Variable } from '../../commands/cleanup/types'
 
@@ -13,21 +14,24 @@ type DVCLiteral = Literal & { createdByDvc: true }
 type DVCObject = ObjectExpression & { createdByDvc: true }
 type VariableAssignments = Record<string, DVCLiteral | DVCObject>
 
-export class RefactorEngine {
-    private ast
+export abstract class RefactorEngine {
+    private ast: any
     private filepath: string
     private output: EngineOptions['output']
+    private fileRefactored: boolean
     private changed: boolean
+
     public variable: Variable
     public aliases: Set<string>
-    public sdkMethod = 'variable'
+
+    abstract sdkMethods: Record<string, string>
+    abstract parser: { parse(source: any): any }
 
     constructor(filepath: string, variable: Variable, options?: EngineOptions) {
         this.filepath = filepath
         this.variable = variable
         this.aliases = options?.aliases || new Set()
         this.output = options?.output || 'file'
-        this.ast = recast.parse(fs.readFileSync(filepath, 'utf-8')).program
     }
 
     static literal(value: any): DVCLiteral {
@@ -113,11 +117,12 @@ export class RefactorEngine {
     static reduceBinaryExpression(
         literal: DVCLiteral, expression: Expression, operator: string
     ): DVCLiteral | void {
-        if (expression.type !== 'Literal') return
+        if (!expression.type.includes('Literal')) return
+        const literalExpression = expression as Literal
         if (operator === '==') {
-            return RefactorEngine.literal(literal.value == expression.value)
+            return RefactorEngine.literal(literal.value == literalExpression.value)
         } else if (operator === '===') {
-            return RefactorEngine.literal(literal.value === expression.value)
+            return RefactorEngine.literal(literal.value === literalExpression.value)
         }
     }
 
@@ -125,27 +130,51 @@ export class RefactorEngine {
      * Replace any DVC SDK variable methods with a static object
      */
     private replaceFeatureFlags = () => {
-        const isKeyOrAlias = (arg: any) => {
-            const isKey = arg.type === 'Literal' && arg.value === this.variable.key
+        const isKeyOrAlias = (arg: any): boolean => {
+            const isKey = arg.type.includes('Literal') && arg.value === this.variable.key
             const isAlias = arg.type === 'Identifier' && this.aliases.has(arg.name)
             return isKey || isAlias
         }
-        const isSdkMethod = (node: any) => (
-            node.type === 'CallExpression' &&
-            node.callee.type === 'MemberExpression' &&
-            node.callee.property.type === 'Identifier' &&
-            node.callee.property.name === this.sdkMethod &&
-            node.arguments.find(isKeyOrAlias)
-        )
+        const getVariableProperty = (node: any): string | undefined => {
+            if (node.type !== 'CallExpression') return undefined
+
+            let identifier
+            if (node.callee.type === 'Identifier') {
+                identifier = node.callee
+            } else if (node.callee.type === 'MemberExpression' && node.callee.property.type === 'Identifier') {
+                identifier = node.callee.property
+            }
+
+            if (
+                identifier &&
+                Object.prototype.hasOwnProperty.call(this.sdkMethods, identifier.name) &&
+                node.arguments.find(isKeyOrAlias)
+            ) {
+                return this.sdkMethods[identifier.name]
+            }
+        }
     
         const engine = this
         estraverse.replace(this.ast, {
             enter: function(node) {
-                if (isSdkMethod(node)) {
+                const variableProperty = getVariableProperty(node)
+                if (variableProperty) {
                     engine.changed = true
-                    return RefactorEngine.dvcVariableObject(engine.variable)
+                    if (variableProperty === 'variable') {
+                        return RefactorEngine.dvcVariableObject(engine.variable)
+                    } else {
+                        const [_, property] = variableProperty.split('.')
+                        return {
+                            type: 'MemberExpression',
+                            object: RefactorEngine.dvcVariableObject(engine.variable),
+                            property: RefactorEngine.identifier(property),
+                            computed: false,
+                            optional: false
+                        }
+                    }
                 }
-            }
+            },
+            fallback: 'iteration',
         })
     
     }
@@ -159,7 +188,9 @@ export class RefactorEngine {
         estraverse.replace(this.ast, {
             enter: function(node) {
                 if (
-                    node.type === 'MemberExpression' &&
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    (node.type === 'MemberExpression' || node.type === 'OptionalMemberExpression') &&
                     RefactorEngine.isDVCObject(node.object)
                 ) {
                     const propertyName = (node.property as Identifier).name
@@ -173,11 +204,12 @@ export class RefactorEngine {
                         return valueLiteral
                     }
                 }
-            }
+            },
+            fallback: 'iteration',
         })
     }
 
-    private evaluateBooleanExpressions = () => {
+    private evaluateExpressions = () => {
         const engine = this
         estraverse.replace(this.ast, {
             leave: function(node) {
@@ -262,13 +294,14 @@ export class RefactorEngine {
                     parent.body.splice(nodeIndex, 1, ...node.body)
                 }
             },
+            fallback: 'iteration',
         })
     }
 
     /**
      * Build a map of variables assigned to a DVC boolean literal or variable object
      */
-    private getRedundantVarMap() {
+    private getVariableMap() {
         const assignments: VariableAssignments = {}
 
         estraverse.traverse(this.ast, {
@@ -332,11 +365,13 @@ export class RefactorEngine {
                         engine.changed = true
                         return this.remove()
                     }
-                } else if (node.type === 'Identifier' && parent?.type !== 'Property') {
-                    if (node.name in assignments) {
-                        engine.changed = true
-                        return assignments[node.name]
-                    }
+                } else if (
+                    node.type === 'Identifier' &&
+                    parent?.type !== 'Property' &&
+                    Object.prototype.hasOwnProperty.call(assignments, node.name)
+                ) {
+                    engine.changed = true
+                    return assignments[node.name]
                 }
             },
 
@@ -349,12 +384,41 @@ export class RefactorEngine {
                     }
                 }
             },
-
             fallback: 'iteration',
         })
     }
+
+    private parseAST = () => {
+        try {
+            const parseOptions = this.parser ? { parser: this.parser } : {}
+            this.ast = recast.parse(
+                fs.readFileSync(this.filepath, 'utf-8'),
+                parseOptions
+            ).program
+        } catch (err: any) {
+            console.warn(chalk.yellow(`Error parsing file ${this.filepath}`))
+            console.warn(`\t${err.message}`)
+        }
+    }
+
+    private printAST = () => {
+        try {
+            const { code } = recast.print(this.ast)
+            if (this.output === 'console') {
+                console.log(code)
+            } else if (this.fileRefactored) {
+                fs.writeFileSync(this.filepath, code)
+            }
+        } catch (err: any) {
+            console.warn(chalk.yellow(`Error occurred while recasting file ${this.filepath}`))
+            console.warn(`\t${err.message}`)
+        }
+    }
     
     public refactor = (): void => {
+        this.parseAST()
+        if (!this.ast) return
+
         this.changed = true
         let iterations = 0
 
@@ -364,17 +428,13 @@ export class RefactorEngine {
 
             this.replaceFeatureFlags()
             this.reduceObjects()
-            this.evaluateBooleanExpressions()
+            this.evaluateExpressions()
             this.reduceIfStatements()
-            const varAssignments = this.getRedundantVarMap()
+            const varAssignments = this.getVariableMap()
             this.pruneVarReferences(varAssignments)
+            if (this.changed) this.fileRefactored = true
         }
 
-        const { code } = recast.print(this.ast)
-        if (this.output === 'console') {
-            console.log(code)
-        } else {
-            fs.writeFileSync(this.filepath, code)
-        }
+        this.printAST()
     }
 }

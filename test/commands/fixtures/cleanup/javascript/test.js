@@ -31,3 +31,5 @@ if (dvcClient.variable(user, "simple-case", true).value) {
 }
 
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log(useVariableValue("simple-case", true))
