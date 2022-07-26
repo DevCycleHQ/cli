@@ -30,3 +30,9 @@ export const variableTypePrompt = {
     type: 'list',
     choices: variableTypes
 }
+
+export const variableValuePrompt = {
+    name: 'value',
+    message: 'Variable value',
+    type: 'string'
+}
