@@ -1,12 +1,14 @@
 import minimatch from 'minimatch'
 import { Flags } from '@oclif/core'
 import chalk from 'chalk'
+import inquirer from 'inquirer'
 import { lsFiles } from '../../utils/git/ls-files'
 import Base from '../base'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import { EngineOptions } from '../../utils/refactor/RefactorEngine'
 import { Variable } from './types'
 import { ENGINES } from '../../utils/refactor'
+import { variablePrompt, variableTypePrompt, variableValuePrompt } from '../../ui/prompts'
 
 export default class Cleanup extends Base {
     static hidden = false
@@ -22,22 +24,19 @@ export default class Cleanup extends Base {
     static args = [
         {
             name: 'key',
-            description: 'Key of variable to replace.',
-            required: true
+            description: 'Key of variable to replace.'
         }
     ]
 
     static flags = {
         ...Base.flags,
         'value': Flags.string({
-            description: 'Value to use in place of variable.',
-            required: true
+            description: 'Value to use in place of variable.'
         }),
         'type': Flags.string({
             description: 'The type of the value that will be replacing the variable. ' +
                 'Valid values include: String, Boolean, Number, JSON',
-            options: ['String', 'Boolean', 'Number', 'JSON'],
-            required: true
+            options: ['String', 'Boolean', 'Number', 'JSON']
         }),
         'include': Flags.string({
             description: 'Files to include when scanning for variables to cleanup. ' +
@@ -62,6 +61,34 @@ export default class Cleanup extends Base {
     public async run(): Promise<void> {
         const { flags, args } = await this.parse(Cleanup)
         const codeInsightsConfig = this.repoConfig?.codeInsights || {}
+        const apiAuth = this.token && this.projectKey
+            ? {
+                token: this.token,
+                projectKey: this.projectKey
+            } : undefined
+
+        const variable = {
+            key: args.key,
+            value: flags.value,
+            type: flags.type
+        } as Variable
+
+        if (!variable.key) {
+            if (apiAuth) {
+                const input = await inquirer.prompt([variablePrompt], apiAuth)
+                variable.key = input.variable.key
+            } else {
+                throw new Error('Missing 1 required arg: \nKey of variable to replace.\nSee more help with --help') 
+            }
+        }
+        if (!variable.type) {
+            const input = await inquirer.prompt([variableTypePrompt])
+            variable.type = input.type
+        }
+        if (!variable.value) {
+            const input = await inquirer.prompt([variableValuePrompt])
+            variable.value = input.value
+        }
 
         const includeFile = (filepath: string) => {
             const includeGlobs = flags['include'] || codeInsightsConfig.includeFiles
@@ -90,11 +117,6 @@ export default class Cleanup extends Base {
         }
 
         files.forEach((filepath) => {
-            const variable = {
-                key: args.key,
-                value: flags.value,
-                type: flags.type
-            } as Variable
             const options = {
                 output: flags.output || 'file',
                 aliases
