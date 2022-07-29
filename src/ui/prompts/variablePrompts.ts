@@ -24,6 +24,11 @@ export const variablePrompt = {
     choices: variableChoices
 }
 
+export const variablePromptNoApi = {
+    name: 'variable',
+    message: 'Please enter a variable key:'
+}
+
 export const variableTypePrompt = {
     name: 'type',
     message: 'The type of variable',
@@ -33,6 +38,5 @@ export const variableTypePrompt = {
 
 export const variableValuePrompt = {
     name: 'value',
-    message: 'Variable value',
-    type: 'string'
+    message: 'Variable value'
 }

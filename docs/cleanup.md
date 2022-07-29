@@ -3,17 +3,17 @@
 
 Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 
-* [`dvc cleanup KEY`](#dvc-cleanup-key)
+* [`dvc cleanup [KEY]`](#dvc-cleanup-key)
 
-## `dvc cleanup KEY`
+## `dvc cleanup [KEY]`
 
 Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 
 ```
 USAGE
-  $ dvc cleanup [KEY] --value <value> --type String|Boolean|Number|JSON [--config-path <value>] [--auth-path
-    <value>] [--repo-config-path <value>] [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api]
-    [--include <value>] [--exclude <value>] [--output console|file] [--var-alias <value>]
+  $ dvc cleanup [KEY] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--value <value>] [--type
+    String|Boolean|Number|JSON] [--include <value>] [--exclude <value>] [--output console|file] [--var-alias <value>]
 
 ARGUMENTS
   KEY  Key of variable to replace.
@@ -26,10 +26,10 @@ FLAGS
   --output=<option>       [default: file] Where the refactored code will be output. By default it overwrites the source
                           file.
                           <options: console|file>
-  --type=<option>         (required) The type of the value that will be replacing the variable. Valid values include:
-                          String, Boolean, Number, JSON
+  --type=<option>         The type of the value that will be replacing the variable. Valid values include: String,
+                          Boolean, Number, JSON
                           <options: String|Boolean|Number|JSON>
-  --value=<value>         (required) Value to use in place of variable.
+  --value=<value>         Value to use in place of variable.
   --var-alias=<value>...  Aliases to use when identifying variables in your code. Should contain a code reference mapped
                           to a DevCycle variable key, eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"
 
@@ -48,9 +48,11 @@ DESCRIPTION
   supported.
 
 EXAMPLES
+  $ dvc cleanup
+
   $ dvc cleanup my-variable-key --value true --type Boolean
 
   $ dvc cleanup some-var --value "My Custom Name" --type String
 ```
 
-_See code: [dist/commands/cleanup/index.ts](https://github.com/DevCycleHQ/cli/blob/v4.0.0/dist/commands/cleanup/index.ts)_
+_See code: [dist/commands/cleanup/index.ts](https://github.com/DevCycleHQ/cli/blob/v4.1.0/dist/commands/cleanup/index.ts)_
