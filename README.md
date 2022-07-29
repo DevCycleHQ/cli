@@ -133,6 +133,11 @@ codeInsights:
         - 'dist/*'
 ```
 
-#Development
+## Development
 To test local changes, run `yarn build`. From there, you can run commands from the `bin` folder.
 e.g. `bin/run diff origin/main...`
+
+## Publishing a new version
+1. Checkout the latest `main` branch and bump the CLI version, `npm version patch`. Make note of the tag created.
+2. Push the tag and version commit that were created, `git push && git push origin vX.X.X`
+3. Publish to NPM, `npm publish --access public`
