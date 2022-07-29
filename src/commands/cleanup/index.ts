@@ -8,7 +8,7 @@ import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import { EngineOptions } from '../../utils/refactor/RefactorEngine'
 import { Variable } from './types'
 import { ENGINES } from '../../utils/refactor'
-import { variablePrompt, variableTypePrompt, variableValuePrompt } from '../../ui/prompts'
+import { variablePrompt, variablePromptNoApi, variableTypePrompt, variableValuePrompt } from '../../ui/prompts'
 
 export default class Cleanup extends Base {
     static hidden = false
@@ -17,6 +17,7 @@ export default class Cleanup extends Base {
     static description = 'Replace a DevCycle variable with a static value in the current version of your code. ' +
         'Currently only JavaScript is supported.' 
     static examples = [
+        '<%= config.bin %> <%= command.id %>',
         '<%= config.bin %> <%= command.id %> my-variable-key --value true --type Boolean',
         '<%= config.bin %> <%= command.id %> some-var --value "My Custom Name" --type String',
     ]
@@ -75,10 +76,14 @@ export default class Cleanup extends Base {
 
         if (!variable.key) {
             if (apiAuth) {
-                const input = await inquirer.prompt([variablePrompt], apiAuth)
+                try {
+                    const input = await inquirer.prompt([variablePrompt], apiAuth)
+                    variable.key = input.variable.key
+                } catch {} // eslint-disable-line no-empty
+            }
+            if (!variable.key) {
+                const input = await inquirer.prompt([variablePromptNoApi])
                 variable.key = input.variable.key
-            } else {
-                throw new Error('Missing 1 required arg: \nKey of variable to replace.\nSee more help with --help') 
             }
         }
         if (!variable.type) {
