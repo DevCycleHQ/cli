@@ -1,7 +1,7 @@
 `dvc alias`
 ===========
 
-Add a variable alias to the repo configuration
+Manage repository variable aliases
 
 * [`dvc alias add`](#dvc-alias-add)
 
