@@ -83,6 +83,12 @@
       "org": {
         "description": "Switch organizations"
       },
+      "alias": {
+        "description": "Manage repository variable aliases"
+      },
+      "repo": {
+        "description": "Manage repository configuration"
+      },
       "status": {
         "description": "Check CLI status"
       }
