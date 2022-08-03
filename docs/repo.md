@@ -1,7 +1,7 @@
 `dvc repo`
 ==========
 
-Create the repo configuration file. This will open a browser window.
+Manage repository configuration
 
 * [`dvc repo init`](#dvc-repo-init)
 
