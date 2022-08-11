@@ -49,20 +49,11 @@ console.log({
     isDefaulted: true
 })
 
-if (simpleCaseValue === true) {
-    const someVar = dvcClient.variable(user, "some-var", "stringy")
-    const templateVar = \`Hello, \${someVar}\`
-    const concatVar = "Goodbye, " + someVar
-}
-
 // Simple Case is true
 console.log('obj var .value is truthy')
+console.log('value var === 3')
 
-if (simpleCaseValue === 3) {
-    console.log('value var === 3')
-}
-
-const x = simpleCaseValue ? 1 : 0
+const x = 1
 
 console.log('obj.value is truthy')
 
@@ -81,20 +72,10 @@ console.log({
     isDefaulted: true
 })
 
-if (simpleCaseValue === true) {
-    const someVar = dvcClient.variable(user, "some-var", "stringy")
-    const templateVar = \`Hello, \${someVar}\`
-    const concatVar = "Goodbye, " + someVar
-}
-
 // Simple Case is true
 console.log('obj var .value is truthy')
 
-if (simpleCaseValue === 3) {
-    console.log('value var === 3')
-}
-
-const x = simpleCaseValue ? 1 : 0
+const x = 1
 
 console.log('obj.value is truthy')
 
@@ -113,20 +94,10 @@ console.log({
     isDefaulted: true
 })
 
-if (simpleCaseValue === true) {
-    const someVar = dvcClient.variable(user, "some-var", "stringy")
-    const templateVar = \`Hello, \${someVar}\`
-    const concatVar = "Goodbye, " + someVar
-}
-
 // Simple Case is true
 console.log('obj var .value is truthy')
 
-if (simpleCaseValue === 3) {
-    console.log('value var === 3')
-}
-
-const x = simpleCaseValue ? 1 : 0
+const x = 1
 
 console.log('obj.value is truthy')
 
