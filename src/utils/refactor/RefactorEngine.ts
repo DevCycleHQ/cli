@@ -12,7 +12,11 @@ export type EngineOptions = {
 
 type DVCLiteral = Literal & { createdByDvc: true }
 type DVCObject = ObjectExpression & { createdByDvc: true }
-type VariableAssignments = Record<string, DVCLiteral | DVCObject>
+type VariableAssignment = {
+    replace: boolean
+    value: DVCLiteral | DVCObject
+}
+type VariableAssignments = Record<string, VariableAssignment>
 
 export abstract class RefactorEngine {
     private ast: any
@@ -20,6 +24,7 @@ export abstract class RefactorEngine {
     private output: EngineOptions['output']
     private fileRefactored: boolean
     private changed: boolean
+    private varAssignments: VariableAssignments = {}
 
     public variable: Variable
     public aliases: Set<string>
@@ -96,21 +101,9 @@ export abstract class RefactorEngine {
         literal: DVCLiteral, expression: Expression, operator: string
     ): DVCLiteral | Expression | void {
         if (operator === '&&') {
-            if (literal.value === true) {
-                return expression
-            }
-
-            if (literal.value === false) {
-                return RefactorEngine.literal(false)
-            }
+            return literal.value ? expression : RefactorEngine.literal(false)
         } else if (operator === '||') {
-            if (literal.value === true) {
-                return RefactorEngine.literal(true)
-            }
-
-            if (literal.value === false) {
-                return expression
-            }
+            return literal.value ? RefactorEngine.literal(true) : expression
         }
     }
 
@@ -124,6 +117,12 @@ export abstract class RefactorEngine {
         } else if (operator === '===') {
             return RefactorEngine.literal(literal.value === literalExpression.value)
         }
+    }
+
+    private getAssignmentValueIfSet(expression: Expression) {
+        return expression.type === 'Identifier' && expression.name && this.varAssignments[expression.name]
+            ? this.varAssignments[expression.name].value
+            : expression
     }
 
     /**
@@ -211,12 +210,13 @@ export abstract class RefactorEngine {
 
     private evaluateExpressions = () => {
         const engine = this
+
         estraverse.replace(this.ast, {
             leave: function(node) {
                 let updatedNode
                 if (node.type === 'LogicalExpression') {
-                    const expression1 = node.left
-                    const expression2 = node.right
+                    const expression1 = engine.getAssignmentValueIfSet(node.left)
+                    const expression2 = engine.getAssignmentValueIfSet(node.right)
 
                     if (RefactorEngine.isDVCLiteral(expression1)) {
                         updatedNode = RefactorEngine
@@ -226,8 +226,8 @@ export abstract class RefactorEngine {
                             .reduceLogicalExpression(expression2 as DVCLiteral, expression1, node.operator)
                     }
                 } else if (node.type === 'BinaryExpression') {
-                    const expression1 = node.left
-                    const expression2 = node.right
+                    const expression1 = engine.getAssignmentValueIfSet(node.left)
+                    const expression2 = engine.getAssignmentValueIfSet(node.right)
 
                     if (RefactorEngine.isDVCLiteral(expression1)) {
                         updatedNode = RefactorEngine
@@ -238,14 +238,13 @@ export abstract class RefactorEngine {
                     }
                 } else if (
                     node.type === 'UnaryExpression' &&
-                    node.operator === '!' &&
-                    RefactorEngine.isDVCLiteral(node.argument)
+                    node.operator === '!'
                 ) {
-                    const argument = node.argument as DVCLiteral
-                    if (argument.value === true) {
-                        updatedNode = RefactorEngine.literal(false)
-                    } else if (argument.value === false) {
-                        updatedNode = RefactorEngine.literal(true)
+                    const nodeArgument = engine.getAssignmentValueIfSet(node.argument)
+
+                    if (RefactorEngine.isDVCLiteral(nodeArgument)) {
+                        const literalArgument = nodeArgument as DVCLiteral
+                        updatedNode = RefactorEngine.literal(!literalArgument.value)
                     }
                 }
 
@@ -265,18 +264,19 @@ export abstract class RefactorEngine {
         const engine = this
         estraverse.replace(this.ast, {
             leave: function(node) {
-                if (
-                    (node.type === 'IfStatement' || node.type === 'ConditionalExpression') &&
-                    RefactorEngine.isDVCLiteral(node.test)
-                ) {
-                    const nodeTest = node.test as DVCLiteral
-                    engine.changed = true
-                    if (nodeTest.value) {
-                        return node.consequent
-                    } else if (node.alternate == null) {
-                        this.remove()
-                    } else {
-                        return node.alternate
+                if (node.type === 'IfStatement' || node.type === 'ConditionalExpression') {
+                    const nodeTest = engine.getAssignmentValueIfSet(node.test)
+
+                    if (RefactorEngine.isDVCLiteral(nodeTest)) {
+                        const nodeTestLiteral = nodeTest as DVCLiteral
+                        engine.changed = true
+                        if (nodeTestLiteral.value) {
+                            return node.consequent
+                        } else if (node.alternate == null) {
+                            this.remove()
+                        } else {
+                            return node.alternate
+                        }
                     }
                 }
             },
@@ -299,7 +299,9 @@ export abstract class RefactorEngine {
     }
 
     /**
-     * Build a map of variables assigned to a DVC boolean literal or variable object
+     * Build a map of variables assigned to a DVC literal or variable object
+     * Only booleans and variable objects should be replaced,
+     * other types will be referenced when evaluating conditionals
      */
     private getVariableMap() {
         const assignments: VariableAssignments = {}
@@ -312,12 +314,16 @@ export abstract class RefactorEngine {
                             const declarationId = declaration.id as Identifier
                             if (RefactorEngine.isDVCLiteral(declaration.init)) {
                                 const declarationInit = declaration.init as DVCLiteral
-                                if (typeof declarationInit.value === 'boolean') {
-                                    assignments[declarationId.name] = declarationInit
+                                assignments[declarationId.name] = {
+                                    replace: typeof declarationInit.value === 'boolean',
+                                    value: declarationInit
                                 }
                             } else if (RefactorEngine.isDVCObject(declaration.init)) {
                                 const declarationInit = declaration.init as DVCObject
-                                assignments[declarationId.name] = declarationInit
+                                assignments[declarationId.name] = {
+                                    replace: true,
+                                    value: declarationInit
+                                }
                             }
                         }
                     })
@@ -325,17 +331,20 @@ export abstract class RefactorEngine {
                     if (node.right && RefactorEngine.isDVCLiteral(node.right)) {
                         const nodeRight = node.right as DVCLiteral
                         const nodeLeft = node.left as Identifier
-                        if (
-                            typeof nodeRight.value === 'boolean' &&
-                            nodeLeft.name !== undefined
-                        ) {
-                            assignments[nodeLeft.name] = nodeRight
+                        if (nodeLeft.name !== undefined) {
+                            assignments[nodeLeft.name] = {
+                                replace: typeof nodeRight.value === 'boolean',
+                                value: nodeRight
+                            }
                         }
                     } else if (node.right && RefactorEngine.isDVCObject(node.right)) {
                         const nodeRight = node.right as DVCObject
                         const nodeLeft = node.left as Identifier
                         if (nodeLeft.name !== undefined) {
-                            assignments[nodeLeft.name] = nodeRight
+                            assignments[nodeLeft.name] = {
+                                replace: true,
+                                value: nodeRight
+                            }
                         }
                     }
                 }
@@ -349,29 +358,35 @@ export abstract class RefactorEngine {
     /**
      * Remove redundant variables by deleting declarations and replacing variable references
      */
-    private pruneVarReferences(assignments: VariableAssignments) {
+    private pruneVarReferences() {
         const engine = this
         estraverse.replace(this.ast, {
             enter: function(node, parent) {
+                // Remove variable declaration if necessary
+                let identifier
                 if (node.type === 'VariableDeclarator') {
-                    const nodeId = node.id as Identifier
-                    if (nodeId.name in assignments) {
-                        engine.changed = true
-                        return this.remove()
-                    }
+                    identifier = node.id as Identifier
                 } else if (node.type === 'ExpressionStatement' && node.expression.type === 'AssignmentExpression') {
-                    const expressionLeft = node.expression.left as Identifier
-                    if (expressionLeft.name in assignments) {
-                        engine.changed = true
-                        return this.remove()
-                    }
-                } else if (
-                    node.type === 'Identifier' &&
-                    parent?.type !== 'Property' &&
-                    Object.prototype.hasOwnProperty.call(assignments, node.name)
+                    identifier = node.expression.left as Identifier
+                }
+                if (
+                    identifier &&
+                    identifier.name in engine.varAssignments &&
+                    engine.varAssignments[identifier.name].replace
                 ) {
                     engine.changed = true
-                    return assignments[node.name]
+                    return this.remove()
+                }
+                
+                // Replace node with variable value if necessary
+                if (
+                    node.type === 'Identifier' &&
+                    parent?.type !== 'Property' &&
+                    Object.prototype.hasOwnProperty.call(engine.varAssignments, node.name) &&
+                    engine.varAssignments[node.name].replace
+                ) {
+                    engine.changed = true
+                    return engine.varAssignments[node.name].value
                 }
             },
 
@@ -428,10 +443,10 @@ export abstract class RefactorEngine {
 
             this.replaceFeatureFlags()
             this.reduceObjects()
+            this.varAssignments = this.getVariableMap()
+            this.pruneVarReferences()
             this.evaluateExpressions()
             this.reduceIfStatements()
-            const varAssignments = this.getVariableMap()
-            this.pruneVarReferences(varAssignments)
             if (this.changed) this.fileRefactored = true
         }
 
