@@ -65,7 +65,7 @@ export default class Diff extends Base {
         }),
         'format': Flags.string({
             default: 'console',
-            options: ['console', 'markdown'],
+            options: ['console', 'markdown', 'markdown-no-html'],
             description: 'Format to use when outputting the diff results.'
         }),
         'show-regex': ShowRegexFlag
@@ -76,6 +76,7 @@ export default class Diff extends Base {
     ]
 
     useMarkdown = false
+    useHTML = false
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(Diff)
@@ -84,7 +85,8 @@ export default class Diff extends Base {
             throw new Error('Must provide a diff pattern')
         }
 
-        this.useMarkdown = flags.format === 'markdown'
+        this.useMarkdown = flags.format.includes('markdown')
+        this.useHTML = flags.format === 'markdown'
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
 
@@ -216,21 +218,21 @@ export default class Diff extends Base {
             + Object.keys(matchesByTypeEnriched.removeUnknown).length
         const totalCleanup = Object.keys(matchesByTypeEnriched.notFoundRemove).length
 
+        const headerPrefix = this.useMarkdown ? '## ' : ''
+        const headerText = 'DevCycle Variable Changes:\n'
         const subHeaderPrefix = this.useMarkdown ? '### ' : ''
 
-        if (this.useMarkdown) {
+        let headerIcon = ''
+        if (this.useHTML) {
             const lightTogglebot = 'togglebot.svg#gh-light-mode-only'
             const darkTogglebot = 'togglebot-white.svg#gh-dark-mode-only'
             const buildIcon = (icon: string) => (
                 `<img src="https://github.com/DevCycleHQ/cli/raw/main/assets/${icon}" height="31px" align="center"/>`
             )
-            this.log(
-                `\n## ${buildIcon(lightTogglebot)}${buildIcon(darkTogglebot)}` +
-                ' DevCycle Variable Changes:\n'
-            )
-        } else {
-            this.log('\nDevCycle Variable Changes:\n')
+            headerIcon = `${buildIcon(lightTogglebot)}${buildIcon(darkTogglebot)} `
         }
+        this.log(`\n${headerPrefix}${headerIcon}${headerText}`)
+
         if (totalNotices) {
             this.log(`${EMOJI.notice}   ${totalNotices} Variable${totalNotices === 1 ? '' : 's'} With Notices`)
         }
