@@ -180,8 +180,20 @@ DevCycle Variable Changes:
 	   Location: test/utils/diff/sampleDiff.js:L1
 `
 
-const formattedExpected = `
+const formattedMarkdownExpected = `
 ## <img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg#gh-light-mode-only" height="31px" align="center"/><img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot-white.svg#gh-dark-mode-only" height="31px" align="center"/> DevCycle Variable Changes:
+
+🟢  1 Variable Added
+🔴  0 Variables Removed
+
+### 🟢 Added
+
+  1. **optional-accessor**
+\t   Location: services/api/src/organizations/organizations.controller.ts:L177
+`
+
+const formattedMarkdownNoHtmlExpected = `
+## DevCycle Variable Changes:
 
 🟢  1 Variable Added
 🔴  0 Variables Removed
@@ -325,8 +337,19 @@ describe('diff', () => {
         ])
         .it('formats the output as markdown',
             (ctx) => {
-                expect(ctx.stdout).to.equal(formattedExpected)
+                expect(ctx.stdout).to.equal(formattedMarkdownExpected)
             })
+
+    test
+        .stdout()
+        .command(['diff', '--file',
+            './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown-no-html'
+        ])
+        .it('formats the output as markdown without html',
+            (ctx) => {
+                expect(ctx.stdout).to.equal(formattedMarkdownNoHtmlExpected)
+            })
+
     test
         .stdout()
         .command(['diff', '--file',
