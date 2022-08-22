@@ -1,6 +1,6 @@
 import { expect, test } from '@oclif/test'
 
-const expected = `
+const nodeExpected = `
 DevCycle Variable Usage:
 
 1. simple-case
@@ -22,11 +22,27 @@ DevCycle Variable Usage:
 \t- test/utils/usages/samples/nodejs.js:L36
 `
 
+const reactExpected = `
+DevCycle Variable Usage:
+
+1. simple-case
+\t- test/utils/usages/samples/react.js:L1
+\t- test/utils/usages/samples/react.js:L6
+\t- test/utils/usages/samples/react.js:L11
+`
+
 describe('usages', () => {
     test
         .stdout()
         .command(['usages', '--include', 'test/utils/usages/samples/nodejs.js'])
-        .it('runs against a test file', (ctx) => {
-            expect(ctx.stdout).to.equal(expected)
+        .it('runs against a node test file', (ctx) => {
+            expect(ctx.stdout).to.equal(nodeExpected)
+        })
+
+    test
+        .stdout()
+        .command(['usages', '--include', 'test/utils/usages/samples/react.js'])
+        .it('runs against a react test file', (ctx) => {
+            expect(ctx.stdout).to.equal(reactExpected)
         })
 })
