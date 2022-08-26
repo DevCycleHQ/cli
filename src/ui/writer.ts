@@ -9,9 +9,13 @@ export default class Writer {
     public failureMessage(message:string):void {
         if (!this.headless) console.log(chalk.red(`❌ ${message}`))
     }
+
+    public warningMessage(message:string):void {
+        if (!this.headless) console.log(chalk.yellow(`⚠️ ${message}`))
+    }
     
     public statusMessage(message:string):void {
-        if (!this.headless) console.log(chalk.yellow(`🤖 ${message}`))
+        if (!this.headless) console.log(chalk.gray(`🤖 ${message}`))
     }
 
     public blankLine():void {
@@ -24,6 +28,10 @@ export default class Writer {
         } else {
             console.log(JSON.stringify(results, null, 2))
         }
+    }
+
+    public showRawResults(results:string):void {
+        console.log(results)
     }
 
     public showTogglebot():void {

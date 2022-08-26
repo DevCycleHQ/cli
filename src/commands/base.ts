@@ -77,7 +77,7 @@ export default abstract class Base extends Command {
             if (this.authRequired) {
                 throw new Error('Authorization is required to use this command.')
             } else if (this.authSuggested && !flags['no-api']) {
-                console.warn('This command has limited functionality without Authorization.' +
+                this.writer.warningMessage('This command has limited functionality without Authorization.' +
                     'Use the "--no-api" flag to suppress this warning')
             }
             return

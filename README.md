@@ -92,8 +92,10 @@ USAGE
 * [`dvc alias`](docs/alias.md) - Manage repository variable aliases
 * [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
+* [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
 * [`dvc features`](docs/features.md) - Access or modify Features with the Management API
 * [`dvc help`](docs/help.md) - Display help for dvc.
+* [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the management API
 * [`dvc login`](docs/login.md) - Log in to DevCycle
 * [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
 * [`dvc org`](docs/org.md) - Switch organizations
