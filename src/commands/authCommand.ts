@@ -35,35 +35,44 @@ export default abstract class AuthCommand extends Base {
             return this.writer.showResults(projects.map((project) => project.key))
         }
         const selectedProject = await this.retrieveProject(projects)
+        await this.saveProject(selectedProject)
+    }
+
+    public async saveProject(project:Project) {
         if (this.repoConfig) {
-            await this.updateRepoConfig({ project: selectedProject.key })
+            await this.updateRepoConfig({ project: project.key })
         } else {
-            await this.updateUserConfig({ project: selectedProject.key })
+            await this.updateUserConfig({ project: project.key })
         }
     }
 
-    public async retrieveProjectFromConfig(): Promise<string | undefined> {
-        return this.repoConfig?.project || this.userConfig?.project
+    public async retrieveProjectFromConfig(projects:Project[]): Promise<Project | null> {
+        const savedProject = this.repoConfig?.project || this.userConfig?.project
+        if (savedProject) {
+            const matchingProject = projects.find((project) => project.key === savedProject)
+            if (matchingProject) {
+                return matchingProject
+            }
+        }
+        return null
     }
 
     private async retrieveProject(projects: Project[]): Promise<Project> {
         const { flags } = await this.parse(AuthCommand)
         if (flags.project) {
-            const matchingProject = projects.find((project) => project.key === flags.project)
-            if (!matchingProject) {
-                throw (new Error(`There is no project with the key ${flags.project} in this organization`))
-            }
-            return matchingProject
+            return this.projectFromFlag(projects)
         } else {
-            const savedProject = await this.retrieveProjectFromConfig()
-            if (savedProject) {
-                const matchingProject = projects.find((project) => project.key === savedProject)
-                if (matchingProject) {
-                    return matchingProject
-                }
-            }
+            return await this.retrieveProjectFromConfig(projects) || promptForProject(projects)
         }
-        return promptForProject(projects)
+    }
+
+    public async projectFromFlag(projects: Project[]) {
+        const { flags } = await this.parse(AuthCommand)
+        const matchingProject = projects.find((project) => project.key === flags.project)
+        if (!matchingProject) {
+            throw (new Error(`There is no project with the key ${flags.project} in this organization`))
+        }
+        return matchingProject
     }
 
     public async retrieveOrganizationFromConfig(): Promise<Organization | undefined> {
