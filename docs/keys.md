@@ -1,21 +1,23 @@
-`dvc org`
-=========
+`dvc keys`
+==========
 
-Switch organizations
+Retrieve SDK keys from the management API
 
-* [`dvc org`](#dvc-org)
+* [`dvc keys get`](#dvc-keys-get)
 
-## `dvc org`
+## `dvc keys get`
 
-Select which organization to access through the API
+Retrieve SDK keys from the management API
 
 ```
 USAGE
-  $ dvc org [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--org <value>]
+  $ dvc keys get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--env <value>] [--type
+    mobile|client|server]
 
 FLAGS
-  --org=<value>  The `name` of the org to sign in as (not the `display_name`)
+  --env=<value>                  Environment to fetch a key for
+  --type=(mobile|client|server)  The type of SDK key to retrieve
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
@@ -29,7 +31,10 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 
 DESCRIPTION
-  Select which organization to access through the API
-```
+  Retrieve SDK keys from the management API
 
-_See code: [dist/commands/org/index.ts](https://github.com/DevCycleHQ/cli/blob/v4.2.3/dist/commands/org/index.ts)_
+EXAMPLES
+  $ dvc keys get
+
+  $ dvc keys get --keys=environment-one,environment-two
+```
