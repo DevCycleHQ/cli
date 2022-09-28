@@ -13,7 +13,13 @@ export class CustomParser extends BaseParser {
             throw new Error(`No match pattern for ${extension}`)
         }
 
+        this.identity = `custom ${extension}`
         this.customPatterns = options.matchPatterns[extension]
+    }
+
+    printRegexPattern(): void {
+        const patterns = this.customPatterns.join('\n\t')
+        console.log(`Pattern for ${this.identity} parser: \n\t${patterns}`)
     }
 
     override match(content: string): MatchResult | null {
