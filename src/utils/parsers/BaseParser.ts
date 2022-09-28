@@ -155,7 +155,7 @@ export abstract class BaseParser {
     }
 
     printRegexPattern(): void {
-        console.log(`Pattern for ${this.identity} parser: ${this.buildRegexPattern().source}`)
+        console.log(`Pattern for ${this.identity} parser: \n\t${this.buildRegexPattern().source}`)
     }
 
     match(content: string): MatchResult | null {

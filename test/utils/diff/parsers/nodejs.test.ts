@@ -121,7 +121,7 @@ describe('nodejs', () => {
         const results = parseFiles(parsedDiff, { matchPatterns: { js: ['checkVariable\\(\\w*,\\s*([^,)]*)\\s*'] } })
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,
-            custom: [
+            'custom js': [
                 {
                     'fileName': 'test/utils/diff/sampleDiff.js',
                     'line': 6,
@@ -138,7 +138,7 @@ describe('nodejs', () => {
         } })
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,
-            custom: [
+            'custom js': [
                 {
                     'fileName': 'test/utils/diff/sampleDiff.js',
                     'line': 6,
