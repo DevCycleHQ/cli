@@ -116,7 +116,8 @@ export default class Usages extends Base {
         aliasMap: Record<string, string>
     ) {
         const matchesByVariable: Record<string, Record<string, VariableUsageMatch>> = {}
-        Object.values(matchesBySdk).forEach((matches) => {
+        Object.entries(matchesBySdk).forEach(([parser, matches]) => {
+            const isCustom = parser.startsWith('custom')
             matches.forEach((m) => {
                 const match = { ...m }
                 const aliasedName = aliasMap[match.name]
@@ -125,7 +126,8 @@ export default class Usages extends Base {
                     match.name = aliasedName
                     delete match.isUnknown
                 }
-                if (!match.isUnknown) {
+                // Include matches for identified keys and all matches from custom regex patterns
+                if (!match.isUnknown || isCustom) {
                     matchesByVariable[match.name] ??= {}
                     matchesByVariable[match.name][`${match.fileName}:${match.line}`] = match
                 }
