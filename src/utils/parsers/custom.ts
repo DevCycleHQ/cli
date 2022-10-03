@@ -2,7 +2,6 @@ import { BaseParser, MatchResult } from './BaseParser'
 import { ParseOptions } from './types'
 
 export class CustomParser extends BaseParser {
-    identity = 'custom'
     variableMethodPattern = new RegExp('')
     customPatterns: string[]
 
