@@ -78,7 +78,7 @@ class ParsedChangeLine extends ParsedLine {
 }
 
 export abstract class BaseParser {
-    abstract identity: string
+    identity: string
     // whether to add the client name (eg. dvcClient) at the beginning of the pattern
     matchClientName = true
 
