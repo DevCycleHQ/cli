@@ -31,6 +31,13 @@ DevCycle Variable Usage:
 \t- test/utils/usages/samples/react.js:L11
 `
 
+const goExpected = `
+DevCycle Variable Usage:
+
+1. hello-test
+\t- test/utils/usages/samples/golang.go:L1
+`
+
 describe('usages', () => {
     test
         .stdout()
@@ -44,5 +51,12 @@ describe('usages', () => {
         .command(['usages', '--include', 'test/utils/usages/samples/react.js'])
         .it('runs against a react test file', (ctx) => {
             expect(ctx.stdout).to.equal(reactExpected)
+        })
+
+    test
+        .stdout()
+        .command(['usages', '--include', 'test/utils/usages/samples/golang.go'])
+        .it('runs against a go test file', (ctx) => {
+            expect(ctx.stdout).to.equal(goExpected)
         })
 })
