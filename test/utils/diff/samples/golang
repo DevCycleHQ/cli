@@ -4,15 +4,15 @@ index 00000000..ed8ee4ab
 --- /dev/null
 +++ b/test/utils/diff/sampleDiff.go
 @@ -1,1 +1,12 @@
-+dvcClient.DevcycleApi.Variable(auth, user, "simple-case", true)
++dvcClient.DevCycleApi.Variable(auth, user, "simple-case", true)
 +
 +dvcClient
-+    .DevcycleApi
++    .DevCycleApi
 +    .Variable(
 +        auth,
 +        user,
 +        "multi-line",
 +        true
 +    )
-+dvcClient.DevcycleApi.Variable(auth, {user_id: "my_user"}, "user-object", true)
-+dvcClient.DevcycleApi.Variable(auth, devcycle.UserData{UserId: "test"}, "user-named-object", true)
++dvcClient.DevCycleApi.Variable(auth, {user_id: "my_user"}, "user-object", true)
++dvcClient.DevCycleApi.Variable(auth, devcycle.UserData{UserId: "test"}, "user-named-object", true)

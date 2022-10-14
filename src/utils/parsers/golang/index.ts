@@ -7,7 +7,7 @@ const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class GolangParser extends BaseParser {
     identity = 'golang'
-    variableMethodPattern = /\.DevcycleApi\.Variable\(\s*/
+    variableMethodPattern = /\.DevCycleApi\.Variable\(\s*/
     orderedParameterPatterns = [
         authPattern,
         userCapturePattern,
