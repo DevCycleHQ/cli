@@ -156,6 +156,6 @@ To test local changes, run `yarn build`. From there, you can run commands from t
 e.g. `bin/run diff origin/main...`
 
 ## Publishing a new version
-1. Checkout the latest `main` branch and bump the CLI version, `npm version patch`. Make note of the tag created.
-2. Push the tag and version commit that were created, `git push && git push origin vX.X.X`
-3. Publish to NPM, `npm publish --access public`
+1. Create a branch off of `main` and run `npm version patch` to bump the CLI version. Create a PR for these changes.
+2. Once merged, create a new Github release with a tag for the latest version.
+3. From `main`, publish to NPM `npm publish --access public`
