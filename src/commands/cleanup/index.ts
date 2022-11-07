@@ -83,7 +83,7 @@ export default class Cleanup extends Base {
             }
             if (!variable.key) {
                 const input = await inquirer.prompt([variablePromptNoApi])
-                variable.key = input.variable.key
+                variable.key = input.variable
             }
         }
         if (!variable.type) {
