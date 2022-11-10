@@ -32,13 +32,3 @@ export class AuthConfig {
     @Type(() => SSOAuthConfig)
     sso?: SSOAuthConfig
 }
-
-export async function storeAccessToken(accessToken:string, authPath:string):Promise<void> {
-    const configDir = path.dirname(authPath)
-    if (!fs.existsSync(configDir)) {
-        fs.mkdirSync(configDir, { recursive: true })
-    }
-    const config = new AuthConfig()
-    config.sso = { accessToken }
-    fs.writeFileSync(authPath, jsYaml.dump(config))
-}

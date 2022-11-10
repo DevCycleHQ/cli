@@ -4,7 +4,6 @@ import { Flags } from '@oclif/core'
 import { fetchOrganizations, Organization } from '../api/organizations'
 import { fetchProjects, Project } from '../api/projects'
 import SSOAuth from '../api/ssoAuth'
-import { storeAccessToken } from '../auth/config'
 import { promptForOrganization } from '../ui/promptForOrganization'
 import { promptForProject } from '../ui/promptForProject'
 import Base from './base'
@@ -39,15 +38,15 @@ export default abstract class AuthCommand extends Base {
     }
 
     public async saveProject(project:Project) {
-        if (this.repoConfig) {
-            await this.updateRepoConfig({ project: project.key })
+        if (this.dvcConfig.isInRepo()) {
+            await this.dvcConfig.updateRepoConfig({ project: project.key })
         } else {
-            await this.updateUserConfig({ project: project.key })
+            await this.dvcConfig.updateUserConfig({ project: project.key })
         }
     }
 
     public async retrieveProjectFromConfig(projects:Project[]): Promise<Project | null> {
-        const savedProject = this.repoConfig?.project || this.userConfig?.project
+        const savedProject = this.dvcConfig.getRepo()?.project || this.dvcConfig.getUser()?.project
         if (savedProject) {
             const matchingProject = projects.find((project) => project.key === savedProject)
             if (matchingProject) {
@@ -76,7 +75,7 @@ export default abstract class AuthCommand extends Base {
     }
 
     public async retrieveOrganizationFromConfig(): Promise<Organization | undefined> {
-        return this.repoConfig?.org || this.userConfig?.org
+        return this.dvcConfig.getRepo()?.org || this.dvcConfig.getUser()?.org
     }
 
     private async retrieveOrganization(organizations: Organization[]): Promise<Organization> {
@@ -98,12 +97,14 @@ export default abstract class AuthCommand extends Base {
 
     async selectOrganization(organization: Organization):Promise<string> {
         const ssoAuth = new SSOAuth(this.writer)
-        const token = await ssoAuth.getAccessToken(organization)
+        const accessToken = await ssoAuth.getAccessToken(organization)
         const { id, name, display_name } = organization
-        storeAccessToken(token, this.authPath)
-        if (this.repoConfig) {
-            this.updateRepoConfig({ org: { id, name, display_name } })
+        this.dvcConfig.updateAuthConfig({
+            sso: { accessToken }
+        })
+        if (this.dvcConfig.isInRepo()) {
+            this.dvcConfig.updateRepoConfig({ org: { id, name, display_name } })
         }
-        return token
+        return accessToken
     }
 }

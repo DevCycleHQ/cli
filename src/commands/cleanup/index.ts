@@ -61,7 +61,8 @@ export default class Cleanup extends Base {
 
     public async run(): Promise<void> {
         const { flags, args } = await this.parse(Cleanup)
-        const codeInsightsConfig = this.repoConfig?.codeInsights || {}
+        const repoConfig = this.dvcConfig.getRepo()
+        const codeInsightsConfig = repoConfig?.codeInsights || {}
         const apiAuth = this.token && this.projectKey
             ? {
                 token: this.token,
@@ -110,7 +111,7 @@ export default class Cleanup extends Base {
         }
 
         const aliases = new Set()
-        Object.entries(getVariableAliases(flags, this.repoConfig)).forEach(([alias, variableKey]) => {
+        Object.entries(getVariableAliases(flags, repoConfig)).forEach(([alias, variableKey]) => {
             if (variableKey === args.key) aliases.add(alias)
         })
 

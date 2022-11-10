@@ -89,14 +89,15 @@ export default class Diff extends Base {
         this.useHTML = flags.format === 'markdown'
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
+        const repoConfig = this.dvcConfig.getRepo()
 
         const matchesBySdk = parseFiles(parsedDiff, {
-            clientNames: getClientNames(flags, this.repoConfig),
-            matchPatterns: getMatchPatterns(flags, this.repoConfig),
+            clientNames: getClientNames(flags, repoConfig),
+            matchPatterns: getMatchPatterns(flags, repoConfig),
             printPatterns: showRegex(flags)
         })
 
-        const variableAliases = getVariableAliases(flags, this.repoConfig)
+        const variableAliases = getVariableAliases(flags, repoConfig)
 
         const matchesByType = this.getMatchesByType(matchesBySdk, variableAliases)
 

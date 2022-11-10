@@ -1,17 +1,12 @@
-import jsYaml from 'js-yaml'
-import fs from 'fs'
-import { plainToClass } from 'class-transformer'
-import { validateSync } from 'class-validator'
-import { AuthConfig } from './config'
 import { clientCredentialsAuth } from '../api/clientCredentialsAuth'
-import { reportValidationErrors } from '../utils/reportValidationErrors'
+import DVCConfig from '../utils/files/dvcConfig'
 
 type SupportedFlags = {
     'client-id'?: string
     'client-secret'?: string
 }
 
-export async function getToken(authPath:string, flags: SupportedFlags): Promise<string> {
+export async function getToken(configuration:DVCConfig, flags: SupportedFlags): Promise<string> {
     const client_id = flags['client-id'] || process.env.DVC_CLIENT_ID
     const client_secret = flags['client-secret'] || process.env.DVC_CLIENT_SECRET
 
@@ -19,23 +14,11 @@ export async function getToken(authPath:string, flags: SupportedFlags): Promise<
         return clientCredentialsAuth(client_id, client_secret)
     }
 
-    if (authPath && fs.existsSync(authPath)) {
-        return getTokenFromAuthFile(authPath)
-    }
-
-    return ''
-}
-
-async function getTokenFromAuthFile(authPath: string): Promise<string> {
-    const rawConfig = jsYaml.load(fs.readFileSync(authPath, 'utf8'))
-    const config = plainToClass(AuthConfig, rawConfig)
-    const errors = validateSync(config)
-    reportValidationErrors('Authorization', errors)
-
-    if (config.sso) {
-        return config.sso.accessToken || ''
-    } else if (config.clientCredentials) {
-        const { client_id, client_secret } = config.clientCredentials
+    const authConfig = configuration.getAuth()
+    if (authConfig?.sso) {
+        return authConfig.sso.accessToken || ''
+    } else if (authConfig?.clientCredentials) {
+        const { client_id, client_secret } = authConfig.clientCredentials
         return clientCredentialsAuth(client_id, client_secret)
     }
 

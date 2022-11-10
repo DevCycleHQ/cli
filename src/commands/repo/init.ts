@@ -1,6 +1,5 @@
 import 'reflect-metadata'
 
-import { storeAccessToken } from '../../auth/config'
 import SSOAuth from '../../api/ssoAuth'
 import AuthCommand from '../authCommand'
 
@@ -10,15 +9,18 @@ export default class InitRepo extends AuthCommand {
     static examples = []
 
     public async run(): Promise<void> {
-        if (this.repoConfig) {
-            throw (new Error(`Repo configuration already exists at ${this.repoConfigPath}`))
+        if (this.dvcConfig.isInRepo()) {
+            throw (new Error(`Repo configuration already exists at ${this.dvcConfig.repoPath}`))
         }
 
-        this.repoConfig = await this.updateRepoConfig({})
+        this.dvcConfig.updateRepoConfig({})
 
         const ssoAuth = new SSOAuth(this.writer)
-        this.token = await ssoAuth.getAccessToken()
-        storeAccessToken(this.token, this.authPath)
+        const accessToken = await ssoAuth.getAccessToken()
+        this.token = accessToken
+        this.dvcConfig.updateAuthConfig({
+            sso: { accessToken }
+        })
 
         await this.setOrganization()
     }

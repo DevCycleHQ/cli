@@ -25,6 +25,7 @@ export default class AddAlias extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(AddAlias)
+        const repoConfig = this.dvcConfig.getRepo()
         const prompts = [
             {
                 name: 'alias',
@@ -45,7 +46,7 @@ export default class AddAlias extends Base {
             variable: flags.variable,
         })
 
-        const aliases:Record<string, string> = this.repoConfig?.codeInsights?.variableAliases || {}
+        const aliases:Record<string, string> = repoConfig?.codeInsights?.variableAliases || {}
         if (aliases[answers.alias] === answers.variable) {
             throw (new Error(`The alias ${answers.alias} already refers to the variable ${answers.variable}`))
         } else if (aliases[answers.alias]) {
@@ -61,9 +62,9 @@ export default class AddAlias extends Base {
         }
 
         aliases[answers.alias] = answers.variable
-        await this.updateRepoConfig({
+        await this.dvcConfig.updateRepoConfig({
             codeInsights: {
-                ...this.repoConfig?.codeInsights,
+                ...repoConfig?.codeInsights,
                 variableAliases: aliases
             }
         })

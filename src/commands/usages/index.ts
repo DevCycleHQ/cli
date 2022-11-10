@@ -49,7 +49,8 @@ export default class Usages extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(Usages)
-        const codeInsightsConfig = this.repoConfig?.codeInsights || {}
+        const repoConfig = this.dvcConfig.getRepo()
+        const codeInsightsConfig = repoConfig?.codeInsights || {}
 
         this.useMarkdown = flags.format === 'markdown'
 
@@ -94,12 +95,12 @@ export default class Usages extends Base {
         }
 
         const matchesBySdk = parseFiles(files, {
-            clientNames: getClientNames(flags, this.repoConfig),
-            matchPatterns: getMatchPatterns(flags, this.repoConfig),
+            clientNames: getClientNames(flags, repoConfig),
+            matchPatterns: getMatchPatterns(flags, repoConfig),
             printPatterns: showRegex(flags)
         })
 
-        const variableAliases = getVariableAliases(flags, this.repoConfig)
+        const variableAliases = getVariableAliases(flags, repoConfig)
         
         const matchesByVariable = this.getMatchesByVariable(matchesBySdk, variableAliases)
         

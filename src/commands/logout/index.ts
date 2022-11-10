@@ -1,4 +1,3 @@
-import fs from 'fs'
 import Base from '../base'
 
 export default class Logout extends Base {
@@ -7,9 +6,7 @@ export default class Logout extends Base {
     static examples = []
 
     public async run(): Promise<void> {
-        if (fs.existsSync(this.authPath)) {
-            fs.rmSync(this.authPath)
-        }
+        this.dvcConfig.deleteAuth()
         this.writer.showTogglebotSleep()
     }
 }
