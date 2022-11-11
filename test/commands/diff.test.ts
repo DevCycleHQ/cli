@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
+import 'reflect-metadata'
 import { expect, test } from '@oclif/test'
 import { AUTH_URL, BASE_URL } from '../../src/api/common'
+import MockDVCFiles from '../../src/utils/files/__mocks__/dvcFiles'
+import Base from '../../src/commands/base'
 
 process.env = {}
 
@@ -31,6 +34,13 @@ DevCycle Variable Changes:
 
   1. simple-case
 	   Location: test/utils/diff/sampleDiff.js:L1
+`
+
+const customConfig = `
+codeInsights:
+    matchPatterns:
+        js:
+        - checkVariable\\(\\w*,\\s*([^,)]*)              
 `
 
 const customExpected = `
@@ -163,6 +173,12 @@ DevCycle Variable Changes:
 	   Location: test/utils/diff/sampleDiff.js:L1
 `
 
+const aliasConfig = `
+codeInsights:
+    variableAliases:
+        SOME_ADDITION: some-addition
+        VARIABLES.SOME_REMOVAL: some-removal              
+`
 const aliasExpected = `
 DevCycle Variable Changes:
 
@@ -203,9 +219,9 @@ const formattedMarkdownNoHtmlExpected = `
   1. **optional-accessor**
 \t   Location: services/api/src/organizations/organizations.controller.ts:L177
 `
-
 describe('diff', () => {
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api'])
         .it('runs against a test file', (ctx) => {
@@ -213,6 +229,7 @@ describe('diff', () => {
         })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/e2e',
@@ -222,6 +239,11 @@ describe('diff', () => {
         })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles({
+            'repo': {
+                'customMatcherConfig.yml': customConfig
+            }
+        }))
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/e2e',
@@ -232,6 +254,7 @@ describe('diff', () => {
             })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/custom-pattern',
@@ -243,6 +266,7 @@ describe('diff', () => {
         })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .nock(AUTH_URL, (api) => {
             api.post('/oauth/token', {
                 grant_type: 'client_credentials',
@@ -260,6 +284,7 @@ describe('diff', () => {
         .it('runs with failed api authorization')
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api', '--pr-link', 'https://example.com'])
         .it('runs against a test file and linkifies the output', (ctx) => {
@@ -267,6 +292,7 @@ describe('diff', () => {
         })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .nock(AUTH_URL, (api) => {
             api.post('/oauth/token', {
                 grant_type: 'client_credentials',
@@ -277,7 +303,7 @@ describe('diff', () => {
                 access_token: 'token'
             })
         })
-        .nock(BASE_URL, { reqheaders: { authorization: 'token' } },(api) => {
+        .nock(BASE_URL, { reqheaders: { authorization: 'token' } }, (api) => {
             api.get(/v1\/projects\/project\/variables\/.*/)
                 .times(4)
                 .reply(200, (uri) => {
@@ -301,6 +327,7 @@ describe('diff', () => {
         })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/aliases/aliased', '--no-api'])
@@ -310,6 +337,7 @@ describe('diff', () => {
             })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/aliases/aliased', '--no-api',
@@ -321,6 +349,11 @@ describe('diff', () => {
             })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles({
+            'repo': {
+                'variableAliasConfig.yml': aliasConfig
+            }
+        }))
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/aliases/aliased', '--no-api',
@@ -331,6 +364,7 @@ describe('diff', () => {
                 expect(ctx.stdout).to.equal(aliasExpected)
             })
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown'
@@ -341,9 +375,10 @@ describe('diff', () => {
             })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown-no-html'
+            './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown-no-html',
         ])
         .it('formats the output as markdown without html',
             (ctx) => {
@@ -351,6 +386,7 @@ describe('diff', () => {
             })
 
     test
+        .stub(Base, 'storage', () => new MockDVCFiles())
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/optional-accessor', '--no-api', '--show-regex'

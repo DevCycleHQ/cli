@@ -1,16 +1,16 @@
-import { AuthConfig } from "../../auth/config"
-import DVCFiles from "./dvcFiles"
+import { AuthConfig } from '../../auth/config'
+import DVCFiles from './dvcFiles'
 import jsYaml from 'js-yaml'
-import { plainToInstance } from "class-transformer"
-import { validateSync } from "class-validator"
-import { reportValidationErrors } from "../reportValidationErrors"
-import { RepoConfigFromFile, UserConfigFromFile } from "../../types"
-import Writer from "../../ui/writer"
-import Roots from "./roots"
+import { plainToInstance } from 'class-transformer'
+import { validateSync } from 'class-validator'
+import { reportValidationErrors } from '../reportValidationErrors'
+import { RepoConfigFromFile, UserConfigFromFile } from '../../types'
+import Writer from '../../ui/writer'
+import Roots from './roots'
 
 export default class DVCConfig {
-    constructor(cliFiles: DVCFiles, writer: Writer) {
-        this.files = cliFiles
+    constructor(storage: DVCFiles, writer: Writer) {
+        this.files = storage
         this.writer = writer
     }
 

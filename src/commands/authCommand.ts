@@ -15,7 +15,7 @@ export default abstract class AuthCommand extends Base {
         }),
     }
 
-    public async setOrganization():Promise<void> {
+    public async setOrganization(): Promise<void> {
         const { flags } = await this.parse(AuthCommand)
         const organizations = await fetchOrganizations(this.token)
         if (flags.headless && !flags.org) {
@@ -27,7 +27,7 @@ export default abstract class AuthCommand extends Base {
         await this.setProject()
     }
 
-    public async setProject():Promise<void> {
+    public async setProject(): Promise<void> {
         const { flags } = await this.parse(AuthCommand)
         const projects = await fetchProjects(this.token)
         if (flags.headless && !flags.project) {
@@ -37,7 +37,7 @@ export default abstract class AuthCommand extends Base {
         await this.saveProject(selectedProject)
     }
 
-    public async saveProject(project:Project) {
+    public async saveProject(project: Project): Promise<void> {
         if (this.dvcConfig.isInRepo()) {
             await this.dvcConfig.updateRepoConfig({ project: project.key })
         } else {
@@ -45,7 +45,7 @@ export default abstract class AuthCommand extends Base {
         }
     }
 
-    public async retrieveProjectFromConfig(projects:Project[]): Promise<Project | null> {
+    public async retrieveProjectFromConfig(projects: Project[]): Promise<Project | null> {
         const savedProject = this.dvcConfig.getRepo()?.project || this.dvcConfig.getUser()?.project
         if (savedProject) {
             const matchingProject = projects.find((project) => project.key === savedProject)
@@ -65,7 +65,7 @@ export default abstract class AuthCommand extends Base {
         }
     }
 
-    public async projectFromFlag(projects: Project[]) {
+    public async projectFromFlag(projects: Project[]): Promise<Project> {
         const { flags } = await this.parse(AuthCommand)
         const matchingProject = projects.find((project) => project.key === flags.project)
         if (!matchingProject) {
@@ -95,7 +95,7 @@ export default abstract class AuthCommand extends Base {
         }
     }
 
-    async selectOrganization(organization: Organization):Promise<string> {
+    async selectOrganization(organization: Organization): Promise<string> {
         const ssoAuth = new SSOAuth(this.writer)
         const accessToken = await ssoAuth.getAccessToken(organization)
         const { id, name, display_name } = organization

@@ -4,9 +4,6 @@ import {
     IsString,
     ValidateNested
 } from 'class-validator'
-import fs from 'fs'
-import path from 'path'
-import jsYaml from 'js-yaml'
 
 export class ClientCredentialsAuthConfig {
     @IsString()

@@ -2,11 +2,16 @@ import fs from 'fs'
 import path from 'path'
 
 export default class DVCFiles {
-    public defineRoot(root: string, path: string) {
-        this.fileRoots[root] = path
+    public defineRoot(root: string, filepath: string): void {
+        if (path.extname(filepath) === '.yml') {
+            this.defaultFiles[root] = path.basename(filepath)
+            this.fileRoots[root] = path.dirname(filepath)
+        } else {
+            this.fileRoots[root] = filepath
+        }
     }
 
-    public saveToFile(root: string, contents: string, filePath?: string) {
+    public saveToFile(root: string, contents: string, filePath?: string): void {
         const fullPath = this.getFullPath(root, filePath || this.defaultFiles[root])
         this.guaranteeDirectoryExists(fullPath)
         fs.writeFileSync(fullPath, contents)
@@ -14,12 +19,6 @@ export default class DVCFiles {
 
     public loadFromFile(root: string, file?: string): string {
         const filePath = file || this.defaultFiles[root]
-        console.log({
-            root,
-            filePath,
-            file,
-            indexFile: this.defaultFiles[root]
-        })
         if (!this.doesFileExist(root, filePath)) {
             return ''
         }
@@ -38,6 +37,9 @@ export default class DVCFiles {
     }
 
     public getFullPath(root: string, file?: string): string {
+        if (!this.fileRoots[root]) {
+            throw (new Error(`File root ${root} is not defined`))
+        }
         return path.join(this.fileRoots[root], file || this.defaultFiles[root])
     }
 
@@ -48,7 +50,7 @@ export default class DVCFiles {
         }
     }
 
-    private defaultFiles:Record<string, string> = {
+    private defaultFiles: Record<string, string> = {
         auth: 'auth.yml',
         user: 'user.yml',
         repo: 'config.yml'

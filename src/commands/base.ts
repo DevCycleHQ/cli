@@ -9,10 +9,10 @@ import Writer from '../ui/writer'
 import DVCConfig from '../utils/files/dvcConfig'
 import DVCFiles from '../utils/files/dvcFiles'
 import Roots from '../utils/files/roots'
-import path, { dirname } from 'path'
 
 export default abstract class Base extends Command {
     static hidden = true
+    static storage: DVCFiles = new DVCFiles()
     static flags = {
         'config-path': Flags.string({
             description: 'Override the default location to look for the user.yml file',
@@ -60,17 +60,20 @@ export default abstract class Base extends Command {
     runsInRepo = false
 
     writer: Writer = new Writer()
-    cliFiles: DVCFiles = new DVCFiles()
-    dvcConfig: DVCConfig = new DVCConfig(this.cliFiles, this.writer)
+    dvcConfig: DVCConfig = new DVCConfig(Base.storage, this.writer)
 
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
+
+        if (flags['no-api']) {
+            return
+        }
 
         this.token = await getToken(this.dvcConfig, flags)
         if (!this.hasToken()) {
             if (this.authRequired) {
                 throw new Error('Authorization is required to use this command.')
-            } else if (this.authSuggested && !flags['no-api']) {
+            } else if (this.authSuggested) {
                 this.writer.warningMessage('This command has limited functionality without Authorization.' +
                     'Use the "--no-api" flag to suppress this warning')
             }
@@ -81,10 +84,10 @@ export default abstract class Base extends Command {
     async init(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
         this.writer.headless = flags.headless
-        
-        this.cliFiles.defineRoot(Roots.auth, await this.getAuthPath())
-        this.cliFiles.defineRoot(Roots.user, await this.getUserPath())
-        this.cliFiles.defineRoot(Roots.repo, await this.getRepoPath())
+
+        Base.storage.defineRoot(Roots.auth, await this.getAuthPath())
+        Base.storage.defineRoot(Roots.user, await this.getUserPath())
+        Base.storage.defineRoot(Roots.repo, await this.getRepoPath())
 
         const userConfig = this.dvcConfig.getUser()
         const repoConfig = this.dvcConfig.getRepo()
@@ -135,3 +138,5 @@ export default abstract class Base extends Command {
         return this.token !== ''
     }
 }
+
+module.exports = Base
