@@ -33,3 +33,10 @@ if (dvcClient.variable(user, "simple-case", true).value) {
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
 
 console.log(useVariableValue("simple-case", true))
+
+function hello() {
+    console.log("HELLO")
+    dvcClient.variable(user, "simple-case", true).onUpdate((value) => {
+        heroText.innerHTML = value
+    })
+}
