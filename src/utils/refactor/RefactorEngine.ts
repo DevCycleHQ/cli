@@ -4,6 +4,7 @@ import estraverse from 'estraverse'
 import chalk from 'chalk'
 import { Literal, Expression, Identifier, ObjectExpression, Property } from 'estree'
 import { Variable } from '../../commands/cleanup/types'
+import { getCallExpression, isMemberExpression } from './utils'
 
 export type EngineOptions = {
     output?: 'console' | 'file'
@@ -140,7 +141,7 @@ export abstract class RefactorEngine {
             let identifier
             if (node.callee.type === 'Identifier') {
                 identifier = node.callee
-            } else if (node.callee.type === 'MemberExpression' && node.callee.property.type === 'Identifier') {
+            } else if (isMemberExpression(node.callee) && node.callee.property.type === 'Identifier') {
                 identifier = node.callee.property
             }
 
@@ -186,10 +187,9 @@ export abstract class RefactorEngine {
         const engine = this
         estraverse.replace(this.ast, {
             enter: function(node) {
+                // Refactor DVC object properties (ie. key, value, isDefaulted)
                 if (
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    (node.type === 'MemberExpression' || node.type === 'OptionalMemberExpression') &&
+                    isMemberExpression(node) &&
                     RefactorEngine.isDVCObject(node.object)
                 ) {
                     const propertyName = (node.property as Identifier).name
@@ -202,6 +202,20 @@ export abstract class RefactorEngine {
                         engine.changed = true
                         return valueLiteral
                     }
+                }
+                // Refactor DVC object methods (ie. onUpdate)
+                const callExpression = node.type === 'ExpressionStatement' && getCallExpression(node)
+                const memberExpression = callExpression &&
+                    isMemberExpression(callExpression.callee) &&
+                    callExpression.callee
+                if (
+                    memberExpression &&
+                    RefactorEngine.isDVCObject(memberExpression.object) &&
+                    memberExpression.property?.type === 'Identifier' &&
+                    memberExpression.property.name === 'onUpdate'
+                ) {
+                    engine.changed = true
+                    return this.remove()
                 }
             },
             fallback: 'iteration',

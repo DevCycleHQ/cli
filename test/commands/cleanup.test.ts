@@ -22,6 +22,10 @@ console.log('obj.value is truthy')
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
 
 console.log(true)
+
+function hello() {
+    console.log("HELLO")
+}
 `
 
 const expectedFalse = `console.log('isDefaulted: ' + true)
@@ -37,6 +41,10 @@ const x = 0
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
 
 console.log(false)
+
+function hello() {
+    console.log("HELLO")
+}
 `
 
 const expectedNumber = `const simpleCaseValue = 3
@@ -60,6 +68,10 @@ console.log('obj.value is truthy')
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
 
 console.log(3)
+
+function hello() {
+    console.log("HELLO")
+}
 `
 
 const expectedString = `const simpleCaseValue = "My String"
@@ -82,6 +94,10 @@ console.log('obj.value is truthy')
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
 
 console.log("My String")
+
+function hello() {
+    console.log("HELLO")
+}
 `
 
 const expectedJSON = `const simpleCaseValue = { "foo": "bar" }
@@ -104,6 +120,10 @@ console.log('obj.value is truthy')
 console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
 
 console.log({ "foo": "bar" })
+
+function hello() {
+    console.log("HELLO")
+}
 `
 
 const expectedAlias = `console.log('isDefaulted: ' + true)
@@ -119,6 +139,10 @@ const x = 0
 console.log(false)
 
 console.log(false)
+
+function hello() {
+    console.log("HELLO")
+}
 `
 
 describe('cleanup', () => {
