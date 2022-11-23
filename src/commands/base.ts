@@ -12,7 +12,7 @@ import Roots from '../utils/files/roots'
 
 export default abstract class Base extends Command {
     static hidden = true
-    static storage: DVCFiles = new DVCFiles()
+    public static storage: DVCFiles = new DVCFiles()
     static flags = {
         'config-path': Flags.string({
             description: 'Override the default location to look for the user.yml file',
@@ -60,7 +60,7 @@ export default abstract class Base extends Command {
     runsInRepo = false
 
     writer: Writer = new Writer()
-    dvcConfig: DVCConfig = new DVCConfig(Base.storage, this.writer)
+    dvcConfig: DVCConfig
 
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
@@ -84,6 +84,7 @@ export default abstract class Base extends Command {
     async init(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
         this.writer.headless = flags.headless
+        this.dvcConfig = new DVCConfig(Base.storage, this.writer)
 
         Base.storage.defineRoot(Roots.auth, await this.getAuthPath())
         Base.storage.defineRoot(Roots.user, await this.getUserPath())
@@ -138,5 +139,3 @@ export default abstract class Base extends Command {
         return this.token !== ''
     }
 }
-
-module.exports = Base

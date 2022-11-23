@@ -1,24 +1,25 @@
 import fs from 'fs'
 import path from 'path'
+import defaultFiles from './defaultFiles'
 
 export default class DVCFiles {
     public defineRoot(root: string, filepath: string): void {
         if (path.extname(filepath) === '.yml') {
-            this.defaultFiles[root] = path.basename(filepath)
-            this.fileRoots[root] = path.dirname(filepath)
+            this.rootFiles[root] = path.basename(filepath)
+            this.rootDirectories[root] = path.dirname(filepath)
         } else {
-            this.fileRoots[root] = filepath
+            this.rootDirectories[root] = filepath
         }
     }
 
     public saveToFile(root: string, contents: string, filePath?: string): void {
-        const fullPath = this.getFullPath(root, filePath || this.defaultFiles[root])
+        const fullPath = this.getFullPath(root, filePath || this.rootFiles[root])
         this.guaranteeDirectoryExists(fullPath)
         fs.writeFileSync(fullPath, contents)
     }
 
     public loadFromFile(root: string, file?: string): string {
-        const filePath = file || this.defaultFiles[root]
+        const filePath = file || this.rootFiles[root]
         if (!this.doesFileExist(root, filePath)) {
             return ''
         }
@@ -26,21 +27,21 @@ export default class DVCFiles {
     }
 
     public deleteFile(root: string, file?: string): void {
-        const fullPath = this.getFullPath(root, file || this.defaultFiles[root])
+        const fullPath = this.getFullPath(root, file || this.rootFiles[root])
         if (fs.existsSync(fullPath)) {
             fs.rmSync(fullPath)
         }
     }
 
     public doesFileExist(root: string, file?: string): boolean {
-        return fs.existsSync(this.getFullPath(root, file || this.defaultFiles[root]))
+        return fs.existsSync(this.getFullPath(root, file || this.rootFiles[root]))
     }
 
     public getFullPath(root: string, file?: string): string {
-        if (!this.fileRoots[root]) {
+        if (!this.rootDirectories[root]) {
             throw (new Error(`File root ${root} is not defined`))
         }
-        return path.join(this.fileRoots[root], file || this.defaultFiles[root])
+        return path.join(this.rootDirectories[root], file || this.rootFiles[root])
     }
 
     private guaranteeDirectoryExists(filePath: string) {
@@ -50,11 +51,6 @@ export default class DVCFiles {
         }
     }
 
-    private defaultFiles: Record<string, string> = {
-        auth: 'auth.yml',
-        user: 'user.yml',
-        repo: 'config.yml'
-    }
-
-    private fileRoots: Record<string, string> = {}
+    protected rootFiles: Record<string, string> = { ...defaultFiles }
+    protected rootDirectories: Record<string, string> = {}
 }

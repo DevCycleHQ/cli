@@ -2,7 +2,7 @@
 import 'reflect-metadata'
 import { expect, test } from '@oclif/test'
 import { AUTH_URL, BASE_URL } from '../../src/api/common'
-import MockDVCFiles from '../../src/utils/files/__mocks__/dvcFiles'
+import MockDVCFiles from '../../src/utils/files/mocks/mockDvcFiles'
 import Base from '../../src/commands/base'
 
 process.env = {}
@@ -219,9 +219,9 @@ const formattedMarkdownNoHtmlExpected = `
   1. **optional-accessor**
 \t   Location: services/api/src/organizations/organizations.controller.ts:L177
 `
-describe('diff', () => {
+describe('diff command', () => {
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api'])
         .it('runs against a test file', (ctx) => {
@@ -229,7 +229,7 @@ describe('diff', () => {
         })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/e2e',
@@ -239,11 +239,13 @@ describe('diff', () => {
         })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles({
-            'repo': {
-                'customMatcherConfig.yml': customConfig
-            }
-        }))
+        .do(() => {
+            Base.storage = new MockDVCFiles({
+                'repo': {
+                    'customMatcherConfig.yml': customConfig
+                }
+            })
+        })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/e2e',
@@ -254,7 +256,7 @@ describe('diff', () => {
             })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/custom-pattern',
@@ -266,7 +268,11 @@ describe('diff', () => {
         })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => {
+            console.log(`before ${Base.storage.constructor.name}`)
+            Base.storage = new MockDVCFiles()
+            console.log(`after ${Base.storage.constructor.name}`)
+        })
         .nock(AUTH_URL, (api) => {
             api.post('/oauth/token', {
                 grant_type: 'client_credentials',
@@ -284,7 +290,7 @@ describe('diff', () => {
         .it('runs with failed api authorization')
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api', '--pr-link', 'https://example.com'])
         .it('runs against a test file and linkifies the output', (ctx) => {
@@ -292,7 +298,7 @@ describe('diff', () => {
         })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .nock(AUTH_URL, (api) => {
             api.post('/oauth/token', {
                 grant_type: 'client_credentials',
@@ -327,7 +333,7 @@ describe('diff', () => {
         })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/aliases/aliased', '--no-api'])
@@ -337,7 +343,7 @@ describe('diff', () => {
             })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/aliases/aliased', '--no-api',
@@ -349,11 +355,13 @@ describe('diff', () => {
             })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles({
-            'repo': {
-                'variableAliasConfig.yml': aliasConfig
-            }
-        }))
+        .do(() => {
+            Base.storage = new MockDVCFiles({
+                'repo': {
+                    'variableAliasConfig.yml': aliasConfig
+                }
+            })
+        })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/aliases/aliased', '--no-api',
@@ -364,7 +372,7 @@ describe('diff', () => {
                 expect(ctx.stdout).to.equal(aliasExpected)
             })
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown'
@@ -375,7 +383,7 @@ describe('diff', () => {
             })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown-no-html',
@@ -386,7 +394,7 @@ describe('diff', () => {
             })
 
     test
-        .stub(Base, 'storage', () => new MockDVCFiles())
+        .do(() => { Base.storage = new MockDVCFiles() })
         .stdout()
         .command(['diff', '--file',
             './test/utils/diff/samples/optional-accessor', '--no-api', '--show-regex'

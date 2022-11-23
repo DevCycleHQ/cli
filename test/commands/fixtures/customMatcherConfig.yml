@@ -1,4 +1,0 @@
-codeInsights:
-  matchPatterns:
-    js:
-      - checkVariable\(\w*,\s*([^,)]*)
