@@ -103,7 +103,6 @@ describe('status command headless', () => {
         .stub(Base, 'storage', loggedInAsUser() as any)
         .stdout()
         .command(['status', '--headless'])
-        .do((ctx) => console.error(ctx.stdout))
         .it('shows headless logged in state correctly with user config', (ctx) => {
             const output = JSON.parse(ctx.stdout)
             expect(output).property('repoConfigExists', false)
