@@ -90,7 +90,6 @@ export const updateEnvironment = async (
 
 export const fetchEnvironments = async (token: string, project_id: string): Promise<Environment[]> => {
     const url = new URL(`/v1/projects/${project_id}/environments`, BASE_URL)
-    console.log(url.href)
     const response = await axios.get(url.href, {
         headers: {
             'Content-Type': 'application/json',

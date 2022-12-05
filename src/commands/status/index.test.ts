@@ -52,9 +52,9 @@ const loggedInAsRepo = () => {
     })
 }
 
-// The "as any" lines are necessary because the Typescript definitions prevent
-// 'stub' from being used to stub non-function values, but the actual code works
-// fine with non-function values
+// "as any" is necessary because the Typescript definitions prevent 'stub' from
+// being used to stub non-function values, but the actual code works fine with
+// non-function values
 
 describe('status command headless', () => {
     test
