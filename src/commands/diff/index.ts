@@ -316,8 +316,12 @@ export default class Diff extends Base {
 
     private logLocations(matches: VariableDiffMatch[], mode: 'add' | 'remove', prLink?: string) {
         const formatPrLink = (fileName: string, line: number) => {
-            return `[${fileName}:L${line}](${
-                prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line})`
+            const displayName = `${fileName}:L${line}`
+            const link = prLink?.includes('bitbucket')
+                ? `${prLink}#L${fileName}${mode === 'add' ? 'T' : 'F'}${line}`
+                : `${prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line}`
+
+            return `[${displayName}](${link})`
         }
 
         matches.sort((a, b) => {

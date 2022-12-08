@@ -105,6 +105,35 @@ DevCycle Variable Changes:
 	   Location: [test/utils/diff/sampleDiff.js:L1](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3L1)
 `
 
+const linkedBitbucketExpected = `
+DevCycle Variable Changes:
+
+🟢  6 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: [test/utils/diff/sampleDiff.js:L1](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT1)
+  2. duplicate-case
+	   Locations:
+	    - [test/utils/diff/sampleDiff.js:L2](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT2)
+	    - [test/utils/diff/sampleDiff.js:L3](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT3)
+  3. single-quotes
+	   Location: [test/utils/diff/sampleDiff.js:L5](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT5)
+  4. multi-line
+	   Location: [test/utils/diff/sampleDiff.js:L11](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT11)
+  5. multi-line-comment
+	   Location: [test/utils/diff/sampleDiff.js:L21](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT21)
+  6. duplicate-same-line
+\t   Location: [test/utils/diff/sampleDiff.js:L26](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT26)
+
+🔴 Removed
+
+  1. simple-case
+	   Location: [test/utils/diff/sampleDiff.js:L1](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsF1)
+`
+
 const apiExpected = `
 DevCycle Variable Changes:
 
@@ -264,6 +293,16 @@ describe('diff', () => {
         .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api', '--pr-link', 'https://example.com'])
         .it('runs against a test file and linkifies the output', (ctx) => {
             expect(ctx.stdout).to.equal(linkedExpected)
+        })
+
+    test
+        .stdout()
+        .command([
+            'diff', '--file', './test/utils/diff/samples/e2e', '--no-api',
+            '--pr-link', 'https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7'
+        ])
+        .it('runs against a test file and linkifies the output for a bitbucket PR', (ctx) => {
+            expect(ctx.stdout).to.equal(linkedBitbucketExpected)
         })
 
     test
