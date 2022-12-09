@@ -10,9 +10,13 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
-    "target": "es2019"
+    "target": "es2019",
+    "composite": true
   },
   "include": [
     "src/**/*"
+  ],
+  "exclude": [
+    "**/samples/**"
   ]
 }

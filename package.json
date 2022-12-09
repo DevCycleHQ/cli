@@ -99,7 +99,7 @@
     "lint": "eslint . --ext .ts --config .eslintrc",
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "yarn build && oclif manifest && oclif readme --multi",
-    "test": "mocha --forbid-only \"src/**/*.test.ts\"",
+    "test": "mocha --parallel --forbid-only \"src/**/*.test.ts\"",
     "version": "oclif readme --multi && git add README.md"
   },
   "engines": {

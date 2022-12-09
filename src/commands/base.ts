@@ -6,13 +6,12 @@ import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
 import Writer from '../ui/writer'
-import DVCConfig from '../utils/files/dvcConfig'
 import DVCFiles from '../utils/files/dvcFiles'
+import DVCConfig from '../utils/files/dvcConfig'
 import Roots from '../utils/files/roots'
 
 export default abstract class Base extends Command {
     static hidden = true
-    public static storage: DVCFiles = new DVCFiles()
     static flags = {
         'config-path': Flags.string({
             description: 'Override the default location to look for the user.yml file',
@@ -82,13 +81,14 @@ export default abstract class Base extends Command {
     }
 
     async init(): Promise<void> {
+        const storage = DVCFiles.getInstance()
         const { flags } = await this.parse(this.constructor as typeof Base)
         this.writer.headless = flags.headless
-        this.dvcConfig = new DVCConfig(Base.storage, this.writer)
+        this.dvcConfig = new DVCConfig(this.writer)
 
-        Base.storage.defineRoot(Roots.auth, await this.getAuthPath())
-        Base.storage.defineRoot(Roots.user, await this.getUserPath())
-        Base.storage.defineRoot(Roots.repo, await this.getRepoPath())
+        storage.defineRoot(Roots.auth, await this.getAuthPath())
+        storage.defineRoot(Roots.user, await this.getUserPath())
+        storage.defineRoot(Roots.repo, await this.getRepoPath())
 
         const userConfig = this.dvcConfig.getUser()
         const repoConfig = this.dvcConfig.getRepo()

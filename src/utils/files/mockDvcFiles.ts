@@ -1,4 +1,4 @@
-import DVCFiles from '../dvcFiles'
+import DVCFiles from './dvcFiles'
 
 export default class MockDVCFiles extends DVCFiles {
     constructor(initialFiles?: Record<string, Record<string, string>>) {

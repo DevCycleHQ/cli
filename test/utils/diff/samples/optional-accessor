@@ -3,7 +3,7 @@ index 429092e6..2698d364 100644
 --- a/services/api/src/organizations/organizations.controller.ts
 +++ b/services/api/src/organizations/organizations.controller.ts
 @@ -26,6 +26,7 @@ import { UpdateOrganizationDTO } from './dto/update-organization.dto'
- import { NoPersonalOrganizationGuard } from '../utils/guards'
+ import { NoPersonalOrganizationGuard } from '@utils/guards'
  import { RequireScopes, PermissionsGuard } from 'lib/nest/permissions-guard/src'
  import { DeleteOrganizationsDTO } from './dto/delete-organization.dto'
 +import { DVCClient } from 'sdk/nodejs-server-sdk/types'

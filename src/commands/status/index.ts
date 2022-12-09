@@ -1,3 +1,4 @@
+import DVCFiles from '../../utils/files/dvcFiles'
 import Roots from '../../utils/files/roots'
 import Base from '../base'
 
@@ -26,7 +27,7 @@ export default class ShowStatus extends Base {
         }
 
         this.writer.statusMessage(`User config path ${this.dvcConfig.userPath}`)
-        if (Base.storage.doesFileExist(Roots.user)) {
+        if (DVCFiles.getInstance().doesFileExist(Roots.user)) {
             this.writer.successMessage('User config loaded')
         } else {
             this.writer.failureMessage('No user config loaded.')

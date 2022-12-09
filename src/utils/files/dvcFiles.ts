@@ -2,7 +2,21 @@ import fs from 'fs'
 import path from 'path'
 import defaultFiles from './defaultFiles'
 
+const typedGlobal = global as {dvcFilesInstance?: DVCFiles}
 export default class DVCFiles {
+    public static getInstance():DVCFiles {
+        // this is the only way I was able to get a consistent singleton across
+        // multiple import paths, so that the tests can mock this out
+        if(!typedGlobal.dvcFilesInstance) {
+            typedGlobal.dvcFilesInstance = new DVCFiles()
+        }
+        return typedGlobal.dvcFilesInstance
+    }
+
+    public static setInstance(instance:DVCFiles) {
+        typedGlobal.dvcFilesInstance = instance
+    }
+
     public defineRoot(root: string, filepath: string): void {
         if (path.extname(filepath) === '.yml') {
             this.rootFiles[root] = path.basename(filepath)

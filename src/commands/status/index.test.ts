@@ -3,10 +3,10 @@ import { expect, test } from '@oclif/test'
 import jsYaml from 'js-yaml'
 import { RepoConfigFromFile, UserConfigFromFile } from '../../types'
 import { AuthConfig } from '../../auth/config'
-import MockDVCFiles from '../../utils/files/mocks/mockDvcFiles'
-import Base from '../base'
 import defaultFiles from '../../utils/files/defaultFiles'
 import Roots from '../../utils/files/roots'
+import MockDVCFiles from '../../utils/files/mockDvcFiles'
+import DVCFiles from '../../utils/files/dvcFiles'
 
 const loggedInAsUser = () => {
     const auth = new AuthConfig()
@@ -52,13 +52,9 @@ const loggedInAsRepo = () => {
     })
 }
 
-// "as any" is necessary because the Typescript definitions prevent 'stub' from
-// being used to stub non-function values, but the actual code works fine with
-// non-function values
-
 describe('status command headless', () => {
     test
-        .stub(Base, 'storage', new MockDVCFiles() as any)
+        .do(() => DVCFiles.setInstance(new MockDVCFiles()))
         .stdout()
         .command(['status', '--headless'])
         .it('uses the default config paths', (ctx) => {
@@ -72,7 +68,7 @@ describe('status command headless', () => {
         })
     
     test
-        .stub(Base, 'storage', new MockDVCFiles() as any)
+        .do(() => DVCFiles.setInstance(new MockDVCFiles()))
         .stdout()
         .command([
             'status',
@@ -89,10 +85,10 @@ describe('status command headless', () => {
         })
 
     test
-        .stub(Base, 'storage', new MockDVCFiles() as any)
+        .do(() => DVCFiles.setInstance(new MockDVCFiles()))
         .stdout()
         .command(['status', '--headless'])
-        .it('shows headless logged out state correctly', (ctx) => {
+        .it('shows logged out state', (ctx) => {
             const output = JSON.parse(ctx.stdout)
             expect(output).property('repoConfigExists', false)
             expect(output).property('userConfigExists', false)
@@ -100,10 +96,10 @@ describe('status command headless', () => {
         })
 
     test
-        .stub(Base, 'storage', loggedInAsUser() as any)
+        .do(() => DVCFiles.setInstance(loggedInAsUser()))
         .stdout()
         .command(['status', '--headless'])
-        .it('shows headless logged in state correctly with user config', (ctx) => {
+        .it('shows logged in state with user config', (ctx) => {
             const output = JSON.parse(ctx.stdout)
             expect(output).property('repoConfigExists', false)
             expect(output).property('userConfigExists', true)
@@ -111,10 +107,10 @@ describe('status command headless', () => {
         })
 
     test
-        .stub(Base, 'storage', loggedInAsRepo() as any)
+        .do(() => DVCFiles.setInstance(loggedInAsRepo()))
         .stdout()
         .command(['status', '--headless'])
-        .it('shows headless logged in state correctly with repo config', (ctx) => {
+        .it('shows logged in state with repo config', (ctx) => {
             const output = JSON.parse(ctx.stdout)
             expect(output).property('repoConfigExists', true)
             expect(output).property('userConfigExists', false)
@@ -124,10 +120,10 @@ describe('status command headless', () => {
 
 describe('status command', () => {
     test
-        .stub(Base, 'storage', new MockDVCFiles() as any)
+        .do(() => DVCFiles.setInstance(new MockDVCFiles()))
         .stdout()
         .command(['status'])
-        .it('shows logged out state correctly', (ctx) => {
+        .it('shows logged out state', (ctx) => {
             expect(ctx.stdout).to.contain('No repo config loaded')
             expect(ctx.stdout).to.contain('No user config loaded')
             expect(ctx.stdout).to.contain('Currently not logged in to DevCycle')

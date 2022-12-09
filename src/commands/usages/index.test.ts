@@ -1,4 +1,6 @@
 import { expect, test } from '@oclif/test'
+import DVCFiles from '../../utils/files/dvcFiles'
+import MockDVCFiles from '../../utils/files/mockDvcFiles'
 
 const nodeExpected = `
 DevCycle Variable Usage:
@@ -40,6 +42,7 @@ DevCycle Variable Usage:
 
 describe('usages', () => {
     test
+        .do(() => DVCFiles.setInstance(new MockDVCFiles()))
         .stdout()
         .command(['usages', '--include', 'test/utils/usages/samples/nodejs.js'])
         .it('runs against a node test file', (ctx) => {
@@ -47,6 +50,7 @@ describe('usages', () => {
         })
 
     test
+        .do(() => DVCFiles.setInstance(new MockDVCFiles()))
         .stdout()
         .command(['usages', '--include', 'test/utils/usages/samples/react.js'])
         .it('runs against a react test file', (ctx) => {
@@ -54,6 +58,7 @@ describe('usages', () => {
         })
 
     test
+        .do(() => DVCFiles.setInstance(new MockDVCFiles()))
         .stdout()
         .command(['usages', '--include', 'test/utils/usages/samples/golang.go'])
         .it('runs against a go test file', (ctx) => {

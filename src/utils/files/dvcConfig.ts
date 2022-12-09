@@ -9,8 +9,8 @@ import Writer from '../../ui/writer'
 import Roots from './roots'
 
 export default class DVCConfig {
-    constructor(storage: DVCFiles, writer: Writer) {
-        this.files = storage
+    constructor(writer: Writer) {
+        this.files = DVCFiles.getInstance()
         this.writer = writer
     }
 
@@ -71,6 +71,7 @@ export default class DVCConfig {
         if (this.files.doesFileExist(Roots.repo)) {
             rawConfig = this.files.loadFromFile(Roots.repo)
         }
+
         if (!rawConfig) {
             return null
         }
