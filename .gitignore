@@ -3,3 +3,4 @@
 .devcycle
 node_modules
 dist
+tsconfig.tsbuildinfo
