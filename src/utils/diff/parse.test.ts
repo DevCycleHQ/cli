@@ -1,7 +1,7 @@
 import * as path from 'node:path'
 import { expect } from '@oclif/test'
-import { executeFileDiff } from '../../../src/utils/diff/fileDiff'
-import { parseFiles } from '../../../src/utils/diff/parse'
+import { executeFileDiff } from './fileDiff'
+import { parseFiles } from './parse'
 
 describe('parse', () => {
     it('identifies no change when match is in normal line', () => {
