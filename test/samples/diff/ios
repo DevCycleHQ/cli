@@ -1,8 +1,8 @@
-diff --git a/test/utils/diff/sampleDiff.swift b/test/utils/diff/sampleDiff.swift
+diff --git a/test/samples/diff/sampleDiff.swift b/test/samples/diff/sampleDiff.swift
 new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
-+++ b/test/utils/diff/sampleDiff.swift
++++ b/test/samples/diff/sampleDiff.swift
 @@ -1,1 +1,9 @@
 +dvcClient.variable(key: "simple-case", defaultValue: true)
 +

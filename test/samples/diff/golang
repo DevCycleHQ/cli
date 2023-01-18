@@ -1,8 +1,8 @@
-diff --git a/test/utils/diff/sampleDiff.go b/test/utils/diff/sampleDiff.go
+diff --git a/test/samples/diff/sampleDiff.go b/test/samples/diff/sampleDiff.go
 new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
-+++ b/test/utils/diff/sampleDiff.go
++++ b/test/samples/diff/sampleDiff.go
 @@ -1,1 +1,12 @@
 +dvcClient.DevCycleApi.Variable(auth, user, "simple-case", true)
 +

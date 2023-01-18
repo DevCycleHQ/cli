@@ -79,6 +79,7 @@ export default class Diff extends Base {
     useHTML = false
 
     public async run(): Promise<void> {
+        console.error({cwd: process.cwd()})
         const { args, flags } = await this.parse(Diff)
 
         if (!flags.file && !args['diff-pattern']) {

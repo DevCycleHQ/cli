@@ -1,11 +1,11 @@
-diff --git a/test/utils/diff/sampleDiff b/test/utils/diff/sampleDiff
+diff --git a/test/samples/diff/sampleDiff b/test/samples/diff/sampleDiff
 new file mode 100644
 index 00000000..e69de29b
-diff --git a/test/utils/diff/sampleDiff.js b/test/utils/diff/sampleDiff.js
+diff --git a/test/samples/diff/sampleDiff.js b/test/samples/diff/sampleDiff.js
 new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
-+++ b/test/utils/diff/sampleDiff.js
++++ b/test/samples/diff/sampleDiff.js
 @@ -1,1 +1,21 @@
 +dvcClient.variable(user, "exists", true)
 +dvcClient.variable(user, "no-exists", false)

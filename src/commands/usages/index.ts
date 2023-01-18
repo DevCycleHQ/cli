@@ -83,7 +83,7 @@ export default class Usages extends Base {
                 name: filepath,
                 lines
             }
-        } 
+        }
 
         const files = lsFiles()
             .filter((filepath) => includeFile(filepath) && !excludeFile(filepath))

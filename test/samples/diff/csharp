@@ -1,8 +1,8 @@
-diff --git a/test/utils/diff/sampleDiff.cs b/test/utils/diff/sampleDiff.cs
+diff --git a/test/samples/diff/sampleDiff.cs b/test/samples/diff/sampleDiff.cs
 new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
-+++ b/test/utils/diff/sampleDiff.cs
++++ b/test/samples/diff/sampleDiff.cs
 @@ -1,1 +1,13 @@
 +dvcClient.VariableAsync(user, "simple-case", true)
 +

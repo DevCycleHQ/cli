@@ -3,9 +3,12 @@ import { expect } from '@oclif/test'
 import { executeFileDiff } from './fileDiff'
 import { parseFiles } from './parse'
 
+const makeSamplePath = (sample: string) =>
+    path.join(__dirname, '../../../test/samples/diff/', sample)
+
 describe('parse', () => {
     it('identifies no change when match is in normal line', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, './samples/no-change'))
+        const parsedDiff = executeFileDiff(makeSamplePath('no-change'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({})
@@ -13,7 +16,7 @@ describe('parse', () => {
 
     describe('multi-line', () => {
         it('identifies an addition in a multi-line method call', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/multiline/addition'))
+            const parsedDiff = executeFileDiff(makeSamplePath('multiline/addition'))
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({
@@ -27,7 +30,7 @@ describe('parse', () => {
         })
 
         it('identifies a deletion in a multi-line method call', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/multiline/deletion'))
+            const parsedDiff = executeFileDiff(makeSamplePath('multiline/deletion'))
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({
@@ -41,7 +44,7 @@ describe('parse', () => {
         })
 
         it('identifies a variable key change in a multi-line method call', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/multiline/key-modification'))
+            const parsedDiff = executeFileDiff(makeSamplePath('multiline/key-modification'))
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({
@@ -61,7 +64,7 @@ describe('parse', () => {
         })
 
         it('identifies a default value change in a multi-line method call', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/multiline/default-modification'))
+            const parsedDiff = executeFileDiff(makeSamplePath('multiline/default-modification'))
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({
@@ -83,14 +86,14 @@ describe('parse', () => {
 
     describe('single comment', () => {
         it('identifies no change when addition is commented', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/comments/add-comment'))
+            const parsedDiff = executeFileDiff(makeSamplePath('comments/add-comment'))
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({})
         })
 
         it('identifies addition when line is uncommented', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/comments/uncomment'))
+            const parsedDiff = executeFileDiff(makeSamplePath('comments/uncomment'))
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({
@@ -104,7 +107,7 @@ describe('parse', () => {
         })
 
         it('identifies deletion when line is commented', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/comments/comment'))
+            const parsedDiff = executeFileDiff(makeSamplePath('comments/comment'))
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({
@@ -118,7 +121,7 @@ describe('parse', () => {
         })
 
         it('identifies change when parameter is commented', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, './samples/comments/param-comment'))
+            const parsedDiff = executeFileDiff(makeSamplePath('comments/param-comment'))
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({
