@@ -1,1 +1,1 @@
-testVariable, _ := client.DevCycleApi.Variable(auth, user, "hello-test", "test")
+testVariable, _ := client.Variable(user, "hello-test", "test")
