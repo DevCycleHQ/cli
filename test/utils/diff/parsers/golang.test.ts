@@ -19,13 +19,13 @@ describe('golang', () => {
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.go',
-            'line': 11,
+            'line': 9,
             'mode': 'add',
             'name': 'user-object'
         },
         {
             'fileName': 'test/utils/diff/sampleDiff.go',
-            'line': 12,
+            'line': 10,
             'mode': 'add',
             'name': 'user-named-object'
         }
