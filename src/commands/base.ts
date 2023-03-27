@@ -13,6 +13,7 @@ import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
 import Writer from '../ui/writer'
+import { setDVCReferrer } from '../api/common'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -176,6 +177,7 @@ export default abstract class Base extends Command {
             || this.userConfig?.project
             || ''
         await this.authorizeApi()
+        setDVCReferrer(this.id, this.config.version)
     }
 
     async requireProject(): Promise<void> {
