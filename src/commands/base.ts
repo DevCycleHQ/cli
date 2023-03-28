@@ -51,6 +51,11 @@ export default abstract class Base extends Command {
             description: 'Disable all interactive flows and format output for easy parsing.',
             helpGroup: 'Global'
         }),
+        'caller': Flags.enum({
+            description: 'The integration that is calling the CLI.',
+            helpGroup: 'Global',
+            options: ['github', 'bitbucket', 'cli']
+        }),
     }
 
     token = ''
@@ -58,6 +63,7 @@ export default abstract class Base extends Command {
     authPath = path.join(this.config.configDir, 'auth.yml')
     configPath = path.join(this.config.configDir, 'user.yml')
     repoConfigPath = '.devcycle/config.yml'
+    caller = 'cli'
 
     // Override to true in commands that must be authorized in order to function
     authRequired = false
@@ -169,6 +175,10 @@ export default abstract class Base extends Command {
             this.repoConfigPath = flags['repo-config-path']
         }
 
+        if (flags['caller']) {
+            this.caller = flags['caller']
+        }
+
         this.userConfig = this.loadUserConfig(this.configPath)
         this.repoConfig = this.loadRepoConfig(this.repoConfigPath)
         this.projectKey = flags['project']
@@ -177,7 +187,7 @@ export default abstract class Base extends Command {
             || this.userConfig?.project
             || ''
         await this.authorizeApi()
-        setDVCReferrer(this.id, this.config.version)
+        setDVCReferrer(this.id, this.config.version, this.caller)
     }
 
     async requireProject(): Promise<void> {
