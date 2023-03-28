@@ -54,7 +54,14 @@ export default abstract class Base extends Command {
         'caller': Flags.enum({
             description: 'The integration that is calling the CLI.',
             helpGroup: 'Global',
-            options: ['github', 'bitbucket', 'cli']
+            options: [
+                'github.pr_insights',
+                'github.code_usages',
+                'bitbucket.pr_insights',
+                'bitbucket.code_usages',
+                'cli'
+            ],
+            hidden: true
         }),
     }
 
