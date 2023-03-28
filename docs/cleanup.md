@@ -56,4 +56,4 @@ EXAMPLES
   $ dvc cleanup some-var --value "My Custom Name" --type String
 ```
 
-_See code: [dist/commands/cleanup/index.ts](https://github.com/DevCycleHQ/cli/blob/v4.2.9/dist/commands/cleanup/index.ts)_
+_See code: [dist/commands/cleanup/index.ts](https://github.com/DevCycleHQ/cli/blob/v4.2.10/dist/commands/cleanup/index.ts)_
