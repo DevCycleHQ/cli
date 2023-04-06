@@ -42,5 +42,4 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
         }
         throw e
     }
-
 }
