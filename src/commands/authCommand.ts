@@ -41,9 +41,8 @@ export default abstract class AuthCommand extends Base {
     public async saveProject(project:Project) {
         if (this.repoConfig) {
             await this.updateRepoConfig({ project: project.key })
-        } else {
-            await this.updateUserConfig({ project: project.key })
         }
+        await this.updateUserConfig({ project: project.key })
     }
 
     public async retrieveProjectFromConfig(projects:Project[]): Promise<Project | null> {
