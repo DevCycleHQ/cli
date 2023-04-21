@@ -70,6 +70,7 @@ export default abstract class Base extends Command {
     authPath = path.join(this.config.configDir, 'auth.yml')
     configPath = path.join(this.config.configDir, 'user.yml')
     repoConfigPath = '.devcycle/config.yml'
+    noApi = false
     caller = 'cli'
 
     // Override to true in commands that must be authorized in order to function
@@ -180,6 +181,10 @@ export default abstract class Base extends Command {
 
         if (flags['repo-config-path']) {
             this.repoConfigPath = flags['repo-config-path']
+        }
+
+        if (flags['no-api']) {
+            this.noApi = flags['no-api']
         }
 
         if (flags['caller']) {
