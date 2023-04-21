@@ -9,6 +9,7 @@ import { PythonParser } from './python'
 import { GolangParser } from './golang'
 import { IosParser } from './ios'
 import { PhpParser } from './php'
+import { DartParser } from './dart'
 
 export * from './android'
 export * from './csharp'
@@ -21,6 +22,7 @@ export * from './php'
 export * from './python'
 export * from './react'
 export * from './ruby'
+export * from './dart'
 
 export const PARSERS: Record<string, (typeof NodeParser)[]> = {
     js: [NodeParser, ReactParser, JavascriptParser],
@@ -34,7 +36,8 @@ export const PARSERS: Record<string, (typeof NodeParser)[]> = {
     py: [PythonParser],
     go: [GolangParser],
     swift: [IosParser],
-    php: [PhpParser]
+    php: [PhpParser],
+    dart: [DartParser]
 }
 
 export const LANGUAGE_MAP: Record<string, string> = {
@@ -49,5 +52,6 @@ export const LANGUAGE_MAP: Record<string, string> = {
     py: 'python',
     go: 'go',
     swift: 'swift',
-    php: 'php'
+    php: 'php',
+    dart: 'dart'
 }

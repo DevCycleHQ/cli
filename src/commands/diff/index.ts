@@ -106,7 +106,7 @@ export default class Diff extends Base {
     }
 
     private useApi() {
-        return this.hasToken() && this.projectKey !== ''
+        return this.hasToken() && this.projectKey !== '' && this.noApi !== true
     }
 
     private getMatchesByType(
