@@ -13,24 +13,24 @@ DevCycle Variable Changes:
 🟢 Added
 
   1. simple-case
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
   2. duplicate-case
 	   Locations:
-	    - test/utils/diff/sampleDiff.js:L2
-	    - test/utils/diff/sampleDiff.js:L3
+	    - test-utils/fixtures/diff/sampleDiff.js:L2
+	    - test-utils/fixtures/diff/sampleDiff.js:L3
   3. single-quotes
-	   Location: test/utils/diff/sampleDiff.js:L5
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L5
   4. multi-line
-	   Location: test/utils/diff/sampleDiff.js:L11
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L11
   5. multi-line-comment
-	   Location: test/utils/diff/sampleDiff.js:L21
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L21
   6. duplicate-same-line
-\t   Location: test/utils/diff/sampleDiff.js:L26
+\t   Location: test-utils/fixtures/diff/sampleDiff.js:L26
 
 🔴 Removed
 
   1. simple-case
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
 `
 
 const customExpected = `
@@ -42,26 +42,26 @@ DevCycle Variable Changes:
 🟢 Added
 
   1. simple-case
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
   2. duplicate-case
 	   Locations:
-	    - test/utils/diff/sampleDiff.js:L2
-	    - test/utils/diff/sampleDiff.js:L3
+	    - test-utils/fixtures/diff/sampleDiff.js:L2
+	    - test-utils/fixtures/diff/sampleDiff.js:L3
   3. single-quotes
-	   Location: test/utils/diff/sampleDiff.js:L5
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L5
   4. multi-line
-	   Location: test/utils/diff/sampleDiff.js:L11
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L11
   5. multi-line-comment
-	   Location: test/utils/diff/sampleDiff.js:L21
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L21
   6. duplicate-same-line
-\t   Location: test/utils/diff/sampleDiff.js:L26
+\t   Location: test-utils/fixtures/diff/sampleDiff.js:L26
   7. func-proxy
-\t   Location: test/utils/diff/sampleDiff.js:L7
+\t   Location: test-utils/fixtures/diff/sampleDiff.js:L7
 
 🔴 Removed
 
   1. simple-case
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
 `
 
 const aliasedCustomExpected = `
@@ -73,7 +73,7 @@ DevCycle Variable Changes:
 🟢 Added
 
   1. my-variable
-	   Location: test/utils/diff/sampleDiff.jsx:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.jsx:L1
 `
 
 const linkedExpected = `
@@ -85,24 +85,24 @@ DevCycle Variable Changes:
 🟢 Added
 
   1. simple-case
-	   Location: [test/utils/diff/sampleDiff.js:L1](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R1)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R1)
   2. duplicate-case
 	   Locations:
-	    - [test/utils/diff/sampleDiff.js:L2](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R2)
-	    - [test/utils/diff/sampleDiff.js:L3](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R3)
+	    - [test-utils/fixtures/diff/sampleDiff.js:L2](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R2)
+	    - [test-utils/fixtures/diff/sampleDiff.js:L3](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R3)
   3. single-quotes
-	   Location: [test/utils/diff/sampleDiff.js:L5](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R5)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L5](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R5)
   4. multi-line
-	   Location: [test/utils/diff/sampleDiff.js:L11](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R11)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L11](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R11)
   5. multi-line-comment
-	   Location: [test/utils/diff/sampleDiff.js:L21](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R21)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L21](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R21)
   6. duplicate-same-line
-\t   Location: [test/utils/diff/sampleDiff.js:L26](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3R26)
+\t   Location: [test-utils/fixtures/diff/sampleDiff.js:L26](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R26)
 
 🔴 Removed
 
   1. simple-case
-	   Location: [test/utils/diff/sampleDiff.js:L1](https://example.com/files#diff-c197a837fe3ee51fcef381dc90df1cde5c759ad43f47c0cb72968af943205fa3L1)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262L1)
 `
 
 const linkedBitbucketExpected = `
@@ -114,24 +114,24 @@ DevCycle Variable Changes:
 🟢 Added
 
   1. simple-case
-	   Location: [test/utils/diff/sampleDiff.js:L1](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT1)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT1)
   2. duplicate-case
 	   Locations:
-	    - [test/utils/diff/sampleDiff.js:L2](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT2)
-	    - [test/utils/diff/sampleDiff.js:L3](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT3)
+	    - [test-utils/fixtures/diff/sampleDiff.js:L2](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT2)
+	    - [test-utils/fixtures/diff/sampleDiff.js:L3](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT3)
   3. single-quotes
-	   Location: [test/utils/diff/sampleDiff.js:L5](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT5)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L5](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT5)
   4. multi-line
-	   Location: [test/utils/diff/sampleDiff.js:L11](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT11)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L11](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT11)
   5. multi-line-comment
-	   Location: [test/utils/diff/sampleDiff.js:L21](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT21)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L21](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT21)
   6. duplicate-same-line
-\t   Location: [test/utils/diff/sampleDiff.js:L26](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsT26)
+\t   Location: [test-utils/fixtures/diff/sampleDiff.js:L26](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT26)
 
 🔴 Removed
 
   1. simple-case
-	   Location: [test/utils/diff/sampleDiff.js:L1](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest/utils/diff/sampleDiff.jsF1)
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsF1)
 `
 
 const apiExpected = `
@@ -150,17 +150,17 @@ DevCycle Variable Changes:
 
   1. exists
 	   Type: String
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
   2. no-exists ⚠️
-	   Location: test/utils/diff/sampleDiff.js:L2
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L2
 
 🔴 Removed
 
   1. exists2
 	   Type: String
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
   2. no-exists2 🧹
-	   Location: test/utils/diff/sampleDiff.js:L2
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L2
 
 🧹 Cleaned Up
 
@@ -184,12 +184,12 @@ DevCycle Variable Changes:
 🟢 Added
 
   1. SOME_ADDITION ⚠️
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
 
 🔴 Removed
 
   1. VARIABLES.SOME_REMOVAL ⚠️
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
 `
 
 const aliasExpected = `
@@ -201,12 +201,12 @@ DevCycle Variable Changes:
 🟢 Added
 
   1. some-addition
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
 
 🔴 Removed
 
   1. some-removal
-	   Location: test/utils/diff/sampleDiff.js:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
 `
 
 const formattedMarkdownExpected = `
@@ -236,7 +236,7 @@ const formattedMarkdownNoHtmlExpected = `
 describe('diff', () => {
     test
         .stdout()
-        .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api'])
+        .command(['diff', '--file', './test-utils/fixtures/diff/e2e', '--no-api'])
         .it('runs against a test file', (ctx) => {
             expect(ctx.stdout).to.equal(expected)
         })
@@ -244,7 +244,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/e2e',
+            './test-utils/fixtures/diff/e2e',
             '--match-pattern', 'js=checkVariable\\(\\w*,\\s*([^,)]*)', '--no-api'])
         .it('runs against a test file with a custom matcher', (ctx) => {
             expect(ctx.stdout).to.equal(customExpected)
@@ -253,8 +253,8 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/e2e',
-            '--repo-config-path', './test/commands/fixtures/customMatcherConfig.yml', '--no-api'])
+            './test-utils/fixtures/diff/e2e',
+            '--repo-config-path', './test-utils/fixtures/configs/customMatcherConfig.yml', '--no-api'])
         .it('runs against a test file with a custom matcher specified in a config file',
             (ctx) => {
                 expect(ctx.stdout).to.equal(customExpected)
@@ -263,7 +263,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/custom-pattern',
+            'test-utils/fixtures/diff/custom-pattern',
             '--match-pattern', 'jsx=useDVCVariable\\(\\s*([^,)]*)\\s*,\\s*(?:[^),]*|{[^}]*})\\)',
             '--var-alias', 'ALIASED_VARIABLE=my-variable',
             '--no-api'])
@@ -283,14 +283,14 @@ describe('diff', () => {
             })
         })
         .command(['diff', '--file',
-            './test/utils/diff/samples/e2e',
+            './test-utils/fixtures/diff/e2e',
             '--client-id', 'client', '--client-secret', 'secret', '--project', 'project'])
         .catch('Failed to authenticate with the DevCycle API. Check your credentials.')
         .it('runs with failed api authorization')
 
     test
         .stdout()
-        .command(['diff', '--file', './test/utils/diff/samples/e2e', '--no-api', '--pr-link', 'https://example.com'])
+        .command(['diff', '--file', './test-utils/fixtures/diff/e2e', '--no-api', '--pr-link', 'https://example.com'])
         .it('runs against a test file and linkifies the output', (ctx) => {
             expect(ctx.stdout).to.equal(linkedExpected)
         })
@@ -298,7 +298,7 @@ describe('diff', () => {
     test
         .stdout()
         .command([
-            'diff', '--file', './test/utils/diff/samples/e2e', '--no-api',
+            'diff', '--file', './test-utils/fixtures/diff/e2e', '--no-api',
             '--pr-link', 'https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7'
         ])
         .it('runs against a test file and linkifies the output for a bitbucket PR', (ctx) => {
@@ -333,7 +333,7 @@ describe('diff', () => {
                 })
         })
         .stdout()
-        .command(['diff', '--file', './test/utils/diff/samples/apiEnrichment/enrichment',
+        .command(['diff', '--file', 'test-utils/fixtures/diff/apiEnrichment/enrichment',
             '--client-id', 'client', '--client-secret', 'secret', '--project', 'project'])
         .it('enriches output with API data', (ctx) => {
             expect(ctx.stdout).to.equal(apiExpected)
@@ -342,7 +342,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/aliases/aliased', '--no-api'])
+            'test-utils/fixtures/diff/aliases/aliased', '--no-api'])
         .it('identifies unknown variables and warns about them',
             (ctx) => {
                 expect(ctx.stdout).to.equal(unknownExpected)
@@ -351,7 +351,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/aliases/aliased', '--no-api',
+            'test-utils/fixtures/diff/aliases/aliased', '--no-api',
             '--var-alias', 'SOME_ADDITION=some-addition', 'VARIABLES.SOME_REMOVAL=some-removal'
         ])
         .it('identifies aliased variables',
@@ -362,8 +362,8 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/aliases/aliased', '--no-api',
-            '--repo-config-path', './test/commands/fixtures/variableAliasConfig.yml'
+            'test-utils/fixtures/diff/aliases/aliased', '--no-api',
+            '--repo-config-path', './test-utils/fixtures/configs/variableAliasConfig.yml'
         ])
         .it('identifies aliased variables specified in config file',
             (ctx) => {
@@ -372,7 +372,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown'
+            'test-utils/fixtures/diff/optional-accessor', '--no-api', '--format', 'markdown'
         ])
         .it('formats the output as markdown',
             (ctx) => {
@@ -382,7 +382,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/optional-accessor', '--no-api', '--format', 'markdown-no-html'
+            'test-utils/fixtures/diff/optional-accessor', '--no-api', '--format', 'markdown-no-html'
         ])
         .it('formats the output as markdown without html',
             (ctx) => {
@@ -392,7 +392,7 @@ describe('diff', () => {
     test
         .stdout()
         .command(['diff', '--file',
-            './test/utils/diff/samples/optional-accessor', '--no-api', '--show-regex'
+            'test-utils/fixtures/diff/optional-accessor', '--no-api', '--show-regex'
         ])
         .it('outputs the regex patterns used for matching',
             (ctx) => {

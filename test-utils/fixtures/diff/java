@@ -1,0 +1,17 @@
+diff --git a/test-utils/fixtures/diff/sampleDiff.java b/test-utils/fixtures/diff/sampleDiff.java
+new file mode 100644
+index 00000000..ed8ee4ab
+--- /dev/null
++++ b/test-utils/fixtures/diff/sampleDiff.java
+@@ -1,1 +1,11 @@
++dvcClient.variable(user, "simple-case", false)
++
++dvcClient
++    .variable(
++        user,
++        "multi-line",
++        true
++    )
++
++dvcClient.variable(new User("user_id"), "user-object", false)
++dvcClient.variable(user, "hashmap-default-value", new HashMap<String, String>())

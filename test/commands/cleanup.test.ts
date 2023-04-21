@@ -152,7 +152,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', 'true',
             '--type', 'Boolean',
-            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
+            '--include', 'test-utils/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value=true', (ctx) => {
@@ -165,7 +165,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', 'false',
             '--type', 'Boolean',
-            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
+            '--include', 'test-utils/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value=false', (ctx) => {
@@ -178,7 +178,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', '3',
             '--type', 'Number',
-            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
+            '--include', 'test-utils/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value is a number', (ctx) => {
@@ -191,7 +191,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', 'My String',
             '--type', 'String',
-            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
+            '--include', 'test-utils/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value is a string', (ctx) => {
@@ -204,7 +204,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', '{ "foo": "bar" }',
             '--type', 'JSON',
-            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
+            '--include', 'test-utils/fixtures/cleanup/javascript/test.js',
             '--output', 'console'
         ])
         .it('refactors correctly when value is JSON', (ctx) => {
@@ -217,7 +217,7 @@ describe('cleanup', () => {
             'cleanup', 'simple-case',
             '--value', 'false',
             '--type', 'Boolean',
-            '--include', 'test/commands/fixtures/cleanup/javascript/test.js',
+            '--include', 'test-utils/fixtures/cleanup/javascript/test.js',
             '--var-alias', 'SIMPLE_CASE=simple-case',
             '--output', 'console'
         ])
