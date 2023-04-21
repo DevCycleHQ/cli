@@ -1,6 +1,6 @@
 {
   "require": [
-    "test/helpers/init.js",
+    "test-utils/init.js",
     "ts-node/register",
     "source-map-support/register"
   ],
