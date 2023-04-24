@@ -152,8 +152,15 @@ codeInsights:
 ```
 
 ## Development
-To test local changes, run `yarn build`. From there, you can run commands from the `bin` folder.
+
+This project uses a `.nvmrc` file to automatically set the version of node being used in your shell when you cd into the
+project folder. If you do not have nvm installed, you can download it [here](https://github.com/nvm-sh/nvm).
+It requires some additions to your shell, instructions for which can be found [here](https://github.com/nvm-sh/nvm#bash).
+
+To manually test local changes, run `yarn build`. From there, you can run commands from the `bin` folder.
 e.g. `bin/run diff origin/main...`
+
+To run the test suite, run `yarn test`
 
 ## Publishing a new version
 1. Create a branch off of `main` and run `npm version patch` to bump the CLI version. Create a PR for these changes.
