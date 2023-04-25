@@ -7,7 +7,7 @@ import { load } from 'js-yaml'
 
 export default class ProjectsCurrent extends Command {
   static description = 'Display the current project key'
-  static aliases = ['pc']
+  static aliases = ['pc', 'project']
 
   async run(): Promise<void> {
       try {
