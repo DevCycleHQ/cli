@@ -3,7 +3,7 @@ DevCycle CLI
 
 DevCycle CLI for interacting with DevCycle features from the command line.
 
-The CLI can be customized in several ways using command-line args or by creating a [configuration file](#configuration).
+The CLI can be customized in several ways using command-line args or by creating a [configuration file](#repo-configuration).
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/@devcycle/cli.svg)](https://www.npmjs.com/package/@devcycle/cli)
@@ -55,7 +55,7 @@ You also need to specify the default project ID for the CLI to use.
 
 If there is a repo configuration file, the [`dvc diff`](docs/diff.md) and [`dvc usages`](docs/usages.md) commands will use the project defined there.
 
-Otherwise, this is chosen during login or set using the [project select command](docs/project.md#dvc-projects-select)
+Otherwise, this is chosen during login or set using the [project select command](docs/projects.md#dvc-projects-select)
 
 ### Environment Variables
 Set the following environment variables:
