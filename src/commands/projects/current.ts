@@ -7,12 +7,12 @@ import { load } from 'js-yaml'
 
 export default class ProjectsCurrent extends Command {
   static description = 'Display the current project key'
-  static aliases = ['pc', 'project']
+  static aliases = ['pc']
 
   async run(): Promise<void> {
       try {
           const configPath = this.getConfigPath()
-          const userConfig = await this.loadUserConfig(configPath)
+          const userConfig = this.loadUserConfig(configPath)
           if (userConfig.project) {
               this.log(`Current project key: ${userConfig.project}`)
           } else {
@@ -24,14 +24,12 @@ export default class ProjectsCurrent extends Command {
   }
 
   private getConfigPath(): string {
-      // Replace 'path/to/default/config' with the actual path to your default config file
       const defaultConfigPath = resolve('.devcycle/config.yaml')
-      // You can replace this logic with the one you use to get the saved config path
       const savedConfigPath = process.env.CONFIG_PATH ? resolve(process.env.CONFIG_PATH) : defaultConfigPath
       return savedConfigPath
   }
 
-  private async loadUserConfig(configPath: string): Promise<UserConfigFromFile> {
+  private loadUserConfig(configPath: string): UserConfigFromFile {
       const userConfigYaml = readFileSync(configPath, 'utf8')
       return load(userConfigYaml) as UserConfigFromFile
   }
