@@ -13,7 +13,7 @@ export default class ProjectsCurrent extends Command {
       try {
           const configPath = this.getConfigPath()
           const userConfig = this.loadUserConfig(configPath)
-          if (userConfig.project) {
+          if (userConfig && userConfig.project) {
               this.log(`Current project key: ${userConfig.project}`)
           } else {
               this.log('No project is currently selected.')
@@ -31,6 +31,7 @@ export default class ProjectsCurrent extends Command {
 
   private loadUserConfig(configPath: string): UserConfigFromFile {
       const userConfigYaml = readFileSync(configPath, 'utf8')
-      return load(userConfigYaml) as UserConfigFromFile
+      const loadedConfig = load(userConfigYaml) as UserConfigFromFile
+      return loadedConfig || {}
   }
 }

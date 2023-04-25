@@ -45,6 +45,7 @@ DESCRIPTION
 
 ALIASES
   $ dvc pc
+  $ dvc project
 ```
 
 ## `dvc projects list`
