@@ -4,7 +4,6 @@
 Access Projects with the Management API
 
 * [`dvc projects create`](#dvc-projects-create)
-* [`dvc projects current`](#dvc-projects-current)
 * [`dvc projects list`](#dvc-projects-list)
 * [`dvc projects select`](#dvc-projects-select)
 
@@ -30,22 +29,6 @@ GLOBAL FLAGS
 
 DESCRIPTION
   Create a new Project
-```
-
-## `dvc projects current`
-
-Display the current project key
-
-```
-USAGE
-  $ dvc projects current
-
-DESCRIPTION
-  Display the current project key
-
-ALIASES
-  $ dvc pc
-  $ dvc project
 ```
 
 ## `dvc projects list`
