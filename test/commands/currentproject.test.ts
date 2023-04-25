@@ -43,7 +43,7 @@ describe('projects:current', () => {
 
     test
         .env({ CONFIG_PATH: configPath })
-        .nock('BASE_URL', (api) =>
+        .nock(BASE_URL, (api) =>
             api.get('/v1/projects').reply(200, mockProjects)
         )
         .stdout()
