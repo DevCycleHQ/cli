@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { BASE_URL } from './common'
+import { IsNotEmpty, IsString } from 'class-validator'
+
 export class Feature {
     _id: string
     _project?: string
@@ -10,6 +12,19 @@ export class Feature {
     tags: string[]
     createdAt: Date
     updatedAt: Date
+}
+
+export class CreateFeatureParams {
+    @IsString()
+    @IsNotEmpty()
+    name: string
+
+    @IsString()
+    description: string
+
+    @IsNotEmpty()
+    @IsString()
+    key: string
 }
 
 export const fetchFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
@@ -43,4 +58,23 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
         throw e
     }
 
+}
+
+export const createFeature = async (token: string, project_id: string, feature: CreateFeatureParams)
+    : Promise<Feature | null> => {
+    const url = new URL(`/v1/projects/${project_id}/features`, BASE_URL)
+    try {
+        const response = await axios.post(url.href, { ...feature, type: 'release' }, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+        })
+        return response.data
+    } catch (e: any) {
+        if (e.response?.status === 404) {
+            return null
+        }
+        throw e
+    }
 }
