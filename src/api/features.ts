@@ -109,3 +109,22 @@ export const createFeature = async (
         throw e
     }
 }
+
+export const createFeature = async (token: string, project_id: string, feature: CreateFeatureParams)
+    : Promise<Feature | null> => {
+    const url = new URL(`/v1/projects/${project_id}/features`, BASE_URL)
+    try {
+        const response = await axios.post(url.href, { ...feature, type: 'release' }, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+        })
+        return response.data
+    } catch (e: any) {
+        if (e.response?.status === 404) {
+            return null
+        }
+        throw e
+    }
+}
