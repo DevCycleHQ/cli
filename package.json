@@ -91,6 +91,9 @@
       },
       "status": {
         "description": "Check CLI status"
+      },
+      "generate": {
+        "description": "Generate Devcycle related files"
       }
     }
   },
