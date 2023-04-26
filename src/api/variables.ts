@@ -10,9 +10,19 @@ export class Variable {
     initialDefaultValue?: string | number | boolean | Record<string, unknown>
     createdAt: Date
     updatedAt: Date
+    validationSchema?: ValidationSchema
 }
 
 export const variableTypes = ['String', 'Boolean', 'Number', 'JSON']
+
+type ValidationSchema = {
+    schemaType: 'enum' | 'url' | 'regex'
+    enumValues?: string[]
+    regexPattern?: string
+    example?: string
+    jsonSchema?: string
+    dateFormats?: string[]
+}
 
 export class CreateVariableParams {
     @IsString()

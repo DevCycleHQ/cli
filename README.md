@@ -78,7 +78,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/4.2.11 darwin-x64 node-v18.16.0
+@devcycle/cli/4.2.11 darwin-arm64 node-v18.12.1
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -94,6 +94,7 @@ USAGE
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
 * [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
 * [`dvc features`](docs/features.md) - Access or modify Features with the Management API
+* [`dvc generate`](docs/generate.md) - Generate stuff @parth
 * [`dvc help`](docs/help.md) - Display help for dvc.
 * [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the management API
 * [`dvc login`](docs/login.md) - Log in to DevCycle
