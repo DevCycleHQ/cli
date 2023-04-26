@@ -58,7 +58,6 @@ export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
             return
         }
         this.writer.showResults(result)
-
         if (flags.withFlag) {
             const variableParams: CreateVariableParams = {
                 key: params.key,
