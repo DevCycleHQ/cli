@@ -25,6 +25,8 @@ export class CreateFeatureParams {
     @IsNotEmpty()
     @IsString()
     key: string
+
+    variations?: { key: string; name: string; variables: Record<string, unknown> }[]
 }
 
 export const fetchFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
