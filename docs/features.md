@@ -14,7 +14,10 @@ Create a new Feature
 ```
 USAGE
   $ dvc features create [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--withFlag]
+
+FLAGS
+  --withFlag  Create a boolean variable with the same key as the feature
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
