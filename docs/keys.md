@@ -1,8 +1,9 @@
-# `dvc keys`
+`dvc keys`
+==========
 
 Retrieve SDK keys from the management API
 
--   [`dvc keys get`](#dvc-keys-get)
+* [`dvc keys get`](#dvc-keys-get)
 
 ## `dvc keys get`
 

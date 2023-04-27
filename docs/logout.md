@@ -1,8 +1,9 @@
-# `dvc logout`
+`dvc logout`
+============
 
 Discards any auth configuration that has been stored in the auth configuration file.
 
--   [`dvc logout`](#dvc-logout)
+* [`dvc logout`](#dvc-logout)
 
 ## `dvc logout`
 

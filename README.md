@@ -10,6 +10,7 @@ The CLI can be customized in several ways using command-line args or by creating
 [![License](https://img.shields.io/npm/l/@devcycle/cli.svg)](https://github.com/DevCycleHQ/cli/blob/main/package.json)
 
 <!-- toc -->
+* [DevCycle CLI](#devcycle-cli)
 * [Setup](#setup)
 * [Authentication](#authentication)
 * [Usage](#usage)
@@ -73,7 +74,6 @@ $ dvc --client-id=<your client id> --client-secret=<your client secret> --projec
 The Devcycle Github actions are configured with auth information through the `project-key`, `client-id` and `client-secret` configuration parameters. This is passed to the CLI via command line arguments.
 # Usage
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @devcycle/cli
 $ dvc COMMAND
@@ -85,11 +85,9 @@ USAGE
   $ dvc COMMAND
 ...
 ```
-
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-
 # Command Topics
 
 * [`dvc alias`](docs/alias.md) - Manage repository variable aliases

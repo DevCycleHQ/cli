@@ -1,8 +1,9 @@
-# `dvc repo`
+`dvc repo`
+==========
 
 Manage repository configuration
 
--   [`dvc repo init`](#dvc-repo-init)
+* [`dvc repo init`](#dvc-repo-init)
 
 ## `dvc repo init`
 
