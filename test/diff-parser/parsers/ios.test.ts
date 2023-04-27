@@ -6,26 +6,28 @@ import { expect } from '@oclif/test'
 describe('ios', () => {
     const simpleMatchResult = [
         {
-            'fileName': 'test-utils/fixtures/diff/sampleDiff.swift',
-            'line': 1,
-            'mode': 'add',
-            'name': 'simple-case'
+            fileName: 'test-utils/fixtures/diff/sampleDiff.swift',
+            line: 1,
+            mode: 'add',
+            name: 'simple-case',
         },
         {
-            'fileName': 'test-utils/fixtures/diff/sampleDiff.swift',
-            'line': 3,
-            'mode': 'add',
-            'name': 'multi-line'
+            fileName: 'test-utils/fixtures/diff/sampleDiff.swift',
+            line: 3,
+            mode: 'add',
+            name: 'multi-line',
         },
         {
-            'fileName': 'test-utils/fixtures/diff/sampleDiff.swift',
-            'line': 9,
-            'mode': 'add',
-            'name': 'default-value-object'
-        }
+            fileName: 'test-utils/fixtures/diff/sampleDiff.swift',
+            line: 9,
+            mode: 'add',
+            name: 'default-value-object',
+        },
     ]
     it('identifies the correct variable usages in the iOS sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/ios'))
+        const parsedDiff = executeFileDiff(
+            path.join(__dirname, '../../../test-utils/fixtures/diff/ios'),
+        )
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({

@@ -7,19 +7,19 @@ import {
     IsString,
     registerDecorator,
     ValidateNested,
-    ValidationOptions
+    ValidationOptions,
 } from 'class-validator'
 
 function ValidateMatchPatterns(validationOptions?: ValidationOptions) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return function(object: any, propertyName: string) {
+    return function (object: any, propertyName: string) {
         registerDecorator({
             name: 'ValidateMatchPatterns',
             target: object.constructor,
             propertyName,
             options: {
                 message: `${propertyName} must be an object mapping file extensions to an array of Regex patterns`,
-                ...validationOptions
+                ...validationOptions,
             },
             validator: {
                 validate(value: Record<string, unknown>) {
@@ -38,14 +38,14 @@ function ValidateMatchPatterns(validationOptions?: ValidationOptions) {
 
 function ValidateVariableAliases(validationOptions?: ValidationOptions) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return function(object: any, propertyName: string) {
+    return function (object: any, propertyName: string) {
         registerDecorator({
             name: 'ValidateVariableAliases',
             target: object.constructor,
             propertyName,
             options: {
                 message: `${propertyName} must be an object mapping code references to variable keys`,
-                ...validationOptions
+                ...validationOptions,
             },
             validator: {
                 validate(aliasMap: Record<string, unknown>) {
@@ -103,7 +103,7 @@ export class UserConfigFromFile {
     @Type(() => SavedOrganization)
     @IsOptional()
     org?: SavedOrganization
-    
+
     @IsString()
     @IsOptional()
     project?: string
@@ -117,7 +117,7 @@ export class RepoConfigFromFile {
     @IsString()
     @IsOptional()
     project?: string
-    
+
     @Type(() => CodeInsights)
     @IsOptional()
     @ValidateNested()
@@ -125,7 +125,7 @@ export class RepoConfigFromFile {
 }
 
 export class AuthFromFile {
-    @IsIn(['sso','rest-api'])
+    @IsIn(['sso', 'rest-api'])
     @IsString()
     @IsOptional()
     type?: string = 'rest-api'

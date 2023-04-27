@@ -3,13 +3,19 @@ import { ParseOptions, VariableUsageMatch } from '../parsers/types'
 import { CustomParser } from '../parsers/custom'
 import { File } from '../../commands/usages/types'
 
-export const parseFiles = (files: File[], options: ParseOptions = {}): Record<string, VariableUsageMatch[]> => {
+export const parseFiles = (
+    files: File[],
+    options: ParseOptions = {},
+): Record<string, VariableUsageMatch[]> => {
     const resultsByLanguage: Record<string, VariableUsageMatch[]> = {}
 
     const ALL_PARSERS = { ...PARSERS }
 
     for (const extension in options.matchPatterns ?? {}) {
-        ALL_PARSERS[extension] = [...(ALL_PARSERS[extension] ?? []), CustomParser]
+        ALL_PARSERS[extension] = [
+            ...(ALL_PARSERS[extension] ?? []),
+            CustomParser,
+        ]
     }
 
     const printed: Record<string, boolean> = {}

@@ -36,7 +36,7 @@ export const fetchProjects = async (token: string): Promise<Project[]> => {
 
 export const createProject = async (
     token: string,
-    params: CreateProjectParams
+    params: CreateProjectParams,
 ): Promise<Project> => {
     const url = new URL('/v1/projects', BASE_URL)
     const response = await axios.post(url.href, params, {

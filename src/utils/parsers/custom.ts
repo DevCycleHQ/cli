@@ -35,7 +35,7 @@ export class CustomParser extends BaseParser {
                     // position or named parameter match
                     name: varName.replace(/["']/g, ''),
                     content: matches[0],
-                    index: matches.index
+                    index: matches.index,
                 }
             }
         }

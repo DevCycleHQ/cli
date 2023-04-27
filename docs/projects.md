@@ -1,11 +1,10 @@
-`dvc projects`
-==============
+# `dvc projects`
 
 Access Projects with the Management API
 
-* [`dvc projects create`](#dvc-projects-create)
-* [`dvc projects list`](#dvc-projects-list)
-* [`dvc projects select`](#dvc-projects-select)
+-   [`dvc projects create`](#dvc-projects-create)
+-   [`dvc projects list`](#dvc-projects-list)
+-   [`dvc projects select`](#dvc-projects-select)
 
 ## `dvc projects create`
 

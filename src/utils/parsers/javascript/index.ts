@@ -8,7 +8,7 @@ export class JavascriptParser extends BaseParser {
     variableMethodPattern = /\??\.variable\(\s*/
     orderedParameterPatterns = [
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     commentCharacters = ['//', '/*']

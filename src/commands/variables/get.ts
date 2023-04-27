@@ -6,8 +6,9 @@ export default class DetailedVariables extends Base {
     static hidden = false
     static flags = {
         ...Base.flags,
-        'keys': Flags.string({
-            description: 'Comma-separated list of variable keys to fetch details for',
+        keys: Flags.string({
+            description:
+                'Comma-separated list of variable keys to fetch details for',
         }),
     }
     authRequired = true
@@ -20,7 +21,9 @@ export default class DetailedVariables extends Base {
 
         let variables = await fetchVariables(this.token, this.projectKey)
         if (keys) {
-            variables = variables.filter((variable) => keys.includes(variable.key))
+            variables = variables.filter((variable) =>
+                keys.includes(variable.key),
+            )
         }
         this.writer.showResults(variables)
     }

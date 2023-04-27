@@ -38,17 +38,15 @@ export class CreateVariableParams {
 export const createVariable = async (
     token: string,
     project_id: string,
-    params: CreateVariableParams
+    params: CreateVariableParams,
 ): Promise<Variable> => {
     const url = new URL(`/v1/projects/${project_id}/variables`, BASE_URL)
-    const response = await axios.post(url.href,
-        params,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-        })
+    const response = await axios.post(url.href, params, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+    })
 
     return response.data
 }
@@ -57,22 +55,26 @@ export const updateVariable = async (
     token: string,
     project_id: string,
     variableKey: string,
-    params: Partial<CreateVariableParams>
+    params: Partial<CreateVariableParams>,
 ): Promise<Variable> => {
-    const url = new URL(`/v1/projects/${project_id}/variables/${variableKey}`, BASE_URL)
-    const response = await axios.patch(url.href,
-        params,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-        })
+    const url = new URL(
+        `/v1/projects/${project_id}/variables/${variableKey}`,
+        BASE_URL,
+    )
+    const response = await axios.patch(url.href, params, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+    })
 
     return response.data
 }
 
-export const fetchVariables = async (token: string, project_id: string): Promise<Variable[]> => {
+export const fetchVariables = async (
+    token: string,
+    project_id: string,
+): Promise<Variable[]> => {
     const url = new URL(`/v1/projects/${project_id}/variables`, BASE_URL)
     const response = await axios.get(url.href, {
         headers: {
@@ -84,7 +86,11 @@ export const fetchVariables = async (token: string, project_id: string): Promise
     return response.data
 }
 
-export const fetchVariableByKey = async (token: string, project_id: string, key: string): Promise<Variable | null> => {
+export const fetchVariableByKey = async (
+    token: string,
+    project_id: string,
+    key: string,
+): Promise<Variable | null> => {
     const url = new URL(`/v1/projects/${project_id}/variables/${key}`, BASE_URL)
     try {
         const response = await axios.get(url.href, {
@@ -95,12 +101,11 @@ export const fetchVariableByKey = async (token: string, project_id: string, key:
         })
 
         return response.data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         if (e.response?.status === 404) {
             return null
         }
         throw e
     }
-
 }

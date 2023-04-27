@@ -7,7 +7,9 @@ export type Organization = {
     display_name: string
 }
 
-export const fetchOrganizations = async (token: string): Promise<Organization[]> => {
+export const fetchOrganizations = async (
+    token: string,
+): Promise<Organization[]> => {
     const url = new URL('/v1/organizations', BASE_URL)
     const response = await axios.get(url.href, {
         headers: {

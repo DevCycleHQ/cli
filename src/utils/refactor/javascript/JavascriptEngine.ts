@@ -14,8 +14,8 @@ export class JavascriptEngine extends RefactorEngine {
             return babelParser.parse(source, {
                 sourceType: 'module',
                 plugins: ['jsx', 'typescript', 'decorators-legacy'],
-                tokens: true
+                tokens: true,
             })
-        }
+        },
     }
 }

@@ -7,12 +7,13 @@ export default class DetailedFeatures extends Base {
     static description = 'Retrieve Features from the management API'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
-        '<%= config.bin %> <%= command.id %> --keys=feature-one,feature-two'
+        '<%= config.bin %> <%= command.id %> --keys=feature-one,feature-two',
     ]
     static flags = {
         ...Base.flags,
-        'keys': Flags.string({
-            description: 'Comma-separated list of feature keys to fetch details for',
+        keys: Flags.string({
+            description:
+                'Comma-separated list of feature keys to fetch details for',
         }),
     }
     authRequired = true
