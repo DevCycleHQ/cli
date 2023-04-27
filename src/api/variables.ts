@@ -82,8 +82,17 @@ export const updateVariable = async (
     return response.data
 }
 
-export const fetchVariables = async (token: string, project_id: string): Promise<Variable[]> => {
-    const url = new URL(`/v1/projects/${project_id}/variables`, BASE_URL)
+export const fetchVariables = async (
+    token: string,
+    project_id: string,
+    queryOptions?: QueryOptions
+): Promise<Variable[]> => {
+    const queryParams = new URLSearchParams()
+    for (const [key, value] of Object.entries(queryOptions || {})) {
+        queryParams.append(key, value as string)
+    }
+
+    const url = new URL(`/v1/projects/${project_id}/variables${'?' + queryParams.toString()}`, BASE_URL)
     const response = await axios.get(url.href, {
         headers: {
             'Content-Type': 'application/json',
@@ -92,6 +101,12 @@ export const fetchVariables = async (token: string, project_id: string): Promise
     })
 
     return response.data
+}
+
+export type QueryOptions = {
+    perPage?: number
+    sortBy?: 'key' | 'name' | 'createdAt' | 'updatedAt'
+    sortOrder?: 'asc' | 'desc'
 }
 
 export const fetchVariableByKey = async (token: string, project_id: string, key: string): Promise<Variable | null> => {
