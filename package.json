@@ -93,7 +93,7 @@
         "description": "Check CLI status"
       },
       "generate": {
-        "description": "Generate stuff @parth"
+        "description": "Generate DevCycle related files"
       }
     }
   },

@@ -1,7 +1,7 @@
 `dvc generate`
 ==============
 
-Generate stuff @parth
+Generate DevCycle related files
 
 * [`dvc generate types`](#dvc-generate-types)
 
@@ -12,10 +12,13 @@ Generate Variable Types from the management API
 ```
 USAGE
   $ dvc generate types [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--output-dir <value>]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--output-dir <value>] [--watch]
+    [--react]
 
 FLAGS
   --output-dir=<value>  [default: .] Directory to output the generated types to
+  --react               Generate types for use with React
+  --watch               Watch for changes to variables and regenerate types
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
