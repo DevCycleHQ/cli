@@ -1,9 +1,10 @@
-# `dvc login`
+`dvc login`
+===========
 
 Log in to DevCycle
 
--   [`dvc login again`](#dvc-login-again)
--   [`dvc login sso`](#dvc-login-sso)
+* [`dvc login again`](#dvc-login-again)
+* [`dvc login sso`](#dvc-login-sso)
 
 ## `dvc login again`
 

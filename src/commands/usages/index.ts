@@ -4,6 +4,7 @@ import { Flags } from '@oclif/core'
 import { lsFiles } from '../../utils/git/ls-files'
 import { parseFiles } from '../../utils/usages/parse'
 import Base from '../base'
+import { fetchVariables, Variable } from '../../api/variables'
 import { File, JSONMatch, LineItem, VariableReference } from './types'
 import ClientNameFlag, { getClientNames } from '../../flags/client-name'
 import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
@@ -46,6 +47,10 @@ export default class Usages extends Base {
             description: 'Format to use when outputting the usage results.',
         }),
         'show-regex': ShowRegexFlag,
+        'find-missing': Flags.boolean({
+            default: false,
+            description: 'Find variables that exist in code but not in DevCycle',
+        }),
     }
 
     useMarkdown = false
@@ -61,8 +66,8 @@ export default class Usages extends Base {
                 flags['include'] || codeInsightsConfig.includeFiles
             return includeGlobs
                 ? includeGlobs.some((glob) =>
-                      minimatch(filepath, glob, { matchBase: true }),
-                  )
+                    minimatch(filepath, glob, { matchBase: true }),
+                )
                 : true
         }
 
@@ -71,8 +76,8 @@ export default class Usages extends Base {
                 flags['exclude'] || codeInsightsConfig.excludeFiles
             return excludeGlobs
                 ? excludeGlobs.some((glob) =>
-                      minimatch(filepath, glob, { matchBase: true }),
-                  )
+                    minimatch(filepath, glob, { matchBase: true }),
+                )
                 : false
         }
 
@@ -117,12 +122,44 @@ export default class Usages extends Base {
             variableAliases,
         )
 
+        if (flags['find-missing']) {
+            await this.findMissingVariables(matchesByVariable)
+        }
+
         if (flags['format'] === 'json') {
             const matchesByVariableJSON =
                 this.formatMatchesToJSON(matchesByVariable)
             this.log(JSON.stringify(matchesByVariableJSON, null, 2))
         } else {
             this.formatConsoleOutput(matchesByVariable)
+        }
+    }
+
+    private async findMissingVariables(
+        matchesByVariable: Record<string, VariableMatch[]>
+    ): Promise<void> {
+        await this.requireProject()
+        const devCycleVariables = await fetchVariables(
+            this.token,
+            this.projectKey
+        )
+        const devCycleVariableKeys = devCycleVariables.map(
+            (variable) => variable.key
+        )
+
+        const codeVariables = Object.keys(matchesByVariable)
+
+        const missingVariables = codeVariables.filter(
+            (codeVariable) => !devCycleVariableKeys.includes(codeVariable)
+        )
+
+        if (missingVariables.length > 0) {
+            this.log('\nVariables found in code but not in DevCycle:')
+            missingVariables.forEach((missingVariable, idx) => {
+                this.log(`${idx + 1}. ${missingVariable}`)
+            })
+        } else {
+            this.log('\nAll variables in code are present in DevCycle')
         }
     }
 
