@@ -1,13 +1,13 @@
 import inquirer from 'inquirer'
 import {
     updateEnvironment,
-    CreateEnvironmentParams
+    CreateEnvironmentParams,
 } from '../../api/environments'
 import {
     descriptionPrompt,
     featurePrompt,
     namePrompt,
-    environmentPrompt
+    environmentPrompt,
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
 
@@ -15,17 +15,13 @@ export default class UpdateEnvironment extends UpdateCommand<CreateEnvironmentPa
     static hidden = false
     static description = 'Update a Environment.'
 
-    prompts = [
-        namePrompt,
-        descriptionPrompt,
-        featurePrompt
-    ]
+    prompts = [namePrompt, descriptionPrompt, featurePrompt]
 
     public async run(): Promise<void> {
         await this.requireProject()
         const { environment } = await inquirer.prompt([environmentPrompt], {
             token: this.token,
-            projectKey: this.projectKey
+            projectKey: this.projectKey,
         })
 
         this.writer.blankLine()
@@ -38,7 +34,7 @@ export default class UpdateEnvironment extends UpdateCommand<CreateEnvironmentPa
             this.token,
             this.projectKey,
             environment.key,
-            params
+            params,
         )
         this.writer.showResults(result)
     }

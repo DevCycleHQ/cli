@@ -3,13 +3,19 @@ import { PARSERS } from '../parsers'
 import { ParseOptions, VariableDiffMatch } from '../parsers/types'
 import { CustomParser } from '../parsers/custom'
 
-export const parseFiles = (files: parse.File[], options: ParseOptions = {}): Record<string, VariableDiffMatch[]> => {
+export const parseFiles = (
+    files: parse.File[],
+    options: ParseOptions = {},
+): Record<string, VariableDiffMatch[]> => {
     const resultsByLanguage: Record<string, VariableDiffMatch[]> = {}
 
     const ALL_PARSERS = { ...PARSERS }
 
     for (const extension in options.matchPatterns ?? {}) {
-        ALL_PARSERS[extension] = [...(ALL_PARSERS[extension] ?? []), CustomParser]
+        ALL_PARSERS[extension] = [
+            ...(ALL_PARSERS[extension] ?? []),
+            CustomParser,
+        ]
     }
 
     const printed: Record<string, boolean> = {}

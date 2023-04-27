@@ -1,9 +1,8 @@
-`dvc status`
-============
+# `dvc status`
 
 Check CLI status
 
-* [`dvc status`](#dvc-status)
+-   [`dvc status`](#dvc-status)
 
 ## `dvc status`
 

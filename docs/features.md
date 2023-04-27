@@ -1,11 +1,10 @@
-`dvc features`
-==============
+# `dvc features`
 
 Access or modify Features with the Management API
 
-* [`dvc features create`](#dvc-features-create)
-* [`dvc features get`](#dvc-features-get)
-* [`dvc features list`](#dvc-features-list)
+-   [`dvc features create`](#dvc-features-create)
+-   [`dvc features get`](#dvc-features-get)
+-   [`dvc features list`](#dvc-features-list)
 
 ## `dvc features create`
 

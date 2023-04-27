@@ -1,9 +1,5 @@
 import { Type } from 'class-transformer'
-import {
-    IsOptional,
-    IsString,
-    ValidateNested
-} from 'class-validator'
+import { IsOptional, IsString, ValidateNested } from 'class-validator'
 import fs from 'fs'
 import path from 'path'
 import jsYaml from 'js-yaml'
@@ -33,7 +29,10 @@ export class AuthConfig {
     sso?: SSOAuthConfig
 }
 
-export async function storeAccessToken(accessToken:string, authPath:string):Promise<void> {
+export async function storeAccessToken(
+    accessToken: string,
+    authPath: string,
+): Promise<void> {
     const configDir = path.dirname(authPath)
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true })

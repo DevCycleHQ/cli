@@ -11,13 +11,13 @@ export class CsharpParser extends BaseParser {
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     namedParameterPatternMap = {
         user: userCapturePattern,
         key: variableNameCapturePattern,
-        default: defaultValueCapturePattern
+        default: defaultValueCapturePattern,
     }
 
     commentCharacters = ['//', '/*']

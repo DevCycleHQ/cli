@@ -10,7 +10,7 @@ export default abstract class CreateCommand<ResourceType> extends Base {
 
     public async populateParameters(
         paramClass: ClassConstructor<ResourceType>,
-        requireProject = true
+        requireProject = true,
     ): Promise<ResourceType> {
         if (requireProject) {
             await this.requireProject()

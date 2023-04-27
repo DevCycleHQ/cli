@@ -9,13 +9,13 @@ export class AndroidParser extends BaseParser {
 
     orderedParameterPatterns = [
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     namedParameterDelimiter = '='
     namedParameterPatternMap = {
         key: variableNameCapturePattern,
-        default: defaultValueCapturePattern
+        default: defaultValueCapturePattern,
     }
 
     commentCharacters = ['//', '/**', '*', '<!--']

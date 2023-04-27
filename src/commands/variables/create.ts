@@ -1,26 +1,23 @@
-import {
-    createVariable,
-    CreateVariableParams
-} from '../../api/variables'
+import { createVariable, CreateVariableParams } from '../../api/variables'
 import {
     descriptionPrompt,
     keyPrompt,
     namePrompt,
     variableTypePrompt,
-    featurePrompt
+    featurePrompt,
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 
 export default class CreateVariable extends CreateCommand<CreateVariableParams> {
     static hidden = false
     static description = 'Create a new Variable for an existing Feature.'
-    
+
     prompts = [
         keyPrompt,
         namePrompt,
         descriptionPrompt,
         variableTypePrompt,
-        featurePrompt
+        featurePrompt,
     ]
 
     public async run(): Promise<void> {

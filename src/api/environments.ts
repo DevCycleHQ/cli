@@ -6,14 +6,10 @@ export const environmentTypes = [
     'development',
     'staging',
     'production',
-    'disaster_recovery'
+    'disaster_recovery',
 ]
 
-export const sdkTypes = [
-    'client',
-    'mobile',
-    'server'
-]
+export const sdkTypes = ['client', 'mobile', 'server']
 
 export class Environment {
     _id: string
@@ -54,17 +50,15 @@ export class APIKey {
 export const createEnvironment = async (
     token: string,
     project_id: string,
-    params: CreateEnvironmentParams
+    params: CreateEnvironmentParams,
 ): Promise<Environment> => {
     const url = new URL(`/v1/projects/${project_id}/environments`, BASE_URL)
-    const response = await axios.post(url.href,
-        params,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-        })
+    const response = await axios.post(url.href, params, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+    })
 
     return response.data
 }
@@ -73,22 +67,26 @@ export const updateEnvironment = async (
     token: string,
     project_id: string,
     environmentKey: string,
-    params: Partial<CreateEnvironmentParams>
+    params: Partial<CreateEnvironmentParams>,
 ): Promise<Environment> => {
-    const url = new URL(`/v1/projects/${project_id}/environments/${environmentKey}`, BASE_URL)
-    const response = await axios.patch(url.href,
-        params,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-        })
+    const url = new URL(
+        `/v1/projects/${project_id}/environments/${environmentKey}`,
+        BASE_URL,
+    )
+    const response = await axios.patch(url.href, params, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+    })
 
     return response.data
 }
 
-export const fetchEnvironments = async (token: string, project_id: string): Promise<Environment[]> => {
+export const fetchEnvironments = async (
+    token: string,
+    project_id: string,
+): Promise<Environment[]> => {
     const url = new URL(`/v1/projects/${project_id}/environments`, BASE_URL)
     const response = await axios.get(url.href, {
         headers: {
@@ -103,9 +101,12 @@ export const fetchEnvironments = async (token: string, project_id: string): Prom
 export const fetchEnvironmentByKey = async (
     token: string,
     project_id: string,
-    key: string
+    key: string,
 ): Promise<Environment | null> => {
-    const url = new URL(`/v1/projects/${project_id}/environments/${key}`, BASE_URL)
+    const url = new URL(
+        `/v1/projects/${project_id}/environments/${key}`,
+        BASE_URL,
+    )
     try {
         const response = await axios.get(url.href, {
             headers: {
@@ -122,5 +123,4 @@ export const fetchEnvironmentByKey = async (
         }
         throw e
     }
-
 }

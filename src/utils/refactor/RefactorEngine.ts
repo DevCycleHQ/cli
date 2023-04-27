@@ -2,7 +2,13 @@ import fs from 'fs'
 import * as recast from 'recast'
 import estraverse from 'estraverse'
 import chalk from 'chalk'
-import { Literal, Expression, Identifier, ObjectExpression, Property } from 'estree'
+import {
+    Literal,
+    Expression,
+    Identifier,
+    ObjectExpression,
+    Property,
+} from 'estree'
 import { Variable } from '../../commands/cleanup/types'
 import { getCallExpression, isMemberExpression } from './utils'
 
@@ -45,14 +51,14 @@ export abstract class RefactorEngine {
             type: 'Literal',
             value: value,
             raw: String(value),
-            createdByDvc: true
+            createdByDvc: true,
         }
     }
 
     static identifier(name: string): Identifier {
         return {
             type: 'Identifier',
-            name
+            name,
         }
     }
 
@@ -64,7 +70,7 @@ export abstract class RefactorEngine {
             computed: false,
             kind: 'init',
             method: false,
-            shorthand: false
+            shorthand: false,
         }
     }
 
@@ -84,9 +90,9 @@ export abstract class RefactorEngine {
                 RefactorEngine.property('key', `"${variable.key}"`),
                 RefactorEngine.property('value', value),
                 RefactorEngine.property('defaultValue', value),
-                RefactorEngine.property('isDefaulted', true)
+                RefactorEngine.property('isDefaulted', true),
             ],
-            createdByDvc: true
+            createdByDvc: true,
         }
     }
 
@@ -99,7 +105,9 @@ export abstract class RefactorEngine {
     }
 
     static reduceLogicalExpression(
-        literal: DVCLiteral, expression: Expression, operator: string
+        literal: DVCLiteral,
+        expression: Expression,
+        operator: string,
     ): DVCLiteral | Expression | void {
         if (operator === '&&') {
             return literal.value ? expression : RefactorEngine.literal(false)
@@ -109,19 +117,27 @@ export abstract class RefactorEngine {
     }
 
     static reduceBinaryExpression(
-        literal: DVCLiteral, expression: Expression, operator: string
+        literal: DVCLiteral,
+        expression: Expression,
+        operator: string,
     ): DVCLiteral | void {
         if (!expression.type.includes('Literal')) return
         const literalExpression = expression as Literal
         if (operator === '==') {
-            return RefactorEngine.literal(literal.value == literalExpression.value)
+            return RefactorEngine.literal(
+                literal.value == literalExpression.value,
+            )
         } else if (operator === '===') {
-            return RefactorEngine.literal(literal.value === literalExpression.value)
+            return RefactorEngine.literal(
+                literal.value === literalExpression.value,
+            )
         }
     }
 
     private getAssignmentValueIfSet(expression: Expression) {
-        return expression.type === 'Identifier' && expression.name && this.varAssignments[expression.name]
+        return expression.type === 'Identifier' &&
+            expression.name &&
+            this.varAssignments[expression.name]
             ? this.varAssignments[expression.name].value
             : expression
     }
@@ -131,8 +147,10 @@ export abstract class RefactorEngine {
      */
     private replaceFeatureFlags = () => {
         const isKeyOrAlias = (arg: any): boolean => {
-            const isKey = arg.type.includes('Literal') && arg.value === this.variable.key
-            const isAlias = arg.type === 'Identifier' && this.aliases.has(arg.name)
+            const isKey =
+                arg.type.includes('Literal') && arg.value === this.variable.key
+            const isAlias =
+                arg.type === 'Identifier' && this.aliases.has(arg.name)
             return isKey || isAlias
         }
         const getVariableProperty = (node: any): string | undefined => {
@@ -141,22 +159,28 @@ export abstract class RefactorEngine {
             let identifier
             if (node.callee.type === 'Identifier') {
                 identifier = node.callee
-            } else if (isMemberExpression(node.callee) && node.callee.property.type === 'Identifier') {
+            } else if (
+                isMemberExpression(node.callee) &&
+                node.callee.property.type === 'Identifier'
+            ) {
                 identifier = node.callee.property
             }
 
             if (
                 identifier &&
-                Object.prototype.hasOwnProperty.call(this.sdkMethods, identifier.name) &&
+                Object.prototype.hasOwnProperty.call(
+                    this.sdkMethods,
+                    identifier.name,
+                ) &&
                 node.arguments.find(isKeyOrAlias)
             ) {
                 return this.sdkMethods[identifier.name]
             }
         }
-    
+
         const engine = this
         estraverse.replace(this.ast, {
-            enter: function(node) {
+            enter: function (node) {
                 const variableProperty = getVariableProperty(node)
                 if (variableProperty) {
                     engine.changed = true
@@ -166,17 +190,18 @@ export abstract class RefactorEngine {
                         const [_, property] = variableProperty.split('.')
                         return {
                             type: 'MemberExpression',
-                            object: RefactorEngine.dvcVariableObject(engine.variable),
+                            object: RefactorEngine.dvcVariableObject(
+                                engine.variable,
+                            ),
                             property: RefactorEngine.identifier(property),
                             computed: false,
-                            optional: false
+                            optional: false,
                         }
                     }
                 }
             },
             fallback: 'iteration',
         })
-    
     }
 
     /**
@@ -186,7 +211,7 @@ export abstract class RefactorEngine {
     private reduceObjects = () => {
         const engine = this
         estraverse.replace(this.ast, {
-            enter: function(node) {
+            enter: function (node) {
                 // Refactor DVC object properties (ie. key, value, isDefaulted)
                 if (
                     isMemberExpression(node) &&
@@ -195,8 +220,9 @@ export abstract class RefactorEngine {
                     const propertyName = (node.property as Identifier).name
                     const object = node.object as DVCObject
                     const objectProperties = object.properties as Property[]
-                    const valueLiteral = objectProperties.find((prop) => (
-                        prop.key as Identifier).name === propertyName
+                    const valueLiteral = objectProperties.find(
+                        (prop) =>
+                            (prop.key as Identifier).name === propertyName,
                     )?.value
                     if (valueLiteral) {
                         engine.changed = true
@@ -204,8 +230,11 @@ export abstract class RefactorEngine {
                     }
                 }
                 // Refactor DVC object methods (ie. onUpdate)
-                const callExpression = node.type === 'ExpressionStatement' && getCallExpression(node)
-                const memberExpression = callExpression &&
+                const callExpression =
+                    node.type === 'ExpressionStatement' &&
+                    getCallExpression(node)
+                const memberExpression =
+                    callExpression &&
                     isMemberExpression(callExpression.callee) &&
                     callExpression.callee
                 if (
@@ -226,39 +255,63 @@ export abstract class RefactorEngine {
         const engine = this
 
         estraverse.replace(this.ast, {
-            leave: function(node) {
+            leave: function (node) {
                 let updatedNode
                 if (node.type === 'LogicalExpression') {
-                    const expression1 = engine.getAssignmentValueIfSet(node.left)
-                    const expression2 = engine.getAssignmentValueIfSet(node.right)
+                    const expression1 = engine.getAssignmentValueIfSet(
+                        node.left,
+                    )
+                    const expression2 = engine.getAssignmentValueIfSet(
+                        node.right,
+                    )
 
                     if (RefactorEngine.isDVCLiteral(expression1)) {
-                        updatedNode = RefactorEngine
-                            .reduceLogicalExpression(expression1 as DVCLiteral, expression2, node.operator)
+                        updatedNode = RefactorEngine.reduceLogicalExpression(
+                            expression1 as DVCLiteral,
+                            expression2,
+                            node.operator,
+                        )
                     } else if (RefactorEngine.isDVCLiteral(expression2)) {
-                        updatedNode = RefactorEngine
-                            .reduceLogicalExpression(expression2 as DVCLiteral, expression1, node.operator)
+                        updatedNode = RefactorEngine.reduceLogicalExpression(
+                            expression2 as DVCLiteral,
+                            expression1,
+                            node.operator,
+                        )
                     }
                 } else if (node.type === 'BinaryExpression') {
-                    const expression1 = engine.getAssignmentValueIfSet(node.left)
-                    const expression2 = engine.getAssignmentValueIfSet(node.right)
+                    const expression1 = engine.getAssignmentValueIfSet(
+                        node.left,
+                    )
+                    const expression2 = engine.getAssignmentValueIfSet(
+                        node.right,
+                    )
 
                     if (RefactorEngine.isDVCLiteral(expression1)) {
-                        updatedNode = RefactorEngine
-                            .reduceBinaryExpression(expression1 as DVCLiteral, expression2, node.operator)
+                        updatedNode = RefactorEngine.reduceBinaryExpression(
+                            expression1 as DVCLiteral,
+                            expression2,
+                            node.operator,
+                        )
                     } else if (RefactorEngine.isDVCLiteral(expression2)) {
-                        updatedNode = RefactorEngine
-                            .reduceBinaryExpression(expression2 as DVCLiteral, expression1, node.operator)
+                        updatedNode = RefactorEngine.reduceBinaryExpression(
+                            expression2 as DVCLiteral,
+                            expression1,
+                            node.operator,
+                        )
                     }
                 } else if (
                     node.type === 'UnaryExpression' &&
                     node.operator === '!'
                 ) {
-                    const nodeArgument = engine.getAssignmentValueIfSet(node.argument)
+                    const nodeArgument = engine.getAssignmentValueIfSet(
+                        node.argument,
+                    )
 
                     if (RefactorEngine.isDVCLiteral(nodeArgument)) {
                         const literalArgument = nodeArgument as DVCLiteral
-                        updatedNode = RefactorEngine.literal(!literalArgument.value)
+                        updatedNode = RefactorEngine.literal(
+                            !literalArgument.value,
+                        )
                     }
                 }
 
@@ -277,8 +330,11 @@ export abstract class RefactorEngine {
     private reduceIfStatements() {
         const engine = this
         estraverse.replace(this.ast, {
-            leave: function(node) {
-                if (node.type === 'IfStatement' || node.type === 'ConditionalExpression') {
+            leave: function (node) {
+                if (
+                    node.type === 'IfStatement' ||
+                    node.type === 'ConditionalExpression'
+                ) {
                     const nodeTest = engine.getAssignmentValueIfSet(node.test)
 
                     if (RefactorEngine.isDVCLiteral(nodeTest)) {
@@ -299,10 +355,11 @@ export abstract class RefactorEngine {
 
         // Flatten any nested blocks introduced in the previous step by moving their contents to their parent
         estraverse.traverse(this.ast, {
-            leave: function(node, parent) {
+            leave: function (node, parent) {
                 if (
                     node.type === 'BlockStatement' &&
-                    (parent?.type === 'BlockStatement' || parent?.type === 'Program')
+                    (parent?.type === 'BlockStatement' ||
+                        parent?.type === 'Program')
                 ) {
                     const nodeIndex = parent.body.indexOf(node)
                     parent.body.splice(nodeIndex, 1, ...node.body)
@@ -321,22 +378,28 @@ export abstract class RefactorEngine {
         const assignments: VariableAssignments = {}
 
         estraverse.traverse(this.ast, {
-            enter: function(node) {
+            enter: function (node) {
                 if (node.type === 'VariableDeclaration') {
                     node.declarations.forEach((declaration) => {
                         if (declaration.init) {
                             const declarationId = declaration.id as Identifier
                             if (RefactorEngine.isDVCLiteral(declaration.init)) {
-                                const declarationInit = declaration.init as DVCLiteral
+                                const declarationInit =
+                                    declaration.init as DVCLiteral
                                 assignments[declarationId.name] = {
-                                    replace: typeof declarationInit.value === 'boolean',
-                                    value: declarationInit
+                                    replace:
+                                        typeof declarationInit.value ===
+                                        'boolean',
+                                    value: declarationInit,
                                 }
-                            } else if (RefactorEngine.isDVCObject(declaration.init)) {
-                                const declarationInit = declaration.init as DVCObject
+                            } else if (
+                                RefactorEngine.isDVCObject(declaration.init)
+                            ) {
+                                const declarationInit =
+                                    declaration.init as DVCObject
                                 assignments[declarationId.name] = {
                                     replace: true,
-                                    value: declarationInit
+                                    value: declarationInit,
                                 }
                             }
                         }
@@ -348,16 +411,19 @@ export abstract class RefactorEngine {
                         if (nodeLeft.name !== undefined) {
                             assignments[nodeLeft.name] = {
                                 replace: typeof nodeRight.value === 'boolean',
-                                value: nodeRight
+                                value: nodeRight,
                             }
                         }
-                    } else if (node.right && RefactorEngine.isDVCObject(node.right)) {
+                    } else if (
+                        node.right &&
+                        RefactorEngine.isDVCObject(node.right)
+                    ) {
                         const nodeRight = node.right as DVCObject
                         const nodeLeft = node.left as Identifier
                         if (nodeLeft.name !== undefined) {
                             assignments[nodeLeft.name] = {
                                 replace: true,
-                                value: nodeRight
+                                value: nodeRight,
                             }
                         }
                     }
@@ -375,12 +441,15 @@ export abstract class RefactorEngine {
     private pruneVarReferences() {
         const engine = this
         estraverse.replace(this.ast, {
-            enter: function(node, parent) {
+            enter: function (node, parent) {
                 // Remove variable declaration if necessary
                 let identifier
                 if (node.type === 'VariableDeclarator') {
                     identifier = node.id as Identifier
-                } else if (node.type === 'ExpressionStatement' && node.expression.type === 'AssignmentExpression') {
+                } else if (
+                    node.type === 'ExpressionStatement' &&
+                    node.expression.type === 'AssignmentExpression'
+                ) {
                     identifier = node.expression.left as Identifier
                 }
                 if (
@@ -391,12 +460,15 @@ export abstract class RefactorEngine {
                     engine.changed = true
                     return this.remove()
                 }
-                
+
                 // Replace node with variable value if necessary
                 if (
                     node.type === 'Identifier' &&
                     parent?.type !== 'Property' &&
-                    Object.prototype.hasOwnProperty.call(engine.varAssignments, node.name) &&
+                    Object.prototype.hasOwnProperty.call(
+                        engine.varAssignments,
+                        node.name,
+                    ) &&
                     engine.varAssignments[node.name].replace
                 ) {
                     engine.changed = true
@@ -405,7 +477,7 @@ export abstract class RefactorEngine {
             },
 
             // After previous step, some declaration may have no declarators, delete them.
-            leave: function(node) {
+            leave: function (node) {
                 if (node.type === 'VariableDeclaration') {
                     if (node.declarations.length === 0) {
                         engine.changed = true
@@ -422,7 +494,7 @@ export abstract class RefactorEngine {
             const parseOptions = this.parser ? { parser: this.parser } : {}
             this.ast = recast.parse(
                 fs.readFileSync(this.filepath, 'utf-8'),
-                parseOptions
+                parseOptions,
             ).program
         } catch (err: any) {
             console.warn(chalk.yellow(`Error parsing file ${this.filepath}`))
@@ -439,11 +511,15 @@ export abstract class RefactorEngine {
                 fs.writeFileSync(this.filepath, code)
             }
         } catch (err: any) {
-            console.warn(chalk.yellow(`Error occurred while recasting file ${this.filepath}`))
+            console.warn(
+                chalk.yellow(
+                    `Error occurred while recasting file ${this.filepath}`,
+                ),
+            )
             console.warn(`\t${err.message}`)
         }
     }
-    
+
     public refactor = (): void => {
         this.parseAST()
         if (!this.ast) return

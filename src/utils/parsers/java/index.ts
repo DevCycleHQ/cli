@@ -10,7 +10,7 @@ export class JavaParser extends BaseParser {
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     commentCharacters = ['/**', '*']

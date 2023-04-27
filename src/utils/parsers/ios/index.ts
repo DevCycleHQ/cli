@@ -10,9 +10,8 @@ export class IosParser extends BaseParser {
     namedParameterDelimiter = ':'
     namedParameterPatternMap = {
         key: variableNameCapturePattern,
-        defaultValue: defaultValueCapturePattern
+        defaultValue: defaultValueCapturePattern,
     }
 
     commentCharacters = ['///', '/**']
-    
 }
