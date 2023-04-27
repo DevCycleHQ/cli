@@ -33,13 +33,13 @@ export class CreateFeatureParams {
     @IsString()
     key: string
 
-    variations?: { key: string; name: string; variables: Record<string, any> }[]
+    variations?: { key: string; name: string; variables: Record<string, unknown> }[]
 
     variables: featureVariable[]
 }
 
 type featureVariable = {
-    defaultValue: boolean
+    defaultValue: boolean | string | number | Record<string, unknown>
     key: string
     name: string
     type: 'Boolean' | 'Number' | 'String' | 'JSON'
@@ -106,6 +106,7 @@ export const createFeature = async (
         if (e.response?.status === 404) {
             return null
         }
+        console.error('Error:', e.response?.data) // Log the error response data
         throw e
-    }
+    } 
 }

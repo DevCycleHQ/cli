@@ -1,16 +1,26 @@
 import fs from 'fs'
 import minimatch from 'minimatch'
 import { Flags } from '@oclif/core'
+import { execSync } from 'child_process'
 import { lsFiles } from '../../utils/git/ls-files'
 import { parseFiles } from '../../utils/usages/parse'
 import Base from '../base'
-import { fetchVariables, Variable } from '../../api/variables'
+import { CreateVariableParams, fetchVariables } from '../../api/variables'
 import { File, JSONMatch, LineItem, VariableReference } from './types'
 import ClientNameFlag, { getClientNames } from '../../flags/client-name'
 import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 import { VariableMatch, VariableUsageMatch } from '../../utils/parsers/types'
+import { 
+    selectMissingVariablesPrompt, 
+    selectActionPrompt, 
+    inputVariableTypePrompt, 
+    inputDefaultValuePrompt
+} from '../../ui/prompts/usagesPrompts'
+import CreateFeature from '../../commands/features/create'
+import { CreateFeatureParams } from '../../api/features'
+import { QuestionCollection, prompt } from 'inquirer'
 
 export default class Usages extends Base {
     static hidden = false
@@ -47,16 +57,31 @@ export default class Usages extends Base {
             description: 'Format to use when outputting the usage results.',
         }),
         'show-regex': ShowRegexFlag,
-        'find-missing': Flags.boolean({
+
+        'blame': Flags.boolean({
             default: false,
-            description: 'Find variables that exist in code but not in DevCycle',
+            char: 'b',
+            description: 'Include git blame information for missing variables',
+        }),
+        'create': Flags.boolean({
+            char: 'c',
+            description: 'Create missing variables',
+            default: false,
         }),
     }
+    static args = [
+        {
+            name: 'command',
+            description: 'find-missing or other command',
+            required: false,
+            default: '',
+        },
+    ]
 
     useMarkdown = false
 
     public async run(): Promise<void> {
-        const { flags } = await this.parse(Usages)
+        const { args, flags } = await this.parse(Usages)
         const codeInsightsConfig = this.repoConfig?.codeInsights || {}
 
         this.useMarkdown = flags.format === 'markdown'
@@ -122,21 +147,40 @@ export default class Usages extends Base {
             variableAliases,
         )
 
-        if (flags['find-missing']) {
-            await this.findMissingVariables(matchesByVariable)
-        }
-
-        if (flags['format'] === 'json') {
-            const matchesByVariableJSON =
-                this.formatMatchesToJSON(matchesByVariable)
-            this.log(JSON.stringify(matchesByVariableJSON, null, 2))
+        if (args.command === 'find-missing') {
+            await this.findMissingVariables(matchesByVariable, flags['blame'])
+            if (flags['create']) {
+                // Handle the --create flag
+                await this.createMissingVariables(matchesByVariable)
+            }
         } else {
-            this.formatConsoleOutput(matchesByVariable)
+            if (flags['format'] === 'json') {
+                const matchesByVariableJSON =
+                    this.formatMatchesToJSON(matchesByVariable)
+                this.log(JSON.stringify(matchesByVariableJSON, null, 2))
+            } else {
+                this.formatConsoleOutput(matchesByVariable)
+            }
+        }
+    }
+
+    private getGitBlame(fileName: string, lineNumber: number): string {
+        try {
+            const output = execSync(
+                `git blame -L ${lineNumber},${lineNumber} -- ${fileName}`,
+                { encoding: 'utf8' }
+            )
+            return output.trim()
+        } catch (error) {
+            this.warn(`Error running git blame for ${fileName}:L${lineNumber}`)
+            this.debug(error)
+            return ''
         }
     }
 
     private async findMissingVariables(
-        matchesByVariable: Record<string, VariableMatch[]>
+        matchesByVariable: Record<string, VariableMatch[]>,
+        blame: boolean
     ): Promise<void> {
         await this.requireProject()
         const devCycleVariables = await fetchVariables(
@@ -146,17 +190,26 @@ export default class Usages extends Base {
         const devCycleVariableKeys = devCycleVariables.map(
             (variable) => variable.key
         )
-
+    
         const codeVariables = Object.keys(matchesByVariable)
-
+    
         const missingVariables = codeVariables.filter(
             (codeVariable) => !devCycleVariableKeys.includes(codeVariable)
         )
-
+    
         if (missingVariables.length > 0) {
             this.log('\nVariables found in code but not in DevCycle:')
             missingVariables.forEach((missingVariable, idx) => {
                 this.log(`${idx + 1}. ${missingVariable}`)
+                matchesByVariable[missingVariable].forEach(({ fileName, line }) => {
+                    if (blame) {
+                        const blameInfo = this.getGitBlame(fileName, line)
+                        const formattedBlame = this.formatGitBlame(blameInfo)
+                        this.log(`\t- ${fileName}:L${line} (${formattedBlame})`)
+                    } else {
+                        this.log(`\t- ${fileName}:L${line}`)
+                    }
+                })
             })
         } else {
             this.log('\nAll variables in code are present in DevCycle')
@@ -237,22 +290,116 @@ export default class Usages extends Base {
             this.log('\nNo DevCycle Variable Usages Found\n')
             return
         }
-
+    
         this.log('\nDevCycle Variable Usage:\n')
         Object.entries(matchesByVariable).forEach(
             ([variableName, matches], idx) => {
-                this.log(`${idx + 1}. ${variableName}`)
-
-                matches.sort((a, b) => {
-                    if (a.fileName === b.fileName)
-                        return a.line > b.line ? 1 : -1
-                    return a.fileName > b.fileName ? 1 : -1
-                })
-
-                matches.forEach(({ fileName, line }) => {
-                    this.log(`\t- ${fileName}:L${line}`)
-                })
+                if (isNaN(parseInt(variableName))) {
+                    this.log(`${idx + 1}. ${variableName}`)
+    
+                    matches.sort((a, b) => {
+                        if (a.fileName === b.fileName)
+                            return a.line > b.line ? 1 : -1
+                        return a.fileName > b.fileName ? 1 : -1
+                    })
+    
+                    matches.forEach(({ fileName, line }) => {
+                        this.log(`\t- ${fileName}:L${line}`)
+                    })
+                }
             },
         )
+    }
+    
+
+    private async createMissingVariables(matchesByVariable: Record<string, VariableMatch[]>): Promise<void> {
+        const missingVariables = Object.keys(matchesByVariable)
+
+        function isVariableType(value: string): value is 'String' | 'Boolean' | 'Number' | 'JSON' {
+            return ['String', 'Boolean', 'Number', 'JSON'].includes(value)
+        }
+
+        function inputDefaultValuePrompt(state: 'ON' | 'OFF'): QuestionCollection {
+            return [
+                {
+                    type: 'input',
+                    name: `defaultValue${state}`,
+                    message: `Enter the default value for the '${state}' state:`,
+                },
+            ]
+        }
+    
+        // Prompt the user to select which variables they want to create
+        const selectedVariables = await prompt(selectMissingVariablesPrompt(missingVariables))
+    
+        if (selectedVariables !== null) {
+    
+            // For each selected variable, prompt the user to choose an action
+            for (const variableKey of selectedVariables.variableKey) {
+                const action = await prompt(selectActionPrompt(variableKey))
+    
+                if (action !== null) {
+    
+                    // Take appropriate action based on the user's choice
+                    switch (action.action) {
+                        case 'create_variable':
+                            // Create the variable here
+                            // ...
+                            break
+                        case 'create_feature': {
+                            // Create a feature with the new variable
+                            const createFeatureCommand = new CreateFeature([], this.config)
+                            createFeatureCommand.token = this.token
+                            createFeatureCommand.projectKey = this.projectKey
+    
+                            const featureParams: CreateFeatureParams = {
+                                name: `Feature for ${variableKey}`,
+                                description: `A feature for the ${variableKey} variable.`,
+                                key: variableKey,
+                                variables: []
+                            }
+                            const { type: variableType } = (await prompt(inputVariableTypePrompt())) as unknown as {
+                                type: string;
+                              }
+                              
+                            if (!isVariableType(variableType)) {
+                                throw new Error('Invalid variable type')
+                            }
+                              
+                            const variableParams: CreateVariableParams = {
+                                key: variableKey,
+                                name: `Variable for ${variableKey}`,
+                                description: `A variable for the ${variableKey} feature.`,
+                                type: variableType,
+                                _feature: '',
+                            }
+    
+                            // Prompt user for default values for the 'ON' and 'OFF' states
+                            const { defaultValueOn } = await prompt(inputDefaultValuePrompt('ON'))
+                            const { defaultValueOff } = await prompt(inputDefaultValuePrompt('OFF'))
+                    
+                            await createFeatureCommand.createFeatureWithVariable (
+                                featureParams, variableParams, defaultValueOn, defaultValueOff
+                            )
+                        }
+                            break
+                        case 'associate':
+                            // Associate the variable with an existing feature here
+                            // ...
+                            break
+                    }
+                }
+            }
+        }
+    }
+
+    private formatGitBlame(blame: string): string {
+        const match = blame.match(/\((.+?)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})\s+(\d+)\)/)
+        if (match) {
+            const author = match[1].trim()
+            const date = match[2].trim()
+            return `${author} on ${date}`
+        }
+        return 'Unknown'
     }
 }

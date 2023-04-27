@@ -88,4 +88,45 @@ export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
             // Add API call to disable all environment rules
         }
     }
+
+    public async createFeatureWithVariable(
+        featureParams: CreateFeatureParams,
+        variableParams: Omit<CreateVariableParams, 'type'> & { type: 'String' | 'Boolean' | 'Number' | 'JSON' },
+        defaultValueOn: string | boolean | number | Record<string, unknown>,
+        defaultValueOff: string | boolean | number | Record<string, unknown>,
+    ): Promise<void> {
+        const feature: CreateFeatureParams = {
+            ...featureParams,
+            variables: [
+                {
+                    ...variableParams,
+                    defaultValue: defaultValueOff,
+                },
+            ],
+            variations: [
+                {
+                    key: 'variation-on',
+                    name: 'ON',
+                    variables: {
+                        [variableParams.key]: defaultValueOn,
+                    },
+                },
+                {
+                    key: 'variation-off',
+                    name: 'OFF',
+                    variables: {
+                        [variableParams.key]: defaultValueOff,
+                    },
+                },
+            ],
+        }
+        const result = await createFeature(this.token, this.projectKey, feature)
+        if (!result) {
+            this.warn('Failed to create the feature.')
+            return
+        }
+        this.writer.showResults(result)
+    }
+    
 }
+
