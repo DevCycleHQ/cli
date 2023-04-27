@@ -1,9 +1,9 @@
 // Base object describing a variable match
 export type VariableMatch = {
-    name: string,
-    line: number,
-    fileName: string,
-    isUnknown?: boolean,
+    name: string
+    line: number
+    fileName: string
+    isUnknown?: boolean
     alias?: string
 }
 
@@ -17,7 +17,7 @@ export type VariableUsageMatch = VariableMatch & {
 
 // Object describing a variable match specific to a git diff
 export type VariableDiffMatch = VariableMatch & {
-    mode: 'add' | 'remove',
+    mode: 'add' | 'remove'
 }
 
 export type Range = {
@@ -25,13 +25,12 @@ export type Range = {
     end: number
 }
 
-export type  MultilineChunk = {
+export type MultilineChunk = {
     content: string
 }
 
 export type ParseOptions = {
-    clientNames?: string[],
-    matchPatterns?: Record<string, string[]>,
+    clientNames?: string[]
+    matchPatterns?: Record<string, string[]>
     printPatterns?: boolean
 }
-

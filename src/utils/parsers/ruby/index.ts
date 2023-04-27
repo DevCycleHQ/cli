@@ -10,7 +10,7 @@ export class RubyParser extends BaseParser {
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     commentCharacters = ['#']

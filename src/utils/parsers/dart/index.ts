@@ -8,7 +8,7 @@ export class DartParser extends BaseParser {
     variableMethodPattern = /\??\.variable\(\s*/
     orderedParameterPatterns = [
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     commentCharacters = ['//', '/*']

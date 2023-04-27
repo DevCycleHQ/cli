@@ -10,14 +10,14 @@ export class PhpParser extends BaseParser {
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     namedParameterDelimiter = ':'
     namedParameterPatternMap = {
         key: variableNameCapturePattern,
         user: userCapturePattern,
-        defaultValue: defaultValueCapturePattern
+        defaultValue: defaultValueCapturePattern,
     }
 
     commentCharacters = ['//', '#', '/*']

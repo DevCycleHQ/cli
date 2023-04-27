@@ -56,30 +56,38 @@ DevCycle Variable Usage:
 `
 
 describe('usages', () => {
-    test
-        .stdout()
-        .command(['usages', '--include', 'test-utils/fixtures/usages/nodejs.js'])
+    test.stdout()
+        .command([
+            'usages',
+            '--include',
+            'test-utils/fixtures/usages/nodejs.js',
+        ])
         .it('runs against a node test file', (ctx) => {
             expect(ctx.stdout).to.equal(nodeExpected)
         })
 
-    test
-        .stdout()
+    test.stdout()
         .command(['usages', '--include', 'test-utils/fixtures/usages/react.js'])
         .it('runs against a react test file', (ctx) => {
             expect(ctx.stdout).to.equal(reactExpected)
         })
 
-    test
-        .stdout()
-        .command(['usages', '--include', 'test-utils/fixtures/usages/golang.go'])
+    test.stdout()
+        .command([
+            'usages',
+            '--include',
+            'test-utils/fixtures/usages/golang.go',
+        ])
         .it('runs against a go test file', (ctx) => {
             expect(ctx.stdout).to.equal(goExpected)
         })
 
-    test
-        .stdout()
-        .command(['usages', '--include', 'test-utils/fixtures/usages/sample.dart'])
+    test.stdout()
+        .command([
+            'usages',
+            '--include',
+            'test-utils/fixtures/usages/sample.dart',
+        ])
         .it('runs against a dart test file', (ctx) => {
             expect(ctx.stdout).to.equal(dartExpected)
         })

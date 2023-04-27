@@ -37,7 +37,7 @@ export const PARSERS: Record<string, (typeof NodeParser)[]> = {
     go: [GolangParser],
     swift: [IosParser],
     php: [PhpParser],
-    dart: [DartParser]
+    dart: [DartParser],
 }
 
 export const LANGUAGE_MAP: Record<string, string> = {
@@ -53,5 +53,5 @@ export const LANGUAGE_MAP: Record<string, string> = {
     go: 'go',
     swift: 'swift',
     php: 'php',
-    dart: 'dart'
+    dart: 'dart',
 }

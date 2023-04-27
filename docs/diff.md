@@ -1,9 +1,8 @@
-`dvc diff`
-==========
+# `dvc diff`
 
 Print a diff of DevCycle variable usage between two versions of your code.
 
-* [`dvc diff [DIFF-PATTERN]`](#dvc-diff-diff-pattern)
+-   [`dvc diff [DIFF-PATTERN]`](#dvc-diff-diff-pattern)
 
 ## `dvc diff [DIFF-PATTERN]`
 

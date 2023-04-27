@@ -26,10 +26,22 @@ export class CreateFeatureParams {
     @IsString()
     key: string
 
-    variations?: { key: string; name: string; variables: Record<string, unknown> }[]
+    variations?: { key: string; name: string; variables: Record<string, any> }[]
+
+    variables: featureVariable[]
 }
 
-export const fetchFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
+type featureVariable = {
+    defaultValue: boolean
+    key: string
+    name: string
+    type: 'Boolean' | 'Number' | 'String' | 'JSON'
+}
+
+export const fetchFeatures = async (
+    token: string,
+    project_id: string,
+): Promise<Feature[]> => {
     const url = new URL(`/v1/projects/${project_id}/features`, BASE_URL)
     const response = await axios.get(url.href, {
         headers: {
@@ -41,7 +53,11 @@ export const fetchFeatures = async (token: string, project_id: string): Promise<
     return response.data
 }
 
-export const fetchFeatureByKey = async (token: string, project_id: string, key: string): Promise<Feature | null> => {
+export const fetchFeatureByKey = async (
+    token: string,
+    project_id: string,
+    key: string,
+): Promise<Feature | null> => {
     const url = new URL(`/v1/projects/${project_id}/features/${key}`, BASE_URL)
     try {
         const response = await axios.get(url.href, {
@@ -59,19 +75,25 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
         }
         throw e
     }
-
 }
 
-export const createFeature = async (token: string, project_id: string, feature: CreateFeatureParams)
-    : Promise<Feature | null> => {
+export const createFeature = async (
+    token: string,
+    project_id: string,
+    feature: CreateFeatureParams,
+): Promise<Feature | null> => {
     const url = new URL(`/v1/projects/${project_id}/features`, BASE_URL)
     try {
-        const response = await axios.post(url.href, { ...feature, type: 'release' }, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
+        const response = await axios.post(
+            url.href,
+            { ...feature, type: 'release' },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
             },
-        })
+        )
         return response.data
     } catch (e: any) {
         if (e.response?.status === 404) {

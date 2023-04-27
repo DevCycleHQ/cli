@@ -2,27 +2,27 @@ import chalk from 'chalk'
 import { togglebot, togglebotSleep, togglebotWink } from './togglebot'
 
 export default class Writer {
-    public successMessage(message:string):void {
+    public successMessage(message: string): void {
         if (!this.headless) console.log(chalk.green(`✅ ${message}`))
     }
-    
-    public failureMessage(message:string):void {
+
+    public failureMessage(message: string): void {
         if (!this.headless) console.log(chalk.red(`❌ ${message}`))
     }
 
-    public warningMessage(message:string):void {
+    public warningMessage(message: string): void {
         if (!this.headless) console.log(chalk.yellow(`⚠️ ${message}`))
     }
-    
-    public statusMessage(message:string):void {
+
+    public statusMessage(message: string): void {
         if (!this.headless) console.log(chalk.gray(`🤖 ${message}`))
     }
 
-    public blankLine():void {
+    public blankLine(): void {
         if (!this.headless) console.log('\n\r')
     }
 
-    public showResults(results:unknown):void {
+    public showResults(results: unknown): void {
         if (this.headless) {
             console.log(JSON.stringify(results))
         } else {
@@ -30,21 +30,21 @@ export default class Writer {
         }
     }
 
-    public showRawResults(results:string):void {
+    public showRawResults(results: string): void {
         console.log(results)
     }
 
-    public showTogglebot():void {
+    public showTogglebot(): void {
         if (!this.headless) console.log(togglebot)
     }
 
-    public showTogglebotWink():void {
+    public showTogglebotWink(): void {
         if (!this.headless) console.log(togglebotWink)
     }
 
-    public showTogglebotSleep():void {
+    public showTogglebotSleep(): void {
         if (!this.headless) console.log(togglebotSleep)
     }
 
-    public headless:boolean
+    public headless: boolean
 }

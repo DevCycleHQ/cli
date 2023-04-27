@@ -19,39 +19,44 @@ export default abstract class Base extends Command {
     static hidden = true
     static flags = {
         'config-path': Flags.string({
-            description: 'Override the default location to look for the user.yml file',
-            helpGroup: 'Global'
+            description:
+                'Override the default location to look for the user.yml file',
+            helpGroup: 'Global',
         }),
         'auth-path': Flags.string({
-            description: 'Override the default location to look for an auth.yml file',
-            helpGroup: 'Global'
+            description:
+                'Override the default location to look for an auth.yml file',
+            helpGroup: 'Global',
         }),
         'repo-config-path': Flags.string({
-            description: 'Override the default location to look for the repo config.yml file',
-            helpGroup: 'Global'
+            description:
+                'Override the default location to look for the repo config.yml file',
+            helpGroup: 'Global',
         }),
         'client-id': Flags.string({
             description: 'Client ID to use for DevCycle API Authorization',
-            helpGroup: 'Global'
+            helpGroup: 'Global',
         }),
         'client-secret': Flags.string({
             description: 'Client Secret to use for DevCycle API Authorization',
-            helpGroup: 'Global'
+            helpGroup: 'Global',
         }),
-        'project': Flags.string({
+        project: Flags.string({
             description: 'Project key to use for the DevCycle API requests',
-            helpGroup: 'Global'
+            helpGroup: 'Global',
         }),
         'no-api': Flags.boolean({
-            description: 'Disable API-based enhancements for commands where authorization is optional. Suppresses ' +
+            description:
+                'Disable API-based enhancements for commands where authorization is optional. Suppresses ' +
                 'warnings about missing credentials.',
-            helpGroup: 'Global'
+            helpGroup: 'Global',
         }),
-        'headless': Flags.boolean({
-            description: 'Disable all interactive flows and format output for easy parsing.',
-            helpGroup: 'Global'
+        headless: Flags.boolean({
+            description:
+                'Disable all interactive flows and format output for easy parsing.',
+            helpGroup: 'Global',
         }),
-        'caller': Flags.enum({
+        caller: Flags.enum({
             description: 'The integration that is calling the CLI.',
             helpGroup: 'Global',
             options: [
@@ -59,9 +64,9 @@ export default abstract class Base extends Command {
                 'github.code_usages',
                 'bitbucket.pr_insights',
                 'bitbucket.code_usages',
-                'cli'
+                'cli',
             ],
-            hidden: true
+            hidden: true,
         }),
     }
 
@@ -90,10 +95,14 @@ export default abstract class Base extends Command {
         this.token = await getToken(this.authPath, flags)
         if (!this.hasToken()) {
             if (this.authRequired) {
-                throw new Error('Authorization is required to use this command.')
+                throw new Error(
+                    'Authorization is required to use this command.',
+                )
             } else if (this.authSuggested && !flags['no-api']) {
-                this.writer.warningMessage('This command has limited functionality without Authorization.' +
-                    'Use the "--no-api" flag to suppress this warning')
+                this.writer.warningMessage(
+                    'This command has limited functionality without Authorization.' +
+                        'Use the "--no-api" flag to suppress this warning',
+                )
             }
             return
         }
@@ -126,7 +135,7 @@ export default abstract class Base extends Command {
     }
 
     async updateUserConfig(
-        changes: Partial<UserConfigFromFile>
+        changes: Partial<UserConfigFromFile>,
     ): Promise<UserConfigFromFile | null> {
         let config = this.loadUserConfig(this.configPath)
         if (!config) {
@@ -137,7 +146,7 @@ export default abstract class Base extends Command {
 
         config = {
             ...config,
-            ...changes
+            ...changes,
         }
 
         fs.writeFileSync(this.configPath, jsYaml.dump(config))
@@ -147,7 +156,7 @@ export default abstract class Base extends Command {
     }
 
     async updateRepoConfig(
-        changes: Partial<RepoConfigFromFile>
+        changes: Partial<RepoConfigFromFile>,
     ): Promise<RepoConfigFromFile | null> {
         let config = this.loadRepoConfig(this.repoConfigPath)
         if (!config) {
@@ -158,11 +167,13 @@ export default abstract class Base extends Command {
 
         config = {
             ...config,
-            ...changes
+            ...changes,
         }
 
         fs.writeFileSync(this.repoConfigPath, jsYaml.dump(config))
-        this.writer.successMessage(`Repo configuration saved to ${this.repoConfigPath}`)
+        this.writer.successMessage(
+            `Repo configuration saved to ${this.repoConfigPath}`,
+        )
 
         return config
     }
@@ -193,11 +204,12 @@ export default abstract class Base extends Command {
 
         this.userConfig = this.loadUserConfig(this.configPath)
         this.repoConfig = this.loadRepoConfig(this.repoConfigPath)
-        this.projectKey = flags['project']
-            || process.env.DVC_PROJECT_KEY
-            || this.runsInRepo && this.repoConfig?.project
-            || this.userConfig?.project
-            || ''
+        this.projectKey =
+            flags['project'] ||
+            process.env.DVC_PROJECT_KEY ||
+            (this.runsInRepo && this.repoConfig?.project) ||
+            this.userConfig?.project ||
+            ''
         await this.authorizeApi()
         setDVCReferrer(this.id, this.config.version, this.caller)
     }
@@ -209,11 +221,14 @@ export default abstract class Base extends Command {
         const projects = await fetchProjects(this.token)
         const project = await promptForProject(projects)
         this.projectKey = project.key
-        const { shouldSave } = await inquirer.prompt([{
-            name: 'shouldSave',
-            message: 'Do you want to use this project for all future commands?',
-            type: 'confirm'
-        }])
+        const { shouldSave } = await inquirer.prompt([
+            {
+                name: 'shouldSave',
+                message:
+                    'Do you want to use this project for all future commands?',
+                type: 'confirm',
+            },
+        ])
         if (shouldSave) {
             await this.updateUserConfig({ project: this.projectKey })
         }

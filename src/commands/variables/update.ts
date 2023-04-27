@@ -1,13 +1,10 @@
 import inquirer from 'inquirer'
-import {
-    updateVariable,
-    CreateVariableParams
-} from '../../api/variables'
+import { updateVariable, CreateVariableParams } from '../../api/variables'
 import {
     descriptionPrompt,
     featurePrompt,
     namePrompt,
-    variablePrompt
+    variablePrompt,
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
 
@@ -15,17 +12,13 @@ export default class UpdateVariable extends UpdateCommand<CreateVariableParams> 
     static hidden = false
     static description = 'Update a Variable.'
 
-    prompts = [
-        namePrompt,
-        descriptionPrompt,
-        featurePrompt
-    ]
+    prompts = [namePrompt, descriptionPrompt, featurePrompt]
 
     public async run(): Promise<void> {
         await this.requireProject()
         const { variable } = await inquirer.prompt([variablePrompt], {
             token: this.token,
-            projectKey: this.projectKey
+            projectKey: this.projectKey,
         })
 
         this.writer.blankLine()
@@ -38,7 +31,7 @@ export default class UpdateVariable extends UpdateCommand<CreateVariableParams> 
             this.token,
             this.projectKey,
             variable.key,
-            params
+            params,
         )
         this.writer.showResults(result)
     }

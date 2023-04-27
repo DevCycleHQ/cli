@@ -11,16 +11,16 @@ export default class AddAlias extends Base {
     static description = 'Add a variable alias to the repo configuration'
     static flags = {
         ...Base.flags,
-        'alias': Flags.string({
-            description: ALIAS_DESCRIPTION
+        alias: Flags.string({
+            description: ALIAS_DESCRIPTION,
         }),
-        'variable': Flags.string({
-            description: VARIABLE_DESCRIPTION
-        })
+        variable: Flags.string({
+            description: VARIABLE_DESCRIPTION,
+        }),
     }
     static examples = [
         '<%= config.bin %> <%= command.id %>',
-        '<%= config.bin %> <%= command.id %> --alias=VARIABLE_ALIAS --variable=variable-key'
+        '<%= config.bin %> <%= command.id %> --alias=VARIABLE_ALIAS --variable=variable-key',
     ]
 
     public async run(): Promise<void> {
@@ -29,13 +29,13 @@ export default class AddAlias extends Base {
             {
                 name: 'alias',
                 message: ALIAS_DESCRIPTION,
-                type: 'input'
+                type: 'input',
             },
             {
                 name: 'variable',
                 message: VARIABLE_DESCRIPTION,
-                type: 'input'
-            }
+                type: 'input',
+            },
         ]
 
         const answers = await inquirer.prompt(prompts, {
@@ -45,18 +45,23 @@ export default class AddAlias extends Base {
             variable: flags.variable,
         })
 
-        const aliases:Record<string, string> = this.repoConfig?.codeInsights?.variableAliases || {}
+        const aliases: Record<string, string> =
+            this.repoConfig?.codeInsights?.variableAliases || {}
         if (aliases[answers.alias] === answers.variable) {
-            throw (new Error(`The alias ${answers.alias} already refers to the variable ${answers.variable}`))
+            throw new Error(
+                `The alias ${answers.alias} already refers to the variable ${answers.variable}`,
+            )
         } else if (aliases[answers.alias]) {
-            const { shouldOverwrite } = await inquirer.prompt([{
-                name: 'shouldOverwrite',
-                message: `Do you want to overwrite the alias ${answers.alias} ?`,
-                type: 'confirm'
-            }])
+            const { shouldOverwrite } = await inquirer.prompt([
+                {
+                    name: 'shouldOverwrite',
+                    message: `Do you want to overwrite the alias ${answers.alias} ?`,
+                    type: 'confirm',
+                },
+            ])
 
             if (!shouldOverwrite) {
-                throw (new Error('Aborted overwrite'))
+                throw new Error('Aborted overwrite')
             }
         }
 
@@ -64,8 +69,8 @@ export default class AddAlias extends Base {
         await this.updateRepoConfig({
             codeInsights: {
                 ...this.repoConfig?.codeInsights,
-                variableAliases: aliases
-            }
+                variableAliases: aliases,
+            },
         })
     }
 }

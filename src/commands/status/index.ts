@@ -2,7 +2,8 @@ import Base from '../base'
 
 export default class ShowStatus extends Base {
     static hidden = false
-    static description = 'Print CLI version information, configuration file locations and auth status.'
+    static description =
+        'Print CLI version information, configuration file locations and auth status.'
 
     async run(): Promise<void> {
         const { flags } = await this.parse(ShowStatus)
@@ -36,7 +37,9 @@ export default class ShowStatus extends Base {
         const loggedInOrg = this.repoConfig?.org || this.userConfig?.org
         if (this.hasToken()) {
             if (loggedInOrg) {
-                this.writer.successMessage(`Currently logged in to DevCycle as a member of ${loggedInOrg.display_name}`)
+                this.writer.successMessage(
+                    `Currently logged in to DevCycle as a member of ${loggedInOrg.display_name}`,
+                )
             } else {
                 this.writer.successMessage('Currently logged in to DevCycle')
             }
@@ -55,7 +58,7 @@ export default class ShowStatus extends Base {
             userConfigExists: !!this.userConfig,
             authConfigPath: this.authPath,
             hasAccessToken: this.hasToken(),
-            organization: loggedInOrg?.name
+            organization: loggedInOrg?.name,
         })
     }
 }
