@@ -3,24 +3,28 @@
 
 Print all DevCycle variable usages in the current version of your code.
 
-* [`dvc usages`](#dvc-usages)
+* [`dvc usages [COMMAND]`](#dvc-usages-command)
 
-## `dvc usages`
+## `dvc usages [COMMAND]`
 
 Print all DevCycle variable usages in the current version of your code.
 
 ```
 USAGE
-  $ dvc usages [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--include <value>] [--exclude
-    <value>] [--client-name <value>] [--match-pattern <value>] [--var-alias <value>] [--format console|json]
-    [--show-regex] [--find-missing]
+  $ dvc usages [COMMAND] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>]
+    [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--include <value>]
+    [--exclude <value>] [--client-name <value>] [--match-pattern <value>] [--var-alias <value>] [--format console|json]
+    [--show-regex] [-b] [-c]
+
+ARGUMENTS
+  COMMAND  find-missing or other command
 
 FLAGS
+  -b, --blame                 Include git blame information for missing variables
+  -c, --create                Create missing variables
   --client-name=<value>...    Name(s) of the DevCycle client variable to match on. Accepts multiple values.
   --exclude=<value>...        Files to exclude when scanning for usages. By default all files are included. Accepts
                               multiple glob patterns.
-  --find-missing              Find variables that exist in code but not in DevCycle
   --format=<option>           [default: console] Format to use when outputting the usage results.
                               <options: console|json>
   --include=<value>...        Files to include when scanning for usages. By default all files are included. Accepts

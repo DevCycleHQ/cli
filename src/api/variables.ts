@@ -30,9 +30,10 @@ export class CreateVariableParams {
     @IsString()
     _feature: string
 
+    @IsNotEmpty()
     @IsString()
     @IsIn(variableTypes)
-    type: string
+    type: 'String' | 'Boolean' | 'Number' | 'JSON';
 }
 
 export const createVariable = async (
