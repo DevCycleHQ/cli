@@ -1,9 +1,8 @@
-`dvc cleanup`
-=============
+# `dvc cleanup`
 
 Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 
-* [`dvc cleanup [KEY]`](#dvc-cleanup-key)
+-   [`dvc cleanup [KEY]`](#dvc-cleanup-key)
 
 ## `dvc cleanup [KEY]`
 

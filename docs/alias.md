@@ -1,9 +1,8 @@
-`dvc alias`
-===========
+# `dvc alias`
 
 Manage repository variable aliases
 
-* [`dvc alias add`](#dvc-alias-add)
+-   [`dvc alias add`](#dvc-alias-add)
 
 ## `dvc alias add`
 
