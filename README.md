@@ -1,5 +1,4 @@
-DevCycle CLI
-=================
+# DevCycle CLI
 
 DevCycle CLI for interacting with DevCycle features from the command line.
 
@@ -18,15 +17,23 @@ The CLI can be customized in several ways using command-line args or by creating
 * [Command Topics](#command-topics)
 * [Repo Configuration](#repo-configuration)
 <!-- tocstop -->
+
 # Setup
+
 ## Install the CLI:
+
 ```sh-session
 $ npm install -g @devcycle/cli
 ```
+
 # Authentication
+
 Many of the CLI commands require DevCycle API authorization. There are several ways to provide these credentials.
+
 ## Using Access Tokens
+
 ### Login Command (preferred)
+
 By using the [`login sso` command](docs/login.md#dvc-login-sso), the CLI will retrieve and store an access token, which is valid for 24 hours.
 
 The [`login again` command](docs/login.md#dvc-login-again) can be used to retrieve a new access token using the saved project and organization without prompting for them.
@@ -34,22 +41,29 @@ The [`login again` command](docs/login.md#dvc-login-again) can be used to retrie
 This process will open browser windows to interact with the DevCycle universal login page. It will first obtain a personal access token, then prompt you to choose an organization. A second browser window is used to authenticate the CLI with your chosen organization.
 
 To switch organizations once logged in, the [`org` command](docs/org.md) can be used.
+
 ### Repo Init Command (preferred)
+
 The [`repo init` command](docs/repo.md#dvc-repo-init) behaves in the same way as `login sso`, but creates a [repo configuration file](#repo-configuration) and stores the project and organization choices there instead.
+
 ## Using Client Credentials
+
 ### Client Credentials in Auth File
+
 Use the [`dvc status` command](docs/status.md#dvc-status) to find the configuration file location for your platform. The credentials can be stored in the file pointed to by the Auth config path. Create the file if it does not exist, with the following contents.
 
 ```yaml
 clientCredentials:
-  client_id: <your client id>
-  client_secret: <your client secret>
+    client_id: <your client id>
+    client_secret: <your client secret>
 ```
+
 This file should **not** be checked in to version control.
 
 The default location is based on the [oclif configDir](https://oclif.io/docs/config)
 
 If you intend to run the CLI using options that override config file locations, the [`dvc status` command](docs/status.md#dvc-status) command can be run with those options to confirm that the file locations are as expected.
+
 ## Project Selection
 
 You also need to specify the default project ID for the CLI to use.
@@ -59,34 +73,45 @@ If there is a repo configuration file, the [`dvc diff`](docs/diff.md) and [`dvc 
 Otherwise, this is chosen during login or set using the [project select command](docs/projects.md#dvc-projects-select)
 
 ### Environment Variables
+
 Set the following environment variables:
+
 ```sh-session
 $ export DVC_CLIENT_ID=<your client id>
 $ export DVC_CLIENT_SECRET=<your client secret>
 $ export DVC_PROJECT_KEY=<your project key>
 ```
+
 ### Command-Line Arguments
+
 The CLI can be run with the following arguments:
+
 ```sh-session
 $ dvc --client-id=<your client id> --client-secret=<your client secret> --project=<your project key>
 ```
+
 ### Github Action
+
 The Devcycle Github actions are configured with auth information through the `project-key`, `client-id` and `client-secret` configuration parameters. This is passed to the CLI via command line arguments.
+
 # Usage
+
 <!-- usage -->
 ```sh-session
 $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/4.2.10 darwin-x64 node-v18.16.0
+@devcycle/cli/4.2.11 darwin-arm64 node-v19.5.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
 ...
 ```
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
 # Command Topics
 
@@ -103,16 +128,20 @@ USAGE
 * [`dvc projects`](docs/projects.md) - Access Projects with the Management API
 * [`dvc repo`](docs/repo.md) - Manage repository configuration
 * [`dvc status`](docs/status.md) - Check CLI status
+* [`dvc targetingrule`](docs/targetingrule.md) - Create a new Environment for an existing Feature.
 * [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
 * [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API
 
 <!-- commandsstop -->
+
 # Repo Configuration
+
 The following commands can only be run from the root of a configured repository
-* [`dvc diff`](docs/diff.md)
-* [`dvc usages`](docs/usages.md)
-* [`dvc alias`](docs/alias.md)
-* [`dvc cleanup`](docs/cleanup.md)
+
+-   [`dvc diff`](docs/diff.md)
+-   [`dvc usages`](docs/usages.md)
+-   [`dvc alias`](docs/alias.md)
+-   [`dvc cleanup`](docs/cleanup.md)
 
 Many of the options available as command-line args can also be specified using a repo configuration file. The default
 location for this file is `<REPO ROOT>/.devcycle/config.yml`.
@@ -133,10 +162,10 @@ org:
 codeInsights:
     ## add additional names to check for when looking for instances of DVCClient from an SDK
     clientNames:
-        - "dvcClient"
+        - 'dvcClient'
     ## map the values used in your code to the corresponding variable key in DevCycle
     variableAliases:
-      'VARIABLES.ENABLE_V1': 'enable-v1'
+        'VARIABLES.ENABLE_V1': 'enable-v1'
     ## fully override the regex patterns used to match variables for a specific file extension
     ## each pattern should contain exactly one capture group which matches on the key of the variable
     ## make sure the captured value contains the entire key parameter (including quotes, if applicable)
@@ -153,12 +182,14 @@ codeInsights:
 ```
 
 ## Development
+
 To test local changes, run `yarn build`. From there, you can run commands from the `bin` folder.
 e.g. `bin/run diff origin/main...`
 
 To run the test suite, run `yarn test`
 
 ## Publishing a new version
+
 1. Create a branch off of `main` and run `npm version patch` to bump the CLI version. Create a PR for these changes.
 2. Once merged, create a new Github release with a tag for the latest version.
 3. From `main`, publish to NPM `npm publish --access public`

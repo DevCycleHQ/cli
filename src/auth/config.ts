@@ -29,7 +29,10 @@ export class AuthConfig {
     sso?: SSOAuthConfig
 }
 
-export async function storeAccessToken(accessToken: string, authPath: string): Promise<void> {
+export async function storeAccessToken(
+    accessToken: string,
+    authPath: string,
+): Promise<void> {
     const configDir = path.dirname(authPath)
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true })

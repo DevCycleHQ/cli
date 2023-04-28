@@ -91,7 +91,9 @@ export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
 
     public async createFeatureWithVariable(
         featureParams: CreateFeatureParams,
-        variableParams: Omit<CreateVariableParams, 'type'> & { type: 'String' | 'Boolean' | 'Number' | 'JSON' },
+        variableParams: Omit<CreateVariableParams, 'type'> & {
+            type: 'String' | 'Boolean' | 'Number' | 'JSON'
+        },
         defaultValueOn: string | boolean | number | Record<string, unknown>,
         defaultValueOff: string | boolean | number | Record<string, unknown>,
     ): Promise<void> {
@@ -127,6 +129,4 @@ export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
         }
         this.writer.showResults(result)
     }
-    
 }
-

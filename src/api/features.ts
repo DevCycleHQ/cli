@@ -33,7 +33,11 @@ export class CreateFeatureParams {
     @IsString()
     key: string
 
-    variations?: { key: string; name: string; variables: Record<string, unknown> }[]
+    variations?: {
+        key: string
+        name: string
+        variables: Record<string, unknown>
+    }[]
 
     variables: featureVariable[]
 }
@@ -108,5 +112,5 @@ export const createFeature = async (
         }
         console.error('Error:', e.response?.data) // Log the error response data
         throw e
-    } 
+    }
 }

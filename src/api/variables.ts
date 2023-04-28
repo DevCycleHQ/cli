@@ -33,7 +33,7 @@ export class CreateVariableParams {
     @IsNotEmpty()
     @IsString()
     @IsIn(variableTypes)
-    type: 'String' | 'Boolean' | 'Number' | 'JSON';
+    type: 'String' | 'Boolean' | 'Number' | 'JSON'
 }
 
 export const createVariable = async (

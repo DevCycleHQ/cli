@@ -16,7 +16,7 @@ import {
     selectMissingVariablesPrompt,
     selectActionPrompt,
     inputVariableTypePrompt,
-    inputDefaultValuePrompt
+    inputDefaultValuePrompt,
 } from '../../ui/prompts/usagesPrompts'
 import CreateFeature from '../../commands/features/create'
 import { CreateFeatureParams } from '../../api/features'
@@ -31,7 +31,7 @@ export default class Usages extends Base {
     static examples = [
         '<%= config.bin %> <%= command.id %>',
         '<%= config.bin %> <%= command.id %> ' +
-        '--match-pattern js="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
+            '--match-pattern js="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
     ]
 
     static flags = {
@@ -58,12 +58,12 @@ export default class Usages extends Base {
         }),
         'show-regex': ShowRegexFlag,
 
-        'blame': Flags.boolean({
+        blame: Flags.boolean({
             default: false,
             char: 'b',
             description: 'Include git blame information for missing variables',
         }),
-        'create': Flags.boolean({
+        create: Flags.boolean({
             char: 'c',
             description: 'Create missing variables',
             default: false,
@@ -91,8 +91,8 @@ export default class Usages extends Base {
                 flags['include'] || codeInsightsConfig.includeFiles
             return includeGlobs
                 ? includeGlobs.some((glob) =>
-                    minimatch(filepath, glob, { matchBase: true }),
-                )
+                      minimatch(filepath, glob, { matchBase: true }),
+                  )
                 : true
         }
 
@@ -101,8 +101,8 @@ export default class Usages extends Base {
                 flags['exclude'] || codeInsightsConfig.excludeFiles
             return excludeGlobs
                 ? excludeGlobs.some((glob) =>
-                    minimatch(filepath, glob, { matchBase: true }),
-                )
+                      minimatch(filepath, glob, { matchBase: true }),
+                  )
                 : false
         }
 
@@ -168,7 +168,7 @@ export default class Usages extends Base {
         try {
             const output = execSync(
                 `git blame -L ${lineNumber},${lineNumber} -- ${fileName}`,
-                { encoding: 'utf8' }
+                { encoding: 'utf8' },
             )
             return output.trim()
         } catch (error) {
@@ -180,36 +180,41 @@ export default class Usages extends Base {
 
     private async findMissingVariables(
         matchesByVariable: Record<string, VariableMatch[]>,
-        blame: boolean
+        blame: boolean,
     ): Promise<void> {
         await this.requireProject()
         const devCycleVariables = await fetchVariables(
             this.token,
-            this.projectKey
+            this.projectKey,
         )
         const devCycleVariableKeys = devCycleVariables.map(
-            (variable) => variable.key
+            (variable) => variable.key,
         )
 
         const codeVariables = Object.keys(matchesByVariable)
 
         const missingVariables = codeVariables.filter(
-            (codeVariable) => !devCycleVariableKeys.includes(codeVariable)
+            (codeVariable) => !devCycleVariableKeys.includes(codeVariable),
         )
 
         if (missingVariables.length > 0) {
             this.log('\nVariables found in code but not in DevCycle:')
             missingVariables.forEach((missingVariable, idx) => {
                 this.log(`${idx + 1}. ${missingVariable}`)
-                matchesByVariable[missingVariable].forEach(({ fileName, line }) => {
-                    if (blame) {
-                        const blameInfo = this.getGitBlame(fileName, line)
-                        const formattedBlame = this.formatGitBlame(blameInfo)
-                        this.log(`\t- ${fileName}:L${line} (${formattedBlame})`)
-                    } else {
-                        this.log(`\t- ${fileName}:L${line}`)
-                    }
-                })
+                matchesByVariable[missingVariable].forEach(
+                    ({ fileName, line }) => {
+                        if (blame) {
+                            const blameInfo = this.getGitBlame(fileName, line)
+                            const formattedBlame =
+                                this.formatGitBlame(blameInfo)
+                            this.log(
+                                `\t- ${fileName}:L${line} (${formattedBlame})`,
+                            )
+                        } else {
+                            this.log(`\t- ${fileName}:L${line}`)
+                        }
+                    },
+                )
             })
         } else {
             this.log('\nAll variables in code are present in DevCycle')
@@ -311,15 +316,20 @@ export default class Usages extends Base {
         )
     }
 
-
-    private async createMissingVariables(matchesByVariable: Record<string, VariableMatch[]>): Promise<void> {
+    private async createMissingVariables(
+        matchesByVariable: Record<string, VariableMatch[]>,
+    ): Promise<void> {
         const missingVariables = Object.keys(matchesByVariable)
 
-        function isVariableType(value: string): value is 'String' | 'Boolean' | 'Number' | 'JSON' {
+        function isVariableType(
+            value: string,
+        ): value is 'String' | 'Boolean' | 'Number' | 'JSON' {
             return ['String', 'Boolean', 'Number', 'JSON'].includes(value)
         }
 
-        function inputDefaultValuePrompt(state: 'ON' | 'OFF'): QuestionCollection {
+        function inputDefaultValuePrompt(
+            state: 'ON' | 'OFF',
+        ): QuestionCollection {
             return [
                 {
                     type: 'input',
@@ -330,59 +340,74 @@ export default class Usages extends Base {
         }
 
         // Prompt the user to select which variables they want to create
-        const selectedVariables = await prompt(selectMissingVariablesPrompt(missingVariables))
+        const selectedVariables = await prompt(
+            selectMissingVariablesPrompt(missingVariables),
+        )
         console.log('selectedVariables', selectedVariables)
 
         if (selectedVariables !== null) {
-
             // For each selected variable, prompt the user to choose an action
             // for (const variableKey of selectedVariables.variableKey) {
-            const action = await prompt(selectActionPrompt(selectedVariables.variableKey))
+            const action = await prompt(
+                selectActionPrompt(selectedVariables.variableKey),
+            )
 
             if (action !== null) {
-
                 // Take appropriate action based on the user's choice
                 switch (action.action) {
                     case 'create_variable':
                         // Create the variable here
                         // ...
                         break
-                    case 'create_feature': {
-                        // Create a feature with the new variable
-                        const createFeatureCommand = new CreateFeature([], this.config)
-                        createFeatureCommand.token = this.token
-                        createFeatureCommand.projectKey = this.projectKey
+                    case 'create_feature':
+                        {
+                            // Create a feature with the new variable
+                            const createFeatureCommand = new CreateFeature(
+                                [],
+                                this.config,
+                            )
+                            createFeatureCommand.token = this.token
+                            createFeatureCommand.projectKey = this.projectKey
 
-                        const featureParams: CreateFeatureParams = {
-                            name: `Feature for ${selectedVariables.variableKey}`,
-                            description: `A feature for the ${selectedVariables.variableKey} variable.`,
-                            key: selectedVariables.variableKey,
-                            variables: []
+                            const featureParams: CreateFeatureParams = {
+                                name: `Feature for ${selectedVariables.variableKey}`,
+                                description: `A feature for the ${selectedVariables.variableKey} variable.`,
+                                key: selectedVariables.variableKey,
+                                variables: [],
+                            }
+                            const { type: variableType } = (await prompt(
+                                inputVariableTypePrompt(),
+                            )) as unknown as {
+                                type: string
+                            }
+
+                            if (!isVariableType(variableType)) {
+                                throw new Error('Invalid variable type')
+                            }
+
+                            const variableParams: CreateVariableParams = {
+                                key: selectedVariables.variableKey,
+                                name: `Variable for ${selectedVariables.variableKey}`,
+                                description: `A variable for the ${selectedVariables.variableKey} feature.`,
+                                type: variableType,
+                                _feature: '',
+                            }
+
+                            // Prompt user for default values for the 'ON' and 'OFF' states
+                            const { defaultValueOn } = await prompt(
+                                inputDefaultValuePrompt('ON'),
+                            )
+                            const { defaultValueOff } = await prompt(
+                                inputDefaultValuePrompt('OFF'),
+                            )
+
+                            await createFeatureCommand.createFeatureWithVariable(
+                                featureParams,
+                                variableParams,
+                                defaultValueOn,
+                                defaultValueOff,
+                            )
                         }
-                        const { type: variableType } = (await prompt(inputVariableTypePrompt())) as unknown as {
-                            type: string;
-                        }
-
-                        if (!isVariableType(variableType)) {
-                            throw new Error('Invalid variable type')
-                        }
-
-                        const variableParams: CreateVariableParams = {
-                            key: selectedVariables.variableKey,
-                            name: `Variable for ${selectedVariables.variableKey}`,
-                            description: `A variable for the ${selectedVariables.variableKey} feature.`,
-                            type: variableType,
-                            _feature: '',
-                        }
-
-                        // Prompt user for default values for the 'ON' and 'OFF' states
-                        const { defaultValueOn } = await prompt(inputDefaultValuePrompt('ON'))
-                        const { defaultValueOff } = await prompt(inputDefaultValuePrompt('OFF'))
-
-                        await createFeatureCommand.createFeatureWithVariable(
-                            featureParams, variableParams, defaultValueOn, defaultValueOff
-                        )
-                    }
                         break
                     case 'associate':
                         // Associate the variable with an existing feature here
@@ -395,7 +420,9 @@ export default class Usages extends Base {
     }
 
     private formatGitBlame(blame: string): string {
-        const match = blame.match(/\((.+?)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})\s+(\d+)\)/)
+        const match = blame.match(
+            /\((.+?)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})\s+(\d+)\)/,
+        )
         if (match) {
             const author = match[1].trim()
             const date = match[2].trim()

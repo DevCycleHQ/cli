@@ -209,7 +209,6 @@ export const toggleTargetingRule = async (
     environment: string,
     status: 'active' | 'inactive' | 'archived',
 ): Promise<FeatureConfiguration | null> => {
-
     const currentFeatureConfigurations = await getFeatureConfigurations(
         token,
         projectKey,

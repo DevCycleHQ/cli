@@ -2,16 +2,23 @@ import { ListQuestion } from 'inquirer'
 import { prompt } from 'enquirer'
 import { CheckboxQuestion } from 'inquirer'
 
-export function selectMissingVariablesPrompt(variables: string[]): ListQuestion<{ variableKey: string }> {
+export function selectMissingVariablesPrompt(
+    variables: string[],
+): ListQuestion<{ variableKey: string }> {
     return {
         type: 'list',
         name: 'variableKey',
         message: 'Please select the missing variables:',
-        choices: variables.map((variable) => ({ name: variable, value: variable })),
+        choices: variables.map((variable) => ({
+            name: variable,
+            value: variable,
+        })),
     }
 }
 
-export function selectActionPrompt(variableKey: string): ListQuestion<{ action: string }> {
+export function selectActionPrompt(
+    variableKey: string,
+): ListQuestion<{ action: string }> {
     return {
         type: 'list',
         name: 'action',
@@ -24,17 +31,23 @@ export function selectActionPrompt(variableKey: string): ListQuestion<{ action: 
     }
 }
 
-export function inputVariableTypePrompt(): ListQuestion<{ type: 'String' | 'Boolean' | 'Number' | 'JSON' }> {
+export function inputVariableTypePrompt(): ListQuestion<{
+    type: 'String' | 'Boolean' | 'Number' | 'JSON'
+}> {
     return {
         type: 'list',
         name: 'type',
         message: 'Select the type of the variable:',
-        choices: ['String', 'Boolean', 'Number', 'JSON'].map((name) => ({ name, value: name })),
+        choices: ['String', 'Boolean', 'Number', 'JSON'].map((name) => ({
+            name,
+            value: name,
+        })),
     }
 }
 
-async function inputDefaultValuePromptHelper(variableType: 'String' | 'Boolean' | 'Number' | 'JSON'):
-    Promise<string | number | boolean | Record<string, unknown>> {
+async function inputDefaultValuePromptHelper(
+    variableType: 'String' | 'Boolean' | 'Number' | 'JSON',
+): Promise<string | number | boolean | Record<string, unknown>> {
     const defaultValuePrompt = {
         type: 'input',
         name: 'defaultValue',
@@ -42,7 +55,9 @@ async function inputDefaultValuePromptHelper(variableType: 'String' | 'Boolean' 
         initial: '',
     }
 
-    const { defaultValue: defaultValueString } = await prompt<{ defaultValue: string }>(defaultValuePrompt)
+    const { defaultValue: defaultValueString } = await prompt<{
+        defaultValue: string
+    }>(defaultValuePrompt)
 
     try {
         switch (variableType) {

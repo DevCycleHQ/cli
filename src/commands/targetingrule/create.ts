@@ -6,10 +6,7 @@ import {
 import { fetchFeatureByKey } from '../../api/features'
 import { promptForVariation } from '../../ui/promptForVariation'
 
-import {
-    featureKeyPrompt,
-    environmentKeyPrompt,
-} from '../../ui/prompts'
+import { featureKeyPrompt, environmentKeyPrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 
 export default class createTargetingRule extends CreateCommand<CreateTargetingRuleParams> {
@@ -19,23 +16,19 @@ export default class createTargetingRule extends CreateCommand<CreateTargetingRu
     static flags = {
         ...CreateCommand.flags,
         featureKey: Flags.string({
-            description:
-                'feature key for the targeting rule to create for',
+            description: 'feature key for the targeting rule to create for',
         }),
         environmentKey: Flags.string({
-            description:
-                'environment key for the targeting rule to create for',
+            description: 'environment key for the targeting rule to create for',
         }),
         variationKey: Flags.string({
-            description:
-                'variation key for the targeting rule to create for',
+            description: 'variation key for the targeting rule to create for',
         }),
     }
 
     prompts = [featureKeyPrompt, environmentKeyPrompt]
 
     public async run(): Promise<void> {
-
         const { flags } = await this.parse(createTargetingRule)
 
         await this.requireProject()

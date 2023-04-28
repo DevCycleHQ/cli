@@ -16,20 +16,16 @@ export default class ToggleTargetingRule extends CreateCommand<ListTargetingRule
     static flags = {
         ...CreateCommand.flags,
         featureKey: Flags.string({
-            description:
-                'feature key for the targeting rule to create for',
+            description: 'feature key for the targeting rule to create for',
         }),
         environmentKey: Flags.string({
-            description:
-                'environment key for the targeting rule to create for',
+            description: 'environment key for the targeting rule to create for',
         }),
         on: Flags.boolean({
-            description:
-                'toggle on the targeting rule',
+            description: 'toggle on the targeting rule',
         }),
         off: Flags.boolean({
-            description:
-                'toggle off the targeting rule',
+            description: 'toggle off the targeting rule',
         }),
     }
 
@@ -42,7 +38,9 @@ export default class ToggleTargetingRule extends CreateCommand<ListTargetingRule
 
         if (Object.values(flags).some((flag) => flag !== undefined)) {
             if (flags.on && flags.off) {
-                this.writer.showResults('Cannot toggle on and off at the same time')
+                this.writer.showResults(
+                    'Cannot toggle on and off at the same time',
+                )
                 return
             }
             if (!flags.featureKey) {
@@ -54,8 +52,8 @@ export default class ToggleTargetingRule extends CreateCommand<ListTargetingRule
                 return
             }
 
-            flags.on ? status = 'active' : status = null
-            flags.off ? status = 'inactive' : status = null
+            flags.on ? (status = 'active') : (status = null)
+            flags.off ? (status = 'inactive') : (status = null)
 
             if (!flags.on && !flags.off) {
                 const status = await promptForTargetStatus()
@@ -96,12 +94,14 @@ export default class ToggleTargetingRule extends CreateCommand<ListTargetingRule
                 const variationList: string[] = []
                 for (const distribution of target.distribution) {
                     const variation = featureObj?.variations.find(
-                        (variation) => variation._id === distribution._variation,
+                        (variation) =>
+                            variation._id === distribution._variation,
                     )
                     variationList.push(variation?.key || 'unknown')
                 }
                 this.writer.showResults(
-                    `Targeting rule: ${target.audience.name
+                    `Targeting rule: ${
+                        target.audience.name
                     } Variation: ${variationList.toString()}`,
                 )
             }
@@ -153,11 +153,11 @@ export default class ToggleTargetingRule extends CreateCommand<ListTargetingRule
                 variationList.push(variation?.key || 'unknown')
             }
             this.writer.showResults(
-                `Targeting rule: ${target.audience.name
+                `Targeting rule: ${
+                    target.audience.name
                 } Variation: ${variationList.toString()}`,
             )
         }
-
     }
     // }
 }
