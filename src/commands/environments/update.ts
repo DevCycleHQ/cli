@@ -7,7 +7,7 @@ import {
     descriptionPrompt,
     featurePrompt,
     namePrompt,
-    environmentPrompt,
+    environmentIdPrompt,
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
 
@@ -19,7 +19,7 @@ export default class UpdateEnvironment extends UpdateCommand<CreateEnvironmentPa
 
     public async run(): Promise<void> {
         await this.requireProject()
-        const { environment } = await inquirer.prompt([environmentPrompt], {
+        const { environment } = await inquirer.prompt([environmentIdPrompt], {
             token: this.token,
             projectKey: this.projectKey,
         })

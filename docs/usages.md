@@ -1,8 +1,9 @@
-# `dvc usages`
+`dvc usages`
+============
 
 Print all DevCycle variable usages in the current version of your code.
 
--   [`dvc usages`](#dvc-usages)
+* [`dvc usages`](#dvc-usages)
 
 ## `dvc usages`
 

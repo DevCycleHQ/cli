@@ -4,7 +4,7 @@ import {
     fetchEnvironmentByKey,
     fetchEnvironments,
 } from '../../api/environments'
-import { environmentPrompt } from '../../ui/prompts'
+import { environmentIdPrompt } from '../../ui/prompts'
 import Base from '../base'
 
 export default class DetailedEnvironments extends Base {
@@ -43,7 +43,7 @@ export default class DetailedEnvironments extends Base {
             )
             this.writer.showResults(environments)
         } else {
-            const responses = await inquirer.prompt([environmentPrompt], {
+            const responses = await inquirer.prompt([environmentIdPrompt], {
                 token: this.token,
                 projectKey: this.projectKey,
             })

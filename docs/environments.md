@@ -1,11 +1,12 @@
-# `dvc environments`
+`dvc environments`
+==================
 
 Create a new Environment for an existing Feature.
 
--   [`dvc environments create`](#dvc-environments-create)
--   [`dvc environments get`](#dvc-environments-get)
--   [`dvc environments list`](#dvc-environments-list)
--   [`dvc environments update`](#dvc-environments-update)
+* [`dvc environments create`](#dvc-environments-create)
+* [`dvc environments get`](#dvc-environments-get)
+* [`dvc environments list`](#dvc-environments-list)
+* [`dvc environments update`](#dvc-environments-update)
 
 ## `dvc environments create`
 

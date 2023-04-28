@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 import inquirer from 'inquirer'
 import { APIKey, fetchEnvironmentByKey } from '../../api/environments'
 import {
-    environmentPrompt,
+    environmentIdPrompt,
     sdkKeyTypePrompt as sdkTypePrompt,
 } from '../../ui/prompts'
 import Base from '../base'
@@ -63,7 +63,7 @@ export default class GetEnvironmentKey extends Base {
         if (flags.env) {
             return flags.env
         }
-        const responses = await inquirer.prompt([environmentPrompt], {
+        const responses = await inquirer.prompt([environmentIdPrompt], {
             token: this.token,
             projectKey: this.projectKey,
         })

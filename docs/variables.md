@@ -1,11 +1,12 @@
-# `dvc variables`
+`dvc variables`
+===============
 
 Access or modify Variables with the Management API
 
--   [`dvc variables create`](#dvc-variables-create)
--   [`dvc variables get`](#dvc-variables-get)
--   [`dvc variables list`](#dvc-variables-list)
--   [`dvc variables update`](#dvc-variables-update)
+* [`dvc variables create`](#dvc-variables-create)
+* [`dvc variables get`](#dvc-variables-get)
+* [`dvc variables list`](#dvc-variables-list)
+* [`dvc variables update`](#dvc-variables-update)
 
 ## `dvc variables create`
 

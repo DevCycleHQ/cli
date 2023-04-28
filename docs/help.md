@@ -1,8 +1,9 @@
-# `dvc help`
+`dvc help`
+==========
 
 Display help for dvc.
 
--   [`dvc help [COMMAND]`](#dvc-help-command)
+* [`dvc help [COMMAND]`](#dvc-help-command)
 
 ## `dvc help [COMMAND]`
 
