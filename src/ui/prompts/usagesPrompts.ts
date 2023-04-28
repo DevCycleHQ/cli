@@ -2,7 +2,6 @@ import { ListQuestion } from 'inquirer'
 import { prompt } from 'enquirer'
 import { CheckboxQuestion } from 'inquirer'
 
-
 export function selectMissingVariablesPrompt(variables: string[]): ListQuestion<{ variableKey: string }> {
     return {
         type: 'list',
@@ -35,7 +34,7 @@ export function inputVariableTypePrompt(): ListQuestion<{ type: 'String' | 'Bool
 }
 
 async function inputDefaultValuePromptHelper(variableType: 'String' | 'Boolean' | 'Number' | 'JSON'):
- Promise<string | number | boolean | Record<string, unknown>> {
+    Promise<string | number | boolean | Record<string, unknown>> {
     const defaultValuePrompt = {
         type: 'input',
         name: 'defaultValue',
