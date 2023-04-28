@@ -12,6 +12,13 @@ export class Feature {
     tags: string[]
     createdAt: Date
     updatedAt: Date
+    variations: {
+        key: string
+        name: string
+        _id: string
+        variables: Record<string, any>
+    }[]
+    variables: featureVariable[]
 }
 
 export class CreateFeatureParams {

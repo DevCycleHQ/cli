@@ -1,8 +1,9 @@
-# `dvc org`
+`dvc org`
+=========
 
 Switch organizations
 
--   [`dvc org`](#dvc-org)
+* [`dvc org`](#dvc-org)
 
 ## `dvc org`
 
