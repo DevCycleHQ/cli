@@ -11,7 +11,7 @@ type EnvironmentChoice = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const environmentChoices = async (
+export const environmentIdChoices = async (
     input: Record<string, any>,
 ): Promise<EnvironmentChoice[]> => {
     const environments = await fetchEnvironments(input.token, input.projectKey)
@@ -24,11 +24,32 @@ export const environmentChoices = async (
     return choices
 }
 
-export const environmentPrompt = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const environmentKeyChoices = async (
+    input: Record<string, any>,
+): Promise<EnvironmentChoice[]> => {
+    const environments = await fetchEnvironments(input.token, input.projectKey)
+    const choices = environments.map((environment: Environment) => {
+        return {
+            name: environment.name || environment.key,
+            value: environment.key,
+        }
+    })
+    return choices
+}
+
+export const environmentIdPrompt = {
     name: '_environment',
     message: 'Which environment?',
     type: 'list',
-    choices: environmentChoices,
+    choices: environmentIdChoices,
+}
+
+export const environmentKeyPrompt = {
+    name: 'environment',
+    message: 'Which environment?',
+    type: 'list',
+    choices: environmentKeyChoices,
 }
 
 export const environmentTypePrompt = {
