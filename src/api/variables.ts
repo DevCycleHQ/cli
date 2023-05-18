@@ -109,7 +109,6 @@ export const fetchAllVariables = async (token: string, project_id: string): Prom
     const totalPages = Math.ceil(total / perPage)
     const promises = []
     for (let i = 2; i <= totalPages; i++) {
-        console.log(`Fetching page ${i} of ${totalPages}`)
         const url = new URL(`/v1/projects/${project_id}/variables?perPage=${perPage}&page=${i}`, BASE_URL)
         promises.push(axios.get(url.href, {
             headers: {
