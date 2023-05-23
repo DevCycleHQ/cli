@@ -28,6 +28,30 @@ describe('java', () => {
             'line': 11,
             'mode': 'add',
             'name': 'hashmap-default-value'
+        },
+        {
+            'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
+            'line': 13,
+            'mode': 'add',
+            'name': 'simple-case'
+        },
+        {
+            'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
+            'line': 15,
+            'mode': 'add',
+            'name': 'multi-line'
+        },
+        {
+            'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
+            'line': 22,
+            'mode': 'add',
+            'name': 'user-object'
+        },
+        {
+            'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
+            'line': 24,
+            'mode': 'add',
+            'name': 'hashmap-default-value'
         }
     ]
     it('identifies the correct variable usages in the Java sample diff', () => {

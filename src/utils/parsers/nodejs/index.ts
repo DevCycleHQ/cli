@@ -7,7 +7,7 @@ const defaultValueCapturePattern = /(?:[^),]*|{[^}]*})/
 export class NodeParser extends BaseParser {
     identity = 'nodejs'
 
-    variableMethodPattern = /\??\.variable\(\s*/
+    variableMethodPattern = /\??\.(variable|variableValue)\(\s*/
     orderedParameterPatterns: RegExp[] | null = [
         userCapturePattern,
         variableNameCapturePattern,

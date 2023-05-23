@@ -6,7 +6,7 @@ const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class CsharpParser extends BaseParser {
     identity = 'csharp'
-    variableMethodPattern = /\??\.VariableAsync\(/
+    variableMethodPattern = /\??\.(VariableAsync|VariableValueAsync)\(/
 
     orderedParameterPatterns = [
         userCapturePattern,

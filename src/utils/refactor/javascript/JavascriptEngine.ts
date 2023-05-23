@@ -4,6 +4,7 @@ import { RefactorEngine } from '../RefactorEngine'
 export class JavascriptEngine extends RefactorEngine {
     sdkMethods: RefactorEngine['sdkMethods'] = {
         variable: 'variable',
+        variableValue: 'variable.value',
         useVariable: 'variable',
         useDVCVariable: 'variable',
         useVariableValue: 'variable.value',

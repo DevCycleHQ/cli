@@ -6,7 +6,7 @@ const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class PhpParser extends BaseParser {
     identity = 'php'
-    variableMethodPattern = /\??->variable\(\s*/
+    variableMethodPattern = /\??->(variable|variableValue)\(\s*/
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,

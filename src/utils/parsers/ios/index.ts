@@ -5,7 +5,7 @@ const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class IosParser extends BaseParser {
     identity = 'ios'
-    variableMethodPattern = /\??\.variable\(/
+    variableMethodPattern = /\??\.(variable|variableValue)\(/
 
     namedParameterDelimiter = ':'
     namedParameterPatternMap = {
@@ -14,5 +14,5 @@ export class IosParser extends BaseParser {
     }
 
     commentCharacters = ['///', '/**']
-    
+
 }
