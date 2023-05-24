@@ -4,7 +4,7 @@ import { parseFiles } from '../../../src/utils/diff/parse'
 import { expect } from '@oclif/test'
 
 describe('php', () => {
-    const simpleMatchResult = [
+    let simpleMatchResult = [
         {
             'fileName': 'test-utils/fixtures/diff/sampleDiff.php',
             'line': 1,
@@ -36,6 +36,10 @@ describe('php', () => {
             'name': 'default-value-object'
         }
     ]
+    simpleMatchResult = simpleMatchResult.concat(simpleMatchResult.map((match) => {
+        return { ...match, line: match.line + 12 }
+    }))
+
     it('identifies the correct variable usages in the PHP sample diff', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/php'))
         const results = parseFiles(parsedDiff)

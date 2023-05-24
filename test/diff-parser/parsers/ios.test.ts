@@ -4,7 +4,7 @@ import { parseFiles } from '../../../src/utils/diff/parse'
 import { expect } from '@oclif/test'
 
 describe('ios', () => {
-    const simpleMatchResult = [
+    let simpleMatchResult = [
         {
             'fileName': 'test-utils/fixtures/diff/sampleDiff.swift',
             'line': 1,
@@ -24,6 +24,10 @@ describe('ios', () => {
             'name': 'default-value-object'
         }
     ]
+    simpleMatchResult = simpleMatchResult.concat(simpleMatchResult.map((match) => {
+        return { ...match, line: match.line + 10 }
+    }))
+
     it('identifies the correct variable usages in the iOS sample diff', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/ios'))
         const results = parseFiles(parsedDiff)

@@ -13,3 +13,13 @@ index 00000000..ed8ee4ab
 +    )
 +
 +dvcClient.variable(key: "default-value-object", defaultValue: ["key": "value"])
++
++dvcClient.variableValue(key: "simple-case", defaultValue: true)
++
++dvcClient
++    .variableValue(
++        key: "multi-line",
++        defaultValue: true
++    )
++
++dvcClient.variableValue(key: "default-value-object", defaultValue: ["key": "value"])

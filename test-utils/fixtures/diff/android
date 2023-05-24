@@ -16,3 +16,16 @@ index 00000000..ed8ee4ab
 +dvcClient.variable(default=false, key="reversed-named-case")
 +dvcClient.variable("map-default-value", mapOf('foo' to 'bar'))
 +dvcClient.variable("hashmap-default-value", new HashMap<String, String>())
++
++dvcClient.variableValue("simple-case", false)
++
++dvcClient
++    .variableValue(
++        "multi-line",
++        true
++    )
++
++dvcClient.variableValue(key="named-case", default=false)
++dvcClient.variableValue(default=false, key="reversed-named-case")
++dvcClient.variableValue("map-default-value", mapOf('foo' to 'bar'))
++dvcClient.variableValue("hashmap-default-value", new HashMap<String, String>())

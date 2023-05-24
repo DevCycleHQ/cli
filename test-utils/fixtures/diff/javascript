@@ -12,3 +12,12 @@ index 00000000..ed8ee4ab
 +    )
 +
 +dvcClient.variable("default-value-object", { key: "value", foo: "bar" })
++
++dvcClient.variableValue("simple-case", true)
++
++dvcClient.variableValue(
++        "multi-line",
++        true
++    )
++
++dvcClient.variableValue("default-value-object", { key: "value", foo: "bar" })

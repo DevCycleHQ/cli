@@ -4,7 +4,7 @@ import { parseFiles } from '../../../src/utils/diff/parse'
 import { expect } from '@oclif/test'
 
 describe('python', () => {
-    const simpleMatchResult = [
+    let simpleMatchResult = [
         {
             'fileName': 'test-utils/fixtures/diff/sampleDiff.py',
             'line': 1,
@@ -36,6 +36,9 @@ describe('python', () => {
             'name': 'user-object'
         }
     ]
+    simpleMatchResult = simpleMatchResult.concat(simpleMatchResult.map((match) => {
+        return { ...match, line: match.line + 11 }
+    }))
 
     it('identifies the correct variable usages in the Python sample diff', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/python'))

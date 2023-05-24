@@ -12,3 +12,12 @@ index 00000000..ed8ee4ab
 +    )
 +
 +useVariable(ALIASED_VARIABLE, true)
++
++useVariableValue("simple-case", true)
++
++useVariableValue(
++        "multi-line",
++        true
++    )
++
++useVariableValue(ALIASED_VARIABLE, true)

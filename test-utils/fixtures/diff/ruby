@@ -13,3 +13,13 @@ index 00000000..ed8ee4ab
 +    )
 +
 +dvcClient.variable(DevCycle::UserData.new({user_id: 'user_id_example'}), "user-object", true)
++
++dvcClient.variable_value(user, "simple-case", true)
++
++dvcClient.variable_value(
++        user,
++        "multi-line",
++        true
++    )
++
++dvcClient.variable_value(DevCycle::UserData.new({user_id: 'user_id_example'}), "user-object", true)
