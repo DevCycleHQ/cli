@@ -15,3 +15,15 @@ index 00000000..ed8ee4ab
 +$dvcClient->variable(user: $user_data, key: "named-case", defaultValue: "default")
 +$dvcClient->variable(array("user_id"=>"foo"), "user-object", "default")
 +$dvcClient->variable($user, "default-value-object", array("foo"=>"bar"))
++
++$dvcClient->variableValue($user_data, "simple-case", "default")
++
++$dvcClient->variableValue(
++        $user_data,
++        "multi-line",
++        "default"
++    )
++
++$dvcClient->variableValue(user: $user_data, key: "named-case", defaultValue: "default")
++$dvcClient->variableValue(array("user_id"=>"foo"), "user-object", "default")
++$dvcClient->variableValue($user, "default-value-object", array("foo"=>"bar"))

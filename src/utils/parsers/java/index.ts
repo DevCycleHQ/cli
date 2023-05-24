@@ -6,7 +6,7 @@ const defaultValueCapturePattern = /(?:[^),]*|new[^)]*\))/
 
 export class JavaParser extends BaseParser {
     identity = 'java'
-    variableMethodPattern = /\.(variable|variableValue)\(\s*/
+    variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(\s*/
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,

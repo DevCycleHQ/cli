@@ -5,7 +5,7 @@ const defaultValueCapturePattern = /(?:[^),]*|{[^}]*})/
 
 export class DartParser extends BaseParser {
     identity = 'dart'
-    variableMethodPattern = /\??\.(variable|variableValue)\(\s*/
+    variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(\s*/
     orderedParameterPatterns = [
         variableNameCapturePattern,
         defaultValueCapturePattern

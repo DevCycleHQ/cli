@@ -17,3 +17,17 @@ index 00000000..ed8ee4ab
 +dvcClient.VariableAsync(user=user, key="named-case", default=true)
 +dvcClient.VariableAsync(key="unordered-named-case", default=true, user=user)
 +dvcClient.VariableAsync(user, "default-value-object", new { Foo = "Bar" })
++
++dvcClient.VariableValueAsync(user, "simple-case", true)
++
++dvcClient
++    .VariableValueAsync(
++        user,
++        "multi-line",
++        true
++    )
++
++dvcClient.VariableValueAsync(new User("user_id"), "user-object", true)
++dvcClient.VariableValueAsync(user=user, key="named-case", default=true)
++dvcClient.VariableValueAsync(key="unordered-named-case", default=true, user=user)
++dvcClient.VariableValueAsync(user, "default-value-object", new { Foo = "Bar" })

@@ -5,7 +5,7 @@ const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class IosParser extends BaseParser {
     identity = 'ios'
-    variableMethodPattern = /\??\.(variable|variableValue)\(/
+    variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(/
 
     namedParameterDelimiter = ':'
     namedParameterPatternMap = {

@@ -14,3 +14,14 @@ index 00000000..ed8ee4ab
 +    )
 +
 +dvcClient.variable(UserData(user_id="id", email="blah"), "user-object", True)
++
++dvcClient.variable_value(user, 'simple-case', True)
++dvcClient.variable_value(user=user, key="named-case", defaultValue="default")
++dvcClient.variable_value(key="named-case-reversed", user=user, defaultValue=True)
++dvcClient.variable_value(
++        user,
++        'multi-line',
++        True
++    )
++
++dvcClient.variable_value(UserData(user_id="id", email="blah"), "user-object", True)
