@@ -6,7 +6,7 @@ const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class PythonParser extends BaseParser {
     identity = 'python'
-    variableMethodPattern = /\.variable\(\s*/
+    variableMethodPattern = /\.(?:(?:variable)|(?:variable_value))\(\s*/
 
     orderedParameterPatterns = [
         userCapturePattern,

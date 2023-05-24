@@ -16,6 +16,7 @@ index 429092e6..2698d364 100644
      ) {
          const dvcUser = { user_id: 'id' }
 +        this.dvcClient?.variable(dvcUser, 'optional-accessor', true)
++        this.dvcClient?.variableValue(dvcUser, 'optional-accessor-value', true)
 
          const organization = await this.organizationsService.create(user.sub, upgradeOrganizationDto)
          await this.projectsService.migrate(user.sub, organization.id)

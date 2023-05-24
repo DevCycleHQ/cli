@@ -212,25 +212,29 @@ DevCycle Variable Changes:
 const formattedMarkdownExpected = `
 ## <img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg#gh-light-mode-only" height="31px" align="center"/><img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot-white.svg#gh-dark-mode-only" height="31px" align="center"/> DevCycle Variable Changes:
 
-🟢  1 Variable Added
+🟢  2 Variables Added
 🔴  0 Variables Removed
 
 ### 🟢 Added
 
   1. **optional-accessor**
 \t   Location: services/api/src/organizations/organizations.controller.ts:L177
+  2. **optional-accessor-value**
+\t   Location: services/api/src/organizations/organizations.controller.ts:L178
 `
 
 const formattedMarkdownNoHtmlExpected = `
 ## DevCycle Variable Changes:
 
-🟢  1 Variable Added
+🟢  2 Variables Added
 🔴  0 Variables Removed
 
 ### 🟢 Added
 
   1. **optional-accessor**
 \t   Location: services/api/src/organizations/organizations.controller.ts:L177
+  2. **optional-accessor-value**
+\t   Location: services/api/src/organizations/organizations.controller.ts:L178
 `
 
 describe('diff', () => {
@@ -268,6 +272,17 @@ describe('diff', () => {
             '--var-alias', 'ALIASED_VARIABLE=my-variable',
             '--no-api'])
         .it('identifies an aliased variable with a custom matcher', (ctx) => {
+            expect(ctx.stdout).to.equal(aliasedCustomExpected)
+        })
+
+    test
+        .stdout()
+        .command(['diff', '--file',
+            'test-utils/fixtures/diff/custom-pattern-value',
+            '--match-pattern', 'jsx=useDVCVariableValue\\(\\s*([^,)]*)\\s*,\\s*(?:[^),]*|{[^}]*})\\)',
+            '--var-alias', 'ALIASED_VARIABLE_VALUE=my-variable',
+            '--no-api'])
+        .it('identifies an aliased variable value with a custom matcher', (ctx) => {
             expect(ctx.stdout).to.equal(aliasedCustomExpected)
         })
 

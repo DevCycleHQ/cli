@@ -15,3 +15,15 @@ index 00000000..ed8ee4ab
 +
 +dvcClient.variable(new User("user_id"), "user-object", false)
 +dvcClient.variable(user, "hashmap-default-value", new HashMap<String, String>())
++
++dvcClient.variableValue(user, "simple-case", false)
++
++dvcClient
++    .variableValue(
++        user,
++        "multi-line",
++        true
++    )
++
++dvcClient.variableValue(new User("user_id"), "user-object", false)
++dvcClient.variableValue(user, "hashmap-default-value", new HashMap<String, String>())

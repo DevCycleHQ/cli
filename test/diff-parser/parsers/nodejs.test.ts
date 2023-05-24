@@ -3,6 +3,8 @@ import * as path from 'node:path'
 import { parseFiles } from '../../../src/utils/diff/parse'
 import { expect } from '@oclif/test'
 
+const VALUE_LINE_DIFF = 35
+
 describe('nodejs', () => {
     const nodeSimpleMatchAdded = [
         {
@@ -61,6 +63,10 @@ describe('nodejs', () => {
             'name': 'VARIABLES.ENUM_VARIABLE'
         }
     ]
+    const nodeSimpleMatchValueAdded = nodeSimpleMatchAdded.map((match) => {
+        return { ...match, line: match.line + VALUE_LINE_DIFF }
+    })
+
     const nodeSimpleMatchRemoved = [
         {
             'fileName': 'test-utils/fixtures/diff/sampleDiff.js',
@@ -69,17 +75,28 @@ describe('nodejs', () => {
             'name': 'simple-case'
         }
     ]
+
+    const nodeSimpleMatchValueRemoved = [
+        {
+            'fileName': 'test-utils/fixtures/diff/sampleDiff.js',
+            'line': 2,
+            'mode': 'remove',
+            'name': 'simple-case'
+        }
+    ]
+
     const nodeSimpleMatchResult = [
         ...nodeSimpleMatchAdded,
-        ...nodeSimpleMatchRemoved
+        ...nodeSimpleMatchValueAdded,
+        ...nodeSimpleMatchRemoved,
+        ...nodeSimpleMatchValueRemoved
     ]
+
     it('identifies the correct variable usages in the NodeJS sample diff', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/nodejs'))
         const results = parseFiles(parsedDiff)
 
-        expect(results).to.deep.equal({
-            nodejs: nodeSimpleMatchResult,
-        })
+        expect(results).to.deep.equal({ nodejs: nodeSimpleMatchResult })
     })
 
     it('identifies the correct variables using an overridden client name', () => {
@@ -94,7 +111,15 @@ describe('nodejs', () => {
                     'mode': 'add',
                     'name': 'renamed-case'
                 },
-                ...nodeSimpleMatchRemoved
+                ...nodeSimpleMatchValueAdded,
+                {
+                    'fileName': 'test-utils/fixtures/diff/sampleDiff.js',
+                    'line': 34 + VALUE_LINE_DIFF,
+                    'mode': 'add',
+                    'name': 'renamed-case'
+                },
+                ...nodeSimpleMatchRemoved,
+                ...nodeSimpleMatchValueRemoved
             ]
         })
     })
@@ -111,14 +136,29 @@ describe('nodejs', () => {
                     'mode': 'add',
                     'name': 'renamed-case'
                 },
-                ...nodeSimpleMatchRemoved
+                ...nodeSimpleMatchValueAdded,
+                {
+                    'fileName': 'test-utils/fixtures/diff/sampleDiff.js',
+                    'line': 34 + VALUE_LINE_DIFF,
+                    'mode': 'add',
+                    'name': 'renamed-case'
+                },
+                ...nodeSimpleMatchRemoved,
+                ...nodeSimpleMatchValueRemoved
             ]
         })
     })
 
     it('identifies the correct variables using a custom pattern', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/nodejs'))
-        const results = parseFiles(parsedDiff, { matchPatterns: { js: ['checkVariable\\(\\w*,\\s*([^,)]*)\\s*'] } })
+        const results = parseFiles(parsedDiff, {
+            matchPatterns: {
+                js: [
+                    'checkVariable\\(\\w*,\\s*([^,)]*)\\s*',
+                    'checkVariableValue\\(\\w*,\\s*([^,)]*)\\s*'
+                ]
+            }
+        })
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,
             'custom js': [
@@ -127,15 +167,30 @@ describe('nodejs', () => {
                     'line': 6,
                     'mode': 'add',
                     'name': 'func-proxy'
-                }]
+                },
+                {
+                    'fileName': 'test-utils/fixtures/diff/sampleDiff.js',
+                    'line': 6 + VALUE_LINE_DIFF,
+                    'mode': 'add',
+                    'name': 'func-proxy'
+                }
+            ]
         })
     })
 
     it('identifies the correct variables using multiple custom patterns that match out-of-order', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/nodejs'))
-        const results = parseFiles(parsedDiff, { matchPatterns: {
-            js: ['myClient.variable\\(\\w*,\\s*([^,)]*)\\s*', 'checkVariable\\(\\w*,\\s*([^,)]*)\\s*']
-        } })
+        const results = parseFiles(parsedDiff, {
+            matchPatterns: {
+                js: [
+                    'myClient.variable\\(\\w*,\\s*([^,)]*)\\s*',
+                    'myClient.variableValue\\(\\w*,\\s*([^,)]*)\\s*',
+                    'checkVariable\\(\\w*,\\s*([^,)]*)\\s*',
+                    'checkVariableValue\\(\\w*,\\s*([^,)]*)\\s*'
+                ]
+            }
+        })
+
         expect(results).to.deep.equal({
             nodejs: nodeSimpleMatchResult,
             'custom js': [
@@ -148,6 +203,18 @@ describe('nodejs', () => {
                 {
                     'fileName': 'test-utils/fixtures/diff/sampleDiff.js',
                     'line': 8,
+                    'mode': 'add',
+                    'name': 'alias-case'
+                },
+                {
+                    'fileName': 'test-utils/fixtures/diff/sampleDiff.js',
+                    'line': 6 + VALUE_LINE_DIFF,
+                    'mode': 'add',
+                    'name': 'func-proxy'
+                },
+                {
+                    'fileName': 'test-utils/fixtures/diff/sampleDiff.js',
+                    'line': 8 + VALUE_LINE_DIFF,
                     'mode': 'add',
                     'name': 'alias-case'
                 }
@@ -165,6 +232,12 @@ describe('nodejs', () => {
                     'line': 177,
                     'mode': 'add',
                     'name': 'optional-accessor'
+                },
+                {
+                    'fileName': 'services/api/src/organizations/organizations.controller.ts',
+                    'line': 178,
+                    'mode': 'add',
+                    'name': 'optional-accessor-value'
                 }
             ]
         })

@@ -5,7 +5,7 @@ const defaultValueCapturePattern = /(?:[^),]*|{[^}]*})/
 
 export class JavascriptParser extends BaseParser {
     identity = 'javascript'
-    variableMethodPattern = /\??\.variable\(\s*/
+    variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(\s*/
     orderedParameterPatterns = [
         variableNameCapturePattern,
         defaultValueCapturePattern

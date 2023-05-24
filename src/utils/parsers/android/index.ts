@@ -5,7 +5,7 @@ const defaultValueCapturePattern = /(?:[^),]*|new[^)]*\))/
 
 export class AndroidParser extends BaseParser {
     identity = 'android'
-    variableMethodPattern = /\??\.variable\(/
+    variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(/
 
     orderedParameterPatterns = [
         variableNameCapturePattern,

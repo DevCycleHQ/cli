@@ -4,7 +4,7 @@ import { parseFiles } from '../../../src/utils/diff/parse'
 import { expect } from '@oclif/test'
 
 describe('react', () => {
-    const simpleMatchResult = [
+    let simpleMatchResult = [
         {
             'fileName': 'test-utils/fixtures/diff/sampleDiff.jsx',
             'line': 1,
@@ -25,6 +25,10 @@ describe('react', () => {
             'name': 'ALIASED_VARIABLE'
         }
     ]
+    simpleMatchResult = simpleMatchResult.concat(simpleMatchResult.map((match) => {
+        return { ...match, line: match.line + 9 }
+    }))
+
     it('identifies the correct variable usages in the React sample diff', () => {
         const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/react'))
         const results = parseFiles(parsedDiff)

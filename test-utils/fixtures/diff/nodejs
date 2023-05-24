@@ -8,6 +8,7 @@ index 00000000..ed8ee4ab
 +++ b/test-utils/fixtures/diff/sampleDiff.js
 @@ -1,1 +1,34 @@
 -dvcClient.variable(user, "simple-case", true)
+-dvcClient.variableValue(user, "simple-case", true)
 +dvcClient.variable(user, "simple-case", true)
 +dvcClient.variable(user, "simple-case", false)
 +
@@ -42,3 +43,38 @@ index 00000000..ed8ee4ab
 +)
 +dvcClient.variable(user, VARIABLES.ENUM_VARIABLE, true)
 +dvc.variable(user, "renamed-case", true)
++
++dvcClient.variableValue(user, "simple-case", true)
++dvcClient.variableValue(user, "simple-case", false)
++
++dvcClient.variableValue(user, 'single-quotes', "word")
++
++checkVariableValue(user, "func-proxy", 7)
++
++myClient.variableValue(user, "alias-case", {})
++
++dvcClient
++    .variableValue(
++        user,
++        "multi-line",
++        true
++    )
++
++// dvcClient.variableValue(user, "single-comment", 10)
++
++/**
++ * dvcClient.variableValue(user, "multi-line-comment", false)
++ */
++
++dvcClient.variableValue({ user_id: "id", email: "blah" }, "user-object", true)
++dvcClient.variableValue(new User("user_id"), "user-constructor", true)
++dvcClient.variableValue(
++   {
++      user_id: "id",
++      email: "blah"
++    },
++   "multi-line-user-object",
++   true
++)
++dvcClient.variableValue(user, VARIABLES.ENUM_VARIABLE, true)
++dvc.variableValue(user, "renamed-case", true)

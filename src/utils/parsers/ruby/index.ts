@@ -6,7 +6,7 @@ const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class RubyParser extends BaseParser {
     identity = 'ruby'
-    variableMethodPattern = /&?\.variable\(\s*/
+    variableMethodPattern = /&?\.(?:(?:variable)|(?:variable_value))\(\s*/
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,
