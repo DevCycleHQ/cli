@@ -24,8 +24,8 @@ $ npm install -g @devcycle/cli
 ```
 # Authentication
 Many of the CLI commands require DevCycle API authorization. There are several ways to provide these credentials.
-## Using Access Tokens
-### Login Command (preferred)
+## Using Access Tokens (preferred)
+### Login Command 
 By using the [`login sso` command](docs/login.md#dvc-login-sso), the CLI will retrieve and store an access token, which is valid for 24 hours.
 
 The [`login again` command](docs/login.md#dvc-login-again) can be used to retrieve a new access token using the saved project and organization without prompting for them.
@@ -33,7 +33,7 @@ The [`login again` command](docs/login.md#dvc-login-again) can be used to retrie
 This process will open browser windows to interact with the DevCycle universal login page. It will first obtain a personal access token, then prompt you to choose an organization. A second browser window is used to authenticate the CLI with your chosen organization.
 
 To switch organizations once logged in, the [`org` command](docs/org.md) can be used.
-### Repo Init Command (preferred)
+### Repo Init Command
 The [`repo init` command](docs/repo.md#dvc-repo-init) behaves in the same way as `login sso`, but creates a [repo configuration file](#repo-configuration) and stores the project and organization choices there instead.
 ## Using Client Credentials
 ### Client Credentials in Auth File
@@ -78,7 +78,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/4.3.0 darwin-arm64 node-v18.16.0
+@devcycle/cli/4.3.0 darwin-arm64 node-v18.12.1
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
