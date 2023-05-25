@@ -110,12 +110,12 @@ export abstract class BaseParser {
         orderedParameterPatterns: RegExp[] | null
     ) {
         const namedParameters = namedParameterPatternMap
-            ? Object
-                .entries(namedParameterPatternMap)
-                .map(([key, pattern]) =>
-                    new RegExp(
-                        `(?=.*?${key}${this.namedParameterDelimiter}\\s*${pattern.source})`
-                    ).source
+            ? Object.entries(namedParameterPatternMap)
+                .map(
+                    ([key, pattern]) =>
+                        new RegExp(
+                            `(?=.*?${key}${this.namedParameterDelimiter}\\s*${pattern.source})`,
+                        ).source,
                 )
                 .join('')
                 .concat(/[^)]*\)/.source)
@@ -129,7 +129,8 @@ export abstract class BaseParser {
             : null
 
         return orderedParameters && namedParameters
-            ? new RegExp(`(?:(?:${orderedParameters})|(?:${namedParameters}))`).source
+            ? new RegExp(`(?:(?:${orderedParameters})|(?:${namedParameters}))`)
+                .source
             : orderedParameters || namedParameters
     }
 
@@ -225,7 +226,7 @@ export abstract class BaseParser {
                 line.range.end = acc.content.length - 1
 
                 acc.lines.push(line)
-                
+
                 return acc
             }, { content: '', lines: [] } as { content: string, lines: ParsedLine[] })
     }
@@ -282,7 +283,7 @@ export abstract class BaseParser {
             const removedLines = lineChanges.filter((line) => ['del', 'normal'].includes(line.type))
             const removed = this.filterAndReduceLines(removedLines)
             const removedMatches = this.getAllMatches(removed.content)
-            
+
             removedMatches.forEach((match) => validateAndFormatMatch(match, removed.lines))
         }
         return results
@@ -314,7 +315,7 @@ export abstract class BaseParser {
                 .filter((line) => range.start - buffer <= line.ln && range.end + buffer >= line.ln)
                 .map((line) => line.content)
                 .join('\n')
-            
+
             results.push({
                 name: match.name,
                 line: range.start,

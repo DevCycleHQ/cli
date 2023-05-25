@@ -1,6 +1,5 @@
-import axios from 'axios'
-import { BASE_URL } from './common'
 import { IsNotEmpty, IsString } from 'class-validator'
+import apiClient from './apiClient'
 
 export type Project = {
     id: string
@@ -23,8 +22,8 @@ export class CreateProjectParams {
 }
 
 export const fetchProjects = async (token: string): Promise<Project[]> => {
-    const url = new URL('/v1/projects', BASE_URL)
-    const response = await axios.get(url.href, {
+    const url = '/v1/projects'
+    const response = await apiClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
@@ -38,8 +37,8 @@ export const createProject = async (
     token: string,
     params: CreateProjectParams
 ): Promise<Project> => {
-    const url = new URL('/v1/projects', BASE_URL)
-    const response = await axios.post(url.href, params, {
+    const url = '/v1/projects'
+    const response = await apiClient.post(url, params, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,

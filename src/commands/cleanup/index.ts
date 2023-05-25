@@ -15,7 +15,7 @@ export default class Cleanup extends Base {
     runsInRepo = true
 
     static description = 'Replace a DevCycle variable with a static value in the current version of your code. ' +
-        'Currently only JavaScript is supported.' 
+        'Currently only JavaScript is supported.'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
         '<%= config.bin %> <%= command.id %> my-variable-key --value true --type Boolean',
@@ -62,11 +62,13 @@ export default class Cleanup extends Base {
     public async run(): Promise<void> {
         const { flags, args } = await this.parse(Cleanup)
         const codeInsightsConfig = this.repoConfig?.codeInsights || {}
-        const apiAuth = this.token && this.projectKey
-            ? {
-                token: this.token,
-                projectKey: this.projectKey
-            } : undefined
+        const apiAuth =
+            this.token && this.projectKey
+                ? {
+                    token: this.token,
+                    projectKey: this.projectKey,
+                }
+                : undefined
 
         const variable = {
             key: args.key,
@@ -79,7 +81,7 @@ export default class Cleanup extends Base {
                 try {
                     const input = await inquirer.prompt([variablePrompt], apiAuth)
                     variable.key = input.variable.key
-                } catch {} // eslint-disable-line no-empty
+                } catch { } // eslint-disable-line no-empty
             }
             if (!variable.key) {
                 const input = await inquirer.prompt([variablePromptNoApi])
@@ -98,14 +100,18 @@ export default class Cleanup extends Base {
         const includeFile = (filepath: string) => {
             const includeGlobs = flags['include'] || codeInsightsConfig.includeFiles
             return includeGlobs
-                ? includeGlobs.some((glob) => minimatch(filepath, glob, { matchBase: true }))
+                ? includeGlobs.some((glob) =>
+                    minimatch(filepath, glob, { matchBase: true }),
+                )
                 : true
         }
 
         const excludeFile = (filepath: string) => {
             const excludeGlobs = flags['exclude'] || codeInsightsConfig.excludeFiles
             return excludeGlobs
-                ? excludeGlobs.some((glob) => minimatch(filepath, glob, { matchBase: true }))
+                ? excludeGlobs.some((glob) =>
+                    minimatch(filepath, glob, { matchBase: true }),
+                )
                 : false
         }
 

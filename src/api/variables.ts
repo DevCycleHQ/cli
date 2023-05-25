@@ -1,6 +1,5 @@
-import axios from 'axios'
 import { IsIn, IsNotEmpty, IsString } from 'class-validator'
-import { BASE_URL } from './common'
+import apiClient from './apiClient'
 export class Variable {
     _feature?: string
     type: string
@@ -50,15 +49,13 @@ export const createVariable = async (
     project_id: string,
     params: CreateVariableParams
 ): Promise<Variable> => {
-    const url = new URL(`/v1/projects/${project_id}/variables`, BASE_URL)
-    const response = await axios.post(url.href,
-        params,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-        })
+    const url = `/v1/projects/${project_id}/variables`
+    const response = await apiClient.post(url, params, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+    })
 
     return response.data
 }
@@ -69,8 +66,8 @@ export const updateVariable = async (
     variableKey: string,
     params: Partial<CreateVariableParams>
 ): Promise<Variable> => {
-    const url = new URL(`/v1/projects/${project_id}/variables/${variableKey}`, BASE_URL)
-    const response = await axios.patch(url.href,
+    const url = `/v1/projects/${project_id}/variables/${variableKey}`
+    const response = await apiClient.patch(url,
         params,
         {
             headers: {
@@ -83,8 +80,8 @@ export const updateVariable = async (
 }
 
 export const fetchVariables = async (token: string, project_id: string): Promise<Variable[]> => {
-    const url = new URL(`/v1/projects/${project_id}/variables`, BASE_URL)
-    const response = await axios.get(url.href, {
+    const url = `/v1/projects/${project_id}/variables`
+    const response = await apiClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
@@ -96,8 +93,8 @@ export const fetchVariables = async (token: string, project_id: string): Promise
 
 export const fetchAllVariables = async (token: string, project_id: string): Promise<Variable[]> => {
     const perPage = 1000
-    const url = new URL(`/v1/projects/${project_id}/variables?perPage=${perPage}&page=1`, BASE_URL)
-    const response = await axios.get(url.href, {
+    const url = `/v1/projects/${project_id}/variables?perPage=${perPage}&page=1`
+    const response = await apiClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
@@ -109,8 +106,8 @@ export const fetchAllVariables = async (token: string, project_id: string): Prom
     const totalPages = Math.ceil(total / perPage)
     const promises = []
     for (let i = 2; i <= totalPages; i++) {
-        const url = new URL(`/v1/projects/${project_id}/variables?perPage=${perPage}&page=${i}`, BASE_URL)
-        promises.push(axios.get(url.href, {
+        const url = `/v1/projects/${project_id}/variables?perPage=${perPage}&page=${i}`
+        promises.push(apiClient.get(url, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,
@@ -121,16 +118,15 @@ export const fetchAllVariables = async (token: string, project_id: string): Prom
     const responses = await Promise.all(promises)
     const variables: Variable[] = responses.reduce((acc, response) => {
         return acc.concat(response.data)
-    }
-    , response.data)
+    }, response.data)
 
     return variables
 }
 
 export const fetchVariableByKey = async (token: string, project_id: string, key: string): Promise<Variable | null> => {
-    const url = new URL(`/v1/projects/${project_id}/variables/${key}`, BASE_URL)
+    const url = `/v1/projects/${project_id}/variables/${key}`
     try {
-        const response = await axios.get(url.href, {
+        const response = await apiClient.get(url, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,
@@ -138,7 +134,7 @@ export const fetchVariableByKey = async (token: string, project_id: string, key:
         })
 
         return response.data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         if (e.response?.status === 404) {
             return null
