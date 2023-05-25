@@ -1,6 +1,5 @@
-import axios from 'axios'
-import { BASE_URL } from './common'
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import apiClient from './apiClient'
 
 export const environmentTypes = [
     'development',
@@ -56,15 +55,12 @@ export const createEnvironment = async (
     project_id: string,
     params: CreateEnvironmentParams
 ): Promise<Environment> => {
-    const url = new URL(`/v1/projects/${project_id}/environments`, BASE_URL)
-    const response = await axios.post(url.href,
-        params,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-        })
+    const response = await apiClient.post(`/v1/projects/${project_id}/environments`, params, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+    })
 
     return response.data
 }
@@ -75,22 +71,20 @@ export const updateEnvironment = async (
     environmentKey: string,
     params: Partial<CreateEnvironmentParams>
 ): Promise<Environment> => {
-    const url = new URL(`/v1/projects/${project_id}/environments/${environmentKey}`, BASE_URL)
-    const response = await axios.patch(url.href,
-        params,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-        })
+    const url = `/v1/projects/${project_id}/environments/${environmentKey}`
+    const response = await apiClient.patch(url, params, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+    })
 
     return response.data
 }
 
 export const fetchEnvironments = async (token: string, project_id: string): Promise<Environment[]> => {
-    const url = new URL(`/v1/projects/${project_id}/environments`, BASE_URL)
-    const response = await axios.get(url.href, {
+    const url = `/v1/projects/${project_id}/environments`
+    const response = await apiClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
@@ -105,9 +99,9 @@ export const fetchEnvironmentByKey = async (
     project_id: string,
     key: string
 ): Promise<Environment | null> => {
-    const url = new URL(`/v1/projects/${project_id}/environments/${key}`, BASE_URL)
+    const url = `/v1/projects/${project_id}/environments/${key}`
     try {
-        const response = await axios.get(url.href, {
+        const response = await apiClient.get(url, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,
