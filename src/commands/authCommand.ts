@@ -102,6 +102,8 @@ export default abstract class AuthCommand extends Base {
         storeAccessToken(token, this.authPath)
         if (this.repoConfig) {
             this.updateRepoConfig({ org: { id, name, display_name } })
+        } else if (this.userConfig) {
+            this.updateUserConfig({ org: { id, name, display_name } })
         }
         return token
     }
