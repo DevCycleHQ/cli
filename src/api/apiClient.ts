@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios'
 import { BASE_URL } from './common'
 
 export const apiClient = axios.create({
-    baseURL: `${BASE_URL}`,
+    baseURL: BASE_URL,
 })
 
 export const setDVCReferrer = (
