@@ -125,9 +125,9 @@ export default abstract class Base extends Command {
         return configParsed
     }
 
-    async updateUserConfig(
+    updateUserConfig(
         changes: Partial<UserConfigFromFile>
-    ): Promise<UserConfigFromFile | null> {
+    ): UserConfigFromFile | null {
         let config = this.loadUserConfig(this.configPath)
         if (!config) {
             const configDir = path.dirname(this.configPath)
@@ -146,9 +146,9 @@ export default abstract class Base extends Command {
         return config
     }
 
-    async updateRepoConfig(
+    updateRepoConfig(
         changes: Partial<RepoConfigFromFile>
-    ): Promise<RepoConfigFromFile | null> {
+    ): RepoConfigFromFile | null {
         let config = this.loadRepoConfig(this.repoConfigPath)
         if (!config) {
             const configDir = path.dirname(this.repoConfigPath)
