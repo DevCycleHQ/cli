@@ -6,7 +6,6 @@ import {
     descriptionPrompt,
     keyPrompt,
     namePrompt,
-    featurePrompt,
     environmentTypePrompt
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
@@ -20,7 +19,6 @@ export default class CreateEnvironment extends CreateCommand<CreateEnvironmentPa
         namePrompt,
         descriptionPrompt,
         environmentTypePrompt,
-        featurePrompt
     ]
 
     public async run(): Promise<void> {

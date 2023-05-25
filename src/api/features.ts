@@ -1,5 +1,5 @@
-import axios from 'axios'
-import { BASE_URL } from './common'
+import apiClient from './apiClient'
+
 export class Feature {
     _id: string
     _project?: string
@@ -13,8 +13,8 @@ export class Feature {
 }
 
 export const fetchFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
-    const url = new URL(`/v1/projects/${project_id}/features`, BASE_URL)
-    const response = await axios.get(url.href, {
+    const url = `/v1/projects/${project_id}/features`
+    const response = await apiClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
@@ -25,9 +25,9 @@ export const fetchFeatures = async (token: string, project_id: string): Promise<
 }
 
 export const fetchFeatureByKey = async (token: string, project_id: string, key: string): Promise<Feature | null> => {
-    const url = new URL(`/v1/projects/${project_id}/features/${key}`, BASE_URL)
+    const url = `/v1/projects/${project_id}/features/${key}`
     try {
-        const response = await axios.get(url.href, {
+        const response = await apiClient.get(url, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,

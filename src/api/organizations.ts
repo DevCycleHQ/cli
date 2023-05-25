@@ -1,5 +1,4 @@
-import axios from 'axios'
-import { BASE_URL } from './common'
+import apiClient from './apiClient'
 
 export type Organization = {
     id: string
@@ -8,8 +7,8 @@ export type Organization = {
 }
 
 export const fetchOrganizations = async (token: string): Promise<Organization[]> => {
-    const url = new URL('/v1/organizations', BASE_URL)
-    const response = await axios.get(url.href, {
+    const url = '/v1/organizations'
+    const response = await apiClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,

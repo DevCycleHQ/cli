@@ -13,7 +13,7 @@ import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
 import Writer from '../ui/writer'
-import { setDVCReferrer } from '../api/common'
+import { setDVCReferrer } from '../api/apiClient'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -92,8 +92,10 @@ export default abstract class Base extends Command {
             if (this.authRequired) {
                 throw new Error('Authorization is required to use this command.')
             } else if (this.authSuggested && !flags['no-api']) {
-                this.writer.warningMessage('This command has limited functionality without Authorization.' +
-                    'Use the "--no-api" flag to suppress this warning')
+                this.writer.warningMessage(
+                    'This command has limited functionality without Authorization.' +
+                    'Use the "--no-api" flag to suppress this warning',
+                )
             }
             return
         }
