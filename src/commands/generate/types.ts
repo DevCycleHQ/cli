@@ -3,23 +3,35 @@ import fs from 'fs'
 import { Variable, fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
 
+const reactImports = `import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
+import {
+    useVariable as originalUseVariable,
+    useVariableValue as originalUseVariableValue
+} from '@devcycle/devcycle-react-sdk'
+
+`
 const reactOverrides =
 `
 
-declare module '@devcycle/devcycle-react-sdk' {
-    import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
-    export * from '@devcycle/devcycle-react-sdk'
+export type UseVariableValue = <
+    K extends string & keyof DVCVariableTypes,
+    T extends DVCVariableValue & DVCVariableTypes[K],
+>(
+    key: K,
+    defaultValue: T
+) => DVCVariable<T>['value']
 
-    export function useVariableValue<
-        K extends string & keyof DVCVariableTypes,
-        T extends DVCVariableValue & DVCVariableTypes[K],
-    >(key: K, defaultValue: T): DVCVariable<T>['value']
+export const useVariableValue: UseVariableValue = originalUseVariableValue
 
-    export function useVariable<
-        K extends string & keyof DVCVariableTypes,
-        T extends DVCVariableValue & DVCVariableTypes[K],
-    >(key: K, defaultValue: T): DVCVariable<T>
-}`
+export type UseVariable = <
+    K extends string & keyof DVCVariableTypes,
+    T extends DVCVariableValue & DVCVariableTypes[K],
+>(
+    key: K,
+    defaultValue: T
+) => DVCVariable<T>
+
+export const useVariable: UseVariable = originalUseVariable`
 
 export default class GenerateTypes extends Base {
   static hidden = false
@@ -58,9 +70,9 @@ export default class GenerateTypes extends Base {
   }
 
   private getTypesString(variables: Variable[], react: boolean): string {
-      let types =
+      let types = (react ? reactImports : '') +
           'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
-          `${!react ? 'export ' : ''}type DVCVariableTypes = {\n` +
+          'export type DVCVariableTypes = {\n' +
           `${variables.map((variable) => `    ${this.getVariableKeyAndtype(variable)}`).join('\n')}` +
           '\n}'
       if (react) {
