@@ -78,7 +78,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/4.3.2 darwin-arm64 node-v18.12.1
+@devcycle/cli/4.3.2 darwin-arm64 node-v18.16.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -164,6 +164,10 @@ e.g. `bin/run diff origin/main...`
 To run the test suite, run `yarn test`
 
 ## Publishing a new version
-1. Create a branch off of `main` and run `npm version patch` to bump the CLI version. Create a PR for these changes.
-2. Once merged, create a new Github release with a tag for the latest version.
-3. From `main`, publish to NPM `npm publish --access public`
+1. Run `nvm use` to set the correct node version
+2. Create a branch off of `main` and run `npm version patch` to bump the CLI version.
+3. Run `yarn build`
+4. Create a PR for these changes.
+5. Once merged, move the tag from your branch to the new commit on main, and push the tag
+6. create a new Github release using the tag for the latest version.
+7. From `main`, publish to NPM `npm publish --access public`
