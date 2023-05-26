@@ -2,7 +2,7 @@ import { expect, test } from '@oclif/test'
 import { AUTH_URL, BASE_URL } from '../../src/api/common'
 import * as fs from 'fs'
 
-const mockVariablesResponse = 
+const mockVariablesResponse =
 [
     {
         'name': 'enum-var',
@@ -65,9 +65,15 @@ export type DVCVariableTypes = {
 }`
 
 const expectedReactTypesString =
-`type DVCJSON = { [key: string]: string | boolean | number }
+`import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
+import {
+    useVariable as originalUseVariable,
+    useVariableValue as originalUseVariableValue
+} from '@devcycle/devcycle-react-sdk'
 
-type DVCVariableTypes = {
+type DVCJSON = { [key: string]: string | boolean | number }
+
+export type DVCVariableTypes = {
     'enum-var': 'Hello' | 'Hey' | 'Hi'
     'regex-var': string
     'string-var': string
@@ -76,20 +82,25 @@ type DVCVariableTypes = {
     'json-var': DVCJSON
 }
 
-declare module '@devcycle/devcycle-react-sdk' {
-    import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
-    export * from '@devcycle/devcycle-react-sdk'
+export type UseVariableValue = <
+    K extends string & keyof DVCVariableTypes,
+    T extends DVCVariableValue & DVCVariableTypes[K],
+>(
+    key: K,
+    defaultValue: T
+) => DVCVariable<T>['value']
 
-    export function useVariableValue<
-        K extends string & keyof DVCVariableTypes,
-        T extends DVCVariableValue & DVCVariableTypes[K],
-    >(key: K, defaultValue: T): DVCVariable<T>['value']
+export const useVariableValue: UseVariableValue = originalUseVariableValue
 
-    export function useVariable<
-        K extends string & keyof DVCVariableTypes,
-        T extends DVCVariableValue & DVCVariableTypes[K],
-    >(key: K, defaultValue: T): DVCVariable<T>
-}`
+export type UseVariable = <
+    K extends string & keyof DVCVariableTypes,
+    T extends DVCVariableValue & DVCVariableTypes[K],
+>(
+    key: K,
+    defaultValue: T
+) => DVCVariable<T>
+
+export const useVariable: UseVariable = originalUseVariable`
 
 describe('generate types', () => {
     after(() => {
