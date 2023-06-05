@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 import { Project } from '../api/projects'
 
-export async function promptForProject(projects:Project[]):Promise<Project> {
+export async function promptForProject(projects: Project[]): Promise<Project> {
     const projectOptions = projects.map((project) => {
         return {
             name: project.name,

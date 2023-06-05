@@ -12,6 +12,9 @@ export default class SelectProject extends AuthCommand {
 
     public async switchProject(): Promise<void> {
         const { flags } = await this.parse(AuthCommand)
+        if (flags.org) {
+            await this.setOrganization()
+        }
         const projects = await fetchProjects(this.token)
         if (flags.headless && !flags.project) {
             return this.writer.showResults(projects.map((project) => project.key))
