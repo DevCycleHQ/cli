@@ -117,7 +117,7 @@ export default class Cleanup extends Base {
 
         const aliases = new Set()
         Object.entries(getVariableAliases(flags, this.repoConfig)).forEach(([alias, variableKey]) => {
-            if (variableKey === args.key) aliases.add(alias)
+            if (variableKey === variable.key) aliases.add(alias)
         })
 
         const files = lsFiles().filter((filepath) => includeFile(filepath) && !excludeFile(filepath))
