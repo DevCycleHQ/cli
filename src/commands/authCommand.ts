@@ -24,8 +24,6 @@ export default abstract class AuthCommand extends Base {
         }
         const selectedOrg = await this.retrieveOrganization(organizations)
         this.token = await this.selectOrganization(selectedOrg)
-
-        await this.setProject()
     }
 
     public async setProject(): Promise<void> {
@@ -36,6 +34,11 @@ export default abstract class AuthCommand extends Base {
         }
         const selectedProject = await this.retrieveProject(projects)
         await this.saveProject(selectedProject)
+    }
+
+    public async setOrganizationAndProject(): Promise<void> {
+        await this.setOrganization()
+        await this.setProject()
     }
 
     public async saveProject(project: Project): Promise<void> {
