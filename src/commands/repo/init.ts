@@ -20,6 +20,6 @@ export default class InitRepo extends AuthCommand {
         this.token = await ssoAuth.getAccessToken()
         storeAccessToken(this.token, this.authPath)
 
-        await this.setOrganization()
+        await this.setOrganizationAndProject()
     }
 }
