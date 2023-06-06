@@ -105,6 +105,7 @@ USAGE
 * [`dvc status`](docs/status.md) - Check CLI status
 * [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
 * [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API
+* [`dvc variations`](docs/variations.md)
 
 <!-- commandsstop -->
 # Repo Configuration
