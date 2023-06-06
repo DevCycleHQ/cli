@@ -103,6 +103,7 @@ USAGE
 * [`dvc projects`](docs/projects.md) - Access Projects with the Management API
 * [`dvc repo`](docs/repo.md) - Manage repository configuration
 * [`dvc status`](docs/status.md) - Check CLI status
+* [`dvc targeting`](docs/targeting.md) - Retrieve Targeting for a Feature from the Management API
 * [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
 * [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API
 * [`dvc variations`](docs/variations.md)
