@@ -14,7 +14,7 @@ import CreateCommand from '../createCommand'
 export default class CreateVariable extends CreateCommand<CreateVariableParams> {
     static hidden = false
     static description = 'Create a new Variable for an existing Feature.'
-    
+
     prompts = [
         keyPrompt,
         namePrompt,
@@ -26,7 +26,7 @@ export default class CreateVariable extends CreateCommand<CreateVariableParams> 
     public async run(): Promise<void> {
         await this.requireProject()
         const params = await this.populateParameters(CreateVariableParams)
-        const result = await createVariable(this.token, this.projectKey, params)
+        const result = await createVariable(this.authToken, this.projectKey, params)
         this.writer.showResults(result)
     }
 }

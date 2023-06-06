@@ -28,12 +28,12 @@ export default abstract class UpdateCommand<ResourceType> extends Base {
         const prompts = this.prompts.filter((prompt) => whichFields.includes(prompt.name))
 
         return inquirer.prompt(prompts, {
-            token: this.token,
+            token: this.authToken,
             projectKey: this.projectKey
         })
     }
 
-    private async chooseFields():Promise<string[]> {
+    private async chooseFields(): Promise<string[]> {
         const responses = await inquirer.prompt([{
             name: 'whichFields',
             type: 'checkbox',
@@ -44,7 +44,7 @@ export default abstract class UpdateCommand<ResourceType> extends Base {
                 }
             })
         }], {
-            token: this.token,
+            token: this.authToken,
             projectKey: this.projectKey
         })
 

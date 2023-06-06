@@ -24,7 +24,7 @@ export default class UpdateVariable extends UpdateCommand<CreateVariableParams> 
     public async run(): Promise<void> {
         await this.requireProject()
         const { variable } = await inquirer.prompt([variablePrompt], {
-            token: this.token,
+            token: this.authToken,
             projectKey: this.projectKey
         })
 
@@ -35,7 +35,7 @@ export default class UpdateVariable extends UpdateCommand<CreateVariableParams> 
 
         const params = await this.populateParameters(CreateVariableParams)
         const result = await updateVariable(
-            this.token,
+            this.authToken,
             this.projectKey,
             variable.key,
             params

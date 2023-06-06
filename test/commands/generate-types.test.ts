@@ -2,8 +2,7 @@ import { expect, test } from '@oclif/test'
 import { AUTH_URL, BASE_URL } from '../../src/api/common'
 import * as fs from 'fs'
 
-const mockVariablesResponse =
-[
+const mockVariablesResponse = [
     {
         'name': 'enum-var',
         'key': 'enum-var',
@@ -52,8 +51,7 @@ const artifactsDir = './test/artifacts/'
 const jsOutputDir = artifactsDir + 'generate/js'
 const reactOutputDir = artifactsDir + 'generate/react'
 
-const expectedTypesString =
-`type DVCJSON = { [key: string]: string | boolean | number }
+const expectedTypesString = `type DVCJSON = { [key: string]: string | boolean | number }
 
 export type DVCVariableTypes = {
     'enum-var': 'Hello' | 'Hey' | 'Hi'
@@ -64,8 +62,7 @@ export type DVCVariableTypes = {
     'json-var': DVCJSON
 }`
 
-const expectedReactTypesString =
-`import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
+const expectedReactTypesString = `import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
 import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue
@@ -127,7 +124,7 @@ describe('generate types', () => {
             'generate:types',
             '--output-dir', jsOutputDir,
             '--client-id', 'client',
-            '--client-secret','secret',
+            '--client-secret', 'secret',
             '--project', 'project'
         ])
         .it('correctly generates JS SDK types', (ctx) => {
@@ -159,7 +156,7 @@ describe('generate types', () => {
             '--react',
             '--output-dir', reactOutputDir,
             '--client-id', 'client',
-            '--client-secret','secret',
+            '--client-secret', 'secret',
             '--project', 'project'
         ])
         .it('correctly generates React SDK types', (ctx) => {

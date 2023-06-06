@@ -39,13 +39,13 @@ export default class AddAlias extends Base {
         ]
 
         const answers = await inquirer.prompt(prompts, {
-            token: this.token,
+            token: this.authToken,
             projectKey: this.projectKey,
             alias: flags.alias,
             variable: flags.variable,
         })
 
-        const aliases:Record<string, string> = this.repoConfig?.codeInsights?.variableAliases || {}
+        const aliases: Record<string, string> = this.repoConfig?.codeInsights?.variableAliases || {}
         if (aliases[answers.alias] === answers.variable) {
             throw (new Error(`The alias ${answers.alias} already refers to the variable ${answers.variable}`))
         } else if (aliases[answers.alias]) {

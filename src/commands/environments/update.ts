@@ -24,7 +24,7 @@ export default class UpdateEnvironment extends UpdateCommand<CreateEnvironmentPa
     public async run(): Promise<void> {
         await this.requireProject()
         const { environment } = await inquirer.prompt([environmentPrompt], {
-            token: this.token,
+            token: this.authToken,
             projectKey: this.projectKey
         })
 
@@ -35,7 +35,7 @@ export default class UpdateEnvironment extends UpdateCommand<CreateEnvironmentPa
 
         const params = await this.populateParameters(CreateEnvironmentParams)
         const result = await updateEnvironment(
-            this.token,
+            this.authToken,
             this.projectKey,
             environment.key,
             params

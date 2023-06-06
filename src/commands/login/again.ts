@@ -15,6 +15,6 @@ export default class LoginAgain extends AuthCommand {
         if (!organization) {
             throw (new Error('No saved authorization choices to use'))
         }
-        this.token = await this.selectOrganization(organization)
+        this.authToken = await this.selectOrganization(organization)
     }
 }

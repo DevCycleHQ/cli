@@ -17,8 +17,8 @@ export default class InitRepo extends AuthCommand {
         this.repoConfig = await this.updateRepoConfig({})
 
         const ssoAuth = new SSOAuth(this.writer)
-        this.token = await ssoAuth.getAccessToken()
-        storeAccessToken(this.token, this.authPath)
+        this.authToken = await ssoAuth.getAccessToken()
+        storeAccessToken(this.authToken, this.authPath)
 
         await this.setOrganizationAndProject()
     }

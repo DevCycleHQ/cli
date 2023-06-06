@@ -16,8 +16,9 @@ USAGE
     mobile|client|server]
 
 FLAGS
-  --env=<value>                  Environment to fetch a key for
-  --type=(mobile|client|server)  The type of SDK key to retrieve
+  --env=<value>    Environment to fetch a key for
+  --type=<option>  The type of SDK key to retrieve
+                   <options: mobile|client|server>
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

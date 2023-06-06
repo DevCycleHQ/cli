@@ -10,7 +10,7 @@ export default class CreateProject extends CreateCommand<CreateProjectParams> {
 
     public async run(): Promise<void> {
         const params = await this.populateParameters(CreateProjectParams, false)
-        const result = await createProject(this.token, params)
+        const result = await createProject(this.authToken, params)
         this.writer.showResults(result)
     }
 }

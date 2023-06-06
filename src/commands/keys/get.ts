@@ -16,7 +16,7 @@ export default class GetEnvironmentKey extends Base {
         'env': Flags.string({
             description: 'Environment to fetch a key for',
         }),
-        'type': Flags.enum({
+        'type': Flags.string({
             options: ['mobile', 'client', 'server'],
             description: 'The type of SDK key to retrieve',
         })
@@ -33,7 +33,7 @@ export default class GetEnvironmentKey extends Base {
 
         const environmentKey = await this.getEnvironmentKey()
         const environment = await fetchEnvironmentByKey(
-            this.token,
+            this.authToken,
             this.projectKey,
             environmentKey
         )
@@ -60,12 +60,12 @@ export default class GetEnvironmentKey extends Base {
         }
         const responses = await inquirer.prompt([environmentPrompt],
             {
-                token: this.token,
+                token: this.authToken,
                 projectKey: this.projectKey
             })
         return responses._environment
     }
-    
+
     private async getSdkType(): Promise<string> {
         const { flags } = await this.parse(GetEnvironmentKey)
         if (flags.type) {
@@ -73,7 +73,7 @@ export default class GetEnvironmentKey extends Base {
         }
         const responses = await inquirer.prompt([sdkTypePrompt],
             {
-                token: this.token,
+                token: this.authToken,
                 projectKey: this.projectKey
             })
         return responses.sdkType
