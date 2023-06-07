@@ -1,4 +1,4 @@
-import { IsIn, IsNotEmpty, IsString } from 'class-validator'
+import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import apiClient from './apiClient'
 export class Variable {
     _feature?: string
@@ -29,15 +29,16 @@ export class CreateVariableParams {
     name: string
 
     @IsString()
+    @IsOptional()
     description: string
 
     @IsNotEmpty()
     @IsString()
     key: string
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
-    _feature: string
+    feature: string
 
     @IsString()
     @IsIn(variableTypes)
@@ -47,10 +48,17 @@ export class CreateVariableParams {
 export const createVariable = async (
     token: string,
     project_id: string,
-    params: CreateVariableParams
+    params: Partial<CreateVariableParams>
 ): Promise<Variable> => {
+    const data = {
+        name: params.name,
+        description: params.description,
+        key: params.key,
+        _feature: params.feature,
+        type: params.type,
+    }
     const url = `/v1/projects/${project_id}/variables`
-    const response = await apiClient.post(url, params, {
+    const response = await apiClient.post(url, data, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
@@ -66,9 +74,16 @@ export const updateVariable = async (
     variableKey: string,
     params: Partial<CreateVariableParams>
 ): Promise<Variable> => {
+    const data = {
+        name: params?.name,
+        description: params?.description,
+        key: params?.key,
+        _feature: params?.feature,
+        type: params?.type,
+    }
     const url = `/v1/projects/${project_id}/variables/${variableKey}`
     const response = await apiClient.patch(url,
-        params,
+        data,
         {
             headers: {
                 'Content-Type': 'application/json',
