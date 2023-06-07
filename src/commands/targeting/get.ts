@@ -36,11 +36,11 @@ export default class DetailedTargeting extends Base {
         const environment = flags.env
 
         if (flags.headless && !feature) {
-            throw new Error('In headless mode, the feature is required')
+            this.writer.showError('In headless mode, the feature is required')
         }
 
         if (feature) {
-            responses = { _feature: feature }
+            responses = { feature }
         } else {
             responses = await inquirer.prompt(
                 [featurePrompt],
@@ -55,12 +55,12 @@ export default class DetailedTargeting extends Base {
             const targetingForFeatureAndEnv = await fetchTargetingForFeature(
                 this.authToken,
                 this.projectKey,
-                responses._feature,
+                responses.feature,
                 environment
             )
             return this.writer.showResults(targetingForFeatureAndEnv)
         }
-        const targetingForFeature = await fetchTargetingForFeature(this.authToken, this.projectKey, responses._feature)
+        const targetingForFeature = await fetchTargetingForFeature(this.authToken, this.projectKey, responses.feature)
         return this.writer.showResults(targetingForFeature)
     }
 }

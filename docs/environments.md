@@ -19,9 +19,9 @@ USAGE
     [--description <value>] [--type development|staging|production|disaster_recovery]
 
 FLAGS
-  --description=<value>  Description for display in the dashboard.
-  --key=<value>          Unique ID to refer to the environment.
-  --name=<value>         Human readable name of the environment.
+  --description=<value>  Description for the dashboard
+  --key=<value>          Unique ID
+  --name=<value>         Human readable name
   --type=<option>        The type of environment
                          <options: development|staging|production|disaster_recovery>
 
