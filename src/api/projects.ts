@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import apiClient from './apiClient'
 
 export type Project = {
@@ -14,6 +14,7 @@ export class CreateProjectParams {
     name: string
 
     @IsString()
+    @IsOptional()
     description: string
 
     @IsNotEmpty()
