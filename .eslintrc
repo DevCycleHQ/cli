@@ -31,7 +31,8 @@
         "allowDestructuring": true,
         "allowedNames": ["engine"]
       }
-    ]
+    ],
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   "ignorePatterns": ["dist"]
 

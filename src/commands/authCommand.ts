@@ -2,12 +2,13 @@ import 'reflect-metadata'
 
 import { Flags } from '@oclif/core'
 import { fetchOrganizations, Organization } from '../api/organizations'
-import { fetchProjects, Project } from '../api/projects'
+import { fetchProjects } from '../api/projects'
 import SSOAuth from '../api/ssoAuth'
 import { storeAccessToken } from '../auth/config'
 import { promptForOrganization } from '../ui/promptForOrganization'
 import { promptForProject } from '../ui/promptForProject'
 import Base from './base'
+import { Project } from '../api/schemas'
 export default abstract class AuthCommand extends Base {
     static flags = {
         ...Base.flags,

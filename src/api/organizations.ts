@@ -1,4 +1,4 @@
-import apiClient from './apiClient'
+import { axiosClient } from './apiClient'
 
 export type Organization = {
     id: string
@@ -7,8 +7,7 @@ export type Organization = {
 }
 
 export const fetchOrganizations = async (token: string): Promise<Organization[]> => {
-    const url = '/v1/organizations'
-    const response = await apiClient.get(url, {
+    const response = await axiosClient.get('/v1/organizations', { // TODO why does swagger not have /v1/organizations?
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,

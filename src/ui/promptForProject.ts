@@ -1,5 +1,5 @@
 import inquirer from 'inquirer'
-import { Project } from '../api/projects'
+import { Project } from '../api/schemas'
 
 export async function promptForProject(projects: Project[]): Promise<Project> {
     const projectOptions = projects.map((project) => {
