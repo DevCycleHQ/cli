@@ -26,7 +26,7 @@ export default abstract class CreateCommand<ResourceType> extends Base {
 
     private async populateParametersWithInquirer() {
         return await inquirer.prompt(this.prompts, {
-            token: this.token,
+            token: this.authToken,
             projectKey: this.projectKey,
         })
     }

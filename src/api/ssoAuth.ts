@@ -2,12 +2,12 @@ import crypto, { createHash } from 'crypto'
 import http, { IncomingMessage, ServerResponse } from 'http'
 import url, { URL } from 'url'
 
-import { cli } from 'cli-ux'
+import open from 'open'
 import axios from 'axios'
 import { Organization } from './organizations'
 import Writer from '../ui/writer'
 
-const CLI_CLIENT_ID='Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
+const CLI_CLIENT_ID = 'Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
 
 type OauthResponse = {
     data: {
@@ -18,7 +18,7 @@ const SUPPORTED_PORTS = [
     80,
     8080,
     2194,
-    2195, 
+    2195,
     2196
 ]
 const PORT = Number.parseInt(process.env.PORT || '2194')
@@ -33,25 +33,25 @@ type OauthParams = {
 }
 
 export default class SSOAuth {
-    private organization: Organization|null
+    private organization: Organization | null
     private server: http.Server
     private done: boolean
     private codeVerifier: string
-    private accessToken: string|null|undefined
-    private writer:Writer
+    private accessToken: string | null | undefined
+    private writer: Writer
 
-    constructor(writer:Writer) {
+    constructor(writer: Writer) {
         this.writer = writer
     }
 
-    public async getAccessToken(organization:Organization|null = null): Promise<string> {
+    public async getAccessToken(organization: Organization | null = null): Promise<string> {
         this.organization = organization
         this.startLocalServer()
         await this.waitForServerClosed()
         return this.waitForToken()
     }
 
-    private async waitForServerClosed():Promise<void> {
+    private async waitForServerClosed(): Promise<void> {
         if (this.done) {
             return
         } else {
@@ -60,7 +60,7 @@ export default class SSOAuth {
         }
     }
 
-    private async waitForToken():Promise<string> {
+    private async waitForToken(): Promise<string> {
         if (this.accessToken) {
             return this.accessToken
         } else {
@@ -80,14 +80,14 @@ export default class SSOAuth {
         const authorizeUrl = this.buildAuthorizeUrl()
 
         this.server = http.createServer(this.handleAuthRedirect.bind(this))
-        this.server.on('error', function(e) {
+        this.server.on('error', (e) => {
             console.error(`Local server error ${e}`)
         })
         // prevents keep-alive connections from keeping the server running after close()
-        this.server.on('connection', function(socket) { socket.unref() })
+        this.server.on('connection', (socket) => { socket.unref() })
         this.server.listen(PORT, host, () => {
             this.writer.statusMessage('Opening browser for authentication...')
-            cli.open(authorizeUrl)
+            open(authorizeUrl)
         })
         this.server.on('close', this.handleServerClosed.bind(this))
     }
@@ -123,7 +123,7 @@ export default class SSOAuth {
     private async retrieveAccessToken(code: string) {
         const authHost = 'auth.devcycle.com'
         const host = 'localhost'
-        const data:OauthParams = {
+        const data: OauthParams = {
             grant_type: 'authorization_code',
             client_id: CLI_CLIENT_ID,
             code_verifier: this.codeVerifier,
@@ -134,7 +134,7 @@ export default class SSOAuth {
 
         const authUrl = `https://${authHost}/oauth/token`
         const response = await axios.post<OauthParams, OauthResponse>(authUrl, data)
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error)
             })
 
@@ -176,7 +176,7 @@ export default class SSOAuth {
         return buffer.toString('base64url')
     }
 
-    private resultHtml(resultMessage:string) {
+    private resultHtml(resultMessage: string) {
         return `
 <html><body align='center'>
 <p>${resultMessage}. You may close this browser window.</p>

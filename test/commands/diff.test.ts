@@ -331,7 +331,7 @@ describe('diff', () => {
                 access_token: 'token'
             })
         })
-        .nock(BASE_URL, { reqheaders: { authorization: 'token' } },(api) => {
+        .nock(BASE_URL, { reqheaders: { authorization: 'token' } }, (api) => {
             api.get(/v1\/projects\/project\/variables\/.*/)
                 .times(4)
                 .reply(200, (uri) => {

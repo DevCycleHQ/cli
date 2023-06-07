@@ -1,5 +1,5 @@
 import { executeDiff } from '../../utils/diff/diff'
-import { Flags } from '@oclif/core'
+import { Flags, Args } from '@oclif/core'
 import * as emoji from 'node-emoji'
 import { uniqBy } from 'lodash'
 import { executeFileDiff } from '../../utils/diff/fileDiff'
@@ -71,9 +71,12 @@ export default class Diff extends Base {
         'show-regex': ShowRegexFlag
     }
 
-    static args = [
-        { name: 'diff-pattern', description: 'A "git diff"-compatible diff pattern, eg. "branch1 branch2"' },
-    ]
+    static args = {
+        'diff-pattern': Args.string({
+            name: 'diff-pattern',
+            description: 'A "git diff"-compatible diff pattern, eg. "branch1 branch2"'
+        }),
+    }
 
     useMarkdown = false
     useHTML = false
@@ -88,7 +91,8 @@ export default class Diff extends Base {
         this.useMarkdown = flags.format.includes('markdown')
         this.useHTML = flags.format === 'markdown'
 
-        const parsedDiff = flags.file ? executeFileDiff(flags.file) : executeDiff(args['diff-pattern'])
+        const parsedDiff = flags.file ? executeFileDiff(flags.file) :
+            args['diff-pattern'] ? executeDiff(args['diff-pattern']) : []
 
         const matchesBySdk = parseFiles(parsedDiff, {
             clientNames: getClientNames(flags, this.repoConfig),
@@ -159,7 +163,7 @@ export default class Diff extends Base {
             const variablesByKey: Record<string, Variable | null> = {}
 
             if (this.useApi()) {
-                const token = this.token
+                const token = this.authToken
                 const projectKey = this.projectKey
                 await Promise.all(keys.map(async (key: string) => {
                     variablesByKey[key] = await fetchVariableByKey(token, projectKey, key)
@@ -275,8 +279,8 @@ export default class Diff extends Base {
 
         Object.entries({ ...matchesByTypeEnriched.addUnknown, ...matchesByTypeEnriched.removeUnknown })
             .forEach(([variableName], idx) => {
-                this.log(`  ${offset + idx + 1}. Variable "${
-                    variableName}" could not be identified. Try adding an alias.`)
+                this.log(`  ${offset + idx + 1}. ` +
+                    `Variable "${variableName}" could not be identified. Try adding an alias.`)
             })
     }
 
@@ -302,9 +306,8 @@ export default class Diff extends Base {
 
             const formattedName = this.useMarkdown ? `**${variableName}**` : variableName
 
-            this.log(`  ${idx + 1}. ${formattedName}${
-                hasNotice ? ` ${EMOJI.notice}` : ''}${
-                hasCleanup ? ` ${EMOJI.cleanup}` : ''}`)
+            this.log(`  ${idx + 1}. ${formattedName}` +
+                `${hasNotice ? ` ${EMOJI.notice}` : ''}${hasCleanup ? ` ${EMOJI.cleanup}` : ''}`)
 
             if (enriched.variable?.type) {
                 this.log(`\t   Type: ${enriched.variable.type}`)

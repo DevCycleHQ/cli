@@ -15,7 +15,7 @@ export default class SelectProject extends AuthCommand {
         if (flags.org) {
             await this.setOrganization()
         }
-        const projects = await fetchProjects(this.token)
+        const projects = await fetchProjects(this.authToken)
         if (flags.headless && !flags.project) {
             return this.writer.showResults(projects.map((project) => project.key))
         }

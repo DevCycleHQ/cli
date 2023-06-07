@@ -51,7 +51,7 @@ export default abstract class Base extends Command {
             description: 'Disable all interactive flows and format output for easy parsing.',
             helpGroup: 'Global'
         }),
-        'caller': Flags.enum({
+        'caller': Flags.string({
             description: 'The integration that is calling the CLI.',
             helpGroup: 'Global',
             options: [
@@ -65,7 +65,7 @@ export default abstract class Base extends Command {
         }),
     }
 
-    token = ''
+    authToken = ''
     projectKey = ''
     authPath = path.join(this.config.configDir, 'auth.yml')
     configPath = path.join(this.config.configDir, 'user.yml')
@@ -87,7 +87,7 @@ export default abstract class Base extends Command {
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
 
-        this.token = await getToken(this.authPath, flags)
+        this.authToken = await getToken(this.authPath, flags)
         if (!this.hasToken()) {
             if (this.authRequired) {
                 throw new Error('Authorization is required to use this command.')
@@ -208,7 +208,7 @@ export default abstract class Base extends Command {
         if (this.projectKey !== '') {
             return
         }
-        const projects = await fetchProjects(this.token)
+        const projects = await fetchProjects(this.authToken)
         const project = await promptForProject(projects)
         this.projectKey = project.key
         const { shouldSave } = await inquirer.prompt([{
@@ -222,6 +222,6 @@ export default abstract class Base extends Command {
     }
 
     hasToken(): boolean {
-        return this.token !== ''
+        return this.authToken !== ''
     }
 }
