@@ -23,7 +23,7 @@ export default class DetailedFeatures extends Base {
 
         await this.requireProject()
 
-        let features = await fetchFeatures(this.token, this.projectKey)
+        let features = await fetchFeatures(this.authToken, this.projectKey)
         if (keys) {
             features = features.filter((feature) => keys.includes(feature.key))
         }

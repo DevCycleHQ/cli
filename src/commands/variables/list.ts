@@ -7,7 +7,7 @@ export default class ListVariables extends Base {
 
     public async run(): Promise<void> {
         await this.requireProject()
-        const variables = await fetchVariables(this.token, this.projectKey)
+        const variables = await fetchVariables(this.authToken, this.projectKey)
         const variableKeys = variables.map((variable) => variable.key)
         this.writer.showResults(variableKeys)
     }

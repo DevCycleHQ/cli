@@ -7,7 +7,7 @@ export default class ListEnvironments extends Base {
 
     public async run(): Promise<void> {
         await this.requireProject()
-        const environments = await fetchEnvironments(this.token, this.projectKey)
+        const environments = await fetchEnvironments(this.authToken, this.projectKey)
         const environmentKeys = environments.map((environment) => environment.key)
         this.writer.showResults(environmentKeys)
     }

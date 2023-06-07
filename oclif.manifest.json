@@ -71,7 +71,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -89,7 +88,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "base": {
       "id": "base",
@@ -161,7 +160,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -173,7 +171,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "createCommand": {
       "id": "createCommand",
@@ -245,7 +243,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -257,7 +254,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "updateCommand": {
       "id": "updateCommand",
@@ -329,7 +326,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -341,7 +337,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "wink": {
       "id": "wink",
@@ -352,7 +348,7 @@
       "hidden": true,
       "aliases": [],
       "flags": {},
-      "args": []
+      "args": {}
     },
     "alias:add": {
       "id": "alias:add",
@@ -429,7 +425,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -453,7 +448,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "cleanup": {
       "id": "cleanup",
@@ -531,7 +526,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -553,7 +547,12 @@
           "type": "option",
           "description": "The type of the value that will be replacing the variable. Valid values include: String, Boolean, Number, JSON",
           "multiple": false,
-          "options": ["String", "Boolean", "Number", "JSON"]
+          "options": [
+            "String",
+            "Boolean",
+            "Number",
+            "JSON"
+          ]
         },
         "include": {
           "name": "include",
@@ -572,7 +571,10 @@
           "type": "option",
           "description": "Where the refactored code will be output. By default it overwrites the source file.",
           "multiple": false,
-          "options": ["console", "file"],
+          "options": [
+            "console",
+            "file"
+          ],
           "default": "file"
         },
         "var-alias": {
@@ -582,7 +584,12 @@
           "multiple": true
         }
       },
-      "args": [{ "name": "key", "description": "Key of variable to replace." }]
+      "args": {
+        "key": {
+          "name": "key",
+          "description": "Key of variable to replace."
+        }
+      }
     },
     "diff": {
       "id": "diff",
@@ -659,7 +666,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -707,7 +713,11 @@
           "type": "option",
           "description": "Format to use when outputting the diff results.",
           "multiple": false,
-          "options": ["console", "markdown", "markdown-no-html"],
+          "options": [
+            "console",
+            "markdown",
+            "markdown-no-html"
+          ],
           "default": "console"
         },
         "show-regex": {
@@ -717,12 +727,12 @@
           "allowNo": false
         }
       },
-      "args": [
-        {
+      "args": {
+        "diff-pattern": {
           "name": "diff-pattern",
           "description": "A \"git diff\"-compatible diff pattern, eg. \"branch1 branch2\""
         }
-      ]
+      }
     },
     "environments:create": {
       "id": "environments:create",
@@ -795,7 +805,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -807,7 +816,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "environments:get": {
       "id": "environments:get",
@@ -884,7 +893,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -902,7 +910,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "environments:list": {
       "id": "environments:list",
@@ -974,7 +982,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -986,7 +993,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "environments:update": {
       "id": "environments:update",
@@ -1059,7 +1066,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1071,7 +1077,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "features:get": {
       "id": "features:get",
@@ -1148,7 +1154,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1166,7 +1171,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "features:list": {
       "id": "features:list",
@@ -1238,7 +1243,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1250,7 +1254,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "generate:types": {
       "id": "generate:types",
@@ -1323,7 +1327,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1348,7 +1351,7 @@
           "allowNo": false
         }
       },
-      "args": []
+      "args": {}
     },
     "keys:get": {
       "id": "keys:get",
@@ -1425,7 +1428,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1446,12 +1448,15 @@
           "name": "type",
           "type": "option",
           "description": "The type of SDK key to retrieve",
-          "helpValue": "(mobile|client|server)",
           "multiple": false,
-          "options": ["mobile", "client", "server"]
+          "options": [
+            "mobile",
+            "client",
+            "server"
+          ]
         }
       },
-      "args": []
+      "args": {}
     },
     "login:again": {
       "id": "login:again",
@@ -1462,7 +1467,9 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
-      "examples": ["<%= config.bin %> <%= command.id %>"],
+      "examples": [
+        "<%= config.bin %> <%= command.id %>"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -1525,7 +1532,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1543,7 +1549,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "login:sso": {
       "id": "login:sso",
@@ -1617,7 +1623,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1635,7 +1640,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "logout": {
       "id": "logout",
@@ -1709,7 +1714,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1721,7 +1725,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "org": {
       "id": "org",
@@ -1794,7 +1798,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1812,7 +1815,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "projects:create": {
       "id": "projects:create",
@@ -1885,7 +1888,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1897,7 +1899,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "projects:list": {
       "id": "projects:list",
@@ -1970,7 +1972,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -1982,7 +1983,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "projects:select": {
       "id": "projects:select",
@@ -2055,7 +2056,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2073,7 +2073,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "repo:init": {
       "id": "repo:init",
@@ -2147,7 +2147,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2165,7 +2164,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "status": {
       "id": "status",
@@ -2238,7 +2237,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2250,7 +2248,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "usages": {
       "id": "usages",
@@ -2327,7 +2325,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2373,7 +2370,10 @@
           "type": "option",
           "description": "Format to use when outputting the usage results.",
           "multiple": false,
-          "options": ["console", "json"],
+          "options": [
+            "console",
+            "json"
+          ],
           "default": "console"
         },
         "show-regex": {
@@ -2383,7 +2383,7 @@
           "allowNo": false
         }
       },
-      "args": []
+      "args": {}
     },
     "variables:create": {
       "id": "variables:create",
@@ -2456,7 +2456,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2468,7 +2467,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "variables:get": {
       "id": "variables:get",
@@ -2540,7 +2539,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2558,7 +2556,7 @@
           "multiple": false
         }
       },
-      "args": []
+      "args": {}
     },
     "variables:list": {
       "id": "variables:list",
@@ -2630,7 +2628,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2642,7 +2639,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "variables:update": {
       "id": "variables:update",
@@ -2715,7 +2712,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2727,7 +2723,7 @@
           ]
         }
       },
-      "args": []
+      "args": {}
     },
     "variations:get": {
       "id": "variations:get",
@@ -2799,7 +2795,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2811,7 +2806,12 @@
           ]
         }
       },
-      "args": [{ "name": "feature", "description": "Feature key or id" }]
+      "args": {
+        "feature": {
+          "name": "feature",
+          "description": "Feature key or id"
+        }
+      }
     },
     "variations:list": {
       "id": "variations:list",
@@ -2883,7 +2883,6 @@
           "type": "option",
           "description": "The integration that is calling the CLI.",
           "hidden": true,
-          "helpValue": "(github.pr_insights|github.code_usages|bitbucket.pr_insights|bitbucket.code_usages|cli)",
           "helpGroup": "Global",
           "multiple": false,
           "options": [
@@ -2895,7 +2894,12 @@
           ]
         }
       },
-      "args": [{ "name": "feature", "description": "Feature key or id" }]
+      "args": {
+        "feature": {
+          "name": "feature",
+          "description": "Feature key or id"
+        }
+      }
     }
   }
 }

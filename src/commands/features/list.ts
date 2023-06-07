@@ -7,7 +7,7 @@ export default class ListFeatures extends Base {
 
     public async run(): Promise<void> {
         await this.requireProject()
-        const features = await fetchFeatures(this.token, this.projectKey)
+        const features = await fetchFeatures(this.authToken, this.projectKey)
         const featureKeys = features.map((feature) => feature.key)
         this.writer.showResults(featureKeys)
     }

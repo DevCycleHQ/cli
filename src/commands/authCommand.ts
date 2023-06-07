@@ -18,17 +18,17 @@ export default abstract class AuthCommand extends Base {
 
     public async setOrganization(): Promise<void> {
         const { flags } = await this.parse(AuthCommand)
-        const organizations = await fetchOrganizations(this.token)
+        const organizations = await fetchOrganizations(this.authToken)
         if (flags.headless && !flags.org) {
             return this.writer.showResults(organizations.map((org) => org.name))
         }
         const selectedOrg = await this.retrieveOrganization(organizations)
-        this.token = await this.selectOrganization(selectedOrg)
+        this.authToken = await this.selectOrganization(selectedOrg)
     }
 
     public async setProject(): Promise<void> {
         const { flags } = await this.parse(AuthCommand)
-        const projects = await fetchProjects(this.token)
+        const projects = await fetchProjects(this.authToken)
         if (flags.headless && !flags.project) {
             return this.writer.showResults(projects.map((project) => project.key))
         }

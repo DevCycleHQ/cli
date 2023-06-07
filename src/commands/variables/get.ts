@@ -18,7 +18,7 @@ export default class DetailedVariables extends Base {
 
         await this.requireProject()
 
-        let variables = await fetchVariables(this.token, this.projectKey)
+        let variables = await fetchVariables(this.authToken, this.projectKey)
         if (keys) {
             variables = variables.filter((variable) => keys.includes(variable.key))
         }

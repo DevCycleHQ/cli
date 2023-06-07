@@ -1,5 +1,5 @@
 import minimatch from 'minimatch'
-import { Flags } from '@oclif/core'
+import { Flags, Args } from '@oclif/core'
 import chalk from 'chalk'
 import inquirer from 'inquirer'
 import { lsFiles } from '../../utils/git/ls-files'
@@ -22,12 +22,12 @@ export default class Cleanup extends Base {
         '<%= config.bin %> <%= command.id %> some-var --value "My Custom Name" --type String',
     ]
 
-    static args = [
-        {
+    static args = {
+        key: Args.string({
             name: 'key',
             description: 'Key of variable to replace.'
-        }
-    ]
+        })
+    }
 
     static flags = {
         ...Base.flags,
@@ -63,9 +63,9 @@ export default class Cleanup extends Base {
         const { flags, args } = await this.parse(Cleanup)
         const codeInsightsConfig = this.repoConfig?.codeInsights || {}
         const apiAuth =
-            this.token && this.projectKey
+            this.authToken && this.projectKey
                 ? {
-                    token: this.token,
+                    token: this.authToken,
                     projectKey: this.projectKey,
                 }
                 : undefined

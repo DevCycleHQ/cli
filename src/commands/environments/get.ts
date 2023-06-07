@@ -30,18 +30,18 @@ export default class DetailedEnvironments extends Base {
         }
 
         if (keys) {
-            let environments = await fetchEnvironments(this.token, this.projectKey)
+            let environments = await fetchEnvironments(this.authToken, this.projectKey)
             environments = environments.filter((environment) => keys.includes(environment.key))
             this.writer.showResults(environments)
         } else {
             const responses = await inquirer.prompt(
                 [environmentPrompt],
                 {
-                    token: this.token,
+                    token: this.authToken,
                     projectKey: this.projectKey
                 }
             )
-            const environment = await fetchEnvironmentByKey(this.token, this.projectKey, responses._environment)   
+            const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, responses._environment)
             this.writer.showResults(environment)
         }
     }
