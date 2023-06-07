@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
-import inquirer from 'inquirer'
 import {
     createEnvironment,
+    CreateEnvironmentParams,
     environmentTypes
 } from '../../api/environments'
 import {
@@ -10,9 +10,9 @@ import {
     namePrompt,
     environmentTypePrompt
 } from '../../ui/prompts'
-import Base from '../base'
+import CreateCommand from '../createCommand'
 
-export default class CreateEnvironment extends Base {
+export default class CreateEnvironment extends CreateCommand<CreateEnvironmentParams> {
     static hidden = false
     static description = 'Create a new Environment for an existing Feature.'
 
@@ -23,16 +23,7 @@ export default class CreateEnvironment extends Base {
         environmentTypePrompt,
     ]
     static flags = {
-        ...Base.flags,
-        'key': Flags.string({
-            description: 'Unique ID to refer to the environment.'
-        }),
-        'name': Flags.string({
-            description: 'Human readable name of the environment.',
-        }),
-        'description': Flags.string({
-            description: 'Description for display in the dashboard.',
-        }),
+        ...CreateCommand.flags,
         'type': Flags.string({
             description: 'The type of environment',
             options: environmentTypes
@@ -42,63 +33,24 @@ export default class CreateEnvironment extends Base {
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateEnvironment)
 
+        const { key, name, type, description, headless } = flags
+
         await this.requireProject()
-        if (flags.headless && (!flags.type || !flags.key || !flags.name)) {
-            this.writer.showError('In headless mode, the environment, key, and name flags are required')
+        if (headless && (!type || !key || !name)) {
+            this.writer.showError('In headless mode, the type, key, and name flags are required')
             return
         }
-        const key = await this.getKey()
-        const name = await this.getName()
-        const type = await this.getEnv()
-        const description = await this.getDescription()
 
-        const result = await createEnvironment(this.authToken, this.projectKey, {
+        const params = await this.populateParameters(CreateEnvironmentParams, false, {
             key,
             name,
             description,
-            type
-        }
-        )
+            type,
+            headless
+        })
+
+        const result = await createEnvironment(this.authToken, this.projectKey, params)
         this.writer.showResults(result)
-    }
-    private async getKey(): Promise<string> {
-        const { flags } = await this.parse(CreateEnvironment)
-        if (flags.key) {
-            return flags.key
-        }
-        const responses = await inquirer.prompt([keyPrompt])
-        return responses.key
-    }
-    private async getName(): Promise<string> {
-        const { flags } = await this.parse(CreateEnvironment)
-        if (flags.name) {
-            return flags.name
-        }
-        const responses = await inquirer.prompt([namePrompt])
-        return responses.name
-    }
-    private async getEnv(): Promise<string> {
-        const { flags } = await this.parse(CreateEnvironment)
-        if (flags.type) {
-            return flags.type
-        }
-        const responses = await inquirer.prompt([environmentTypePrompt],
-            {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
-        return responses.type
-    }
-    private async getDescription(): Promise<string> {
-        const { flags } = await this.parse(CreateEnvironment)
-        if (flags.description) {
-            return flags.description
-        }
-        if (flags.headless) {
-            return ''
-        }
-        const responses = await inquirer.prompt([descriptionPrompt])
-        return responses.description
     }
 
 }

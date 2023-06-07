@@ -252,6 +252,24 @@
             "bitbucket.code_usages",
             "cli"
           ]
+        },
+        "key": {
+          "name": "key",
+          "type": "option",
+          "description": "Unique ID to refer to the environment.",
+          "multiple": false
+        },
+        "name": {
+          "name": "name",
+          "type": "option",
+          "description": "Human readable name of the environment.",
+          "multiple": false
+        },
+        "description": {
+          "name": "description",
+          "type": "option",
+          "description": "Description for display in the dashboard.",
+          "multiple": false
         }
       },
       "args": {}
@@ -1897,6 +1915,24 @@
             "bitbucket.code_usages",
             "cli"
           ]
+        },
+        "key": {
+          "name": "key",
+          "type": "option",
+          "description": "Unique ID to refer to the environment.",
+          "multiple": false
+        },
+        "name": {
+          "name": "name",
+          "type": "option",
+          "description": "Human readable name of the environment.",
+          "multiple": false
+        },
+        "description": {
+          "name": "description",
+          "type": "option",
+          "description": "Description for display in the dashboard.",
+          "multiple": false
         }
       },
       "args": {}
@@ -2566,6 +2602,42 @@
             "bitbucket.code_usages",
             "cli"
           ]
+        },
+        "key": {
+          "name": "key",
+          "type": "option",
+          "description": "Unique ID to refer to the environment.",
+          "multiple": false
+        },
+        "name": {
+          "name": "name",
+          "type": "option",
+          "description": "Human readable name of the environment.",
+          "multiple": false
+        },
+        "description": {
+          "name": "description",
+          "type": "option",
+          "description": "Description for display in the dashboard.",
+          "multiple": false
+        },
+        "type": {
+          "name": "type",
+          "type": "option",
+          "description": "The type of variable",
+          "multiple": false,
+          "options": [
+            "String",
+            "Boolean",
+            "Number",
+            "JSON"
+          ]
+        },
+        "feature": {
+          "name": "feature",
+          "type": "option",
+          "description": "The key of the feature to create the variable for",
+          "multiple": false
         }
       },
       "args": {}
