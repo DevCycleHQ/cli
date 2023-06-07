@@ -21,12 +21,12 @@ export default class GetVariations extends Base {
 
         let featureKey
         if (!args.feature) {
-            const { _feature } = await inquirer.prompt([featurePrompt], {
+            const { feature } = await inquirer.prompt([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
 
-            featureKey = _feature
+            featureKey = feature
         } else {
             featureKey = args.feature
         }

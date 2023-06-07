@@ -256,19 +256,19 @@
         "key": {
           "name": "key",
           "type": "option",
-          "description": "Unique ID to refer to the environment.",
+          "description": "Unique ID",
           "multiple": false
         },
         "name": {
           "name": "name",
           "type": "option",
-          "description": "Human readable name of the environment.",
+          "description": "Human readable name",
           "multiple": false
         },
         "description": {
           "name": "description",
           "type": "option",
-          "description": "Description for display in the dashboard.",
+          "description": "Description for the dashboard",
           "multiple": false
         }
       },
@@ -836,19 +836,19 @@
         "key": {
           "name": "key",
           "type": "option",
-          "description": "Unique ID to refer to the environment.",
+          "description": "Unique ID",
           "multiple": false
         },
         "name": {
           "name": "name",
           "type": "option",
-          "description": "Human readable name of the environment.",
+          "description": "Human readable name",
           "multiple": false
         },
         "description": {
           "name": "description",
           "type": "option",
-          "description": "Description for display in the dashboard.",
+          "description": "Description for the dashboard",
           "multiple": false
         },
         "type": {
@@ -1949,19 +1949,19 @@
         "key": {
           "name": "key",
           "type": "option",
-          "description": "Unique ID to refer to the environment.",
+          "description": "Unique ID",
           "multiple": false
         },
         "name": {
           "name": "name",
           "type": "option",
-          "description": "Human readable name of the environment.",
+          "description": "Human readable name",
           "multiple": false
         },
         "description": {
           "name": "description",
           "type": "option",
-          "description": "Description for display in the dashboard.",
+          "description": "Description for the dashboard",
           "multiple": false
         }
       },
@@ -2636,19 +2636,19 @@
         "key": {
           "name": "key",
           "type": "option",
-          "description": "Unique ID to refer to the environment.",
+          "description": "Unique ID",
           "multiple": false
         },
         "name": {
           "name": "name",
           "type": "option",
-          "description": "Human readable name of the environment.",
+          "description": "Human readable name",
           "multiple": false
         },
         "description": {
           "name": "description",
           "type": "option",
-          "description": "Description for display in the dashboard.",
+          "description": "Description for the dashboard",
           "multiple": false
         },
         "type": {
