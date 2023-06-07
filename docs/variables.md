@@ -19,10 +19,10 @@ USAGE
     [--description <value>] [--type String|Boolean|Number|JSON] [--feature <value>]
 
 FLAGS
-  --description=<value>  Description for display in the dashboard.
+  --description=<value>  Description for the dashboard
   --feature=<value>      The key or id of the feature to create the variable for
-  --key=<value>          Unique ID to refer to the environment.
-  --name=<value>         Human readable name of the environment.
+  --key=<value>          Unique ID
+  --name=<value>         Human readable name
   --type=<option>        The type of variable
                          <options: String|Boolean|Number|JSON>
 

@@ -16,13 +16,13 @@ export default abstract class CreateCommand<ResourceType> extends Base {
     static flags = {
         ...Base.flags,
         'key': Flags.string({
-            description: 'Unique ID to refer to the environment.'
+            description: 'Unique ID'
         }),
         'name': Flags.string({
-            description: 'Human readable name of the environment.',
+            description: 'Human readable name',
         }),
         'description': Flags.string({
-            description: 'Description for display in the dashboard.',
+            description: 'Description for the dashboard',
         }),
     }
 

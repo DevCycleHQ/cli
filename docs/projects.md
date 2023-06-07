@@ -18,9 +18,9 @@ USAGE
     [--description <value>]
 
 FLAGS
-  --description=<value>  Description for display in the dashboard.
-  --key=<value>          Unique ID to refer to the environment.
-  --name=<value>         Human readable name of the environment.
+  --description=<value>  Description for the dashboard
+  --key=<value>          Unique ID
+  --name=<value>         Human readable name
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

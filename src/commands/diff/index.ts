@@ -85,7 +85,7 @@ export default class Diff extends Base {
         const { args, flags } = await this.parse(Diff)
 
         if (!flags.file && !args['diff-pattern']) {
-            throw new Error('Must provide a diff pattern')
+            this.writer.showError('Must provide a diff pattern')
         }
 
         this.useMarkdown = flags.format.includes('markdown')
