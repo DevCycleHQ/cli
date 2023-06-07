@@ -54,7 +54,7 @@ export const fetchTargetingForFeature = async (
     project_id: string,
     feature_key: string,
     environment_key?: string
-): Promise<TargetingRules[]> => {
+): Promise<TargetingRules> => {
     const url = `/v1/projects/${project_id}/features/${feature_key}/configurations` +
         `${environment_key ? `?environment=${environment_key}` : ''}`
     const response = await apiClient.get(url, {
@@ -64,5 +64,5 @@ export const fetchTargetingForFeature = async (
         },
     })
 
-    return response.data
+    return response.data[0]
 }
