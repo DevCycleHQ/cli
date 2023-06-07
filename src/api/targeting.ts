@@ -54,7 +54,7 @@ export const fetchTargetingForFeature = async (
     project_id: string,
     feature_key: string,
     environment_key?: string
-): Promise<TargetingRules> => {
+): Promise<TargetingRules[]> => {
     const url = `/v1/projects/${project_id}/features/${feature_key}/configurations` +
         `${environment_key ? `?environment=${environment_key}` : ''}`
     const response = await apiClient.get(url, {
@@ -64,5 +64,54 @@ export const fetchTargetingForFeature = async (
         },
     })
 
-    return response.data[0]
+    return response.data
+}
+
+export const enableTargeting = async (
+    token: string,
+    project_id: string,
+    feature_key: string,
+    environment_key: string
+): Promise<TargetingRules> => {
+    const targetingEnabledResponse = await updateTargetingStatusForFeatureAndEnvironment(
+        token,
+        project_id,
+        feature_key,
+        environment_key,
+        TargetingStatus.active
+    )
+    return targetingEnabledResponse.data
+}
+
+export const disableTargeting = async (
+    token: string,
+    project_id: string,
+    feature_key: string,
+    environment_key: string
+): Promise<TargetingRules> => {
+    const targetingDisabledResponse = await updateTargetingStatusForFeatureAndEnvironment(
+        token,
+        project_id,
+        feature_key,
+        environment_key,
+        TargetingStatus.inactive
+    )
+    return targetingDisabledResponse.data
+}
+
+const updateTargetingStatusForFeatureAndEnvironment = async (
+    token: string,
+    project_id: string,
+    feature_key: string,
+    environment_key: string,
+    status: TargetingStatus
+) => {
+    const url = `/v1/projects/${project_id}/features/${feature_key}/configurations` +
+        `?environment=${environment_key}`
+    return apiClient.patch(url, { status }, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+    })
 }

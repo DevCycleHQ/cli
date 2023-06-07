@@ -2316,6 +2316,198 @@
       },
       "args": {}
     },
+    "targeting:disable": {
+      "id": "targeting:disable",
+      "description": "Disable the Targeting for the specified Environment on a Feature",
+      "strict": true,
+      "pluginName": "@devcycle/cli",
+      "pluginAlias": "@devcycle/cli",
+      "pluginType": "core",
+      "hidden": false,
+      "aliases": [],
+      "examples": [
+        "<%= config.bin %> <%= command.id %> feature-one environment-one"
+      ],
+      "flags": {
+        "config-path": {
+          "name": "config-path",
+          "type": "option",
+          "description": "Override the default location to look for the user.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "auth-path": {
+          "name": "auth-path",
+          "type": "option",
+          "description": "Override the default location to look for an auth.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "repo-config-path": {
+          "name": "repo-config-path",
+          "type": "option",
+          "description": "Override the default location to look for the repo config.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "client-id": {
+          "name": "client-id",
+          "type": "option",
+          "description": "Client ID to use for DevCycle API Authorization",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "client-secret": {
+          "name": "client-secret",
+          "type": "option",
+          "description": "Client Secret to use for DevCycle API Authorization",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "project": {
+          "name": "project",
+          "type": "option",
+          "description": "Project key to use for the DevCycle API requests",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "no-api": {
+          "name": "no-api",
+          "type": "boolean",
+          "description": "Disable API-based enhancements for commands where authorization is optional. Suppresses warnings about missing credentials.",
+          "helpGroup": "Global",
+          "allowNo": false
+        },
+        "headless": {
+          "name": "headless",
+          "type": "boolean",
+          "description": "Disable all interactive flows and format output for easy parsing.",
+          "helpGroup": "Global",
+          "allowNo": false
+        },
+        "caller": {
+          "name": "caller",
+          "type": "option",
+          "description": "The integration that is calling the CLI.",
+          "hidden": true,
+          "helpGroup": "Global",
+          "multiple": false,
+          "options": [
+            "github.pr_insights",
+            "github.code_usages",
+            "bitbucket.pr_insights",
+            "bitbucket.code_usages",
+            "cli"
+          ]
+        }
+      },
+      "args": {
+        "feature": {
+          "name": "feature",
+          "description": "The Feature for the Targeting Rules"
+        },
+        "environment": {
+          "name": "environment",
+          "description": "The Environment where the Targeting Rules will be enabled"
+        }
+      }
+    },
+    "targeting:enable": {
+      "id": "targeting:enable",
+      "description": "Enable the Targeting for the specified Environment on a Feature",
+      "strict": true,
+      "pluginName": "@devcycle/cli",
+      "pluginAlias": "@devcycle/cli",
+      "pluginType": "core",
+      "hidden": false,
+      "aliases": [],
+      "examples": [
+        "<%= config.bin %> <%= command.id %> feature-one environment-one"
+      ],
+      "flags": {
+        "config-path": {
+          "name": "config-path",
+          "type": "option",
+          "description": "Override the default location to look for the user.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "auth-path": {
+          "name": "auth-path",
+          "type": "option",
+          "description": "Override the default location to look for an auth.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "repo-config-path": {
+          "name": "repo-config-path",
+          "type": "option",
+          "description": "Override the default location to look for the repo config.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "client-id": {
+          "name": "client-id",
+          "type": "option",
+          "description": "Client ID to use for DevCycle API Authorization",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "client-secret": {
+          "name": "client-secret",
+          "type": "option",
+          "description": "Client Secret to use for DevCycle API Authorization",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "project": {
+          "name": "project",
+          "type": "option",
+          "description": "Project key to use for the DevCycle API requests",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "no-api": {
+          "name": "no-api",
+          "type": "boolean",
+          "description": "Disable API-based enhancements for commands where authorization is optional. Suppresses warnings about missing credentials.",
+          "helpGroup": "Global",
+          "allowNo": false
+        },
+        "headless": {
+          "name": "headless",
+          "type": "boolean",
+          "description": "Disable all interactive flows and format output for easy parsing.",
+          "helpGroup": "Global",
+          "allowNo": false
+        },
+        "caller": {
+          "name": "caller",
+          "type": "option",
+          "description": "The integration that is calling the CLI.",
+          "hidden": true,
+          "helpGroup": "Global",
+          "multiple": false,
+          "options": [
+            "github.pr_insights",
+            "github.code_usages",
+            "bitbucket.pr_insights",
+            "bitbucket.code_usages",
+            "cli"
+          ]
+        }
+      },
+      "args": {
+        "feature": {
+          "name": "feature",
+          "description": "The Feature for the Targeting Rules"
+        },
+        "environment": {
+          "name": "environment",
+          "description": "The Environment where the Targeting Rules will be enabled"
+        }
+      }
+    },
     "targeting:get": {
       "id": "targeting:get",
       "description": "Retrieve Targeting for a Feature from the Management API",
@@ -2400,20 +2592,17 @@
             "bitbucket.code_usages",
             "cli"
           ]
-        },
-        "env": {
-          "name": "env",
-          "type": "option",
-          "char": "e",
-          "description": "Environment to fetch the Feature Configuration",
-          "required": false,
-          "multiple": false
         }
       },
       "args": {
         "feature": {
           "name": "feature",
           "description": "The Feature to get the Targeting Rules"
+        },
+        "environment": {
+          "name": "environment",
+          "description": "The Environment to get the Targeting Rules",
+          "required": false
         }
       }
     },

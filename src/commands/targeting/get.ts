@@ -1,4 +1,4 @@
-import { Args, Flags } from '@oclif/core'
+import { Args } from '@oclif/core'
 import inquirer from 'inquirer'
 import { fetchTargetingForFeature } from '../../api/targeting'
 import { featurePrompt } from '../../ui/prompts'
