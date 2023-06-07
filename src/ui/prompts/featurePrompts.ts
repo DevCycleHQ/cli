@@ -6,7 +6,7 @@ type FeatureChoice = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const featureChoices = async (input: Record<string, any>):Promise<FeatureChoice[]> => {
+export const featureChoices = async (input: Record<string, any>): Promise<FeatureChoice[]> => {
     const features = await fetchFeatures(input.token, input.projectKey)
     const choices = features.map((feature: Feature) => {
         return {
@@ -18,7 +18,7 @@ export const featureChoices = async (input: Record<string, any>):Promise<Feature
 }
 
 export const featurePrompt = {
-    name: '_feature',
+    name: 'feature',
     message: 'Which feature?',
     type: 'list',
     choices: featureChoices
