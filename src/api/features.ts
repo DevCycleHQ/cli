@@ -44,3 +44,18 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
     }
 
 }
+
+export const deleteFeature = async (token: string, project_id: string, key: string): Promise<string | undefined> => {
+    const url = `/v1/projects/${project_id}/features/${key}`
+
+    const response = await apiClient.delete(url, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        }
+    })
+
+    if (response) {
+        return response.data.message
+    }
+}

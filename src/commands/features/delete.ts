@@ -1,38 +1,40 @@
-import inquirer from 'inquirer'
-import { fetchVariations } from '../../api/variations'
-import { featurePrompt } from '../../ui/prompts'
-import Base from '../base'
 import { Args } from '@oclif/core'
+import { deleteFeature } from '../../api/features'
+import Base from '../base'
+import inquirer from 'inquirer'
+import { featurePrompt } from '../../ui/prompts'
 
-export default class ListVariations extends Base {
+export default class DeleteFeatures extends Base {
     static hidden = false
     authRequired = true
 
     static args = {
         feature: Args.string({
             name: 'feature',
-            description: 'Feature key or id'
+            description: 'Feature key or id to delete'
         })
     }
 
     public async run(): Promise<void> {
         await this.requireProject()
-        const { args } = await this.parse(ListVariations)
+
+        const { args } = await this.parse(DeleteFeatures)
 
         let featureKey
         if (!args.feature) {
-            const { feature } = await inquirer.prompt([featurePrompt], {
+            const { feature  } = await inquirer.prompt([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
-
             featureKey = feature
         } else {
             featureKey = args.feature
         }
 
-        const variations = await fetchVariations(this.authToken, this.projectKey, featureKey)
-        const variationKeys = variations.map((variation) => variation.key)
-        this.writer.showResults(variationKeys)
+        const response = await deleteFeature(this.authToken, this.projectKey, featureKey)
+
+        if (response) { 
+            this.writer.successMessage('Feature successfully deleted')
+        }
     }
 }
