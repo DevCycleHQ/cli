@@ -1,4 +1,4 @@
-import { Args, Flags } from '@oclif/core'
+import { Args } from '@oclif/core'
 import inquirer from 'inquirer'
 import { fetchTargetingForFeature } from '../../api/targeting'
 import { featurePrompt } from '../../ui/prompts'
@@ -11,16 +11,10 @@ export default class DetailedTargeting extends Base {
         '<%= config.bin %> <%= command.id %> feature-one',
         '<%= config.bin %> <%= command.id %> feature-one environment-one',
     ]
-    static flags = {
-        ...Base.flags,
-        'env': Flags.string({
-            char: 'e',
-            description: 'Environment to fetch the Feature Configuration',
-            required: false
-        })
-    }
+    static flags = Base.flags
     static args = {
-        feature: Args.string({ description: 'The Feature to get the Targeting Rules' })
+        feature: Args.string({ description: 'The Feature to get the Targeting Rules' }),
+        environment: Args.string({ description: 'The Environment to get the Targeting Rules', required: false })
     }
 
     authRequired = true
@@ -33,7 +27,7 @@ export default class DetailedTargeting extends Base {
         let responses
 
         const feature = args['feature']
-        const environment = flags.env
+        const environment = args['environment']
 
         if (flags.headless && !feature) {
             this.writer.showError('In headless mode, the feature is required')

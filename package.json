@@ -93,6 +93,9 @@
       "status": {
         "description": "Check CLI status"
       },
+      "targeting": {
+        "description": "Access and Modify Targeting Rules for a Feature with the Management API."
+      },
       "generate": {
         "description": "Generate Devcycle related files"
       }
