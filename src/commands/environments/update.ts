@@ -5,7 +5,6 @@ import {
 } from '../../api/environments'
 import {
     descriptionPrompt,
-    featurePrompt,
     namePrompt,
     environmentPrompt
 } from '../../ui/prompts'
@@ -17,8 +16,7 @@ export default class UpdateEnvironment extends UpdateCommand<CreateEnvironmentPa
 
     prompts = [
         namePrompt,
-        descriptionPrompt,
-        featurePrompt
+        descriptionPrompt
     ]
 
     public async run(): Promise<void> {
