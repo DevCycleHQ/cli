@@ -108,7 +108,8 @@ export const fetchVariables = async (token: string, project_id: string): Promise
 
 export const fetchAllVariables = async (token: string, project_id: string): Promise<Variable[]> => {
     const perPage = 1000
-    const url = `/v1/projects/${project_id}/variables?perPage=${perPage}&page=1`
+    const firstPage = 1
+    const url = generatePaginatedVariableUrl(project_id, firstPage, perPage)
     const response = await apiClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
@@ -121,7 +122,7 @@ export const fetchAllVariables = async (token: string, project_id: string): Prom
     const totalPages = Math.ceil(total / perPage)
     const promises = []
     for (let i = 2; i <= totalPages; i++) {
-        const url = `/v1/projects/${project_id}/variables?perPage=${perPage}&page=${i}`
+        const url = generatePaginatedVariableUrl(project_id, i, perPage)
         promises.push(apiClient.get(url, {
             headers: {
                 'Content-Type': 'application/json',
@@ -156,5 +157,8 @@ export const fetchVariableByKey = async (token: string, project_id: string, key:
         }
         throw e
     }
+}
 
+const generatePaginatedVariableUrl = (project_id: string, page: number, perPage: number): string => {
+    return `/v1/projects/${project_id}/variables?perPage=${perPage}&page=${page}&status=active`
 }
