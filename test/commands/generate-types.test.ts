@@ -116,7 +116,7 @@ describe('generate types', () => {
             })
         })
         .nock(BASE_URL, { reqheaders: { authorization: 'token' } }, (api) =>
-            api.get('/v1/projects/project/variables?perPage=1000&page=1')
+            api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
                 .reply(200, mockVariablesResponse)
         )
         .stdout()
@@ -147,7 +147,7 @@ describe('generate types', () => {
             })
         })
         .nock(BASE_URL, { reqheaders: { authorization: 'token' } }, (api) =>
-            api.get('/v1/projects/project/variables?perPage=1000&page=1')
+            api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
                 .reply(200, mockVariablesResponse)
         )
         .stdout()
