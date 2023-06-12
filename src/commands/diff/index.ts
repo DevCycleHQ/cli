@@ -7,11 +7,12 @@ import { parseFiles } from '../../utils/diff/parse'
 import { VariableDiffMatch } from '../../utils/parsers/types'
 import Base from '../base'
 import { sha256 } from 'js-sha256'
-import { fetchVariableByKey, Variable } from '../../api/variables'
+import { fetchVariableByKey } from '../../api/variables'
 import ClientNameFlag, { getClientNames } from '../../flags/client-name'
 import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
+import { Variable } from '../../api/schemas'
 
 const EMOJI = {
     add: emoji.get('large_green_circle'),

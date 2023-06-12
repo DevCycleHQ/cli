@@ -1,7 +1,8 @@
 import axios, { AxiosError } from 'axios'
 import { BASE_URL } from './common'
+import { createApiClient } from './zodClient'
 
-export const apiClient = axios.create({
+export const axiosClient = axios.create({
     baseURL: BASE_URL,
 })
 
@@ -10,15 +11,15 @@ export const setDVCReferrer = (
     version: string,
     caller = 'cli',
 ): void => {
-    apiClient.defaults.headers.common['dvc-referrer'] = 'cli'
-    apiClient.defaults.headers.common['dvc-referrer-metadata'] = JSON.stringify({
+    axiosClient.defaults.headers.common['dvc-referrer'] = 'cli'
+    axiosClient.defaults.headers.common['dvc-referrer-metadata'] = JSON.stringify({
         command,
         version,
         caller,
     })
 }
 
-apiClient.interceptors.response.use(
+axiosClient.interceptors.response.use(
     (response) => {
         return response
     },
@@ -32,4 +33,6 @@ apiClient.interceptors.response.use(
     },
 )
 
+// TODO remove validate: 'request' when the swagger docs are fixed, so that it validates the response too 
+export const apiClient = createApiClient(BASE_URL, { axiosInstance: axiosClient, validate: 'request' })
 export default apiClient

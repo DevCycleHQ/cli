@@ -1,4 +1,5 @@
-import { Feature, fetchFeatures } from '../../api/features'
+import { fetchFeatures } from '../../api/features'
+import { Feature } from '../../api/schemas'
 
 type FeatureChoice = {
     name: string,

@@ -1,7 +1,8 @@
 import Base from '../base'
 import fs from 'fs'
-import { Variable, fetchAllVariables } from '../../api/variables'
+import { fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
+import { Variable } from '../../api/schemas'
 
 const reactImports = `import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
 import {
@@ -87,7 +88,8 @@ export default class GenerateTypes extends Base {
 
     private getVariableType(variable: Variable): string {
         if (variable.validationSchema && variable.validationSchema.schemaType === 'enum') {
-            const enumValues = variable.validationSchema.enumValues
+            // TODO fix the schema so it doesn't think enumValues is an object
+            const enumValues = variable.validationSchema.enumValues as string[] | number []
             if (enumValues === undefined || enumValues.length === 0) {
                 return variable.type.toLocaleLowerCase()
             }

@@ -1,20 +1,17 @@
 import apiClient from './apiClient'
-
-export class Variation {
-    _id?: string
-    key: string
-    name: string
-    variables?: { [key: string]: string | number | boolean | Record<string, unknown> }
-}
+import { Variation } from './schemas'
 
 export const fetchVariations = async (token: string, project_id: string, feature_key: string): Promise<Variation[]> => {
-    const url = `/v1/projects/${project_id}/features/${feature_key}/variations`
-    const response = await apiClient.get(url, {
+    const response = await apiClient.get('/v1/projects/:project/features/:feature/variations', {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
         },
+        params: {
+            project: project_id,
+            feature: feature_key,
+        }
     })
 
-    return response.data
+    return response
 }

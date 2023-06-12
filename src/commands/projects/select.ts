@@ -1,4 +1,5 @@
-import { fetchProjects, Project } from '../../api/projects'
+import { fetchProjects } from '../../api/projects'
+import { Project } from '../../api/schemas'
 import { promptForProject } from '../../ui/promptForProject'
 import AuthCommand from '../authCommand'
 export default class SelectProject extends AuthCommand {

@@ -31,10 +31,7 @@ export default class DeleteFeatures extends Base {
             featureKey = args.feature
         }
 
-        const response = await deleteFeature(this.authToken, this.projectKey, featureKey)
-
-        if (response) { 
-            this.writer.successMessage('Feature successfully deleted')
-        }
+        await deleteFeature(this.authToken, this.projectKey, featureKey)
+        this.writer.successMessage('Feature successfully deleted')
     }
 }

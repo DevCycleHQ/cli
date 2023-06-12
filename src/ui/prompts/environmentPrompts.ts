@@ -1,10 +1,8 @@
 import {
-    Environment,
     environmentTypes,
     fetchEnvironments,
     sdkTypes
 } from '../../api/environments'
-
 type EnvironmentChoice = {
     name: string,
     value: string
@@ -13,7 +11,7 @@ type EnvironmentChoice = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const environmentChoices = async (input: Record<string, any>):Promise<EnvironmentChoice[]> => {
     const environments = await fetchEnvironments(input.token, input.projectKey)
-    const choices = environments.map((environment: Environment) => {
+    const choices = environments.map((environment) => {
         return {
             name: environment.name || environment.key,
             value: environment._id

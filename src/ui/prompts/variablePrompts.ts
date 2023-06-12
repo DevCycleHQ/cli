@@ -1,5 +1,5 @@
-import { fetchVariables, Variable, variableTypes } from '../../api/variables'
-
+import { Variable } from '../../api/schemas'
+import { fetchVariables, variableTypes } from '../../api/variables'
 type VariableChoice = {
     name: string,
     value: Variable
@@ -8,7 +8,7 @@ type VariableChoice = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const variableChoices = async (input: Record<string, any>):Promise<VariableChoice[]> => {
     const variables = await fetchVariables(input.token, input.projectKey)
-    const choices = variables.map((variable: Variable) => {
+    const choices = variables.map((variable) => {
         return {
             name: variable.name || variable.key,
             value: variable
