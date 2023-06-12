@@ -30,6 +30,11 @@ export default class CreateVariation extends CreateCommand<CreateVariationParams
         }),
     }
 
+    static examples = [
+        '<%= config.bin %> <%= command.id %>',
+        '<%= config.bin %> <%= command.id %> --variables=\'{ "bool-var": true, "num-var": 80, "string-var": "test" }\''
+    ]
+
     prompts = [keyPrompt, namePrompt]
 
     public async run(): Promise<void> {
@@ -80,7 +85,7 @@ export default class CreateVariation extends CreateCommand<CreateVariationParams
         const variation = {
             key: params.key,
             name: params.name,
-            variables: variables ? variables : variableAnswers
+            variables: variables ? JSON.parse(variables) : variableAnswers
         }
 
         const result = await createVariation(this.authToken, this.projectKey, featureKey, variation)
