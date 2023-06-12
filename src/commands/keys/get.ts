@@ -66,16 +66,26 @@ export default class GetEnvironmentKey extends Base {
         return responses._environment
     }
 
-    private async getSdkType(): Promise<string> {
+    private async getSdkType(): Promise<'mobile' | 'client' | 'server' | 'all'> {
         const { flags } = await this.parse(GetEnvironmentKey)
-        if (flags.type) {
-            return flags.type
+        let sdkType = flags.type
+
+        if (!sdkType) {
+            const responses = await inquirer.prompt([sdkTypePrompt],
+                {
+                    token: this.authToken,
+                    projectKey: this.projectKey
+                })
+            sdkType = responses.sdkType
         }
-        const responses = await inquirer.prompt([sdkTypePrompt],
-            {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
-        return responses.sdkType
+
+        if (sdkType && isSdkType(sdkType)) {
+            return sdkType
+        }
+        return 'all'
     }
+}
+
+const isSdkType = (sdkType: string): sdkType is 'mobile' | 'client' | 'server' | 'all' => {
+    return ['mobile', 'client', 'server', 'all'].includes(sdkType)
 }

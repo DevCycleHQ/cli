@@ -20,11 +20,14 @@
     "@babel/parser": "^7.18.9",
     "@oclif/core": "^2.8.5",
     "@oclif/plugin-help": "^5.2.9",
+    "@types/axios": "^0.14.0",
     "@types/estraverse": "^5.1.1",
     "@types/inquirer": "^8.2.0",
     "@types/js-yaml": "^4.0.5",
     "@types/validator": "^13.7.1",
-    "axios": "^0.24.0",
+    "@zodios/core": "^10.9.1",
+    "@zodios/openapi": "^10.4.7",
+    "axios": "^1.4.0",
     "chalk": "^4.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
@@ -36,9 +39,11 @@
     "minimatch": "^5.0.1",
     "node-emoji": "^1.11.0",
     "open": "^8.4.2",
+    "openapi-zod-client": "^1.7.1",
     "parse-diff": "^0.9.0",
     "recast": "^0.21.1",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@oclif/test": "^2.3.22",

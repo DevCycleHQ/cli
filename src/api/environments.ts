@@ -14,18 +14,6 @@ export const sdkTypes = [
     'server'
 ]
 
-export class Environment {
-    _id: string
-    _project?: string
-    name?: string
-    key: string
-    type: 'development' | 'staging' | 'production' | 'disaster_recovery'
-    sdkKeys: Record<string, APIKey[]>
-    description?: string
-    createdAt: Date
-    updatedAt: Date
-}
-
 export class CreateEnvironmentParams {
     @IsString()
     @IsNotEmpty()
@@ -41,12 +29,12 @@ export class CreateEnvironmentParams {
 
     @IsString()
     @IsIn(environmentTypes)
-    type: string
+    type: 'development' | 'staging' | 'production' | 'disaster_recovery'
 }
 
 export class APIKey {
     key: string
-    createdAt: Date
+    createdAt: string
     compromised: boolean
 }
 
@@ -54,15 +42,14 @@ export const createEnvironment = async (
     token: string,
     project_id: string,
     params: CreateEnvironmentParams
-): Promise<Environment> => {
-    const response = await apiClient.post(`/v1/projects/${project_id}/environments`, params, {
+) => {
+    return apiClient.post('/v1/projects/:project/environments', params, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
         },
+        params: { project: project_id }
     })
-
-    return response.data
 }
 
 export const updateEnvironment = async (
@@ -70,45 +57,49 @@ export const updateEnvironment = async (
     project_id: string,
     environmentKey: string,
     params: Partial<CreateEnvironmentParams>
-): Promise<Environment> => {
-    const url = `/v1/projects/${project_id}/environments/${environmentKey}`
-    const response = await apiClient.patch(url, params, {
+) => {
+    return apiClient.patch('/v1/projects/:project/environments/:key', params, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
         },
+        params: {
+            project: project_id,
+            key: environmentKey
+        }
     })
-
-    return response.data
 }
 
-export const fetchEnvironments = async (token: string, project_id: string): Promise<Environment[]> => {
-    const url = `/v1/projects/${project_id}/environments`
-    const response = await apiClient.get(url, {
+export const fetchEnvironments = async (token: string, project_id: string) => {
+    return apiClient.get('/v1/projects/:project/environments', {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
         },
+        params: {
+            project: project_id
+        }
     })
-
-    return response.data
 }
 
 export const fetchEnvironmentByKey = async (
     token: string,
     project_id: string,
     key: string
-): Promise<Environment | null> => {
-    const url = `/v1/projects/${project_id}/environments/${key}`
+) => {
     try {
-        const response = await apiClient.get(url, {
+        const response = await apiClient.get('/v1/projects/:project/environments/:key', {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,
             },
+            params: {
+                project: project_id,
+                key
+            }
         })
 
-        return response.data
+        return response
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         if (e.response?.status === 404) {

@@ -1,40 +1,34 @@
 import apiClient from './apiClient'
-
-export class Feature {
-    _id: string
-    _project?: string
-    name?: string
-    description?: string
-    key: string
-    type: 'release' | 'experiment' | 'permission' | 'ops'
-    tags: string[]
-    createdAt: Date
-    updatedAt: Date
-}
+import { Feature } from './schemas'
 
 export const fetchFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
-    const url = `/v1/projects/${project_id}/features`
-    const response = await apiClient.get(url, {
+    const response = await apiClient.get('/v1/projects/:project/features', {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
         },
+        params: {
+            project: project_id
+        }
     })
 
-    return response.data
+    return response
 }
 
 export const fetchFeatureByKey = async (token: string, project_id: string, key: string): Promise<Feature | null> => {
-    const url = `/v1/projects/${project_id}/features/${key}`
     try {
-        const response = await apiClient.get(url, {
+        const response = await apiClient.get('/v1/projects/:project/features/:key', {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,
             },
+            params: {
+                project: project_id,
+                key
+            }
         })
 
-        return response.data
+        return response
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         if (e.response?.status === 404) {
@@ -45,17 +39,16 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
 
 }
 
-export const deleteFeature = async (token: string, project_id: string, key: string): Promise<string | undefined> => {
-    const url = `/v1/projects/${project_id}/features/${key}`
-
-    const response = await apiClient.delete(url, {
+export const deleteFeature = async (token: string, project_id: string, key: string): Promise<void> => {
+    const url = '/v1/projects/:project/features/:key'
+    return apiClient.delete(url, undefined, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
+        },
+        params: {
+            project: project_id,
+            key
         }
     })
-
-    if (response) {
-        return response.data.message
-    }
 }

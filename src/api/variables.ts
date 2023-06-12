@@ -1,27 +1,8 @@
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator'
-import apiClient from './apiClient'
-export class Variable {
-    _feature?: string
-    type: string
-    name?: string
-    description?: string
-    key: string
-    initialDefaultValue?: string | number | boolean | Record<string, unknown>
-    createdAt: Date
-    updatedAt: Date
-    validationSchema?: ValidationSchema
-}
+import apiClient, { axiosClient } from './apiClient'
+import { Variable } from './schemas'
 
 export const variableTypes = ['String', 'Boolean', 'Number', 'JSON']
-
-type ValidationSchema = {
-    schemaType: 'enum' | 'regex' | 'jsonSchema'
-    enumValues?: string[] | number[]
-    regexPattern?: string
-    jsonSchema?: string
-    description: string
-    defaultValue: string | number | { [key: string]: string | boolean | number }
-}
 
 export class CreateVariableParams {
     @IsString()
@@ -42,14 +23,14 @@ export class CreateVariableParams {
 
     @IsString()
     @IsIn(variableTypes)
-    type: string
+    type: 'String' | 'Boolean' | 'Number' | 'JSON'
 }
 
 export const createVariable = async (
     token: string,
     project_id: string,
-    params: Partial<CreateVariableParams>
-): Promise<Variable> => {
+    params: CreateVariableParams
+) => {
     const data = {
         name: params.name,
         description: params.description,
@@ -57,15 +38,15 @@ export const createVariable = async (
         _feature: params.feature,
         type: params.type,
     }
-    const url = `/v1/projects/${project_id}/variables`
-    const response = await apiClient.post(url, data, {
+    return apiClient.post('/v1/projects/:project/variables', data, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
         },
+        params: {
+            project: project_id,
+        }
     })
-
-    return response.data
 }
 
 export const updateVariable = async (
@@ -73,7 +54,7 @@ export const updateVariable = async (
     project_id: string,
     variableKey: string,
     params: Partial<CreateVariableParams>
-): Promise<Variable> => {
+) => {
     const data = {
         name: params?.name,
         description: params?.description,
@@ -81,36 +62,38 @@ export const updateVariable = async (
         _feature: params?.feature,
         type: params?.type,
     }
-    const url = `/v1/projects/${project_id}/variables/${variableKey}`
-    const response = await apiClient.patch(url,
+    return apiClient.patch('/v1/projects/:project/variables/:key',
         data,
         {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,
             },
+            params: {
+                project: project_id,
+                key: variableKey,
+            }
         })
-
-    return response.data
 }
 
-export const fetchVariables = async (token: string, project_id: string): Promise<Variable[]> => {
-    const url = `/v1/projects/${project_id}/variables`
-    const response = await apiClient.get(url, {
+export const fetchVariables = async (token: string, project_id: string) => {
+    return await apiClient.get('/v1/projects/:project/variables', {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
         },
+        params: {
+            project: project_id,
+        }
     })
-
-    return response.data
 }
 
-export const fetchAllVariables = async (token: string, project_id: string): Promise<Variable[]> => {
+export const fetchAllVariables = async (token: string, project_id: string) => {
     const perPage = 1000
     const firstPage = 1
     const url = generatePaginatedVariableUrl(project_id, firstPage, perPage)
-    const response = await apiClient.get(url, {
+    // we have to use axiosClient instead of zodios because we need access to response headers
+    const response = await axiosClient.get(url, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
@@ -123,7 +106,7 @@ export const fetchAllVariables = async (token: string, project_id: string): Prom
     const promises = []
     for (let i = 2; i <= totalPages; i++) {
         const url = generatePaginatedVariableUrl(project_id, i, perPage)
-        promises.push(apiClient.get(url, {
+        promises.push(axiosClient.get(url, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,
@@ -139,17 +122,20 @@ export const fetchAllVariables = async (token: string, project_id: string): Prom
     return variables
 }
 
-export const fetchVariableByKey = async (token: string, project_id: string, key: string): Promise<Variable | null> => {
-    const url = `/v1/projects/${project_id}/variables/${key}`
+export const fetchVariableByKey = async (token: string, project_id: string, key: string) => {
     try {
-        const response = await apiClient.get(url, {
+        const response = await apiClient.get('/v1/projects/:project/variables/:key', {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token,
             },
+            params: {
+                project: project_id,
+                key
+            }
         })
 
-        return response.data
+        return response
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         if (e.response?.status === 404) {
