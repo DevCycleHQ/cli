@@ -1,5 +1,7 @@
 import { Variable } from '../../api/schemas'
 import { fetchVariables, variableTypes } from '../../api/variables'
+import { ListQuestion, Question } from 'inquirer'
+
 type VariableChoice = {
     name: string,
     value: Variable
@@ -36,7 +38,48 @@ export const variableTypePrompt = {
     choices: variableTypes
 }
 
-export const variableValuePrompt = {
-    name: 'value',
-    message: 'Variable value'
+export const variableValueStringPrompt = (variableKey: string): Question => {
+    return {
+        name: variableKey,
+        message: `Variable value for ${variableKey}`,
+    }
+}
+
+export const variableValueNumberPrompt = (variableKey: string): Question => {
+    return {
+        name: variableKey,
+        message: `Variable value for ${variableKey}`,
+        type: 'input',
+        filter: (input: string): number | string => {
+            if (isNaN(Number(input))) {
+                return 'NaN'
+            } else {
+                return Number(input)
+            }
+        },
+        validate: (input: string): boolean | string => {
+            if (isNaN(Number(input))) {
+                return 'Please enter a number'
+            }
+            return true
+        } 
+    }
+}
+
+export const variableValueBooleanPrompt  = (variableKey: string): ListQuestion => {
+    return {
+        name: variableKey,
+        message: `Variable value for ${variableKey}`,
+        type: 'list',
+        choices: [
+            {
+                name: 'true',
+                value: true
+            },
+            {
+                name: 'false',
+                value: false
+            }
+        ]
+    }
 }

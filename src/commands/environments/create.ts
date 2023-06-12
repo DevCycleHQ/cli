@@ -28,6 +28,9 @@ export default class CreateEnvironment extends CreateCommand<CreateEnvironmentPa
             description: 'The type of environment',
             options: environmentTypes
         }),
+        'description': Flags.string({
+            description: 'Description for the dashboard',
+        }),
     }
 
     public async run(): Promise<void> {

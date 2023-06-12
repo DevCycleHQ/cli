@@ -106,7 +106,7 @@ USAGE
 * [`dvc targeting`](docs/targeting.md) - Access and Modify Targeting Rules for a Feature with the Management API.
 * [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
 * [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API
-* [`dvc variations`](docs/variations.md)
+* [`dvc variations`](docs/variations.md) - Create a new Variation
 
 <!-- commandsstop -->
 # Repo Configuration
