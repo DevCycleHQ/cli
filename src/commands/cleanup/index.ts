@@ -8,7 +8,14 @@ import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import { EngineOptions } from '../../utils/refactor/RefactorEngine'
 import { Variable } from './types'
 import { ENGINES } from '../../utils/refactor'
-import { variablePrompt, variablePromptNoApi, variableTypePrompt, variableValuePrompt } from '../../ui/prompts'
+import {
+    variablePrompt,
+    variablePromptNoApi,
+    variableTypePrompt,
+    variableValueBooleanPrompt,
+    variableValueNumberPrompt,
+    variableValueStringPrompt
+} from '../../ui/prompts'
 
 export default class Cleanup extends Base {
     static hidden = false
@@ -93,8 +100,20 @@ export default class Cleanup extends Base {
             variable.type = input.type
         }
         if (!variable.value) {
-            const input = await inquirer.prompt([variableValuePrompt])
-            variable.value = input.value
+            let question
+            switch (variable.type) {
+                case 'Boolean':
+                    question =variableValueBooleanPrompt(variable.key)
+                    break
+                case 'Number':
+                    question = variableValueNumberPrompt(variable.key)
+                    break
+                default:
+                    question = variableValueStringPrompt(variable.key)
+            }
+
+            const input = await inquirer.prompt([question])
+            variable.value = input[variable.key]
         }
 
         const includeFile = (filepath: string) => {
