@@ -38,6 +38,11 @@ GLOBAL FLAGS
 
 DESCRIPTION
   Create a new Variation
+
+EXAMPLES
+  $ dvc variations create
+
+  $ dvc variations create --variables='{ "bool-var": true, "num-var": 80, "string-var": "test" }'
 ```
 
 ## `dvc variations get [FEATURE]`
