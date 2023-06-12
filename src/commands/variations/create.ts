@@ -5,6 +5,7 @@ import {
     keyPrompt,
     namePrompt,
     variableValueBooleanPrompt,
+    variableValueJSONPrompt,
     variableValueNumberPrompt,
     variableValueStringPrompt
 } from '../../ui/prompts'
@@ -65,21 +66,34 @@ export default class CreateVariation extends CreateCommand<CreateVariationParams
             headless
         })
 
-        let variableAnswers = {}
+        let variableAnswers: Record<string, unknown> = {}
         if (!variables) {
             const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, featureKey)
             const variablePrompts = []
             for (const variable of variablesForFeature) {
-                if (variable.type === 'Boolean') {
-                    variablePrompts.push(variableValueBooleanPrompt(variable.key))
-                } else if (variable.type === 'Number') {
-                    variablePrompts.push(variableValueNumberPrompt(variable.key))
-                } else {
-                    variablePrompts.push(variableValueStringPrompt(variable.key))
+                switch (variable.type) {
+                    case 'Boolean':
+                        variablePrompts.push(variableValueBooleanPrompt(variable.key))
+                        break
+                    case 'Number':
+                        variablePrompts.push(variableValueNumberPrompt(variable.key))
+                        break
+                    case 'JSON':
+                        variablePrompts.push(variableValueJSONPrompt(variable.key))
+                        break
+                    default:
+                        variablePrompts.push(variableValueStringPrompt(variable.key))
                 }
             }
 
             variableAnswers = await inquirer.prompt(variablePrompts, {})
+
+            for (const [key, value] of Object.entries(variableAnswers)) {
+                const variable = variablesForFeature.find((variable) => variable.key === key)
+                if (variable && variable.type === 'JSON') {
+                    variableAnswers[key] = JSON.parse(value as string)
+                }
+            }
         }
 
         const variation = {

@@ -83,3 +83,23 @@ export const variableValueBooleanPrompt  = (variableKey: string): ListQuestion =
         ]
     }
 }
+
+export const variableValueJSONPrompt  = (variableKey: string): Question => {
+    return {
+        name: variableKey,
+        message: `Variable value for ${variableKey}`,
+        type: 'input',
+        validate: (input: string): boolean | string => {
+            try {
+                const parsedInput = JSON.parse(input)
+                if (typeof parsedInput === 'object') {
+                    return true
+                } else {
+                    return 'Please enter a valid JSON object'
+                }
+            } catch (e) {
+                return 'Please enter a valid JSON object'
+            }
+        } 
+    }
+}
