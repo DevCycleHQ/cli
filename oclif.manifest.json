@@ -3208,6 +3208,10 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --variables='{ \"bool-var\": true, \"num-var\": 80, \"string-var\": \"test\" }'"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
