@@ -87,6 +87,7 @@ export default class Diff extends Base {
 
         if (!flags.file && !args['diff-pattern']) {
             this.writer.showError('Must provide a diff pattern')
+            return
         }
 
         this.useMarkdown = flags.format.includes('markdown')

@@ -31,6 +31,7 @@ export default class DetailedTargeting extends Base {
 
         if (flags.headless && !feature) {
             this.writer.showError('In headless mode, the feature is required')
+            return
         }
 
         if (feature) {
