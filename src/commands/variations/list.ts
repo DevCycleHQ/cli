@@ -7,6 +7,7 @@ import { Args } from '@oclif/core'
 export default class ListVariations extends Base {
     static hidden = false
     authRequired = true
+    static description = 'List the keys of all variations in a feature'
 
     static args = {
         feature: Args.string({

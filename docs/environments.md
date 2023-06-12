@@ -16,7 +16,7 @@ Create a new Environment for an existing Feature.
 USAGE
   $ dvc environments create [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--key <value>] [--name <value>]
-    [--description <value>] [--type development|staging|production|disaster_recovery]
+    [--type development|staging|production|disaster_recovery] [--description <value>]
 
 FLAGS
   --description=<value>  Description for the dashboard
