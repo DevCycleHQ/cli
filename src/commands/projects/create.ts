@@ -1,3 +1,4 @@
+import { Flags } from '@oclif/core'
 import { createProject, CreateProjectParams } from '../../api/projects'
 import { descriptionPrompt, keyPrompt, namePrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
@@ -7,6 +8,13 @@ export default class CreateProject extends CreateCommand<CreateProjectParams> {
     static description = 'Create a new Project'
 
     prompts = [keyPrompt, namePrompt, descriptionPrompt]
+
+    static flags = {
+        ...CreateCommand.flags,
+        'description': Flags.string({
+            description: 'Description for the dashboard',
+        }),
+    }
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateProject)

@@ -21,9 +21,6 @@ export default abstract class CreateCommand<ResourceType> extends Base {
         'name': Flags.string({
             description: 'Human readable name',
         }),
-        'description': Flags.string({
-            description: 'Description for the dashboard',
-        }),
     }
 
     public async populateParameters(

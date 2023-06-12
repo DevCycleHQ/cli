@@ -25,7 +25,10 @@ export default class CreateVariable extends CreateCommand<CreateVariableParams> 
         }),
         'feature': Flags.string({
             description: 'The key or id of the feature to create the variable for'
-        })
+        }),
+        'description': Flags.string({
+            description: 'Description for the dashboard',
+        }),
     }
 
     prompts = [

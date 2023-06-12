@@ -7,6 +7,7 @@ import { Args } from '@oclif/core'
 export default class GetVariations extends Base {
     static hidden = false
     authRequired = true
+    static description = 'Retrieve variations for a feature from the management API'
 
     static args = {
         feature: Args.string({
