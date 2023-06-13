@@ -180,7 +180,7 @@ export default class SSOAuth {
         return `
 <html><body align='center'>
 <p>${resultMessage}. You may close this browser window.</p>
-<button type="button" onclick="javascript:window.close()">Close Window</button>
+<button type="button" onclick="window.close()">Close Window</button>
 </body></html>
 `
     }
