@@ -6,7 +6,8 @@ import {
 import {
     descriptionPrompt,
     namePrompt,
-    environmentPrompt
+    environmentPrompt,
+    EnvronmentPromptResult
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
 
@@ -21,21 +22,21 @@ export default class UpdateEnvironment extends UpdateCommand<CreateEnvironmentPa
 
     public async run(): Promise<void> {
         await this.requireProject()
-        const { environment } = await inquirer.prompt([environmentPrompt], {
+        const { _environment } = await inquirer.prompt<EnvronmentPromptResult>([environmentPrompt], {
             token: this.authToken,
             projectKey: this.projectKey
         })
 
         this.writer.blankLine()
         this.writer.statusMessage('Current values:')
-        this.writer.statusMessage(JSON.stringify(environment, null, 2))
+        this.writer.statusMessage(JSON.stringify(_environment, null, 2))
         this.writer.blankLine()
 
         const params = await this.populateParameters(CreateEnvironmentParams)
         const result = await updateEnvironment(
             this.authToken,
             this.projectKey,
-            environment.key,
+            _environment,
             params
         )
         this.writer.showResults(result)
