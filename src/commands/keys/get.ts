@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 import inquirer from 'inquirer'
 import { APIKey, fetchEnvironmentByKey } from '../../api/environments'
-import { environmentPrompt, sdkKeyTypePrompt as sdkTypePrompt } from '../../ui/prompts'
+import { EnvironmentPromptResult, environmentPrompt, sdkKeyTypePrompt as sdkTypePrompt } from '../../ui/prompts'
 import Base from '../base'
 
 export default class GetEnvironmentKey extends Base {
@@ -58,12 +58,12 @@ export default class GetEnvironmentKey extends Base {
         if (flags.env) {
             return flags.env
         }
-        const responses = await inquirer.prompt([environmentPrompt],
+        const responses = await inquirer.prompt<EnvironmentPromptResult>([environmentPrompt],
             {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
-        return responses._environment
+        return responses.environment._id
     }
 
     private async getSdkType(): Promise<'mobile' | 'client' | 'server' | 'all'> {
