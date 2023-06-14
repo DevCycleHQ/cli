@@ -1,7 +1,7 @@
 import { Args } from '@oclif/core'
 import inquirer from 'inquirer'
 import { disableTargeting } from '../../api/targeting'
-import { environmentPrompt, featurePrompt } from '../../ui/prompts'
+import { EnvironmentPromptResult, environmentPrompt, featurePrompt } from '../../ui/prompts'
 import Base from '../base'
 
 export default class DisableTargeting extends Base {
@@ -48,14 +48,14 @@ export default class DisableTargeting extends Base {
         if (environment) {
             responses = { ...responses, environmentKey: environment }
         } else {
-            const userSelectedEnv = await inquirer.prompt(
+            const userSelectedEnv = await inquirer.prompt<EnvironmentPromptResult>(
                 [environmentPrompt],
                 {
                     token: this.authToken,
                     projectKey: this.projectKey
                 }
             )
-            responses = { ...responses, environmentKey: userSelectedEnv._environment }
+            responses = { ...responses, environmentKey: userSelectedEnv.environment._id }
         }
 
         const disableTargetingForFeatureAndEnvironment = await disableTargeting(

@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 import inquirer from 'inquirer'
 import { fetchEnvironmentByKey, fetchEnvironments } from '../../api/environments'
-import { environmentPrompt } from '../../ui/prompts'
+import { EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
 import Base from '../base'
 
 export default class DetailedEnvironments extends Base {
@@ -34,14 +34,14 @@ export default class DetailedEnvironments extends Base {
             environments = environments.filter((environment) => keys.includes(environment.key))
             this.writer.showResults(environments)
         } else {
-            const responses = await inquirer.prompt(
+            const responses = await inquirer.prompt<EnvironmentPromptResult>(
                 [environmentPrompt],
                 {
                     token: this.authToken,
                     projectKey: this.projectKey
                 }
             )
-            const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, responses._environment)
+            const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, responses.environment._id)
             this.writer.showResults(environment)
         }
     }
