@@ -90,7 +90,11 @@ export default abstract class Base extends Command {
         this.authToken = await getToken(this.authPath, flags)
         if (!this.hasToken()) {
             if (this.authRequired) {
-                throw new Error('Authorization is required to use this command.')
+                throw new Error(
+                    'Authorization is required to use this command.\n' +
+                    'Please login using "dvc login sso" ' +
+                    'or pass credentials using the --client-id and --client-secret flags.'
+                )
             } else if (this.authSuggested && !flags['no-api']) {
                 this.writer.warningMessage(
                     'This command has limited functionality without Authorization.' +
