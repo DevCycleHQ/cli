@@ -1,7 +1,7 @@
 import { Args } from '@oclif/core'
 import inquirer from 'inquirer'
 import { fetchTargetingForFeature } from '../../api/targeting'
-import { featurePrompt } from '../../ui/prompts'
+import { environmentPrompt, featurePrompt } from '../../ui/prompts'
 import Base from '../base'
 
 export default class DetailedTargeting extends Base {
@@ -18,44 +18,48 @@ export default class DetailedTargeting extends Base {
     }
 
     authRequired = true
+    prompts = [
+        featurePrompt,
+        environmentPrompt
+    ]
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(DetailedTargeting)
 
         await this.requireProject()
 
-        let responses
+        const params = Object.assign({}, args)
 
-        const feature = args['feature']
-        const environment = args['environment']
+        // TODO: this should use populateParameters once it's added to Base class
+        if (!flags.headless && !params.feature) {
+            Object.keys(args).forEach((key) => {
+                this.prompts = this.prompts.filter((prompt) => prompt.name !== key)
+            })
 
-        if (flags.headless && !feature) {
-            this.writer.showError('In headless mode, the feature is required')
-            return
-        }
-
-        if (feature) {
-            responses = { feature }
-        } else {
-            responses = await inquirer.prompt(
-                [featurePrompt],
+            const responses = await inquirer.prompt(
+                this.prompts,
                 {
                     token: this.authToken,
                     projectKey: this.projectKey
                 }
             )
+            Object.assign(params, {
+                feature: responses.feature,
+                environment: responses.environment?._id
+            })
         }
 
-        if (environment) {
-            const targetingForFeatureAndEnv = await fetchTargetingForFeature(
-                this.authToken,
-                this.projectKey,
-                responses.feature,
-                environment
-            )
-            return this.writer.showResults(targetingForFeatureAndEnv)
+        if (!params.feature) {
+            this.writer.showError('Feature argument is required')
+            return
         }
-        const targetingForFeature = await fetchTargetingForFeature(this.authToken, this.projectKey, responses.feature)
-        return this.writer.showResults(targetingForFeature)
+
+        const targeting = await fetchTargetingForFeature(
+            this.authToken,
+            this.projectKey,
+            params.feature,
+            params.environment
+        )
+        return this.writer.showResults(targeting)
     }
 }
