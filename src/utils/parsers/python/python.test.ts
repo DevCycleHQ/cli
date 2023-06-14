@@ -1,6 +1,6 @@
-import { executeFileDiff } from '../../../src/utils/diff/fileDiff'
+import { executeFileDiff } from '../../diff/fileDiff'
 import * as path from 'node:path'
-import { parseFiles } from '../../../src/utils/diff/parse'
+import { parseFiles } from '../../diff/parse'
 import { expect } from '@oclif/test'
 
 describe('python', () => {
@@ -41,7 +41,7 @@ describe('python', () => {
     }))
 
     it('identifies the correct variable usages in the Python sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/python'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../../../../test-utils/fixtures/diff/python'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({

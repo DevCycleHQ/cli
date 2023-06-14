@@ -1,9 +1,9 @@
-import { executeFileDiff } from '../../../src/utils/diff/fileDiff'
+import { executeFileDiff } from '../../diff/fileDiff'
 import * as path from 'node:path'
-import { parseFiles } from '../../../src/utils/diff/parse'
+import { parseFiles } from '../../diff/parse'
 import { expect } from '@oclif/test'
 
-describe('android', () => {
+describe('java', () => {
     let simpleMatchResult = [
         {
             'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
@@ -19,39 +19,27 @@ describe('android', () => {
         },
         {
             'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
-            'line': 9,
-            'mode': 'add',
-            'name': 'named-case'
-        },
-        {
-            'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
             'line': 10,
             'mode': 'add',
-            'name': 'reversed-named-case'
+            'name': 'user-object'
         },
         {
             'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
             'line': 11,
             'mode': 'add',
-            'name': 'map-default-value'
-        },
-        {
-            'fileName': 'test-utils/fixtures/diff/sampleDiff.java',
-            'line': 12,
-            'mode': 'add',
             'name': 'hashmap-default-value'
         }
     ]
     simpleMatchResult = simpleMatchResult.concat(simpleMatchResult.map((match) => {
-        return { ...match, line: match.line + 13 }
+        return { ...match, line: match.line + 12 }
     }))
 
-    it('identifies the correct variable usages in the Android sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/android'))
+    it('identifies the correct variable usages in the Java sample diff', () => {
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../../../../test-utils/fixtures/diff/java'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({
-            android: simpleMatchResult,
+            java: simpleMatchResult,
         })
     })
 })

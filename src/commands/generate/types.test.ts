@@ -1,5 +1,5 @@
 import { expect, test } from '@oclif/test'
-import { AUTH_URL, BASE_URL } from '../../src/api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
 import * as fs from 'fs'
 
 const mockVariablesResponse = [

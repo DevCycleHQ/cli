@@ -1,11 +1,11 @@
 import * as path from 'node:path'
 import { expect } from '@oclif/test'
-import { executeFileDiff } from '../../src/utils/diff/fileDiff'
-import { parseFiles } from '../../src/utils/diff/parse'
+import { executeFileDiff } from './fileDiff'
+import { parseFiles } from './parse'
 
 describe('parse', () => {
     it('identifies no change when match is in normal line', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../../test-utils/fixtures/diff/no-change'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/no-change'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({})
@@ -14,7 +14,7 @@ describe('parse', () => {
     describe('multi-line', () => {
         it('identifies an addition in a multi-line method call', () => {
             const parsedDiff = executeFileDiff(
-                path.join(__dirname, '../../test-utils/fixtures/diff/multiline/addition')
+                path.join(__dirname, '../../../test-utils/fixtures/diff/multiline/addition')
             )
             const results = parseFiles(parsedDiff)
 
@@ -30,7 +30,7 @@ describe('parse', () => {
 
         it('identifies a deletion in a multi-line method call', () => {
             const parsedDiff = executeFileDiff(
-                path.join(__dirname, '../../test-utils/fixtures/diff/multiline/deletion')
+                path.join(__dirname, '../../../test-utils/fixtures/diff/multiline/deletion')
             )
             const results = parseFiles(parsedDiff)
 
@@ -46,7 +46,7 @@ describe('parse', () => {
 
         it('identifies a variable key change in a multi-line method call', () => {
             const parsedDiff = executeFileDiff(
-                path.join(__dirname, '../../test-utils/fixtures/diff/multiline/key-modification')
+                path.join(__dirname, '../../../test-utils/fixtures/diff/multiline/key-modification')
             )
             const results = parseFiles(parsedDiff)
 
@@ -68,7 +68,7 @@ describe('parse', () => {
 
         it('identifies a default value change in a multi-line method call', () => {
             const parsedDiff = executeFileDiff(
-                path.join(__dirname, '../../test-utils/fixtures/diff/multiline/default-modification')
+                path.join(__dirname, '../../../test-utils/fixtures/diff/multiline/default-modification')
             )
             const results = parseFiles(parsedDiff)
 
@@ -92,7 +92,7 @@ describe('parse', () => {
     describe('single comment', () => {
         it('identifies no change when addition is commented', () => {
             const parsedDiff = executeFileDiff(
-                path.join(__dirname, '../../test-utils/fixtures/diff/comments/add-comment')
+                path.join(__dirname, '../../../test-utils/fixtures/diff/comments/add-comment')
             )
             const results = parseFiles(parsedDiff)
 
@@ -101,7 +101,7 @@ describe('parse', () => {
 
         it('identifies addition when line is uncommented', () => {
             const parsedDiff = executeFileDiff(
-                path.join(__dirname, '../../test-utils/fixtures/diff/comments/uncomment')
+                path.join(__dirname, '../../../test-utils/fixtures/diff/comments/uncomment')
             )
             const results = parseFiles(parsedDiff)
 
@@ -116,7 +116,9 @@ describe('parse', () => {
         })
 
         it('identifies deletion when line is commented', () => {
-            const parsedDiff = executeFileDiff(path.join(__dirname, '../../test-utils/fixtures/diff/comments/comment'))
+            const parsedDiff = executeFileDiff(
+                path.join(__dirname, '../../../test-utils/fixtures/diff/comments/comment')
+            )
             const results = parseFiles(parsedDiff)
 
             expect(results).to.deep.equal({
@@ -131,7 +133,7 @@ describe('parse', () => {
 
         it('identifies change when parameter is commented', () => {
             const parsedDiff = executeFileDiff(
-                path.join(__dirname, '../../test-utils/fixtures/diff/comments/param-comment')
+                path.join(__dirname, '../../../test-utils/fixtures/diff/comments/param-comment')
             )
             const results = parseFiles(parsedDiff)
 
