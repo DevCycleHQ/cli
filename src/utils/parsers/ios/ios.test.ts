@@ -1,6 +1,6 @@
-import { executeFileDiff } from '../../../src/utils/diff/fileDiff'
+import { executeFileDiff } from '../../diff/fileDiff'
 import * as path from 'node:path'
-import { parseFiles } from '../../../src/utils/diff/parse'
+import { parseFiles } from '../../diff/parse'
 import { expect } from '@oclif/test'
 
 describe('ios', () => {
@@ -29,7 +29,7 @@ describe('ios', () => {
     }))
 
     it('identifies the correct variable usages in the iOS sample diff', () => {
-        const parsedDiff = executeFileDiff(path.join(__dirname, '../../../test-utils/fixtures/diff/ios'))
+        const parsedDiff = executeFileDiff(path.join(__dirname, '../../../../test-utils/fixtures/diff/ios'))
         const results = parseFiles(parsedDiff)
 
         expect(results).to.deep.equal({
