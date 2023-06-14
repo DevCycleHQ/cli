@@ -25,10 +25,12 @@ axiosClient.interceptors.response.use(
     },
     (error: AxiosError) => {
         if (error.response?.status === 401) {
-            console.info('Authorization Error: Please login again.')
+            console.info('Authorization Error: Please login using "dvc login again".')
+        } else {
+            const responseData = error.response?.data as Record<string, any>
+            console.info('DevCycle Error:', responseData.message)
         }
-        const responseData = error.response?.data as Record<string, any>
-        console.info('DevCycle Error:', responseData.message)
+        // TODO: Handle this error properly, DVC-7758
         return null
     },
 )
