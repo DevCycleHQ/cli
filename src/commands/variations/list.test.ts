@@ -58,10 +58,6 @@ describe('variations list', () => {
 
     dvcTest()
         .skip() // TODO: unskip once fixed
-        .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/features/${featureKey}/variations`)
-            .reply(200, mockVariations)
-        )
         .stdout()
         .command(['variations list', '--headless', '--project', projectKey, ...authFlags])
         .it('does not prompt when using --headless',
