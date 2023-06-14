@@ -19,7 +19,7 @@ export type EnvironmentPromptResult = {
 export const environmentChoices = async (input: Record<string, any>):Promise<EnvironmentChoice[]> => {
     const environments = await fetchEnvironments(input.token, input.projectKey)
     const choices = environments.map((environment) => {
-        const name = environment.name ? `${environment.name} ${chalk.gray(`(${environment.key})`)}` : environment.key
+        const name = environment.name ? `${environment.name} ${chalk.dim(`(${environment.key})`)}` : environment.key
         return {
             name,
             value: environment,

@@ -15,7 +15,7 @@ export default class Writer {
     }
 
     public statusMessage(message: string): void {
-        if (!this.headless) console.log(chalk.gray(`🤖 ${message}`))
+        if (!this.headless) console.log(chalk.dim(`🤖 ${message}`))
     }
 
     public blankLine(): void {
