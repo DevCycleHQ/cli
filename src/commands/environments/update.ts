@@ -10,6 +10,7 @@ import {
     EnvironmentPromptResult
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
+import { promptListOptions } from '../../ui/prompts/listPrompt'
 
 export default class UpdateEnvironment extends UpdateCommand<CreateEnvironmentParams> {
     static hidden = false
