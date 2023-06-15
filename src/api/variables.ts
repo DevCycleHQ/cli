@@ -11,7 +11,7 @@ export class CreateVariableParams {
 
     @IsString()
     @IsOptional()
-    description: string
+    description?: string
 
     @IsNotEmpty()
     @IsString()
@@ -19,7 +19,7 @@ export class CreateVariableParams {
 
     @IsOptional()
     @IsString()
-    feature: string
+    feature?: string
 
     @IsString()
     @IsIn(variableTypes)
