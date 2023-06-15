@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 import UpdateCommand from '../updateCommand'
 import { CreateVariationParams, updateVariation } from '../../api/variations'
 import { featurePrompt, keyPrompt, namePrompt, variablePrompt } from '../../ui/prompts'
-import { variationPrompt } from '../../ui/prompts/variationPrompts'
+import { updateVariableValuePrompt, variationPrompt } from '../../ui/prompts/variationPrompts'
 import { Args } from '@oclif/core'
 
 export default class UpdateVariation extends UpdateCommand<CreateVariationParams> {
@@ -13,7 +13,7 @@ export default class UpdateVariation extends UpdateCommand<CreateVariationParams
     prompts = [
         keyPrompt,
         namePrompt,
-        variablePrompt
+        updateVariableValuePrompt
     ]
 
     static args = {
@@ -52,6 +52,15 @@ export default class UpdateVariation extends UpdateCommand<CreateVariationParams
         this.writer.blankLine()
 
         const data = await this.populateParameters(CreateVariationParams)
+
+        if (this.chosenFields.includes(updateVariableValuePrompt.name)) {
+            const { variable } = await inquirer.prompt([updateVariableValuePrompt], {
+                token: this.authToken,
+                projectKey: this.projectKey,
+                variables: variation.variables
+            })
+        }
+        
         const result = await updateVariation(
             this.authToken,
             this.projectKey,
