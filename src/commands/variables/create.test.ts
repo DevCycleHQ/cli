@@ -65,7 +65,6 @@ describe('variables create', () => {
             '--name', requestBody.name,
             ...authFlags
         ])
-
         .it('prompts for missing key and description, and returns a variable',
             (ctx) => {
                 expect(JSON.parse(ctx.stdout)).to.eql(mockVariable)
@@ -84,7 +83,7 @@ describe('variables create', () => {
         ])
         .it('Errors when called in headless mode with no key',
             (ctx) => {
-                expect(ctx.stdout).to.contain('the key, name, feature and type are required')
+                expect(ctx.stdout).to.contain('The key, name, feature, and type flags are required')
             })
 
 })

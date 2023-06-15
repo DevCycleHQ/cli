@@ -6,6 +6,7 @@ import {
 } from '../../api/environments'
 import { PromptResult } from '.'
 import { Environment } from '../../api/schemas'
+
 type EnvironmentChoice = {
     name: string,
     value: Environment

@@ -1,44 +1,43 @@
-import { ClassConstructor, plainToClass } from 'class-transformer'
-import { validateSync } from 'class-validator'
-import inquirer from 'inquirer'
-import { reportValidationErrors } from '../utils/reportValidationErrors'
+import { Args, Flags } from '@oclif/core'
 import Base from './base'
+import { Prompt } from '../ui/prompts'
+import inquirer from 'inquirer'
 
-type namedObject = {
-    name: string
-}
-export default abstract class UpdateCommand<ResourceType> extends Base {
-    prompts: Array<namedObject> = []
+export default abstract class UpdateCommand extends Base {
     authRequired = true
 
-    public async populateParameters(paramClass: ClassConstructor<ResourceType>): Promise<ResourceType> {
-        await this.requireProject()
-        const answers = await this.populateParametersWithInquirer()
-        const params = plainToClass(paramClass, answers)
-        const errors = validateSync(params as Record<string, unknown>, {
-            whitelist: true,
-            skipMissingProperties: true
-        })
-        reportValidationErrors(paramClass.name, errors)
-        return params
+    static args = {
+        key: Args.string({
+            'key': Flags.string({
+                description: 'Unique ID'
+            })
+        }),
     }
 
-    private async populateParametersWithInquirer() {
-        const whichFields = await this.chooseFields()
-        const prompts = this.prompts.filter((prompt) => whichFields.includes(prompt.name))
+    static flags = {
+        ...Base.flags,
+        'name': Flags.string({
+            description: 'Human readable name',
+        }),
+    }
 
-        return inquirer.prompt(prompts, {
+    protected async populateParametersWithInquirer(prompts: Prompt[]) {
+        let filteredPrompts = [ ...prompts ]
+        const whichFields = await this.chooseFields(prompts)
+        filteredPrompts = prompts.filter((prompt) => whichFields.includes(prompt.name))
+
+        return inquirer.prompt(filteredPrompts, {
             token: this.authToken,
             projectKey: this.projectKey
         })
     }
 
-    private async chooseFields(): Promise<string[]> {
+    private async chooseFields(prompts: Prompt[]): Promise<string[]> {
         const responses = await inquirer.prompt([{
             name: 'whichFields',
             type: 'checkbox',
             message: 'Which fields are you updating',
-            choices: this.prompts.map((prompt) => {
+            choices: prompts.map((prompt) => {
                 return {
                     name: prompt.name
                 }
