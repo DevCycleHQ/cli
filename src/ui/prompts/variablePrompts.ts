@@ -2,6 +2,7 @@ import { Variable } from '../../api/schemas'
 import { fetchVariables, variableTypes } from '../../api/variables'
 import { ListQuestion, Question } from 'inquirer'
 import { PromptResult } from '.'
+import chalk from 'chalk'
 
 type VariableChoice = {
     name: string,
@@ -16,8 +17,9 @@ export type VariablePromptResult = {
 export const variableChoices = async (input: Record<string, any>):Promise<VariableChoice[]> => {
     const variables = await fetchVariables(input.token, input.projectKey)
     const choices = variables.map((variable) => {
+        const name = variable.name ? `${variable.name} ${chalk.dim(`(${variable.key})`)}` : variable.key
         return {
-            name: variable.name || variable.key,
+            name, 
             value: variable
         }
     })
