@@ -5,6 +5,8 @@ import inquirer from 'inquirer'
 
 export default abstract class UpdateCommand extends Base {
     authRequired = true
+    chosenFields: string[] = []
+    promptsToHandle: Array<namedObject> = []
 
     static args = {
         key: Args.string({
