@@ -16,6 +16,7 @@
     "quotes": ["error", "single"],
     "arrow-parens": ["error", "always"],
     "no-param-reassign": "error",
+    "no-case-declarations": "off",
     "space-before-function-paren": ["error", {
       "anonymous": "never",
       "named": "never",

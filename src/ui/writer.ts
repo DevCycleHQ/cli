@@ -18,8 +18,16 @@ export default class Writer {
         if (!this.headless) console.log(chalk.dim(`🤖 ${message}`))
     }
 
+    public list(list: string[]): void {
+        if (!this.headless) console.log(chalk.dim(`${list.join('\n\r')}`))
+    }
+
     public blankLine(): void {
         if (!this.headless) console.log('\n\r')
+    }
+
+    public divider(): void {
+        if (!this.headless) console.log('----------------------------------------')
     }
 
     public showResults(results: unknown): void {
