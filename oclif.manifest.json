@@ -3661,6 +3661,16 @@
           "description": "Feature key or id"
         }
       }
+    },
+    "variations:update": {
+      "id": "variations:update",
+      "description": "Update a variation for a feature from the management API",
+      "strict": true,
+      "pluginName": "@devcycle/cli",
+      "pluginAlias": "@devcycle/cli",
+      "pluginType": "core",
+      "hidden": false,
+      "aliases": []
     }
   }
 }
