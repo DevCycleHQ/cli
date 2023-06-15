@@ -6,7 +6,7 @@ Access or modify Variables with the Management API
 * [`dvc variables create`](#dvc-variables-create)
 * [`dvc variables get`](#dvc-variables-get)
 * [`dvc variables list`](#dvc-variables-list)
-* [`dvc variables update`](#dvc-variables-update)
+* [`dvc variables update [KEY]`](#dvc-variables-update-key)
 
 ## `dvc variables create`
 
@@ -82,14 +82,20 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 ```
 
-## `dvc variables update`
+## `dvc variables update [KEY]`
 
 Update a Variable.
 
 ```
 USAGE
-  $ dvc variables update [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless]
+  $ dvc variables update [KEY] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--name <value>] [--description
+    <value>] [--feature <value>]
+
+FLAGS
+  --description=<value>  Description for the variable
+  --feature=<value>      The ID of the feature to associate the variable to
+  --name=<value>         Human readable name
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

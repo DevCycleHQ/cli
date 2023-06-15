@@ -347,9 +347,19 @@
             "bitbucket.code_usages",
             "cli"
           ]
+        },
+        "name": {
+          "name": "name",
+          "type": "option",
+          "description": "Human readable name",
+          "multiple": false
         }
       },
-      "args": {}
+      "args": {
+        "key": {
+          "name": "key"
+        }
+      }
     },
     "wink": {
       "id": "wink",
@@ -1117,9 +1127,43 @@
             "bitbucket.code_usages",
             "cli"
           ]
+        },
+        "name": {
+          "name": "name",
+          "type": "option",
+          "description": "Human readable name",
+          "multiple": false
+        },
+        "key": {
+          "name": "key",
+          "type": "option",
+          "description": "Unique ID",
+          "multiple": false
+        },
+        "type": {
+          "name": "type",
+          "type": "option",
+          "description": "The type of environment",
+          "multiple": false,
+          "options": [
+            "development",
+            "staging",
+            "production",
+            "disaster_recovery"
+          ]
+        },
+        "description": {
+          "name": "description",
+          "type": "option",
+          "description": "Description for the environment",
+          "multiple": false
         }
       },
-      "args": {}
+      "args": {
+        "key": {
+          "name": "key"
+        }
+      }
     },
     "features:delete": {
       "id": "features:delete",
@@ -3195,9 +3239,31 @@
             "bitbucket.code_usages",
             "cli"
           ]
+        },
+        "name": {
+          "name": "name",
+          "type": "option",
+          "description": "Human readable name",
+          "multiple": false
+        },
+        "description": {
+          "name": "description",
+          "type": "option",
+          "description": "Description for the variable",
+          "multiple": false
+        },
+        "feature": {
+          "name": "feature",
+          "type": "option",
+          "description": "The ID of the feature to associate the variable to",
+          "multiple": false
         }
       },
-      "args": {}
+      "args": {
+        "key": {
+          "name": "key"
+        }
+      }
     },
     "variations:create": {
       "id": "variations:create",

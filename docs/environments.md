@@ -6,7 +6,7 @@ Create a new Environment for an existing Feature.
 * [`dvc environments create`](#dvc-environments-create)
 * [`dvc environments get`](#dvc-environments-get)
 * [`dvc environments list`](#dvc-environments-list)
-* [`dvc environments update`](#dvc-environments-update)
+* [`dvc environments update [KEY]`](#dvc-environments-update-key)
 
 ## `dvc environments create`
 
@@ -91,14 +91,22 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 ```
 
-## `dvc environments update`
+## `dvc environments update [KEY]`
 
 Update a Environment.
 
 ```
 USAGE
-  $ dvc environments update [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless]
+  $ dvc environments update [KEY] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--name <value>] [--key <value>]
+    [--type development|staging|production|disaster_recovery] [--description <value>]
+
+FLAGS
+  --description=<value>  Description for the environment
+  --key=<value>          Unique ID
+  --name=<value>         Human readable name
+  --type=<option>        The type of environment
+                         <options: development|staging|production|disaster_recovery>
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

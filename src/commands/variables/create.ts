@@ -13,7 +13,7 @@ import {
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 
-export default class CreateVariable extends CreateCommand<CreateVariableParams> {
+export default class CreateVariable extends CreateCommand {
     static hidden = false
     static description = 'Create a new Variable for an existing Feature.'
 
@@ -41,21 +41,14 @@ export default class CreateVariable extends CreateCommand<CreateVariableParams> 
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateVariable)
-
-        const { key, name, description, type, feature, headless } = flags
-
+        const { key, name, type, feature, headless } = flags
+ 
         if (headless && (!key || !name || !type || !feature)) {
-            this.writer.showError('In headless mode, the key, name, feature and type are required')
+            this.writer.showError('The key, name, feature, and type flags are required')
             return
         }
-        const params = await this.populateParameters(CreateVariableParams, true, {
-            key,
-            name,
-            description,
-            type,
-            feature,
-            headless
-        })
+
+        const params = await this.populateParameters(CreateVariableParams, this.prompts, flags)
         const result = await createVariable(this.authToken, this.projectKey, params)
         this.writer.showResults(result)
     }

@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 import jsYaml from 'js-yaml'
 import { RepoConfigFromFile, UserConfigFromFile } from '../types'
-import { plainToClass } from 'class-transformer'
+import { ClassConstructor, plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
 import { reportValidationErrors } from '../utils/reportValidationErrors'
 import { getToken } from '../auth/getToken'
@@ -14,6 +14,8 @@ import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
 import Writer from '../ui/writer'
 import { setDVCReferrer } from '../api/apiClient'
+import { Prompt } from '../ui/prompts'
+import { filterPrompts, mergeFlagsAndAnswers, validateParams } from '../utils/prompts'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -77,7 +79,7 @@ export default abstract class Base extends Command {
     authRequired = false
     // Override to true in commands that have "enhanced" functionality enabled by API access
     authSuggested = false
-    // Override to trye in commands that expect to run in the repo
+    // Override to true in commands that expect to run in the repo
     runsInRepo = false
 
     userConfig: UserConfigFromFile | null
@@ -227,5 +229,32 @@ export default abstract class Base extends Command {
 
     hasToken(): boolean {
         return this.authToken !== ''
+    }
+
+    public async populateParameters<ResourceType>(
+        paramClass: ClassConstructor<ResourceType>,
+        prompts: Prompt[],
+        flags: Record<string, unknown> = {},
+        isUpdate = false,
+    ): Promise<ResourceType> {
+        if (flags.headless) {
+            const params = plainToClass(paramClass, flags)
+            validateParams(paramClass, params, { whitelist: true, skipMissingProperties: isUpdate })
+            return params
+        }
+
+        const filteredPrompts = filterPrompts(prompts, flags)
+        const answers = await this.populateParametersWithInquirer(filteredPrompts)
+
+        const params = plainToClass(paramClass, mergeFlagsAndAnswers(flags, answers))
+        validateParams(paramClass, params, { whitelist: true, skipMissingProperties: isUpdate })
+        return params
+    }
+
+    protected async populateParametersWithInquirer(prompts: Prompt[]) {
+        return inquirer.prompt(prompts, {
+            token: this.authToken,
+            projectKey: this.projectKey
+        })
     }
 }

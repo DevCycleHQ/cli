@@ -13,7 +13,7 @@ import CreateCommand from '../createCommand'
 import { createVariation, CreateVariationParams } from '../../api/variations'
 import { fetchVariables } from '../../api/variables'
 
-export default class CreateVariation extends CreateCommand<CreateVariationParams> {
+export default class CreateVariation extends CreateCommand {
     static hidden = false
     static description = 'Create a new Variation'
 
@@ -60,11 +60,14 @@ export default class CreateVariation extends CreateCommand<CreateVariationParams
             featureKey = args.feature
         }
 
-        const params = await this.populateParameters(CreateVariationParams, false, {
-            key,
-            name,
-            headless
-        })
+        const params = await this.populateParameters(
+            CreateVariationParams,
+            this.prompts, {
+                key,
+                name,
+                headless
+            }
+        )
 
         let variableAnswers: Record<string, unknown> = {}
         if (!variables) {

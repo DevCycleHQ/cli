@@ -12,7 +12,7 @@ import {
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 
-export default class CreateEnvironment extends CreateCommand<CreateEnvironmentParams> {
+export default class CreateEnvironment extends CreateCommand {
     static hidden = false
     static description = 'Create a new Environment for an existing Feature.'
 
@@ -35,22 +35,18 @@ export default class CreateEnvironment extends CreateCommand<CreateEnvironmentPa
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateEnvironment)
+        const { key, name, type, headless } = flags
 
-        const { key, name, type, description, headless } = flags
-
-        await this.requireProject()
         if (headless && (!type || !key || !name)) {
-            this.writer.showError('In headless mode, the type, key, and name flags are required')
+            this.writer.showError('The type, key, and name flags are required')
             return
         }
 
-        const params = await this.populateParameters(CreateEnvironmentParams, false, {
-            key,
-            name,
-            description,
-            type,
-            headless
-        })
+        const params = await this.populateParameters(
+            CreateEnvironmentParams,
+            this.prompts,
+            flags,
+        )
 
         const result = await createEnvironment(this.authToken, this.projectKey, params)
         this.writer.showResults(result)
