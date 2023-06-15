@@ -2,19 +2,27 @@ import { AxiosError } from 'axios'
 import apiClient from './apiClient'
 import { Feature } from './schemas'
 import { IsNotEmpty, IsString, IsOptional } from 'class-validator'
+import { CreateVariableParams } from './variables'
+import { CreateVariationParams } from './variations'
 
 export class CreateFeatureParams {
     @IsString()
     @IsNotEmpty()
     name: string
 
-    @IsString()
-    @IsOptional()
-    description: string
-
     @IsNotEmpty()
     @IsString()
     key: string
+
+    @IsString()
+    @IsOptional()
+    description?: string
+
+    @IsOptional()
+    variables?: CreateVariableParams[]
+
+    @IsOptional()
+    variations?: CreateVariationParams[]
 }
 
 const FEATURE_URL = '/v1/projects/:project/features'

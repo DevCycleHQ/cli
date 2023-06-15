@@ -1,7 +1,7 @@
-import { Args } from '@oclif/core'
 import { createFeature, CreateFeatureParams } from '../../api/features'
 import { descriptionPrompt, keyPrompt, namePrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
+import { VariableListOptions } from '../../ui/prompts/listPrompts/variableListPrompts'
 
 export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
     static hidden = false
@@ -11,8 +11,8 @@ export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
     prompts = [keyPrompt, namePrompt, descriptionPrompt]
 
     public async run(): Promise<void> {
-        const { args, flags } = await this.parse(CreateFeature)
-        const { headless, key, name, description } = flags
+        const { flags } = await this.parse(CreateFeature)
+        const { headless, key, name, description, variables, variations } = flags
         await this.requireProject()
 
         if (headless && (!key || !name)) {
@@ -24,8 +24,14 @@ export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
             key,
             name,
             description,
+            variables,
+            variations,
             headless
         })
+
+        if (!variables) {
+            params.variables = await (new VariableListOptions([], this.writer)).prompt()
+        }
 
         await createFeature(this.authToken, this.projectKey, params)
         this.writer.successMessage('Feature successfully created')
