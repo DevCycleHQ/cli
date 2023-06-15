@@ -44,11 +44,10 @@ export default class CreateVariable extends CreateCommand<CreateVariableParams> 
 
         const { key, name, description, type, feature, headless } = flags
 
-        if (headless && (!key || !name || !type)) {
-            this.writer.showError('In headless mode, the key, name and type are required')
+        if (headless && (!key || !name || !type || !feature)) {
+            this.writer.showError('In headless mode, the key, name, feature and type are required')
             return
         }
-        await this.requireProject()
         const params = await this.populateParameters(CreateVariableParams, true, {
             key,
             name,
