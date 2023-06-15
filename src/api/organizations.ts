@@ -7,7 +7,7 @@ export type Organization = {
 }
 
 export const fetchOrganizations = async (token: string): Promise<Organization[]> => {
-    const response = await axiosClient.get('/v1/organizations', { // TODO why does swagger not have /v1/organizations?
+    const response = await axiosClient.get('/v1/organizations', {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
