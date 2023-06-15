@@ -35,6 +35,5 @@ axiosClient.interceptors.response.use(
     },
 )
 
-// TODO remove validate: 'request' when the swagger docs are fixed, so that it validates the response too 
 export const apiClient = createApiClient(BASE_URL, { axiosInstance: axiosClient, validate: 'request' })
 export default apiClient

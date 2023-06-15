@@ -1,18 +1,21 @@
-import inquirer from 'inquirer'
+import Enquirer from 'enquirer'
 import { Project } from '../api/schemas'
 
 export async function promptForProject(projects: Project[]): Promise<Project> {
+    const projectIdMap: Record<string, Project> = {}
     const projectOptions = projects.map((project) => {
+        projectIdMap[project._id] = project
         return {
             name: project.name,
-            value: project
+            value: project._id
         }
     })
-    const responses = await inquirer.prompt([{
+    const responses = await new Enquirer<{project: string}>().prompt([{
         name: 'project',
         message: 'Which project do you want to use?',
-        type: 'list',
+        type: 'autocomplete',
         choices: projectOptions
     }])
-    return responses.project
+
+    return projectIdMap[responses.project]
 }
