@@ -35,3 +35,25 @@ export const createVariation = async (
 
     return response
 }
+
+export const updateVariation = async (
+    token: string,
+    project_id: string,
+    feature_key: string,
+    variationKey: string,
+    variation: CreateVariationParams
+) => {
+    return apiClient.patch('/v1/projects/:project/features/:feature/variations/:key',
+        variation,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+            params: {
+                project: project_id,
+                feature: feature_key,
+                key: variationKey,
+            }
+        })
+}
