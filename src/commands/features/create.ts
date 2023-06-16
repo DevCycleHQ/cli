@@ -2,12 +2,21 @@ import { createFeature, CreateFeatureParams } from '../../api/features'
 import { descriptionPrompt, keyPrompt, namePrompt, sdkVisibilityPrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
-import inquirer from 'inquirer'
+import { Flags } from '@oclif/core'
 
 export default class CreateFeature extends CreateCommand {
     static hidden = false
     authRequired = true
     static description = 'Create a new Feature.'
+    static flags = {
+        ...CreateCommand.flags,
+        variables: Flags.string({
+            description: 'The variables to create for the feature'
+        }),
+        sdkVisibility: Flags.string({
+            description: 'The visibility of the feature for the SDKs'
+        })
+    }
 
     prompts = [keyPrompt, namePrompt, descriptionPrompt]
 
@@ -25,20 +34,22 @@ export default class CreateFeature extends CreateCommand {
             key,
             name,
             description,
-            variables,
-            variations,
+            variables: variables ? JSON.parse(variables) : [],
+            variations: variations ? JSON.parse(variations) : [],
             sdkVisibility,
             headless
         })
 
-        if (!variables) {
-            params.variables = await (new VariableListOptions([], this.writer)).prompt()
-        }
-
-        // TODO: Add variation prompt
-
-        if (!sdkVisibility) {
-            params.sdkVisibility = await sdkVisibilityPrompt()
+        if (!headless) {
+            if (!variables) {
+                params.variables = await (new VariableListOptions([], this.writer)).prompt()
+            }
+    
+            // TODO: Add variation prompt
+    
+            if (!sdkVisibility) {
+                params.sdkVisibility = await sdkVisibilityPrompt()
+            }
         }
 
         await createFeature(this.authToken, this.projectKey, params)

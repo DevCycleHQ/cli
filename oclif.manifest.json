@@ -1257,6 +1257,18 @@
           "type": "option",
           "description": "Human readable name",
           "multiple": false
+        },
+        "variables": {
+          "name": "variables",
+          "type": "option",
+          "description": "The variables to create for the feature",
+          "multiple": false
+        },
+        "sdkVisibility": {
+          "name": "sdkVisibility",
+          "type": "option",
+          "description": "The visibility of the feature for the SDKs",
+          "multiple": false
         }
       },
       "args": {}

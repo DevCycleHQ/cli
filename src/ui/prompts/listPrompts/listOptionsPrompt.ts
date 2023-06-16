@@ -112,32 +112,32 @@ export abstract class ListOptionsPrompt<T> {
         }
 
         const response = await this.promptListOptions()
-        switch (response) {
-            case 'add':
-                try {
+        try {
+            switch (response) {
+                case 'add':
                     newList.push(await this.promptAddItem())
-                } catch(e) {
-                    if (e instanceof Error) {
-                        this.writer.showError(e.message)
-                    }
-                }
-                break
-            case 'edit':
-                await this.promptEditItem(newList)
-                break
-            case 'remove':
-                const indicesToDelete = await this.promptDeleteItems(newList)
-                indicesToDelete.reverse().forEach((index) => newList.splice(index, 1))
-                break
-            case 'reorder':
-                const [oldIndex, newIndex] = await this.promptReorderItem(newList)
-                newList.splice(newIndex, 0, newList[oldIndex])
-                newList.splice(oldIndex + 1, 1)
-                break
-            case 'continue':
-                break
-            case 'exit':
-                return this.list.map((item) => item.value) as unknown as T[]
+                    break
+                case 'edit':
+                    await this.promptEditItem(newList)
+                    break
+                case 'remove':
+                    const indicesToDelete = await this.promptDeleteItems(newList)
+                    indicesToDelete.reverse().forEach((index) => newList.splice(index, 1))
+                    break
+                case 'reorder':
+                    const [oldIndex, newIndex] = await this.promptReorderItem(newList)
+                    newList.splice(newIndex, 0, newList[oldIndex])
+                    newList.splice(oldIndex + 1, 1)
+                    break
+                case 'continue':
+                    break
+                case 'exit':
+                    return this.list.map((item) => item.value) as unknown as T[]
+            }
+        } catch (e) {
+            if (e instanceof Error) {
+                this.writer.showError(e.message)
+            }
         }
         this.printListOptions(newList)
     
