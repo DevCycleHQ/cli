@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import inquirer from '../../ui/autocomplete'
 import {
     updateEnvironment,
     CreateEnvironmentParams,

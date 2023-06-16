@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import inquirer, { autocompleteSearch } from '../ui/autocomplete'
 import { Organization } from '../api/organizations'
 
 export async function promptForOrganization(organizations:Organization[]):Promise<Organization> {
@@ -11,8 +11,8 @@ export async function promptForOrganization(organizations:Organization[]):Promis
     const responses = await inquirer.prompt([{
         name: 'organization',
         message: 'Which organization do you want to use?',
-        type: 'list',
-        choices: organizationOptions
+        type: 'autocomplete',
+        source: (_input: never, search: string) => autocompleteSearch(organizationOptions, search)
     }])
     return responses.organization
 }
