@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core'
-import inquirer from 'inquirer'
+import inquirer from '../../ui/autocomplete'
 import { APIKey, fetchEnvironmentByKey } from '../../api/environments'
 import { EnvironmentPromptResult, environmentPrompt, sdkKeyTypePrompt as sdkTypePrompt } from '../../ui/prompts'
 import Base from '../base'

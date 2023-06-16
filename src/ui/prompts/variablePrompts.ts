@@ -3,6 +3,7 @@ import { fetchVariables, variableTypes } from '../../api/variables'
 import { ListQuestion, Question } from 'inquirer'
 import { PromptResult } from '.'
 import chalk from 'chalk'
+import { autocompleteSearch } from '../autocomplete'
 
 type VariableChoice = {
     name: string,
@@ -13,24 +14,27 @@ export type VariablePromptResult = {
     variable: VariableChoice['value']
 } & PromptResult
 
+let choices: { name: string, value: Variable }[]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const variableChoices = async (input: Record<string, any>):Promise<VariableChoice[]> => {
-    const variables = await fetchVariables(input.token, input.projectKey)
-    const choices = variables.map((variable) => {
-        const name = variable.name ? `${variable.name} ${chalk.dim(`(${variable.key})`)}` : variable.key
-        return {
-            name, 
-            value: variable
-        }
-    })
-    return choices
+export const variableChoices = async (input: Record<string, any>, search: string):Promise<VariableChoice[]> => {
+    if (!choices) {
+        const variables = await fetchVariables(input.token, input.projectKey)
+        choices = variables.map((variable) => {
+            const name = variable.name ? `${variable.name} ${chalk.dim(`(${variable.key})`)}` : variable.key
+            return {
+                name,
+                value: variable
+            }
+        })
+    }
+    return autocompleteSearch(choices, search)
 }
 
 export const variablePrompt = {
     name: 'variable',
     message: 'Which variable?',
-    type: 'list',
-    choices: variableChoices
+    type: 'autocomplete',
+    source: variableChoices
 }
 
 export const variablePromptNoApi = {

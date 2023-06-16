@@ -1,5 +1,5 @@
 import { Args } from '@oclif/core'
-import inquirer from 'inquirer'
+import inquirer from '../../ui/autocomplete'
 import { fetchTargetingForFeature } from '../../api/targeting'
 import { environmentPrompt, EnvironmentPromptResult, featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 import Base from '../base'
