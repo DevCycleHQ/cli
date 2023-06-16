@@ -8,7 +8,13 @@ import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import { EngineOptions } from '../../utils/refactor/RefactorEngine'
 import { Variable } from './types'
 import { ENGINES } from '../../utils/refactor'
-import { variablePrompt, variablePromptNoApi, variableTypePrompt, variableValueStringPrompt } from '../../ui/prompts'
+import {
+    variablePrompt,
+    variablePromptNoApi,
+    VariablePromptResult,
+    variableTypePrompt,
+    variableValueStringPrompt
+} from '../../ui/prompts'
 
 export default class Cleanup extends Base {
     static hidden = false
@@ -79,7 +85,7 @@ export default class Cleanup extends Base {
         if (!variable.key) {
             if (apiAuth) {
                 try {
-                    const input = await inquirer.prompt([variablePrompt], apiAuth)
+                    const input = await inquirer.prompt<VariablePromptResult>([variablePrompt], apiAuth)
                     variable.key = input.variable.key
                 } catch { } // eslint-disable-line no-empty
             }

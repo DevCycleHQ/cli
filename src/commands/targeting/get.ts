@@ -1,7 +1,7 @@
 import { Args } from '@oclif/core'
 import inquirer from 'inquirer'
 import { fetchTargetingForFeature } from '../../api/targeting'
-import { environmentPrompt, featurePrompt } from '../../ui/prompts'
+import { environmentPrompt, EnvironmentPromptResult, featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 import Base from '../base'
 
 export default class DetailedTargeting extends Base {
@@ -36,7 +36,7 @@ export default class DetailedTargeting extends Base {
                 this.prompts = this.prompts.filter((prompt) => prompt.name !== key)
             })
 
-            const responses = await inquirer.prompt(
+            const responses = await inquirer.prompt<FeaturePromptResult & EnvironmentPromptResult>(
                 this.prompts,
                 {
                     token: this.authToken,

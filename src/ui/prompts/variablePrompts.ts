@@ -1,11 +1,16 @@
 import { Variable } from '../../api/schemas'
 import { fetchVariables, variableTypes } from '../../api/variables'
 import { ListQuestion, Question } from 'inquirer'
+import { PromptResult } from '.'
 
 type VariableChoice = {
     name: string,
     value: Variable
 }
+
+export type VariablePromptResult = {
+    variable: VariableChoice['value']
+} & PromptResult
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const variableChoices = async (input: Record<string, any>):Promise<VariableChoice[]> => {

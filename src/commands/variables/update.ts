@@ -7,7 +7,8 @@ import {
     descriptionPrompt,
     featurePrompt,
     namePrompt,
-    variablePrompt
+    variablePrompt,
+    VariablePromptResult
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
 
@@ -23,7 +24,7 @@ export default class UpdateVariable extends UpdateCommand<CreateVariableParams> 
 
     public async run(): Promise<void> {
         await this.requireProject()
-        const { variable } = await inquirer.prompt([variablePrompt], {
+        const { variable } = await inquirer.prompt<VariablePromptResult>([variablePrompt], {
             token: this.authToken,
             projectKey: this.projectKey
         })
