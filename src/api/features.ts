@@ -23,6 +23,9 @@ export class CreateFeatureParams {
 
     @IsOptional()
     variations?: CreateVariationParams[]
+
+    @IsOptional()
+    sdkVisibility?: Feature['sdkVisibility']
 }
 
 const FEATURE_URL = '/v1/projects/:project/features'

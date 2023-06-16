@@ -1,7 +1,8 @@
 import { createFeature, CreateFeatureParams } from '../../api/features'
-import { descriptionPrompt, keyPrompt, namePrompt } from '../../ui/prompts'
+import { descriptionPrompt, keyPrompt, namePrompt, sdkVisibilityPrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
+import inquirer from 'inquirer'
 
 export default class CreateFeature extends CreateCommand {
     static hidden = false
@@ -12,7 +13,7 @@ export default class CreateFeature extends CreateCommand {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateFeature)
-        const { headless, key, name, description, variables, variations } = flags
+        const { headless, key, name, description, variables, variations, sdkVisibility } = flags
         await this.requireProject()
 
         if (headless && (!key || !name)) {
@@ -26,11 +27,18 @@ export default class CreateFeature extends CreateCommand {
             description,
             variables,
             variations,
+            sdkVisibility,
             headless
         })
 
         if (!variables) {
             params.variables = await (new VariableListOptions([], this.writer)).prompt()
+        }
+
+        // TODO: Add variation prompt
+
+        if (!sdkVisibility) {
+            params.sdkVisibility = await sdkVisibilityPrompt()
         }
 
         await createFeature(this.authToken, this.projectKey, params)
