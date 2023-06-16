@@ -1,7 +1,7 @@
 import minimatch from 'minimatch'
 import { Flags, Args } from '@oclif/core'
 import chalk from 'chalk'
-import inquirer from 'inquirer'
+import inquirer from '../../ui/autocomplete'
 import { lsFiles } from '../../utils/git/ls-files'
 import Base from '../base'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'

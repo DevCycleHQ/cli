@@ -1,5 +1,5 @@
-import Enquirer from 'enquirer'
 import { Project } from '../api/schemas'
+import inquirer, { autocompleteSearch } from './autocomplete'
 
 export async function promptForProject(projects: Project[]): Promise<Project> {
     const projectIdMap: Record<string, Project> = {}
@@ -10,11 +10,12 @@ export async function promptForProject(projects: Project[]): Promise<Project> {
             value: project._id
         }
     })
-    const responses = await new Enquirer<{project: string}>().prompt([{
+
+    const responses = await inquirer.prompt([{
         name: 'project',
         message: 'Which project do you want to use?',
         type: 'autocomplete',
-        choices: projectOptions
+        source: (_input: never, search: string) => autocompleteSearch(projectOptions, search)
     }])
 
     return projectIdMap[responses.project]
