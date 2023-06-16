@@ -52,7 +52,7 @@ export abstract class ListOptionsPrompt<T> {
      * and editing the list of items
      */
     abstract promptAddItem<T>(): Promise<ListOption<T>>
-    abstract promptEditItem<T>(list: ListOption<T>[]): Promise<ListOption<T>>
+    abstract promptEditItem<T>(list: ListOption<T>[]): void
 
     /**
      * Returns a list of indices to remove from the list
@@ -121,6 +121,9 @@ export abstract class ListOptionsPrompt<T> {
                         this.writer.showError(e.message)
                     }
                 }
+                break
+            case 'edit':
+                await this.promptEditItem(newList)
                 break
             case 'remove':
                 const indicesToDelete = await this.promptDeleteItems(newList)

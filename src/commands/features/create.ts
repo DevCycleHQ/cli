@@ -3,7 +3,7 @@ import { descriptionPrompt, keyPrompt, namePrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
 
-export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
+export default class CreateFeature extends CreateCommand {
     static hidden = false
     authRequired = true
     static description = 'Create a new Feature.'
@@ -20,7 +20,7 @@ export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
             return
         }
 
-        const params = await this.populateParameters(CreateFeatureParams, false, {
+        const params = await this.populateParameters(CreateFeatureParams, this.prompts, {
             key,
             name,
             description,
