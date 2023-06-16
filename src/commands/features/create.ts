@@ -1,7 +1,7 @@
 import { createFeature, CreateFeatureParams } from '../../api/features'
 import { descriptionPrompt, keyPrompt, namePrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
-import { VariableListOptions } from '../../ui/prompts/listPrompts/variableListPrompts'
+import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
 
 export default class CreateFeature extends CreateCommand<CreateFeatureParams> {
     static hidden = false
