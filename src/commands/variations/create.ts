@@ -71,8 +71,7 @@ export default class CreateVariation extends CreateCommand {
 
         let variableAnswers: Record<string, unknown> = {}
         if (!variables) {
-            const prompts = await getVariationVariableValuePrompts(this.authToken, this.projectKey, featureKey)
-            variableAnswers = await promptVariableAnswers(prompts)
+            variableAnswers = await getVariationVariableValuePrompts(this.authToken, this.projectKey, featureKey)
         }
 
             const variation = {
