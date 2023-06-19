@@ -3,17 +3,15 @@ import { Args, Flags } from '@oclif/core'
 import {
     featurePrompt,
     keyPrompt,
-    namePrompt,
-    variableValueBooleanPrompt,
-    variableValueJSONPrompt,
-    variableValueNumberPrompt,
-    variableValueStringPrompt
+    namePrompt
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 import { createVariation } from '../../api/variations'
-import { fetchVariables } from '../../api/variables'
 import { CreateVariationDto } from '../../api/schemas'
 import { ZodError } from 'zod'
+import { createVariation, CreateVariationParams } from '../../api/variations'
+import { promptVariableAnswers } from '../../utils/variations'
+import { getVariationVariableValuePrompts } from "../../ui/prompts/variationPrompts";
 
 export default class CreateVariation extends CreateCommand {
     static hidden = false
@@ -72,35 +70,11 @@ export default class CreateVariation extends CreateCommand {
                 }
             )
 
-            let variableAnswers: Record<string, unknown> = {}
-            if (!variables) {
-                const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, featureKey)
-                const variablePrompts = []
-                for (const variable of variablesForFeature) {
-                    switch (variable.type) {
-                        case 'Boolean':
-                            variablePrompts.push(variableValueBooleanPrompt(variable.key))
-                            break
-                        case 'Number':
-                            variablePrompts.push(variableValueNumberPrompt(variable.key))
-                            break
-                        case 'JSON':
-                            variablePrompts.push(variableValueJSONPrompt(variable.key))
-                            break
-                        default:
-                            variablePrompts.push(variableValueStringPrompt(variable.key))
-                    }
-                }
-
-                variableAnswers = await inquirer.prompt(variablePrompts, {})
-
-                for (const [key, value] of Object.entries(variableAnswers)) {
-                    const variable = variablesForFeature.find((variable) => variable.key === key)
-                    if (variable && variable.type === 'JSON') {
-                        variableAnswers[key] = JSON.parse(value as string)
-                    }
-                }
-            }
+        let variableAnswers: Record<string, unknown> = {}
+        if (!variables) {
+            const prompts = await getVariationVariableValuePrompts(this.authToken, this.projectKey, featureKey)
+            variableAnswers = await promptVariableAnswers(prompts)
+        }
 
             const variation = {
                 key: params.key,

@@ -1,6 +1,18 @@
 import apiClient from './apiClient'
 import { CreateVariationParams, Feature, Variation } from './schemas'
 
+export class UpdateVariationParams {
+    @IsString()
+    @IsOptional()
+    key?: string
+
+    @IsString()
+    @IsOptional()
+    name?: string
+
+    @IsOptional()
+    variables?: { [key: string]: string | number | boolean | Record<string, unknown> }
+}
 export const fetchVariations = async (token: string, project_id: string, feature_key: string): Promise<Variation[]> => {
     const response = await apiClient.get('/v1/projects/:project/features/:feature/variations', {
         headers: {
@@ -41,7 +53,7 @@ export const updateVariation = async (
     project_id: string,
     feature_key: string,
     variationKey: string,
-    variation: CreateVariationParams
+    variation: UpdateVariationParams
 ) => {
     return apiClient.patch('/v1/projects/:project/features/:feature/variations/:key',
         variation,
