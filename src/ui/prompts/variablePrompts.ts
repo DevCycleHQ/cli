@@ -51,18 +51,20 @@ export const variableTypePrompt = {
     choices: CreateVariableDto.shape.type.options
 }
 
-export const variableValueStringPrompt = (variableKey: string): Question => {
+export const variableValueStringPrompt = (variableKey: string, defaultValue?: string): Question => {
     return {
         name: variableKey,
+        default:  defaultValue,
         message: `Variable value for ${variableKey}`,
     }
 }
 
-export const variableValueNumberPrompt = (variableKey: string): Question => {
+export const variableValueNumberPrompt = (variableKey: string, defaultValue?: number): Question => {
     return {
         name: variableKey,
         message: `Variable value for ${variableKey}`,
         type: 'input',
+        default: defaultValue,
         filter: (input: string): number | string => {
             if (isNaN(Number(input))) {
                 return 'NaN'
@@ -75,15 +77,16 @@ export const variableValueNumberPrompt = (variableKey: string): Question => {
                 return 'Please enter a number'
             }
             return true
-        } 
+        }
     }
 }
 
-export const variableValueBooleanPrompt  = (variableKey: string): ListQuestion => {
+export const variableValueBooleanPrompt  = (variableKey: string, defaultValue?: boolean): ListQuestion => {
     return {
         name: variableKey,
         message: `Variable value for ${variableKey}`,
         type: 'list',
+        default: defaultValue,
         choices: [
             {
                 name: 'true',
@@ -97,11 +100,12 @@ export const variableValueBooleanPrompt  = (variableKey: string): ListQuestion =
     }
 }
 
-export const variableValueJSONPrompt  = (variableKey: string): Question => {
+export const variableValueJSONPrompt  = (variableKey: string, defaultValue?: string): Question => {
     return {
         name: variableKey,
         message: `Variable value for ${variableKey}`,
         type: 'input',
+        default: defaultValue,
         validate: (input: string): boolean | string => {
             try {
                 const parsedInput = JSON.parse(input)
@@ -113,7 +117,7 @@ export const variableValueJSONPrompt  = (variableKey: string): Question => {
             } catch (e) {
                 return 'Please enter a valid JSON object'
             }
-        } 
+        }
     }
 }
 
