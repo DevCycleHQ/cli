@@ -4,6 +4,8 @@ import { ListQuestion, Question } from 'inquirer'
 import { PromptResult } from '.'
 import chalk from 'chalk'
 import { autocompleteSearch } from '../autocomplete'
+import { descriptionPrompt, keyPrompt, namePrompt } from './commonPrompts'
+import { featurePrompt } from './featurePrompts'
 
 type VariableChoice = {
     name: string,
@@ -114,3 +116,11 @@ export const variableValueJSONPrompt  = (variableKey: string): Question => {
         } 
     }
 }
+
+export const createVariablePrompts = [
+    keyPrompt,
+    namePrompt,
+    descriptionPrompt,
+    variableTypePrompt,
+    featurePrompt
+]

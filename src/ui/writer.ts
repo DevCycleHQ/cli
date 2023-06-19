@@ -19,7 +19,7 @@ export default class Writer {
     }
 
     public list(list: string[]): void {
-        if (!this.headless) console.log(chalk.dim(`${list.join('\n\r')}`))
+        if (!this.headless) console.log(list.length ? chalk.dim(`${list.join('\n\r')}`) : chalk.dim('(Empty)'))
     }
 
     public blankLine(): void {

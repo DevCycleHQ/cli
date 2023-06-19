@@ -1,12 +1,60 @@
+import { AxiosError } from 'axios'
 import apiClient from './apiClient'
 import { Feature } from './schemas'
+import { IsNotEmpty, IsString, IsOptional, ValidateNested, IsBoolean } from 'class-validator'
+import { CreateVariableParams } from './variables'
+import { CreateVariationParams } from './variations'
+import { Type } from 'class-transformer'
+import 'reflect-metadata'
+import { buildHeaders } from './common'
+
+export class SDKVisibilityParams {
+    @IsBoolean()
+    @IsNotEmpty()
+    mobile: boolean
+    
+    @IsBoolean()
+    @IsNotEmpty()
+    client: boolean
+
+    @IsBoolean()
+    @IsNotEmpty()
+    server: boolean
+}
+
+export class CreateFeatureParams {
+    @IsString()
+    @IsNotEmpty()
+    name: string
+
+    @IsString()
+    @IsNotEmpty()
+    key: string
+
+    @IsString()
+    @IsOptional()
+    description?: string
+
+    @IsOptional()
+    @ValidateNested({ each: true })
+    @Type(() => CreateVariableParams)
+    variables?: CreateVariableParams[]
+
+    @IsOptional()
+    @ValidateNested({ each: true })
+    @Type(() => CreateVariationParams)
+    variations?: CreateVariationParams[]
+
+    @IsOptional()
+    @Type(() => SDKVisibilityParams)
+    sdkVisibility?: SDKVisibilityParams
+}
+
+const FEATURE_URL = '/v1/projects/:project/features'
 
 export const fetchFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
-    const response = await apiClient.get('/v1/projects/:project/features', {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+    const response = await apiClient.get(FEATURE_URL, {
+        headers: buildHeaders(token),
         params: {
             project: project_id
         }
@@ -17,11 +65,8 @@ export const fetchFeatures = async (token: string, project_id: string): Promise<
 
 export const fetchFeatureByKey = async (token: string, project_id: string, key: string): Promise<Feature | null> => {
     try {
-        const response = await apiClient.get('/v1/projects/:project/features/:key', {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
+        const response = await apiClient.get(`${FEATURE_URL}/:key`, {
+            headers: buildHeaders(token),
             params: {
                 project: project_id,
                 key
@@ -29,9 +74,8 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
         })
 
         return response
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-        if (e.response?.status === 404) {
+    } catch (e: unknown) {
+        if (e instanceof AxiosError && e.response?.status === 404) {
             return null
         }
         throw e
@@ -39,13 +83,22 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
 
 }
 
+export const createFeature = async (
+    token: string, 
+    project_id: string,
+    params: CreateFeatureParams
+): Promise<Feature> => {
+    return await apiClient.post(FEATURE_URL, params, {
+        headers: buildHeaders(token),
+        params: {
+            project: project_id
+        }
+    })
+}
+
 export const deleteFeature = async (token: string, project_id: string, key: string): Promise<void> => {
-    const url = '/v1/projects/:project/features/:key'
-    return apiClient.delete(url, undefined, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+    return apiClient.delete(`${FEATURE_URL}/:key`, undefined, {
+        headers: buildHeaders(token),
         params: {
             project: project_id,
             key

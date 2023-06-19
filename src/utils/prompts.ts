@@ -9,7 +9,7 @@ export function validateParams<ResourceType>(
     validatorOptions?: ValidatorOptions
 ){
     const errors = validateSync(params as Record<string, unknown>, { ...validatorOptions })
-    reportValidationErrors(paramClass.name, errors)
+    reportValidationErrors(errors)
 }
 
 // Filter out prompts that already have values provided by flags

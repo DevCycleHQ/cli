@@ -1,13 +1,5 @@
 import inquirer from 'inquirer'
 import Writer from '../../writer'
-import { 
-    AddItemPrompt, 
-    RemoveItemPrompt, 
-    ReorderItemPrompt, 
-    ContinuePrompt, 
-    ExitPrompt, 
-    EditItemPrompt 
-} from './promptOptions'
 
 /**
  * Map list items to a human readable name to make it easier to display to the user
@@ -18,28 +10,20 @@ export type ListOption<T> = {
 }
 
 export abstract class ListOptionsPrompt<T> {
+    abstract messagePrompt: string
     abstract itemType: string
     writer: Writer
     list: ListOption<T>[]
-    constructor(writer: Writer, list: T[]) {
-        this.writer = writer
+    constructor(list: T[], writer: Writer) {
         this.list = this.transformToListOptions(list)
+        this.writer = writer
     }
 
     /**
      * Returns the list of possible options for this List
      * @returns 
      */
-    options() {
-        return [
-            AddItemPrompt(this.itemType),
-            EditItemPrompt(this.itemType),
-            RemoveItemPrompt(this.itemType),
-            ReorderItemPrompt(this.itemType),
-            ContinuePrompt,
-            ExitPrompt
-        ]
-    }
+    abstract options(): { name: string, value: string }[]
 
     /**
      * Prompts the user to select an option from the list of options()
@@ -48,7 +32,7 @@ export abstract class ListOptionsPrompt<T> {
     async promptListOptions() {
         const response = await inquirer.prompt([{
             name: 'listPromptOption',
-            message: 'What would you like to do?',
+            message: this.messagePrompt,
             type: 'list',
             choices: this.options()
         }])
@@ -59,8 +43,8 @@ export abstract class ListOptionsPrompt<T> {
      * Implementation should be prescribed by the specific subclass for adding
      * and editing the list of items
      */
-    abstract promptAddItem<T>(): Promise<T>
-    abstract promptEditItem<T>(list: ListOption<T>): Promise<ListOption<T>>
+    abstract promptAddItem<T>(): Promise<ListOption<T>>
+    abstract promptEditItem<T>(list: ListOption<T>[]): void
 
     /**
      * Returns a list of indices to remove from the list
@@ -113,24 +97,39 @@ export abstract class ListOptionsPrompt<T> {
      */
     async prompt<T>(list?: ListOption<T>[]): Promise<T[]> {
         const newList = [...(list || this.list)] as ListOption<T>[]
+
+        // if there's no list passed in, this should be the first prompt call and thus we should print the list
+        if (!list) {
+            this.printListOptions(newList)
+        }
+
         const response = await this.promptListOptions()
-        switch (response) {
-            case 'add':
-                newList.push(await this.promptAddItem())
-                break
-            case 'remove':
-                const indicesToDelete = await this.promptDeleteItems(newList)
-                indicesToDelete.reverse().forEach((index) => newList.splice(index, 1))
-                break
-            case 'reorder':
-                const [oldIndex, newIndex] = await this.promptReorderItem(newList)
-                newList.splice(newIndex, 0, newList[oldIndex])
-                newList.splice(oldIndex + 1, 1)
-                break
-            case 'continue':
-                break
-            case 'exit':
-                return this.list.map((item) => item.value) as unknown as T[]
+        try {
+            switch (response) {
+                case 'add':
+                    newList.push(await this.promptAddItem())
+                    break
+                case 'edit':
+                    await this.promptEditItem(newList)
+                    break
+                case 'remove':
+                    const indicesToDelete = await this.promptDeleteItems(newList)
+                    indicesToDelete.reverse().forEach((index) => newList.splice(index, 1))
+                    break
+                case 'reorder':
+                    const [oldIndex, newIndex] = await this.promptReorderItem(newList)
+                    newList.splice(newIndex, 0, newList[oldIndex])
+                    newList.splice(oldIndex + 1, 1)
+                    break
+                case 'continue':
+                    break
+                case 'exit':
+                    return this.list.map((item) => item.value) as unknown as T[]
+            }
+        } catch (e) {
+            if (e instanceof Error) {
+                this.writer.showError(e.message)
+            }
         }
         this.printListOptions(newList)
     
@@ -147,8 +146,7 @@ export abstract class ListOptionsPrompt<T> {
      */
     async printListOptions<T>(list?: ListOption<T>[]) {
         const listToPrint = list || this.list
-        this.writer.blankLine()
-        this.writer.statusMessage('Current values:')
+        this.writer.statusMessage(`Current ${this.itemType}s:`)
         this.writer.list(listToPrint.map((item) => item.name))
         this.writer.divider()
     }

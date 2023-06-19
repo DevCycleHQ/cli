@@ -4,14 +4,8 @@ import {
     CreateVariableParams,
     variableTypes
 } from '../../api/variables'
-import {
-    descriptionPrompt,
-    keyPrompt,
-    namePrompt,
-    variableTypePrompt,
-    featurePrompt
-} from '../../ui/prompts'
 import CreateCommand from '../createCommand'
+import { createVariablePrompts } from '../../ui/prompts'
 
 export default class CreateVariable extends CreateCommand {
     static hidden = false
@@ -31,13 +25,7 @@ export default class CreateVariable extends CreateCommand {
         }),
     }
 
-    prompts = [
-        keyPrompt,
-        namePrompt,
-        descriptionPrompt,
-        variableTypePrompt,
-        featurePrompt
-    ]
+    prompts = createVariablePrompts
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateVariable)
