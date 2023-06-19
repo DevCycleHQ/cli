@@ -5,7 +5,7 @@ import { featurePrompt, keyPrompt, namePrompt, variableChoices, variablePrompt }
 import { getUpdateVariablesPrompt, variationPrompt } from '../../ui/prompts/variationPrompts'
 import { Args, Flags } from '@oclif/core'
 
-export default class UpdateVariation extends UpdateCommand<UpdateVariationParams> {
+export default class UpdateVariation extends UpdateCommand {
     static hidden = false
     authRequired = true
     static description = 'Update a Variation.'
@@ -20,13 +20,17 @@ export default class UpdateVariation extends UpdateCommand<UpdateVariationParams
         feature: Args.string({
             name: 'feature',
             description: 'Feature key or id'
-        })
+        }),
+        ...UpdateCommand.args
     }
 
     static flags = {
         ...UpdateCommand.flags,
         'variables': Flags.string({
             description: 'The variables to create for the variation'
+        }),
+        'key': Flags.string({
+            description: 'The variation key'
         }),
     }
 
@@ -35,7 +39,7 @@ export default class UpdateVariation extends UpdateCommand<UpdateVariationParams
 
         const { args, flags } = await this.parse(UpdateVariation)
         const { variables } = flags
-        let featureKey
+        let featureKey, variation, variationKey
         if (!args.feature) {
             const { feature } = await inquirer.prompt([featurePrompt], {
                 token: this.authToken,
@@ -45,12 +49,17 @@ export default class UpdateVariation extends UpdateCommand<UpdateVariationParams
         } else {
             featureKey = args.feature
         }
+        if (!args.key) {
+            variation = await inquirer.prompt([variationPrompt], {
+                token: this.authToken,
+                projectKey: this.projectKey,
+                featureKey
+            })
+            variationKey = variation.key
+        } else {
+            variationKey = args.key
+        }
 
-        const { variation } = await inquirer.prompt([variationPrompt], {
-            token: this.authToken,
-            projectKey: this.projectKey,
-            featureKey
-        })
         this.writer.blankLine()
         this.writer.statusMessage('Current values:')
         this.writer.statusMessage(JSON.stringify(variation, null, 2))
@@ -61,13 +70,13 @@ export default class UpdateVariation extends UpdateCommand<UpdateVariationParams
         //     await getUpdateVariablesPrompt(this.authToken, this.projectKey, featureKey, variation.variables)
         //     variableAnswers = await promptVariableAnswers(this.authToken, this.projectKey, featureKey)
         // }
-        const data = await this.populateParameters(UpdateVariationParams)
+        const data = await this.populateParameters(UpdateVariationParams, this.prompts, flags, true)
         console.error(`TEST: ${JSON.stringify(data)}`)
         const result = await updateVariation(
             this.authToken,
             this.projectKey,
             featureKey,
-            variation.key,
+            variationKey,
             {
                 ...data,
                 variables: variables ? JSON.parse(variables) : {}

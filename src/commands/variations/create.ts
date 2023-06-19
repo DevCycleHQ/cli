@@ -10,8 +10,7 @@ import { createVariation } from '../../api/variations'
 import { CreateVariationDto } from '../../api/schemas'
 import { ZodError } from 'zod'
 import { createVariation, CreateVariationParams } from '../../api/variations'
-import { promptVariableAnswers } from '../../utils/variations'
-import { getVariationVariableValuePrompts } from "../../ui/prompts/variationPrompts";
+import { getVariationVariableValuePrompts, promptVariableAnswers } from "../../ui/prompts/variationPrompts";
 
 export default class CreateVariation extends CreateCommand {
     static hidden = false
