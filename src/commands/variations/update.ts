@@ -1,11 +1,11 @@
 import inquirer from 'inquirer'
 import UpdateCommand from '../updateCommand'
-import { CreateVariationParams, updateVariation } from '../../api/variations'
-import { featurePrompt, keyPrompt, namePrompt, variablePrompt } from '../../ui/prompts'
-import { updateVariableValuePrompt, variationPrompt } from '../../ui/prompts/variationPrompts'
-import { Args } from '@oclif/core'
+import { updateVariation, UpdateVariationParams } from '../../api/variations'
+import { featurePrompt, keyPrompt, namePrompt, variableChoices, variablePrompt } from '../../ui/prompts'
+import { getUpdateVariablesPrompt, variationPrompt } from '../../ui/prompts/variationPrompts'
+import { Args, Flags } from '@oclif/core'
 
-export default class UpdateVariation extends UpdateCommand<CreateVariationParams> {
+export default class UpdateVariation extends UpdateCommand<UpdateVariationParams> {
     static hidden = false
     authRequired = true
     static description = 'Update a Variation.'
@@ -13,7 +13,7 @@ export default class UpdateVariation extends UpdateCommand<CreateVariationParams
     prompts = [
         keyPrompt,
         namePrompt,
-        updateVariableValuePrompt
+        variablePrompt
     ]
 
     static args = {
@@ -23,12 +23,18 @@ export default class UpdateVariation extends UpdateCommand<CreateVariationParams
         })
     }
 
-    
+    static flags = {
+        ...UpdateCommand.flags,
+        'variables': Flags.string({
+            description: 'The variables to create for the variation'
+        }),
+    }
+
     public async run(): Promise<void> {
         await this.requireProject()
 
-        const { args } = await this.parse(UpdateVariation)
-
+        const { args, flags } = await this.parse(UpdateVariation)
+        const { variables } = flags
         let featureKey
         if (!args.feature) {
             const { feature } = await inquirer.prompt([featurePrompt], {
@@ -45,28 +51,27 @@ export default class UpdateVariation extends UpdateCommand<CreateVariationParams
             projectKey: this.projectKey,
             featureKey
         })
-
         this.writer.blankLine()
         this.writer.statusMessage('Current values:')
         this.writer.statusMessage(JSON.stringify(variation, null, 2))
         this.writer.blankLine()
 
-        const data = await this.populateParameters(CreateVariationParams)
-
-        if (this.chosenFields.includes(updateVariableValuePrompt.name)) {
-            const { variable } = await inquirer.prompt([updateVariableValuePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey,
-                variables: variation.variables
-            })
-        }
-        
+        // let variableAnswers: Record<string, unknown> = {}
+        // if (this.chosenFields.includes(updateVariableValuePrompt.name)) {
+        //     await getUpdateVariablesPrompt(this.authToken, this.projectKey, featureKey, variation.variables)
+        //     variableAnswers = await promptVariableAnswers(this.authToken, this.projectKey, featureKey)
+        // }
+        const data = await this.populateParameters(UpdateVariationParams)
+        console.error(`TEST: ${JSON.stringify(data)}`)
         const result = await updateVariation(
             this.authToken,
             this.projectKey,
             featureKey,
             variation.key,
-            data
+            {
+                ...data,
+                variables: variables ? JSON.parse(variables) : {}
+            }
         )
         this.writer.showResults(result)
 
