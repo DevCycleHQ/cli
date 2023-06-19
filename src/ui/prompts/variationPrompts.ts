@@ -65,6 +65,7 @@ export async function getVariationVariableValuePrompts(
     authToken: string,
     projectKey: string,
     featureKey: string,
+    // variablesForFeature: Record<string, unknown>[],
     defaultValues: Record<string, boolean | string | number> = {}
 ) {
     const variablesForFeature = await fetchVariables(authToken, projectKey, featureKey)

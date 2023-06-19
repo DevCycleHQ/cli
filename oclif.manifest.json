@@ -3481,6 +3481,10 @@
         "feature": {
           "name": "feature",
           "description": "Feature key or id"
+        },
+        "variationKey": {
+          "name": "key",
+          "description": "Variation key"
         }
       }
     },
@@ -3748,6 +3752,10 @@
         "feature": {
           "name": "feature",
           "description": "Feature key or id"
+        },
+        "variationKey": {
+          "name": "key",
+          "description": "Variation key"
         }
       }
     }
