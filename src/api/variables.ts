@@ -6,7 +6,7 @@ export const variableTypes = ['String', 'Boolean', 'Number', 'JSON']
 
 export class CreateVariableParams {
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     name: string
 
     @IsString()

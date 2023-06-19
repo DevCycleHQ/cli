@@ -2,6 +2,7 @@ import { PromptResult } from './'
 import { fetchFeatures } from '../../api/features'
 import { Feature } from '../../api/schemas'
 import { autocompleteSearch } from '../autocomplete'
+import inquirer from 'inquirer'
 
 type FeatureChoice = {
     name: string,
@@ -34,4 +35,49 @@ export const featurePrompt = {
     message: 'Which feature?',
     type: 'autocomplete',
     source: featureChoices
+}
+
+type SDKVisibilityChoice = {
+    name: string,
+    value: 'mobile' | 'client' | 'server',
+    checked: boolean
+}
+type SDKVisibilityPromptResult = {
+    sdkVisibility: SDKVisibilityChoice['value'][]
+}
+
+export const getSDKVisibilityChoices = (sdkVisibility?: Feature['sdkVisibility']): SDKVisibilityChoice[] => {
+    return [
+        {
+            name: 'mobile',
+            value: 'mobile',
+            checked: sdkVisibility?.mobile || true
+        },
+        {
+            name: 'client',
+            value: 'client',
+            checked: sdkVisibility?.client || true
+        }, 
+        {
+            name: 'server',
+            value: 'server',
+            checked: sdkVisibility?.server || true
+        },
+    ]
+}
+
+export const sdkVisibilityPrompt = async (
+    sdkVisibility?: Feature['sdkVisibility']
+): Promise<Feature['sdkVisibility']> => {
+    const response = await inquirer.prompt<SDKVisibilityPromptResult>([{
+        name: 'sdkVisibility',
+        message: 'Which SDKs should this feature be visible to?',
+        type: 'checkbox',
+        choices: getSDKVisibilityChoices(sdkVisibility)
+    }])
+    return {
+        mobile: response.sdkVisibility.includes('mobile'),
+        client: response.sdkVisibility.includes('client'),
+        server: response.sdkVisibility.includes('server')
+    }
 }
