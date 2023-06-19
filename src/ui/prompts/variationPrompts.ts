@@ -1,13 +1,16 @@
-import { Variation } from "../../api/schemas"
-import { fetchVariations } from "../../api/variations"
-import { fetchVariables } from "../../api/variables"
+import { Variation } from '../../api/schemas'
+import { fetchVariations } from '../../api/variations'
+import { fetchVariables } from '../../api/variables'
+import { Prompt } from '../../ui/prompts'
+import { Variable } from '../../api/schemas'
+
 import {
     variableValueBooleanPrompt,
     variableValueJSONPrompt,
     variableValueNumberPrompt,
     variableValueStringPrompt
-} from "./variablePrompts";
-import inquirer, {ListQuestion, Question} from "inquirer";
+} from './variablePrompts'
+import inquirer, { ListQuestion, Question } from 'inquirer'
 
 type VariationChoice = {
     name: string,
@@ -30,8 +33,8 @@ export const variationChoices = async (input: Record<string, any>):Promise<Varia
     return choices
 }
 
-export const variableChoices = async (input: Record<string, any>):Promise<any[]> => {
-    const variablesMap = await fetchVariables(input.token, input.projectKey, input.featureKey)
+export const featureVariableChoices = async (authToken: string, projectKey: string, featureKey: string) => {
+    const variablesMap = await fetchVariables(authToken, projectKey, featureKey)
     const choices = []
     for (const variable of variablesMap) {
         const item = { name: variable.key, value: variable }
@@ -40,6 +43,15 @@ export const variableChoices = async (input: Record<string, any>):Promise<any[]>
     return choices
 }
 
+export async function getVariationVariablePrompt(authToken: string, projectKey: string, featureKey: string) {
+    return {
+        name: 'variables',
+        message: 'Which variables?',
+        type: 'checkbox',
+        choices: await featureVariableChoices(authToken, projectKey, featureKey)
+    }
+
+}
 export const variationPrompt = {
     name: 'variation',
     message: 'Which variation?',
@@ -47,30 +59,13 @@ export const variationPrompt = {
     choices: variationChoices
 }
 
-export async function getUpdateVariablesPrompt(
-    authToken: string,
-    projectKey: string,
-    featureKey: string,
-    variableValues: Record<string, boolean | string | number>
-) {
-    const choices = await getVariationVariableValuePrompts(authToken, projectKey, featureKey, variableValues)
-    return {
-        name: 'variables',
-        type: 'list',
-        choices: choices
-    }
-}
-
 export async function getVariationVariableValuePrompts(
-    authToken: string,
-    projectKey: string,
     featureKey: string,
-    // variablesForFeature: Record<string, unknown>[],
+    variables: Variable[],
     defaultValues: Record<string, boolean | string | number> = {}
-) {
-    const variablesForFeature = await fetchVariables(authToken, projectKey, featureKey)
+): Promise<Prompt[]> {
     const variablePrompts = []
-    for (const variable of variablesForFeature) {
+    for (const variable of variables) {
         switch (variable.type) {
             case 'Boolean':
                 variablePrompts.push(
@@ -93,7 +88,7 @@ export async function getVariationVariableValuePrompts(
                 )
         }
     }
-    return variablePrompts
+    return variablePrompts as Prompt[]
 }
 export async function promptVariableAnswers(
     variablePrompts: (Question | ListQuestion)[],

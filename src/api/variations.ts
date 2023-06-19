@@ -55,6 +55,7 @@ export const updateVariation = async (
     variationKey: string,
     variation: UpdateVariationParams
 ) => {
+    console.error(`variationKey: ${variationKey}`)
     return apiClient.patch('/v1/projects/:project/features/:feature/variations/:key',
         variation,
         {
