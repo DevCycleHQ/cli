@@ -76,6 +76,6 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         const errors = validateSync(variableParams, {
             whitelist: true,
         })
-        reportValidationErrors(CreateVariableParams.name, errors)
+        reportValidationErrors(errors)
     }
 }

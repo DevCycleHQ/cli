@@ -75,7 +75,6 @@ export const sdkVisibilityPrompt = async (
         type: 'checkbox',
         choices: getSDKVisibilityChoices(sdkVisibility)
     }])
-    console.error('sdkVisibilityResult', response.sdkVisibility)
     return {
         mobile: response.sdkVisibility.includes('mobile'),
         client: response.sdkVisibility.includes('client'),

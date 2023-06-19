@@ -1,11 +1,12 @@
 import { AxiosError } from 'axios'
 import apiClient from './apiClient'
 import { Feature } from './schemas'
-import { IsNotEmpty, IsString, IsOptional, IsJSON, ValidateNested, IsObject, IsBoolean } from 'class-validator'
+import { IsNotEmpty, IsString, IsOptional, ValidateNested, IsBoolean } from 'class-validator'
 import { CreateVariableParams } from './variables'
 import { CreateVariationParams } from './variations'
 import { Type } from 'class-transformer'
 import 'reflect-metadata'
+import { buildHeaders } from './common'
 
 export class SDKVisibilityParams {
     @IsBoolean()
@@ -26,8 +27,8 @@ export class CreateFeatureParams {
     @IsNotEmpty()
     name: string
 
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
     key: string
 
     @IsString()
@@ -45,17 +46,11 @@ export class CreateFeatureParams {
     variations?: CreateVariationParams[]
 
     @IsOptional()
-    @ValidateNested({ each: true })
     @Type(() => SDKVisibilityParams)
     sdkVisibility?: SDKVisibilityParams
 }
 
 const FEATURE_URL = '/v1/projects/:project/features'
-
-const buildHeaders = (token: string) => ({
-    'Content-Type': 'application/json',
-    Authorization: token,
-})
 
 export const fetchFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
     const response = await apiClient.get(FEATURE_URL, {

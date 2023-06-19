@@ -115,7 +115,7 @@ export default abstract class Base extends Command {
         const config = jsYaml.load(fs.readFileSync(path, 'utf8'))
         const configParsed = plainToClass(UserConfigFromFile, config)
         const errors = validateSync(configParsed)
-        reportValidationErrors('Config', errors)
+        reportValidationErrors(errors)
 
         return configParsed
     }
@@ -128,7 +128,7 @@ export default abstract class Base extends Command {
         const config = jsYaml.load(fs.readFileSync(path, 'utf8'))
         const configParsed = plainToClass(RepoConfigFromFile, config)
         const errors = validateSync(configParsed)
-        reportValidationErrors('Config', errors)
+        reportValidationErrors(errors)
 
         return configParsed
     }

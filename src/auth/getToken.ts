@@ -30,7 +30,7 @@ async function getTokenFromAuthFile(authPath: string): Promise<string> {
     const rawConfig = jsYaml.load(fs.readFileSync(authPath, 'utf8'))
     const config = plainToClass(AuthConfig, rawConfig)
     const errors = validateSync(config)
-    reportValidationErrors('Authorization', errors)
+    reportValidationErrors(errors)
 
     if (config.sso) {
         return config.sso.accessToken || ''

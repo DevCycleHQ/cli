@@ -1,13 +1,5 @@
 import inquirer from 'inquirer'
 import Writer from '../../writer'
-import { 
-    AddItemPrompt, 
-    RemoveItemPrompt, 
-    ReorderItemPrompt, 
-    ContinuePrompt, 
-    ExitPrompt, 
-    EditItemPrompt 
-} from './promptOptions'
 
 /**
  * Map list items to a human readable name to make it easier to display to the user

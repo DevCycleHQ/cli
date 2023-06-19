@@ -1,11 +1,6 @@
 import { Flags } from '@oclif/core'
 import Base from './base'
-
-type Prompt = {
-    name: string
-    message: string
-    type: string;
-}
+import { Prompt } from '../ui/prompts'
 
 export default abstract class CreateCommand extends Base {
     prompts: Prompt[] = []

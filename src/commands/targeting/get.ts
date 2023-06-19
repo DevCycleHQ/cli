@@ -42,7 +42,7 @@ export default class DetailedTargeting extends Base {
                     token: this.authToken,
                     projectKey: this.projectKey
                 }
-            ) as Record<string, any>
+            )
             Object.assign(params, {
                 feature: responses.feature,
                 environment: responses.environment?._id

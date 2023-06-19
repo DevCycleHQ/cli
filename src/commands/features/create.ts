@@ -26,33 +26,39 @@ export default class CreateFeature extends CreateCommand {
         await this.requireProject()
 
         if (headless && (!key || !name)) {
-            this.writer.showError('In headless mode, the key and name flags are required')
+            this.writer.showError('The key and name flags are required')
             return
         }
 
-        const params = await this.populateParameters(CreateFeatureParams, this.prompts, {
-            key,
-            name,
-            description,
-            variables: variables ? JSON.parse(variables) : [],
-            variations: variations ? JSON.parse(variations) : [],
-            sdkVisibility,
-            headless
-        })
-
-        if (!headless) {
-            if (!variables) {
-                params.variables = await (new VariableListOptions([], this.writer)).prompt()
+        try {
+            const params = await this.populateParameters(CreateFeatureParams, this.prompts, {
+                key,
+                name,
+                description,
+                ...(variables ? { variables: JSON.parse(variables) } : {}),
+                ...(variations ? { variations: JSON.parse(variations) } : {}),
+                ...(sdkVisibility ? { sdkVisibility: JSON.parse(sdkVisibility) } : {}),
+                headless
+            })
+    
+            if (!headless) {
+                if (!variables) {
+                    params.variables = await (new VariableListOptions([], this.writer)).prompt()
+                }
+        
+                // TODO: Add variation prompt
+        
+                if (!sdkVisibility) {
+                    params.sdkVisibility = await sdkVisibilityPrompt()
+                }
             }
     
-            // TODO: Add variation prompt
-    
-            if (!sdkVisibility) {
-                params.sdkVisibility = await sdkVisibilityPrompt()
+            const result = await createFeature(this.authToken, this.projectKey, params)
+            this.writer.showResults(result)
+        } catch (e) {
+            if (e instanceof Error) {
+                this.writer.showError(e.message)
             }
         }
-
-        await createFeature(this.authToken, this.projectKey, params)
-        this.writer.successMessage('Feature successfully created')
     }
 }
