@@ -16,7 +16,8 @@ import Writer from '../ui/writer'
 import { setDVCReferrer } from '../api/apiClient'
 import { Prompt } from '../ui/prompts'
 import { filterPrompts, mergeFlagsAndAnswers, validateParams } from '../utils/prompts'
-import z, { ZodObject, ZodTypeAny } from 'zod'
+import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
+
 export default abstract class Base extends Command {
     static hidden = true
     static flags = {
@@ -262,10 +263,16 @@ export default abstract class Base extends Command {
             const filteredPrompts = filterPrompts(prompts, flags)
             const answers = await this.populateParametersWithInquirer(filteredPrompts)
             input = mergeFlagsAndAnswers(flags, answers)
-        }
-
-        const parse = schema.parse(input)
-        return parse.data
+        } 
+        const parse = schema.parse(
+            input, 
+            { 
+                errorMap: (e) => {
+                    return { message: `Invalid value for ${e.path.join('.')}: ${e?.message}` }
+                }
+            }
+        )
+        return parse
     }
       
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
@@ -273,5 +280,12 @@ export default abstract class Base extends Command {
             token: this.authToken,
             projectKey: this.projectKey
         })
+    }
+
+    protected reportZodValidationErrors(error: ZodError): void {
+        const errorsByKey = error.flatten().fieldErrors
+        for (const issues of Object.values(errorsByKey)) {
+            issues?.[0] && this.writer.showError(issues[0])        
+        }
     }
 }
