@@ -1,7 +1,7 @@
 import { Variable } from '../../api/schemas'
 import { fetchVariables, variableTypes } from '../../api/variables'
 import { ListQuestion, Question } from 'inquirer'
-import { PromptResult } from '.'
+import { AutoCompletePrompt, Prompt, PromptResult } from '.'
 import chalk from 'chalk'
 import { autocompleteSearch } from '../autocomplete'
 import { descriptionPrompt, keyPrompt, namePrompt } from './commonPrompts'
@@ -117,7 +117,7 @@ export const variableValueJSONPrompt  = (variableKey: string): Question => {
     }
 }
 
-export const createVariablePrompts = [
+export const createVariablePrompts: (Prompt | AutoCompletePrompt)[] = [
     keyPrompt,
     namePrompt,
     descriptionPrompt,

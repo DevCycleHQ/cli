@@ -1,17 +1,38 @@
+import chalk from 'chalk'
+
+export const hintTextTransformer = (hint: string) => 
+    (value: string, answers: unknown, { isFinal }: { isFinal: boolean }) => {
+        let newValue = value
+        const styledHint = chalk.dim(hint)
+        if (!value) {
+            newValue = styledHint
+        } 
+        if (isFinal) {
+            return newValue !== chalk.dim(`${hint}`) ? chalk.cyan(`${newValue}`) : ''
+        }
+        return newValue
+    }
+
 export const keyPrompt = {
     name: 'key',
-    message: 'Unique ID',
+    message: 'Key',
+    suffix: ':',
+    transformer: hintTextTransformer('(Unique ID)'),
     type: 'input'
 }
 
 export const namePrompt = {
     name: 'name',
-    message: 'Human readable name',
+    message: 'Name',
+    suffix: ':',
+    transformer: hintTextTransformer('(Human readable name)'),
     type: 'input'
 }
 
 export const descriptionPrompt = {
     name: 'description',
-    message: 'Description for display in the dashboard',
+    message: 'Description',
+    suffix: ':',
+    transformer: hintTextTransformer('(Optional)'),
     type: 'input'
 }

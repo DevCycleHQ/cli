@@ -1,9 +1,9 @@
 import { Flags } from '@oclif/core'
 import Base from './base'
-import { Prompt } from '../ui/prompts'
+import { AutoCompletePrompt, Prompt } from '../ui/prompts'
 
 export default abstract class CreateCommand extends Base {
-    prompts: Prompt[] = []
+    prompts: (Prompt | AutoCompletePrompt)[] = []
     authRequired = true
 
     static flags = {
