@@ -7,5 +7,11 @@ export type Prompt = {
     name: string
     message: string
     type: string
-    choices?: () => Promise<Record<string, string>[]>
+    prefix?: string
+    transformer?: (value: string, answers: any, { isFinal }: { isFinal: boolean }) => string
+    choices?: unknown[]
+}
+
+export type AutoCompletePrompt = Prompt & {
+  source: (input: Record<string, unknown>, search: string) => Promise<Record<string, unknown>[]>
 }
