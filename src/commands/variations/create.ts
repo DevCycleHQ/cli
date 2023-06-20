@@ -10,7 +10,9 @@ import { createVariation } from '../../api/variations'
 import { CreateVariationDto } from '../../api/schemas'
 import { ZodError } from 'zod'
 import { createVariation, CreateVariationParams } from '../../api/variations'
-import { getVariationVariableValuePrompts, promptVariableAnswers } from "../../ui/prompts/variationPrompts";
+import { getVariationVariableValuePrompts } from '../../ui/prompts/variationPrompts'
+import { Variable } from '../../api/schemas'
+import {fetchVariables} from "../../api/variables";
 
 export default class CreateVariation extends CreateCommand {
     static hidden = false
@@ -71,7 +73,11 @@ export default class CreateVariation extends CreateCommand {
 
         let variableAnswers: Record<string, unknown> = {}
         if (!variables) {
-            variableAnswers = await getVariationVariableValuePrompts(this.authToken, this.projectKey, featureKey)
+            const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, featureKey)
+            variableAnswers = await getVariationVariableValuePrompts(
+                featureKey,
+                variablesForFeature
+            )
         }
 
             const variation = {
