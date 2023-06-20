@@ -11,3 +11,4 @@ export type CreateEnvironmentParams = z.infer<typeof schemas.CreateEnvironmentDt
 export const CreateEnvironmentDto = schemas.CreateEnvironmentDto
 export type UpdateEnvironmentParams = z.infer<typeof schemas.UpdateEnvironmentDto>
 export const UpdateEnvironmentDto = schemas.UpdateEnvironmentDto
+export type FeatureConfig = z.infer<typeof schemas.FeatureConfig>

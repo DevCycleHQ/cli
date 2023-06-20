@@ -1,7 +1,12 @@
 import { expect } from '@oclif/test'
+import chai from 'chai'
+import { jestSnapshotPlugin, _getSnapshotManager } from 'mocha-chai-jest-snapshot'
 import inquirer from 'inquirer'
-import { dvcTest } from '../../../test-utils'
+import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
+
+beforeEach(setCurrentTestFile(__filename))
+chai.use(jestSnapshotPlugin())
 
 describe('targeting get', () => {
     const projectKey = 'test-project'
@@ -78,34 +83,88 @@ describe('targeting get', () => {
         }
     ]
 
+    const mockEnvironments = [
+        {
+            key: 'development',
+            name: 'Development',
+            _id: '647f62ae749bbe90fb222070'
+        },
+        {
+            key: 'testing',
+            name: 'Testing',
+            _id: '637cfe8195279288bc08cb63'
+        },
+        {
+            key: 'staging',
+            name: 'Staging',
+            _id: '637cfe8195279288bc08cb62'
+        },
+        {
+            key: 'production',
+            name: 'Production',
+            _id: '637cfe8195279288bc08cb61'
+        }
+    ]
+    const mockVariations = [
+        {
+            key: 'variation-on',
+            name: 'Variation ON',
+            variables: {},
+            _id: '642d9de38bbfc09ad0657e09'
+        }
+    ]
+
     dvcTest()
         .nock(BASE_URL, (api) => api
             .get(`/v1/projects/${projectKey}/features/${featureKey}/configurations`)
             .reply(200, mockTargeting)
         )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/features/${featureKey}/variations`)
+            .reply(200, mockVariations)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/environments`)
+            .reply(200, mockEnvironments)
+        )
         .stdout()
         .command(['targeting get', featureKey, ...authFlags])
-        .it('returns all targeting for a feature',
-            (ctx) => {
-                expect(ctx.stdout).to.contain(JSON.stringify(mockTargeting, null, 2))
-            })
+        .it('returns all targeting for a feature', (ctx) => {
+            expect(ctx.stdout).toMatchSnapshot()
+        })
 
     dvcTest()
         .nock(BASE_URL, (api) => api
             .get(`/v1/projects/${projectKey}/features/${featureKey}/configurations?environment=development`)
             .reply(200, mockTargeting)
         )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/features/${featureKey}/variations`)
+            .reply(200, mockVariations)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/environments`)
+            .reply(200, mockEnvironments)
+        )
         .stdout()
         .command(['targeting get', featureKey, 'development', ...authFlags])
         .it('includes environment in query params',
             (ctx) => {
-                expect(ctx.stdout).to.contain(JSON.stringify(mockTargeting, null, 2))
+                expect(ctx.stdout).toMatchSnapshot()
             })
 
     dvcTest()
         .nock(BASE_URL, (api) => api
             .get(`/v1/projects/${projectKey}/features/prompted-feature-id/configurations`)
             .reply(200, mockTargeting)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/features/prompted-feature-id/variations`)
+            .reply(200, mockVariations)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/environments`)
+            .reply(200, mockEnvironments)
         )
         .stub(inquirer, 'prompt', () => {
             return { feature: 'prompted-feature-id' }
@@ -114,7 +173,7 @@ describe('targeting get', () => {
         .command(['targeting get', ...authFlags])
         .it('uses prompts when feature is not provided',
             (ctx) => {
-                expect(ctx.stdout).to.contain(JSON.stringify(mockTargeting, null, 2))
+                expect(ctx.stdout).toMatchSnapshot()
             })
 
     dvcTest() 
