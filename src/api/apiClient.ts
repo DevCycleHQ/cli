@@ -28,10 +28,10 @@ axiosClient.interceptors.response.use(
             console.info('Authorization Error: Please login using "dvc login again".')
         } else {
             const responseData = error.response?.data as Record<string, any>
-            console.info('DevCycle Error:', responseData.message)
+            console.info('DevCycle Error:', responseData?.message)
         }
         // TODO: Handle this error properly, DVC-7758
-        return null
+        return Promise.reject(error)
     },
 )
 
