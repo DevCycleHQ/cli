@@ -1,8 +1,6 @@
 import inquirer from '../../ui/autocomplete'
 import {
     updateEnvironment,
-    CreateEnvironmentParams,
-    environmentTypes
 } from '../../api/environments'
 import {
     descriptionPrompt,
@@ -12,6 +10,8 @@ import {
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
 import { Flags } from '@oclif/core'
+import { CreateEnvironmentDto, UpdateEnvironmentDto } from '../../api/schemas'
+import { ZodError } from 'zod'
 
 export default class UpdateEnvironment extends UpdateCommand {
     static hidden = false
@@ -28,7 +28,7 @@ export default class UpdateEnvironment extends UpdateCommand {
         }),
         'type': Flags.string({
             description: 'The type of environment',
-            options: environmentTypes
+            options: CreateEnvironmentDto.shape.type.options
         }),
         'description': Flags.string({
             description: 'Description for the environment',
@@ -57,19 +57,23 @@ export default class UpdateEnvironment extends UpdateCommand {
             this.writer.blankLine()
         }
 
-        const params = await this.populateParameters(
-            CreateEnvironmentParams,
-            this.prompts,
-            flags,
-            true
-        )
-
-        const result = await updateEnvironment(
-            this.authToken,
-            this.projectKey,
-            envKey,
-            params
-        )
-        this.writer.showResults(result)
+        try {
+            const params = await this.populateParametersWithZod(
+                UpdateEnvironmentDto,
+                this.prompts,
+                flags
+            )
+            const result = await updateEnvironment(
+                this.authToken,
+                this.projectKey,
+                envKey,
+                params
+            )
+            this.writer.showResults(result)
+        } catch (e) {
+            if (e instanceof ZodError) {
+                this.writer.showError(`Input failed validation with the following errors:\n${e.message}`)    
+            }
+        }
     }
 }

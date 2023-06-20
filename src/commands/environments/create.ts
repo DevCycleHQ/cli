@@ -1,8 +1,6 @@
 import { Flags } from '@oclif/core'
 import {
     createEnvironment,
-    CreateEnvironmentParams,
-    environmentTypes
 } from '../../api/environments'
 import {
     descriptionPrompt,
@@ -11,6 +9,8 @@ import {
     environmentTypePrompt
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
+import { CreateEnvironmentDto } from '../../api/schemas'
+import { ZodError } from 'zod'
 
 export default class CreateEnvironment extends CreateCommand {
     static hidden = false
@@ -26,7 +26,7 @@ export default class CreateEnvironment extends CreateCommand {
         ...CreateCommand.flags,
         'type': Flags.string({
             description: 'The type of environment',
-            options: environmentTypes
+            options: CreateEnvironmentDto.shape.type.options,
         }),
         'description': Flags.string({
             description: 'Description for the dashboard',
@@ -42,14 +42,18 @@ export default class CreateEnvironment extends CreateCommand {
             return
         }
 
-        const params = await this.populateParameters(
-            CreateEnvironmentParams,
-            this.prompts,
-            flags,
-        )
-
-        const result = await createEnvironment(this.authToken, this.projectKey, params)
-        this.writer.showResults(result)
+        try {
+            const params = await this.populateParametersWithZod(
+                CreateEnvironmentDto,
+                this.prompts,
+                flags,
+            )
+            const result = await createEnvironment(this.authToken, this.projectKey, params)
+            this.writer.showResults(result)
+        } catch (e) {
+            if (e instanceof ZodError) {
+                this.writer.showError(`Input failed validation with the following errors:\n${e.message}`)    
+            }
+        }
     }
-
 }

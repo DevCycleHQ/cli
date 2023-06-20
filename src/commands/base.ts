@@ -16,7 +16,7 @@ import Writer from '../ui/writer'
 import { setDVCReferrer } from '../api/apiClient'
 import { Prompt } from '../ui/prompts'
 import { filterPrompts, mergeFlagsAndAnswers, validateParams } from '../utils/prompts'
-
+import z, { ZodObject, ZodTypeAny } from 'zod'
 export default abstract class Base extends Command {
     static hidden = true
     static flags = {
@@ -251,6 +251,23 @@ export default abstract class Base extends Command {
         return params
     }
 
+    public async populateParametersWithZod
+    <ResourceType extends Record<string, ZodTypeAny>>(
+        schema: ZodObject<ResourceType>, 
+        prompts: Prompt[],
+        flags: Record<string, unknown>,
+    ): Promise<z.infer<typeof schema>> {
+        let input = flags
+        if (!flags.headless) {
+            const filteredPrompts = filterPrompts(prompts, flags)
+            const answers = await this.populateParametersWithInquirer(filteredPrompts)
+            input = mergeFlagsAndAnswers(flags, answers)
+        }
+
+        const parse = schema.parse(input)
+        return parse.data
+    }
+      
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
         return inquirer.prompt(prompts, {
             token: this.authToken,

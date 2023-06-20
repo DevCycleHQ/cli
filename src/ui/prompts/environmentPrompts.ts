@@ -1,11 +1,9 @@
 import chalk from 'chalk'
 import {
-    environmentTypes,
     fetchEnvironments,
-    sdkTypes
 } from '../../api/environments'
 import { PromptResult } from '.'
-import { Environment } from '../../api/schemas'
+import { CreateEnvironmentDto, Environment } from '../../api/schemas'
 
 import { autocompleteSearch } from '../autocomplete'
 type EnvironmentChoice = {
@@ -44,12 +42,12 @@ export const environmentTypePrompt = {
     name: 'type',
     message: 'The type of environment',
     type: 'list',
-    choices: environmentTypes
+    choices: CreateEnvironmentDto.shape.type.options
 }
 
 export const sdkKeyTypePrompt = {
     name: 'sdkType',
     message: 'Which SDK?',
     type: 'list',
-    choices: sdkTypes.concat(['all'])
+    choices: ['client', 'mobile', 'server', 'all']
 }
