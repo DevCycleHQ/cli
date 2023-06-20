@@ -1,19 +1,19 @@
 import chalk from 'chalk'
-
-export const hintTextTransformer = (hint: string) => 
+import { Prompt } from './types'
+export const hintTextTransformer = (hint: string) =>
     (value: string, answers: unknown, { isFinal }: { isFinal: boolean }) => {
         let newValue = value
         const styledHint = chalk.dim(hint)
         if (!value) {
             newValue = styledHint
-        } 
+        }
         if (isFinal) {
             return newValue !== chalk.dim(`${hint}`) ? chalk.cyan(`${newValue}`) : ''
         }
         return newValue
     }
 
-export const keyPrompt = {
+export const keyPrompt: Prompt = {
     name: 'key',
     message: 'Key',
     suffix: ':',
@@ -21,7 +21,7 @@ export const keyPrompt = {
     type: 'input'
 }
 
-export const namePrompt = {
+export const namePrompt: Prompt = {
     name: 'name',
     message: 'Name',
     suffix: ':',
@@ -29,7 +29,7 @@ export const namePrompt = {
     type: 'input'
 }
 
-export const descriptionPrompt = {
+export const descriptionPrompt: Prompt = {
     name: 'description',
     message: 'Description',
     suffix: ':',

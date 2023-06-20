@@ -43,7 +43,11 @@ export const featureVariableChoices = async (authToken: string, projectKey: stri
     return choices
 }
 
-export async function getVariationVariablePrompt(authToken: string, projectKey: string, featureKey: string) {
+export async function getVariationVariablePrompt(
+    authToken: string,
+    projectKey: string,
+    featureKey: string
+): Promise<Prompt> {
     return {
         name: 'variables',
         message: 'Which variables?',
