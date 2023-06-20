@@ -1,36 +1,5 @@
-import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import apiClient from './apiClient'
-
-export const environmentTypes = [
-    'development',
-    'staging',
-    'production',
-    'disaster_recovery'
-]
-
-export const sdkTypes = [
-    'client',
-    'mobile',
-    'server'
-]
-
-export class CreateEnvironmentParams {
-    @IsString()
-    @IsNotEmpty()
-    name: string
-
-    @IsNotEmpty()
-    @IsString()
-    key: string
-
-    @IsString()
-    @IsOptional()
-    description?: string
-
-    @IsString()
-    @IsIn(environmentTypes)
-    type: 'development' | 'staging' | 'production' | 'disaster_recovery'
-}
+import { CreateEnvironmentParams, UpdateEnvironmentParams } from './schemas'
 
 export class APIKey {
     key: string
@@ -56,7 +25,7 @@ export const updateEnvironment = async (
     token: string,
     project_id: string,
     environmentKey: string,
-    params: Partial<CreateEnvironmentParams>
+    params: UpdateEnvironmentParams
 ) => {
     return apiClient.patch('/v1/projects/:project/environments/:key', params, {
         headers: {
