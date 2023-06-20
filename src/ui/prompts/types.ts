@@ -7,7 +7,7 @@ export type Prompt = {
     name: string
     message: string
     type: string
-    prefix?: string
+    suffix?: string
     transformer?: (value: string, answers: any, { isFinal }: { isFinal: boolean }) => string
     choices?: unknown[]
 }
