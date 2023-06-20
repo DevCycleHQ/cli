@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`usages runs against a dart test file 1`] = `
+"
+DevCycle Variable Usage:
+
+1. string-variable
+	- test-utils/fixtures/usages/sample.dart:L81
+2. boolean-variable
+	- test-utils/fixtures/usages/sample.dart:L92
+3. integer-variable
+	- test-utils/fixtures/usages/sample.dart:L102
+4. decimal-variable
+	- test-utils/fixtures/usages/sample.dart:L112
+5. json-array-variable
+	- test-utils/fixtures/usages/sample.dart:L122
+6. json-object-variable
+	- test-utils/fixtures/usages/sample.dart:L135
+"
+`;
+
+exports[`usages runs against a go test file 1`] = `
+"
+DevCycle Variable Usage:
+
+1. hello-test
+	- test-utils/fixtures/usages/golang.go:L1
+"
+`;
+
+exports[`usages runs against a node test file 1`] = `
+"
+DevCycle Variable Usage:
+
+1. simple-case
+	- test-utils/fixtures/usages/nodejs.js:L1
+	- test-utils/fixtures/usages/nodejs.js:L2
+2. single-quotes
+	- test-utils/fixtures/usages/nodejs.js:L4
+3. multi-line
+	- test-utils/fixtures/usages/nodejs.js:L10
+4. multi-line-comment
+	- test-utils/fixtures/usages/nodejs.js:L20
+5. user-object
+	- test-utils/fixtures/usages/nodejs.js:L23
+6. user-constructor
+	- test-utils/fixtures/usages/nodejs.js:L24
+7. multi-line-user-object
+	- test-utils/fixtures/usages/nodejs.js:L25
+8. multiline-extra-comma
+	- test-utils/fixtures/usages/nodejs.js:L36
+"
+`;
+
+exports[`usages runs against a react test file 1`] = `
+"
+DevCycle Variable Usage:
+
+1. simple-case
+	- test-utils/fixtures/usages/react.js:L1
+	- test-utils/fixtures/usages/react.js:L6
+	- test-utils/fixtures/usages/react.js:L11
+"
+`;

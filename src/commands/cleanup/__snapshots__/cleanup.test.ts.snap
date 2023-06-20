@@ -1,0 +1,158 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cleanup correctly replaces aliases 1`] = `
+"console.log('isDefaulted: ' + true)
+console.log({
+    key: \\"simple-case\\",
+    value: false,
+    defaultValue: false,
+    isDefaulted: true
+})
+
+const x = 0
+
+console.log(false)
+
+console.log(false)
+
+function hello() {
+    console.log(\\"HELLO\\")
+}
+"
+`;
+
+exports[`cleanup refactors correctly when value is JSON 1`] = `
+"const simpleCaseValue = { \\"foo\\": \\"bar\\" }
+
+console.log('isDefaulted: ' + true)
+console.log({
+    key: \\"simple-case\\",
+    value: { \\"foo\\": \\"bar\\" },
+    defaultValue: { \\"foo\\": \\"bar\\" },
+    isDefaulted: true
+})
+
+// Simple Case is true
+console.log('obj var .value is truthy')
+
+const x = 1
+
+console.log('obj.value is truthy')
+
+console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log({ \\"foo\\": \\"bar\\" })
+
+function hello() {
+    console.log(\\"HELLO\\")
+}
+"
+`;
+
+exports[`cleanup refactors correctly when value is a number 1`] = `
+"const simpleCaseValue = 3
+
+console.log('isDefaulted: ' + true)
+console.log({
+    key: \\"simple-case\\",
+    value: 3,
+    defaultValue: 3,
+    isDefaulted: true
+})
+
+// Simple Case is true
+console.log('obj var .value is truthy')
+console.log('value var === 3')
+
+const x = 1
+
+console.log('obj.value is truthy')
+
+console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log(3)
+
+function hello() {
+    console.log(\\"HELLO\\")
+}
+"
+`;
+
+exports[`cleanup refactors correctly when value is a string 1`] = `
+"const simpleCaseValue = \\"My String\\"
+
+console.log('isDefaulted: ' + true)
+console.log({
+    key: \\"simple-case\\",
+    value: \\"My String\\",
+    defaultValue: \\"My String\\",
+    isDefaulted: true
+})
+
+// Simple Case is true
+console.log('obj var .value is truthy')
+
+const x = 1
+
+console.log('obj.value is truthy')
+
+console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log(\\"My String\\")
+
+function hello() {
+    console.log(\\"HELLO\\")
+}
+"
+`;
+
+exports[`cleanup refactors correctly when value=false 1`] = `
+"console.log('isDefaulted: ' + true)
+console.log({
+    key: \\"simple-case\\",
+    value: false,
+    defaultValue: false,
+    isDefaulted: true
+})
+
+const x = 0
+
+console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log(false)
+
+function hello() {
+    console.log(\\"HELLO\\")
+}
+"
+`;
+
+exports[`cleanup refactors correctly when value=true 1`] = `
+"console.log('isDefaulted: ' + true)
+console.log({
+    key: \\"simple-case\\",
+    value: true,
+    defaultValue: true,
+    isDefaulted: true
+})
+
+const someVar = dvcClient.variable(user, \\"some-var\\", \\"stringy\\")
+const templateVar = \`Hello, \${someVar}\`
+const concatVar = \\"Goodbye, \\" + someVar
+// Simple Case is true
+console.log('obj var .value is truthy')
+
+const x = 1
+
+console.log('obj.value === true')
+console.log('obj.value is truthy')
+
+console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
+
+console.log(true)
+
+function hello() {
+    console.log(\\"HELLO\\")
+}
+"
+`;
