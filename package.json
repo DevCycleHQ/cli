@@ -40,6 +40,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "minimatch": "^5.0.1",
+    "mocha-chai-jest-snapshot": "^1.1.4",
     "node-emoji": "^1.11.0",
     "open": "^8.4.2",
     "openapi-zod-client": "^1.7.1",

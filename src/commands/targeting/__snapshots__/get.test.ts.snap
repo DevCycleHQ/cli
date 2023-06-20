@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`targeting get includes environment in query params 1`] = `
+"├─ Production
+│  ├─ status
+│  │  └─ enabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Staging
+│  ├─ status
+│  │  └─ disabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Testing
+│  └─ status
+│     └─ disabled
+└─ Development
+   └─ status
+      └─ disabled
+"
+`;
+
+exports[`targeting get returns all targeting for a feature 1`] = `
+"├─ Production
+│  ├─ status
+│  │  └─ enabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Staging
+│  ├─ status
+│  │  └─ disabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Testing
+│  └─ status
+│     └─ disabled
+└─ Development
+   └─ status
+      └─ disabled
+"
+`;
+
+exports[`targeting get uses prompts when feature is not provided 1`] = `
+"├─ Production
+│  ├─ status
+│  │  └─ enabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Staging
+│  ├─ status
+│  │  └─ disabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Testing
+│  └─ status
+│     └─ disabled
+└─ Development
+   └─ status
+      └─ disabled
+"
+`;

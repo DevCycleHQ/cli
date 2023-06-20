@@ -1,7 +1,10 @@
 import { Args } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
+import { fetchEnvironments } from '../../api/environments'
+import { fetchVariations } from '../../api/variations'
 import { fetchTargetingForFeature } from '../../api/targeting'
 import { environmentPrompt, EnvironmentPromptResult, featurePrompt, FeaturePromptResult } from '../../ui/prompts'
+import { renderTargetingTree } from '../../ui/targetingTree'
 import Base from '../base'
 
 export default class DetailedTargeting extends Base {
@@ -60,6 +63,14 @@ export default class DetailedTargeting extends Base {
             params.feature,
             params.environment
         )
-        return this.writer.showResults(targeting)
+
+        if (flags.headless) {
+            this.writer.showResults(targeting)
+        } else {
+            // TODO: reuse the data fetched for the prompts
+            const environments = await fetchEnvironments(this.authToken, this.projectKey)
+            const variations = await fetchVariations(this.authToken, this.projectKey, params.feature)
+            renderTargetingTree(targeting, environments, variations)
+        }
     }
 }
