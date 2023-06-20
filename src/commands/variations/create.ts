@@ -11,8 +11,7 @@ import { CreateVariationDto } from '../../api/schemas'
 import { ZodError } from 'zod'
 import { createVariation, CreateVariationParams } from '../../api/variations'
 import { getVariationVariableValuePrompts } from '../../ui/prompts/variationPrompts'
-import { Variable } from '../../api/schemas'
-import {fetchVariables} from "../../api/variables";
+import { fetchVariables } from '../../api/variables'
 
 export default class CreateVariation extends CreateCommand {
     static hidden = false

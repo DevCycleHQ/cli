@@ -3,14 +3,8 @@ import Base from './base'
 import { Prompt } from '../ui/prompts'
 import inquirer from 'inquirer'
 
-type namedObject = {
-    name: string
-}
-
 export default abstract class UpdateCommand extends Base {
     authRequired = true
-    chosenFields: string[] = []
-    promptsToHandle: Array<namedObject> = []
 
     static args = {
         key: Args.string({
