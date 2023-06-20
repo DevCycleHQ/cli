@@ -1,14 +1,14 @@
 import { expect } from '@oclif/test'
 import chai from 'chai'
-import { jestSnapshotPlugin, _getSnapshotManager } from 'mocha-chai-jest-snapshot'
+import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import inquirer from 'inquirer'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 
-beforeEach(setCurrentTestFile(__filename))
-chai.use(jestSnapshotPlugin())
-
 describe('targeting get', () => {
+    beforeEach(setCurrentTestFile(__filename))
+    chai.use(jestSnapshotPlugin())
+
     const projectKey = 'test-project'
     const featureKey = 'test-feature'
     const authFlags = [

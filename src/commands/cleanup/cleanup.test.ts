@@ -1,151 +1,12 @@
 import { expect, test } from '@oclif/test'
-
-const expectedTrue = `console.log('isDefaulted: ' + true)
-console.log({
-    key: "simple-case",
-    value: true,
-    defaultValue: true,
-    isDefaulted: true
-})
-
-const someVar = dvcClient.variable(user, "some-var", "stringy")
-const templateVar = \`Hello, \${someVar}\`
-const concatVar = "Goodbye, " + someVar
-// Simple Case is true
-console.log('obj var .value is truthy')
-
-const x = 1
-
-console.log('obj.value === true')
-console.log('obj.value is truthy')
-
-console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
-
-console.log(true)
-
-function hello() {
-    console.log("HELLO")
-}
-`
-
-const expectedFalse = `console.log('isDefaulted: ' + true)
-console.log({
-    key: "simple-case",
-    value: false,
-    defaultValue: false,
-    isDefaulted: true
-})
-
-const x = 0
-
-console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
-
-console.log(false)
-
-function hello() {
-    console.log("HELLO")
-}
-`
-
-const expectedNumber = `const simpleCaseValue = 3
-
-console.log('isDefaulted: ' + true)
-console.log({
-    key: "simple-case",
-    value: 3,
-    defaultValue: 3,
-    isDefaulted: true
-})
-
-// Simple Case is true
-console.log('obj var .value is truthy')
-console.log('value var === 3')
-
-const x = 1
-
-console.log('obj.value is truthy')
-
-console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
-
-console.log(3)
-
-function hello() {
-    console.log("HELLO")
-}
-`
-
-const expectedString = `const simpleCaseValue = "My String"
-
-console.log('isDefaulted: ' + true)
-console.log({
-    key: "simple-case",
-    value: "My String",
-    defaultValue: "My String",
-    isDefaulted: true
-})
-
-// Simple Case is true
-console.log('obj var .value is truthy')
-
-const x = 1
-
-console.log('obj.value is truthy')
-
-console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
-
-console.log("My String")
-
-function hello() {
-    console.log("HELLO")
-}
-`
-
-const expectedJSON = `const simpleCaseValue = { "foo": "bar" }
-
-console.log('isDefaulted: ' + true)
-console.log({
-    key: "simple-case",
-    value: { "foo": "bar" },
-    defaultValue: { "foo": "bar" },
-    isDefaulted: true
-})
-
-// Simple Case is true
-console.log('obj var .value is truthy')
-
-const x = 1
-
-console.log('obj.value is truthy')
-
-console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
-
-console.log({ "foo": "bar" })
-
-function hello() {
-    console.log("HELLO")
-}
-`
-
-const expectedAlias = `console.log('isDefaulted: ' + true)
-console.log({
-    key: "simple-case",
-    value: false,
-    defaultValue: false,
-    isDefaulted: true
-})
-
-const x = 0
-
-console.log(false)
-
-console.log(false)
-
-function hello() {
-    console.log("HELLO")
-}
-`
+import chai from 'chai'
+import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
+import { setCurrentTestFile } from '../../../test-utils'
 
 describe('cleanup', () => {
+    beforeEach(setCurrentTestFile(__filename))
+    chai.use(jestSnapshotPlugin())
+
     test
         .stdout()
         .command([
@@ -156,7 +17,7 @@ describe('cleanup', () => {
             '--output', 'console'
         ])
         .it('refactors correctly when value=true', (ctx) => {
-            expect(ctx.stdout).to.equal(expectedTrue)
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     test
@@ -169,7 +30,7 @@ describe('cleanup', () => {
             '--output', 'console'
         ])
         .it('refactors correctly when value=false', (ctx) => {
-            expect(ctx.stdout).to.equal(expectedFalse)
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     test
@@ -182,7 +43,7 @@ describe('cleanup', () => {
             '--output', 'console'
         ])
         .it('refactors correctly when value is a number', (ctx) => {
-            expect(ctx.stdout).to.equal(expectedNumber)
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     test
@@ -195,7 +56,7 @@ describe('cleanup', () => {
             '--output', 'console'
         ])
         .it('refactors correctly when value is a string', (ctx) => {
-            expect(ctx.stdout).to.equal(expectedString)
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     test
@@ -208,7 +69,7 @@ describe('cleanup', () => {
             '--output', 'console'
         ])
         .it('refactors correctly when value is JSON', (ctx) => {
-            expect(ctx.stdout).to.equal(expectedJSON)
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     test
@@ -222,6 +83,6 @@ describe('cleanup', () => {
             '--output', 'console'
         ])
         .it('correctly replaces aliases', (ctx) => {
-            expect(ctx.stdout).to.equal(expectedAlias)
+            expect(ctx.stdout).toMatchSnapshot()
         })
 })

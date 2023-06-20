@@ -1,4 +1,3 @@
-import { _getSnapshotManager } from 'mocha-chai-jest-snapshot'
 import { HookFunction } from 'mocha'
 
 /**
