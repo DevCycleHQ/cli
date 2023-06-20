@@ -10,7 +10,7 @@ import {
     variableValueNumberPrompt,
     variableValueStringPrompt
 } from './variablePrompts'
-import inquirer, { ListQuestion, Question } from 'inquirer'
+import inquirer, { Answers, ListQuestion, Question } from 'inquirer'
 
 type VariationChoice = {
     name: string,
@@ -63,7 +63,7 @@ export async function getVariationVariableValuePrompts(
     featureKey: string,
     variables: Variable[],
     defaultValues: Record<string, boolean | string | number> = {}
-): Promise<Prompt[]> {
+): Promise<Answers> {
     const variablePrompts = []
     for (const variable of variables) {
         switch (variable.type) {
@@ -88,12 +88,6 @@ export async function getVariationVariableValuePrompts(
                 )
         }
     }
-    return variablePrompts as Prompt[]
-}
-export async function promptVariableAnswers(
-    variablePrompts: (Question | ListQuestion)[],
-    variables: Record<string, unknown>[]
-) {
     const variableAnswers = await inquirer.prompt(variablePrompts, {})
 
     for (const [key, value] of Object.entries(variableAnswers)) {
