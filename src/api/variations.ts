@@ -28,6 +28,27 @@ export const fetchVariations = async (token: string, project_id: string, feature
     return response
 }
 
+export const fetchVariationByKey = async (
+    token: string,
+    project_id: string,
+    feature_key: string,
+    variationKey: string
+): Promise<Variation> => {
+    const response = await apiClient.get('/v1/projects/:project/features/:feature/variations/:key', {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+        params: {
+            project: project_id,
+            feature: feature_key,
+            key: variationKey
+        }
+    })
+
+    return response
+}
+
 export const createVariation = async (
     token: string,
     project_id: string,
@@ -55,7 +76,6 @@ export const updateVariation = async (
     variationKey: string,
     variation: UpdateVariationParams
 ) => {
-    console.error(`variationKey: ${variationKey}`)
     return apiClient.patch('/v1/projects/:project/features/:feature/variations/:key',
         variation,
         {

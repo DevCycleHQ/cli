@@ -1,6 +1,6 @@
 import inquirer from 'inquirer'
 import UpdateCommand from '../updateCommand'
-import { updateVariation, UpdateVariationParams } from '../../api/variations'
+import {fetchVariationByKey, fetchVariations, updateVariation, UpdateVariationParams} from '../../api/variations'
 import { featurePrompt, keyPrompt, namePrompt } from '../../ui/prompts'
 import { Variable } from '../../api/schemas'
 
@@ -25,6 +25,10 @@ export default class UpdateVariation extends UpdateCommand {
         feature: Args.string({
             name: 'feature',
             description: 'Feature key or id'
+        }),
+        variation: Args.string({
+            name: 'variation',
+            description: 'Variation key'
         }),
         ...UpdateCommand.args
     }
@@ -54,11 +58,17 @@ export default class UpdateVariation extends UpdateCommand {
         } else {
             featureKey = args.feature
         }
-        const { variation } = await inquirer.prompt([variationPrompt], {
-            token: this.authToken,
-            projectKey: this.projectKey,
-            featureKey
-        })
+        let selectedVariation
+        if (!args.variation) {
+            const { variation } = await inquirer.prompt([variationPrompt], {
+                token: this.authToken,
+                projectKey: this.projectKey,
+                featureKey
+            })
+            selectedVariation = variation
+        } else {
+            selectedVariation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, args.variation)
+        }
 
         this.prompts.push(await getVariationVariablePrompt(
             this.authToken,
@@ -68,27 +78,24 @@ export default class UpdateVariation extends UpdateCommand {
 
         this.writer.blankLine()
         this.writer.statusMessage('Current values:')
-        this.writer.statusMessage(JSON.stringify(variation, null, 2))
+        this.writer.statusMessage(JSON.stringify(selectedVariation, null, 2))
         this.writer.blankLine()
 
         const data = await this.populateParameters(UpdateVariationParams, this.prompts, flags, true)
-        console.error(`TEST: ${JSON.stringify(data)}`)
-        console.error(`Variation: ${JSON.stringify(variation)}`)
         let variableAnswers: Record<string, unknown> = {}
         if (!variables && data.variables) {
-            const variationVariableValuePrompts = await getVariationVariableValuePrompts(
+            variableAnswers = await getVariationVariableValuePrompts(
                 featureKey,
                 data.variables as unknown as Variable[],
-                variation.variables
+                selectedVariation.variables
             )
-            variableAnswers = await inquirer.prompt(variationVariableValuePrompts)
         }
 
         const result = await updateVariation(
             this.authToken,
             this.projectKey,
             featureKey,
-            variation.key,
+            selectedVariation.key,
             {
                 ...data,
                 variables: variables ? JSON.parse(variables) : variableAnswers
