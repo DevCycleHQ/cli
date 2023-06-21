@@ -3481,10 +3481,6 @@
         "feature": {
           "name": "feature",
           "description": "Feature key or id"
-        },
-        "variationKey": {
-          "name": "key",
-          "description": "Variation key"
         }
       }
     },
@@ -3746,6 +3742,24 @@
             "bitbucket.code_usages",
             "cli"
           ]
+        },
+        "name": {
+          "name": "name",
+          "type": "option",
+          "description": "Human readable name",
+          "multiple": false
+        },
+        "variables": {
+          "name": "variables",
+          "type": "option",
+          "description": "The variables to create for the variation",
+          "multiple": false
+        },
+        "key": {
+          "name": "key",
+          "type": "option",
+          "description": "The variation key",
+          "multiple": false
         }
       },
       "args": {
@@ -3753,9 +3767,8 @@
           "name": "feature",
           "description": "Feature key or id"
         },
-        "variationKey": {
-          "name": "key",
-          "description": "Variation key"
+        "key": {
+          "name": "key"
         }
       }
     }

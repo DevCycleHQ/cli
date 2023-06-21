@@ -6,7 +6,7 @@ Create a new Variation
 * [`dvc variations create [FEATURE]`](#dvc-variations-create-feature)
 * [`dvc variations get [FEATURE]`](#dvc-variations-get-feature)
 * [`dvc variations list [FEATURE]`](#dvc-variations-list-feature)
-* [`dvc variations update [FEATURE]`](#dvc-variations-update-feature)
+* [`dvc variations update [FEATURE] [KEY]`](#dvc-variations-update-feature-key)
 
 ## `dvc variations create [FEATURE]`
 
@@ -100,17 +100,24 @@ DESCRIPTION
   List the keys of all variations in a feature
 ```
 
-## `dvc variations update [FEATURE]`
+## `dvc variations update [FEATURE] [KEY]`
 
 Update a Variation.
 
 ```
 USAGE
-  $ dvc variations update [FEATURE] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>]
-    [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless]
+  $ dvc variations update [FEATURE] [KEY] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>]
+    [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--name <value>]
+    [--variables <value>] [--key <value>]
 
 ARGUMENTS
   FEATURE  Feature key or id
+  KEY
+
+FLAGS
+  --key=<value>        The variation key
+  --name=<value>       Human readable name
+  --variables=<value>  The variables to create for the variation
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
