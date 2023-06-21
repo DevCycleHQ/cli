@@ -35,10 +35,7 @@ export const fetchVariationByKey = async (
     variationKey: string
 ): Promise<Variation> => {
     const response = await apiClient.get(`${variationsUrl}/:key`, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+        headers: buildHeaders(token),
         params: {
             project: project_id,
             feature: feature_key,
@@ -56,10 +53,7 @@ export const createVariation = async (
     variation: CreateVariationParams
 ): Promise<Feature> => {
     const response = await apiClient.post('/v1/projects/:project/features/:feature/variations', variation, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+        headers: buildHeaders(token),
         params: {
             project: project_id,
             feature: feature_key,
@@ -79,10 +73,7 @@ export const updateVariation = async (
     return apiClient.patch('/v1/projects/:project/features/:feature/variations/:key',
         variation,
         {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
+            headers: buildHeaders(token),
             params: {
                 project: project_id,
                 feature: feature_key,
