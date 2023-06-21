@@ -1,7 +1,7 @@
 
+import { CreateVariationParams } from '../../../api/schemas'
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import { AddItemPrompt, EditItemPrompt, RemoveItemPrompt, ContinuePrompt, ExitPrompt } from './promptOptions'
-import { CreateVariationParams } from '../../../api/variations'
 
 export class VariationListOptions extends ListOptionsPrompt<CreateVariationParams> {
     itemType = 'Variation'
