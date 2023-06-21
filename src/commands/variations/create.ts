@@ -10,8 +10,10 @@ import {
     variableValueStringPrompt
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
-import { createVariation, CreateVariationParams } from '../../api/variations'
+import { createVariation } from '../../api/variations'
 import { fetchVariables } from '../../api/variables'
+import { CreateVariationDto } from '../../api/schemas'
+import { ZodError } from 'zod'
 
 export default class CreateVariation extends CreateCommand {
     static hidden = false
@@ -60,52 +62,60 @@ export default class CreateVariation extends CreateCommand {
             featureKey = args.feature
         }
 
-        const params = await this.populateParameters(
-            CreateVariationParams,
-            this.prompts, {
-                key,
-                name,
-                headless
-            }
-        )
+        try {
+            const params = await this.populateParametersWithZod(
+                CreateVariationDto,
+                this.prompts, {
+                    key,
+                    name,
+                    headless
+                }
+            )
 
-        let variableAnswers: Record<string, unknown> = {}
-        if (!variables) {
-            const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, featureKey)
-            const variablePrompts = []
-            for (const variable of variablesForFeature) {
-                switch (variable.type) {
-                    case 'Boolean':
-                        variablePrompts.push(variableValueBooleanPrompt(variable.key))
-                        break
-                    case 'Number':
-                        variablePrompts.push(variableValueNumberPrompt(variable.key))
-                        break
-                    case 'JSON':
-                        variablePrompts.push(variableValueJSONPrompt(variable.key))
-                        break
-                    default:
-                        variablePrompts.push(variableValueStringPrompt(variable.key))
+            let variableAnswers: Record<string, unknown> = {}
+            if (!variables) {
+                const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, featureKey)
+                const variablePrompts = []
+                for (const variable of variablesForFeature) {
+                    switch (variable.type) {
+                        case 'Boolean':
+                            variablePrompts.push(variableValueBooleanPrompt(variable.key))
+                            break
+                        case 'Number':
+                            variablePrompts.push(variableValueNumberPrompt(variable.key))
+                            break
+                        case 'JSON':
+                            variablePrompts.push(variableValueJSONPrompt(variable.key))
+                            break
+                        default:
+                            variablePrompts.push(variableValueStringPrompt(variable.key))
+                    }
+                }
+
+                variableAnswers = await inquirer.prompt(variablePrompts, {})
+
+                for (const [key, value] of Object.entries(variableAnswers)) {
+                    const variable = variablesForFeature.find((variable) => variable.key === key)
+                    if (variable && variable.type === 'JSON') {
+                        variableAnswers[key] = JSON.parse(value as string)
+                    }
                 }
             }
 
-            variableAnswers = await inquirer.prompt(variablePrompts, {})
+            const variation = {
+                key: params.key,
+                name: params.name,
+                variables: variables ? JSON.parse(variables) : variableAnswers
+            }
 
-            for (const [key, value] of Object.entries(variableAnswers)) {
-                const variable = variablesForFeature.find((variable) => variable.key === key)
-                if (variable && variable.type === 'JSON') {
-                    variableAnswers[key] = JSON.parse(value as string)
-                }
+            const result = await createVariation(this.authToken, this.projectKey, featureKey, variation)
+            this.writer.showResults(result)
+
+        } catch (e) {
+            if (e instanceof ZodError) {
+                this.reportZodValidationErrors(e)
+                return
             }
         }
-
-        const variation = {
-            key: params.key,
-            name: params.name,
-            variables: variables ? JSON.parse(variables) : variableAnswers
-        }
-
-        const result = await createVariation(this.authToken, this.projectKey, featureKey, variation)
-        this.writer.showResults(result)
     }
 }
