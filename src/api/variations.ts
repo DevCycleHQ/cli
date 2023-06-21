@@ -1,19 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator'
 import apiClient from './apiClient'
-import { Feature, Variation } from './schemas'
-
-export class CreateVariationParams {
-    @IsString()
-    @IsNotEmpty()
-    key: string
-
-    @IsString()
-    @IsNotEmpty()
-    name: string
-
-    @IsOptional()
-    variables?: { [key: string]: string | number | boolean | Record<string, unknown> }
-}
+import { CreateVariationParams, Feature, Variation } from './schemas'
 
 export const fetchVariations = async (token: string, project_id: string, feature_key: string): Promise<Variation[]> => {
     const response = await apiClient.get('/v1/projects/:project/features/:feature/variations', {
