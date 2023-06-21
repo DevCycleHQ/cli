@@ -1,30 +1,5 @@
-import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import apiClient, { axiosClient } from './apiClient'
-import { Variable } from './schemas'
-
-export const variableTypes = ['String', 'Boolean', 'Number', 'JSON']
-
-export class CreateVariableParams {
-    @IsString()
-    @IsOptional()
-    name: string
-
-    @IsString()
-    @IsOptional()
-    description?: string
-
-    @IsNotEmpty()
-    @IsString()
-    key: string
-
-    @IsOptional()
-    @IsString()
-    feature?: string
-
-    @IsString()
-    @IsIn(variableTypes)
-    type: 'String' | 'Boolean' | 'Number' | 'JSON'
-}
+import { CreateVariableParams, Variable } from './schemas'
 
 export const createVariable = async (
     token: string,
@@ -35,7 +10,7 @@ export const createVariable = async (
         name: params.name,
         description: params.description,
         key: params.key,
-        _feature: params.feature,
+        _feature: params._feature,
         type: params.type,
     }
     return apiClient.post('/v1/projects/:project/variables', data, {
@@ -59,7 +34,7 @@ export const updateVariable = async (
         name: params?.name,
         description: params?.description,
         key: params?.key,
-        _feature: params?.feature,
+        _feature: params?._feature,
         type: params?.type,
     }
     return apiClient.patch('/v1/projects/:project/variables/:key',
