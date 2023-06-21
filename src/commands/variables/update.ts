@@ -1,17 +1,18 @@
 import inquirer from '../../ui/autocomplete'
 import {
     updateVariable,
-    CreateVariableParams
 } from '../../api/variables'
 import {
     VariablePromptResult,
     descriptionPrompt,
-    featurePrompt,
+    variableFeaturePrompt,
     namePrompt,
     variablePrompt,
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
 import { Flags } from '@oclif/core'
+import { UpdateVariableDto } from '../../api/schemas'
+import { ZodError } from 'zod'
 
 export default class UpdateVariable extends UpdateCommand {
     static hidden = false
@@ -20,7 +21,7 @@ export default class UpdateVariable extends UpdateCommand {
     prompts = [
         namePrompt,
         descriptionPrompt,
-        featurePrompt
+        variableFeaturePrompt
     ]
 
     static flags = {
@@ -37,6 +38,7 @@ export default class UpdateVariable extends UpdateCommand {
         const { args, flags } = await this.parse(UpdateVariable)
         const { key } = args
         const { headless } = flags
+        flags._feature = flags.feature
 
         await this.requireProject()
         let variableKey = key
@@ -55,18 +57,23 @@ export default class UpdateVariable extends UpdateCommand {
             this.writer.blankLine()
         }
 
-        const params = await this.populateParameters(
-            CreateVariableParams,
-            this.prompts,
-            flags,
-            true
-        )
-        const result = await updateVariable(
-            this.authToken,
-            this.projectKey,
-            variableKey,
-            params
-        )
-        this.writer.showResults(result)
+        try {
+            const params = await this.populateParametersWithZod(
+                UpdateVariableDto,
+                this.prompts,
+                flags,
+            )
+            const result = await updateVariable(
+                this.authToken,
+                this.projectKey,
+                variableKey,
+                params
+            )
+            this.writer.showResults(result)
+        } catch (e) {
+            if (e instanceof ZodError) {
+                this.reportZodValidationErrors(e)
+            }
+        }
     }
 }

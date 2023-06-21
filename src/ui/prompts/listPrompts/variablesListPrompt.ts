@@ -1,11 +1,9 @@
-import { plainToClass } from 'class-transformer'
-import { CreateVariableParams } from '../../../api/variables'
 import { createVariablePrompts } from '../variablePrompts'
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import inquirer from 'inquirer'
-import { validateSync } from 'class-validator'
-import { reportValidationErrors } from '../../../utils/reportValidationErrors'
 import { AddItemPrompt, EditItemPrompt, RemoveItemPrompt, ContinuePrompt, ExitPrompt } from './promptOptions'
+import { CreateVariableDto, CreateVariableParams, UpdateVariableDto } from '../../../api/schemas'
+import { errorMap } from '../../../api/apiClient'
 
 export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams> {
     itemType = 'Variable'
@@ -20,13 +18,11 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
             ExitPrompt
         ]
     }
-    variablePropertyPrompts = createVariablePrompts.filter((prompt) => prompt.name !== 'feature')
+    variablePropertyPrompts = createVariablePrompts.filter((prompt) => prompt.name !== '_feature')
 
     async promptAddItem<CreateVariableParams>(): Promise<ListOption<CreateVariableParams>> {
-        // TODO: the following validation code is taken from createCommand.ts,
-        // rip it out of there and put it in a utility function to be able to be reused
         const variable = await inquirer.prompt(this.variablePropertyPrompts)
-        this.validateVariable(variable)
+        CreateVariableDto.parse(variable, { errorMap })
         return {
             name: variable.name,
             value: variable as CreateVariableParams
@@ -55,10 +51,10 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         }))
 
         const editedVariable = await inquirer.prompt(filledOutPrompts)
-        this.validateVariable(editedVariable)
+        UpdateVariableDto.parse(editedVariable, { errorMap })
         if (index >= 0) {
             list[index] = {
-                name: editedVariable.name,
+                name: editedVariable.name || editedVariable.key,
                 value: editedVariable as CreateVariableParams
             }
         }
@@ -66,16 +62,9 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
 
     transformToListOptions(list: CreateVariableParams[]): ListOption<CreateVariableParams>[] {
         return list.map((createVariable) => ({
-            name: createVariable.name,
+            name: createVariable.name || createVariable.key,
             value: createVariable
         }))
     }
     
-    validateVariable(variable: CreateVariableParams) {
-        const variableParams = plainToClass(CreateVariableParams, variable)
-        const errors = validateSync(variableParams, {
-            whitelist: true,
-        })
-        reportValidationErrors(errors)
-    }
 }

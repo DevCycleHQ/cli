@@ -7,13 +7,13 @@ import jsYaml from 'js-yaml'
 import { RepoConfigFromFile, UserConfigFromFile } from '../types'
 import { ClassConstructor, plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
-import { reportValidationErrors } from '../utils/reportValidationErrors'
+import { reportValidationErrors, reportZodValidationErrors } from '../utils/reportValidationErrors'
 import { getToken } from '../auth/getToken'
 import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
 import Writer from '../ui/writer'
-import { setDVCReferrer } from '../api/apiClient'
+import { errorMap, setDVCReferrer } from '../api/apiClient'
 import { Prompt } from '../ui/prompts'
 import { filterPrompts, mergeFlagsAndAnswers, validateParams } from '../utils/prompts'
 import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
@@ -266,11 +266,7 @@ export default abstract class Base extends Command {
         } 
         const parse = schema.parse(
             input, 
-            { 
-                errorMap: (e) => {
-                    return { message: `Invalid value for ${e.path.join('.')}: ${e?.message}` }
-                }
-            }
+            { errorMap }
         )
         return parse
     }
@@ -283,9 +279,6 @@ export default abstract class Base extends Command {
     }
 
     protected reportZodValidationErrors(error: ZodError): void {
-        const errorsByKey = error.flatten().fieldErrors
-        for (const issues of Object.values(errorsByKey)) {
-            issues?.[0] && this.writer.showError(issues[0])        
-        }
+        reportZodValidationErrors(error, this.writer)
     }
 }

@@ -1,5 +1,7 @@
 import inquirer from 'inquirer'
 import Writer from '../../writer'
+import { reportZodValidationErrors } from '../../../utils/reportValidationErrors'
+import { ZodError } from 'zod'
 
 /**
  * Map list items to a human readable name to make it easier to display to the user
@@ -127,7 +129,9 @@ export abstract class ListOptionsPrompt<T> {
                     return this.list.map((item) => item.value) as unknown as T[]
             }
         } catch (e) {
-            if (e instanceof Error) {
+            if (e instanceof ZodError) {
+                reportZodValidationErrors(e, this.writer)
+            } else if (e instanceof Error) {
                 this.writer.showError(e.message)
             }
         }

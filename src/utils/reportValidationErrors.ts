@@ -1,4 +1,6 @@
 import { ValidationError } from 'class-validator'
+import { ZodError } from 'zod'
+import Writer from '../ui/writer'
 
 export function reportValidationErrors(errors: ValidationError[]): void {
     if (errors.length) {
@@ -9,5 +11,12 @@ export function reportValidationErrors(errors: ValidationError[]): void {
 
         throw new Error(`Failed validation at property "${error.property}": ` +
             `${Object.values(error.constraints ?? {})[0]}`)
+    }
+}
+
+export function reportZodValidationErrors(error: ZodError, writer: Writer): void {
+    const errorsByKey = error.flatten().fieldErrors
+    for (const issues of Object.values(errorsByKey)) {
+        issues?.[0] && writer.showError(issues[0])        
     }
 }

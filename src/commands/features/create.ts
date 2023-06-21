@@ -60,9 +60,7 @@ export default class CreateFeature extends CreateCommand {
         } catch (e) {
             if (e instanceof ZodError) {
                 this.reportZodValidationErrors(e)
-            }
-
-            if (e instanceof Error) {
+            } else if (e instanceof Error) {
                 this.writer.showError(e.message)
             }
         }

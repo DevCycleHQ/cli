@@ -1,11 +1,11 @@
-import { Variable } from '../../api/schemas'
-import { fetchVariables, variableTypes } from '../../api/variables'
+import { CreateVariableDto, Variable } from '../../api/schemas'
+import { fetchVariables } from '../../api/variables'
 import { ListQuestion, Question } from 'inquirer'
 import { AutoCompletePrompt, Prompt, PromptResult } from '.'
 import chalk from 'chalk'
 import { autocompleteSearch } from '../autocomplete'
 import { descriptionPrompt, keyPrompt, namePrompt } from './commonPrompts'
-import { featurePrompt } from './featurePrompts'
+import { variableFeaturePrompt } from './featurePrompts'
 
 type VariableChoice = {
     name: string,
@@ -48,7 +48,7 @@ export const variableTypePrompt = {
     name: 'type',
     message: 'The type of variable',
     type: 'list',
-    choices: variableTypes
+    choices: CreateVariableDto.shape.type.options
 }
 
 export const variableValueStringPrompt = (variableKey: string): Question => {
@@ -122,5 +122,5 @@ export const createVariablePrompts: (Prompt | AutoCompletePrompt)[] = [
     namePrompt,
     descriptionPrompt,
     variableTypePrompt,
-    featurePrompt
+    variableFeaturePrompt
 ]

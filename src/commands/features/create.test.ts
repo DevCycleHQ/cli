@@ -154,7 +154,7 @@ describe('features create', () => {
         .it('returns an error if key is not provided',
             (ctx) => {
                 expect(ctx.stdout).to.contain(
-                    'Invalid value for key: undefined'
+                    'key is a required field'
                 )
             })
     
@@ -173,7 +173,7 @@ describe('features create', () => {
         .it('returns an error if name is not provided',
             (ctx) => {
                 expect(ctx.stdout).to.contain(
-                    'Invalid value for name: undefined'
+                    'name is a required field'
                 )
             })
 
