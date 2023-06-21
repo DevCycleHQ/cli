@@ -81,27 +81,34 @@ export default class UpdateVariation extends UpdateCommand {
         this.writer.statusMessage(JSON.stringify(selectedVariation, null, 2))
         this.writer.blankLine()
 
-        const data = await this.populateParameters(UpdateVariationParams, this.prompts, flags, true)
-        let variableAnswers: Record<string, unknown> = {}
-        if (!variables && data.variables) {
-            variableAnswers = await getVariationVariableValuePrompts(
+        try {
+            const data = await this.populateParameters(UpdateVariationParams, this.prompts, flags, true)
+            let variableAnswers: Record<string, unknown> = {}
+            if (!variables && data.variables) {
+                variableAnswers = await getVariationVariableValuePrompts(
+                    featureKey,
+                    data.variables as unknown as Variable[],
+                    selectedVariation.variables
+                )
+            }
+
+            const result = await updateVariation(
+                this.authToken,
+                this.projectKey,
                 featureKey,
-                data.variables as unknown as Variable[],
-                selectedVariation.variables
+                selectedVariation.key,
+                {
+                    ...data,
+                    variables: variables ? JSON.parse(variables) : variableAnswers
+                }
             )
+            this.writer.showResults(result)
+        } catch (e) {
+            if (e instanceof Error) {
+                this.writer.showError(e.message)
+            }
         }
 
-        const result = await updateVariation(
-            this.authToken,
-            this.projectKey,
-            featureKey,
-            selectedVariation.key,
-            {
-                ...data,
-                variables: variables ? JSON.parse(variables) : variableAnswers
-            }
-        )
-        this.writer.showResults(result)
 
     }
 }
