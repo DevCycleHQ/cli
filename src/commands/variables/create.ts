@@ -1,11 +1,11 @@
 import { Flags } from '@oclif/core'
 import {
     createVariable,
-    CreateVariableParams,
-    variableTypes
 } from '../../api/variables'
 import CreateCommand from '../createCommand'
 import { createVariablePrompts } from '../../ui/prompts'
+import { CreateVariableDto } from '../../api/schemas'
+import { ZodError } from 'zod'
 
 export default class CreateVariable extends CreateCommand {
     static hidden = false
@@ -15,7 +15,7 @@ export default class CreateVariable extends CreateCommand {
         ...CreateCommand.flags,
         'type': Flags.string({
             description: 'The type of variable',
-            options: variableTypes
+            options: CreateVariableDto.shape.type.options
         }),
         'feature': Flags.string({
             description: 'The key or id of the feature to create the variable for'
@@ -35,9 +35,16 @@ export default class CreateVariable extends CreateCommand {
             this.writer.showError('The key, name, feature, and type flags are required')
             return
         }
+        flags._feature = feature
 
-        const params = await this.populateParameters(CreateVariableParams, this.prompts, flags)
-        const result = await createVariable(this.authToken, this.projectKey, params)
-        this.writer.showResults(result)
+        try {
+            const params = await this.populateParametersWithZod(CreateVariableDto, this.prompts, flags)
+            const result = await createVariable(this.authToken, this.projectKey, params)
+            this.writer.showResults(result)
+        } catch (e) {
+            if (e instanceof ZodError) {
+                this.reportZodValidationErrors(e)
+            }
+        }
     }
 }

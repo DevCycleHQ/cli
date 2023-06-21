@@ -37,6 +37,11 @@ export const featurePrompt = {
     source: featureChoices
 }
 
+export const variableFeaturePrompt = {
+    ...featurePrompt,
+    name: '_feature',
+}
+
 type SDKVisibilityChoice = {
     name: string,
     value: 'mobile' | 'client' | 'server',
