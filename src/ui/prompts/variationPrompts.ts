@@ -92,13 +92,12 @@ export async function getVariationVariableValuePrompts(
                 )
         }
     }
-    const variableAnswers = await inquirer.prompt(variablePrompts, {})
-
-    for (const [key, value] of Object.entries(variableAnswers)) {
+    const promptAnswers = await inquirer.prompt(variablePrompts, {})
+    const variableAnswers: Answers = {}
+    for (const [key, value] of Object.entries(promptAnswers)) {
         const variable = variables.find((variable) => variable.key === key)
-        if (variable && variable.type === 'JSON') {
-            variableAnswers[key] = JSON.parse(value as string)
-        }
+        if (!variable) continue
+        variableAnswers[key] = variable.type === 'JSON' ? JSON.parse(value as string) : value
     }
     return variableAnswers
 }
