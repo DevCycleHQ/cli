@@ -52,7 +52,7 @@ export default class CreateEnvironment extends CreateCommand {
             this.writer.showResults(result)
         } catch (e) {
             if (e instanceof ZodError) {
-                this.writer.showError(`Input failed validation with the following errors:\n${e.message}`)    
+                this.reportZodValidationErrors(e)
             }
         }
     }

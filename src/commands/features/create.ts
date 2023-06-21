@@ -1,8 +1,10 @@
-import { createFeature, CreateFeatureParams } from '../../api/features'
+import { createFeature } from '../../api/features'
 import { descriptionPrompt, keyPrompt, namePrompt, sdkVisibilityPrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
 import { Flags } from '@oclif/core'
+import { CreateFeatureDto } from '../../api/schemas'
+import { ZodError } from 'zod'
 
 export default class CreateFeature extends CreateCommand {
     static hidden = false
@@ -31,7 +33,7 @@ export default class CreateFeature extends CreateCommand {
         }
 
         try {
-            const params = await this.populateParameters(CreateFeatureParams, this.prompts, {
+            const params = await this.populateParametersWithZod(CreateFeatureDto, this.prompts, {
                 key,
                 name,
                 description,
@@ -48,7 +50,7 @@ export default class CreateFeature extends CreateCommand {
         
                 // TODO: Add variation prompt
         
-                if (!sdkVisibility) {
+                if (!params.sdkVisibility) {
                     params.sdkVisibility = await sdkVisibilityPrompt()
                 }
             }
@@ -56,6 +58,10 @@ export default class CreateFeature extends CreateCommand {
             const result = await createFeature(this.authToken, this.projectKey, params)
             this.writer.showResults(result)
         } catch (e) {
+            if (e instanceof ZodError) {
+                this.reportZodValidationErrors(e)
+            }
+
             if (e instanceof Error) {
                 this.writer.showError(e.message)
             }

@@ -102,10 +102,10 @@ const EnvironmentSettings = z
     .object({ appIconURI: z.string().max(2048) })
     .partial()
 const CreateEnvironmentDto = z.object({
-    name: z.string().max(100),
+    name: z.string().max(100).nonempty(),
     key: z
         .string()
-        .max(100)
+        .max(100).nonempty()
         .regex(/^[a-z0-9-_.]+$/),
     description: z.string().max(1000).optional(),
     color: z
