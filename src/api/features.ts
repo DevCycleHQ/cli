@@ -1,54 +1,8 @@
 import { AxiosError } from 'axios'
 import apiClient from './apiClient'
-import { Feature } from './schemas'
-import { IsNotEmpty, IsString, IsOptional, ValidateNested, IsBoolean } from 'class-validator'
-import { CreateVariableParams } from './variables'
-import { CreateVariationParams } from './variations'
-import { Type } from 'class-transformer'
+import { CreateFeatureParams, Feature } from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
-
-export class SDKVisibilityParams {
-    @IsBoolean()
-    @IsNotEmpty()
-    mobile: boolean
-    
-    @IsBoolean()
-    @IsNotEmpty()
-    client: boolean
-
-    @IsBoolean()
-    @IsNotEmpty()
-    server: boolean
-}
-
-export class CreateFeatureParams {
-    @IsString()
-    @IsNotEmpty()
-    name: string
-
-    @IsString()
-    @IsNotEmpty()
-    key: string
-
-    @IsString()
-    @IsOptional()
-    description?: string
-
-    @IsOptional()
-    @ValidateNested({ each: true })
-    @Type(() => CreateVariableParams)
-    variables?: CreateVariableParams[]
-
-    @IsOptional()
-    @ValidateNested({ each: true })
-    @Type(() => CreateVariationParams)
-    variations?: CreateVariationParams[]
-
-    @IsOptional()
-    @Type(() => SDKVisibilityParams)
-    sdkVisibility?: SDKVisibilityParams
-}
 
 const FEATURE_URL = '/v1/projects/:project/features'
 

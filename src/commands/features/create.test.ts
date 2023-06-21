@@ -154,7 +154,7 @@ describe('features create', () => {
         .it('returns an error if key is not provided',
             (ctx) => {
                 expect(ctx.stdout).to.contain(
-                    'Failed validation at property "key": key should not be empty'
+                    'Invalid value for key: undefined'
                 )
             })
     
@@ -173,7 +173,7 @@ describe('features create', () => {
         .it('returns an error if name is not provided',
             (ctx) => {
                 expect(ctx.stdout).to.contain(
-                    'Failed validation at property "name": name should not be empty'
+                    'Invalid value for name: undefined'
                 )
             })
 
@@ -182,7 +182,11 @@ describe('features create', () => {
             key: requestBody.key, 
             description: undefined, 
             listPromptOption: 'continue',
-            sdkVisibility: ['mobile', 'client', 'server']
+            sdkVisibility: {
+                mobile: true,
+                client: true,
+                server: true
+            }
         }))
         .nock(BASE_URL, (api) => api
             .post(`/v1/projects/${projectKey}/features`, {
