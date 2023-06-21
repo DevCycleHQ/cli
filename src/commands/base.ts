@@ -254,7 +254,7 @@ export default abstract class Base extends Command {
 
     public async populateParametersWithZod
     <ResourceType extends Record<string, ZodTypeAny>>(
-        schema: ZodObject<ResourceType>, 
+        schema: ZodObject<ResourceType>,
         prompts: Prompt[],
         flags: Record<string, unknown>,
     ): Promise<z.infer<typeof schema>> {
@@ -263,15 +263,16 @@ export default abstract class Base extends Command {
             const filteredPrompts = filterPrompts(prompts, flags)
             const answers = await this.populateParametersWithInquirer(filteredPrompts)
             input = mergeFlagsAndAnswers(flags, answers)
-        } 
+        }
         const parse = schema.parse(
-            input, 
+            input,
             { errorMap }
         )
         return parse
     }
-      
+
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
+        if (!prompts.length) return
         return inquirer.prompt(prompts, {
             token: this.authToken,
             projectKey: this.projectKey

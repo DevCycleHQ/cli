@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 import UpdateCommand from '../updateCommand'
 import { fetchVariationByKey, updateVariation, UpdateVariationParams } from '../../api/variations'
 import { featurePrompt, keyPrompt, namePrompt, Prompt } from '../../ui/prompts'
-import { Variable } from '../../api/schemas'
+import { Variable, UpdateVariationDto } from '../../api/schemas'
 
 import {
     getVariationVariablePrompt,
@@ -47,7 +47,7 @@ export default class UpdateVariation extends UpdateCommand {
         await this.requireProject()
 
         const { args, flags } = await this.parse(UpdateVariation)
-        const { variables } = flags
+        const { variables, name, key, headless } = flags
         let featureKey
         if (!args.feature) {
             const { feature } = await inquirer.prompt([featurePrompt], {
@@ -82,7 +82,12 @@ export default class UpdateVariation extends UpdateCommand {
         this.writer.blankLine()
 
         try {
-            const data = await this.populateParameters(UpdateVariationParams, this.prompts, flags, true)
+            const data = await this.populateParameters(UpdateVariationParams, this.prompts, {
+                name,
+                key,
+                ...(variables ? { variables: JSON.parse(variables) } : {}),
+                headless
+            }, true)
             let variableAnswers: Record<string, unknown> = {}
             if (!variables && data.variables) {
                 variableAnswers = await getVariationVariableValuePrompts(
@@ -98,7 +103,8 @@ export default class UpdateVariation extends UpdateCommand {
                 featureKey,
                 selectedVariation.key,
                 {
-                    ...data,
+                    key: data.key,
+                    name: data.name,
                     variables: variables ? JSON.parse(variables) : variableAnswers
                 }
             )
@@ -108,7 +114,5 @@ export default class UpdateVariation extends UpdateCommand {
                 this.writer.showError(e.message)
             }
         }
-
-
     }
 }

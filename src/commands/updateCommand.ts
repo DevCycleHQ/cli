@@ -22,10 +22,10 @@ export default abstract class UpdateCommand extends Base {
     }
 
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
+        if (!prompts.length) return []
         let filteredPrompts = [ ...prompts ]
         const whichFields = await this.chooseFields(prompts)
         filteredPrompts = prompts.filter((prompt) => whichFields.includes(prompt.name))
-
         return inquirer.prompt(filteredPrompts, {
             token: this.authToken,
             projectKey: this.projectKey
