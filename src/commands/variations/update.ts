@@ -1,8 +1,8 @@
 import inquirer from 'inquirer'
 import UpdateCommand from '../updateCommand'
 import { fetchVariationByKey, updateVariation, UpdateVariationParams } from '../../api/variations'
-import { featurePrompt, keyPrompt, namePrompt, Prompt } from '../../ui/prompts'
-import { Variable, UpdateVariationDto } from '../../api/schemas'
+import { featurePrompt, keyPrompt, namePrompt } from '../../ui/prompts'
+import { Variable } from '../../api/schemas'
 
 import {
     getVariationVariablePrompt,
@@ -25,10 +25,6 @@ export default class UpdateVariation extends UpdateCommand {
         feature: Args.string({
             name: 'feature',
             description: 'Feature key or id'
-        }),
-        variation: Args.string({
-            name: 'variation',
-            description: 'Variation key'
         }),
         ...UpdateCommand.args
     }
@@ -59,7 +55,7 @@ export default class UpdateVariation extends UpdateCommand {
             featureKey = args.feature
         }
         let selectedVariation
-        if (!args.variation) {
+        if (!args.key) {
             const { variation } = await inquirer.prompt([variationPrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey,
@@ -67,7 +63,7 @@ export default class UpdateVariation extends UpdateCommand {
             })
             selectedVariation = variation
         } else {
-            selectedVariation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, args.variation)
+            selectedVariation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, args.key)
         }
 
         this.prompts.push(await getVariationVariablePrompt(
@@ -92,6 +88,9 @@ export default class UpdateVariation extends UpdateCommand {
             if (!variables && data.variables) {
                 variableAnswers = await getVariationVariableValuePrompts(
                     featureKey,
+                    // This is a hack that's needed since the output from the variable prompt is different
+                    // from the input for the --variable flag. That variation variable value data comes from
+                    // this prompt.
                     data.variables as unknown as Variable[],
                     selectedVariation.variables
                 )
