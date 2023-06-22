@@ -18,10 +18,13 @@ export default class ListVariations extends Base {
 
     public async run(): Promise<void> {
         await this.requireProject()
-        const { args } = await this.parse(ListVariations)
-
+        const { args, flags } = await this.parse(ListVariations)
+        const { headless } = flags
         let featureKey
-        if (!args.feature) {
+        if (headless && !args.feature) {
+            this.writer.showError('In headless mode, feature is required')
+            return
+        } else if (!args.feature) {
             const { feature } = await inquirer.prompt([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
