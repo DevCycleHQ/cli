@@ -32,37 +32,30 @@ export default class CreateFeature extends CreateCommand {
             return
         }
 
-        try {
-            const params = await this.populateParametersWithZod(CreateFeatureDto, this.prompts, {
-                key,
-                name,
-                description,
-                ...(variables ? { variables: JSON.parse(variables) } : {}),
-                ...(variations ? { variations: JSON.parse(variations) } : {}),
-                ...(sdkVisibility ? { sdkVisibility: JSON.parse(sdkVisibility) } : {}),
-                headless
-            })
-    
-            if (!headless) {
-                if (!variables) {
-                    params.variables = await (new VariableListOptions([], this.writer)).prompt()
-                }
-        
-                // TODO: Add variation prompt
-        
-                if (!params.sdkVisibility) {
-                    params.sdkVisibility = await sdkVisibilityPrompt()
-                }
+        const params = await this.populateParametersWithZod(CreateFeatureDto, this.prompts, {
+            key,
+            name,
+            description,
+            ...(variables ? { variables: JSON.parse(variables) } : {}),
+            ...(variations ? { variations: JSON.parse(variations) } : {}),
+            ...(sdkVisibility ? { sdkVisibility: JSON.parse(sdkVisibility) } : {}),
+            headless
+        })
+
+        if (!headless) {
+            if (!variables) {
+                params.variables = await (new VariableListOptions([], this.writer)).prompt()
             }
-    
-            const result = await createFeature(this.authToken, this.projectKey, params)
-            this.writer.showResults(result)
-        } catch (e) {
-            if (e instanceof ZodError) {
-                this.reportZodValidationErrors(e)
-            } else if (e instanceof Error) {
-                this.writer.showError(e.message)
+
+            // TODO: Add variation prompt
+
+            if (!params.sdkVisibility) {
+                params.sdkVisibility = await sdkVisibilityPrompt()
             }
         }
+
+        const result = await createFeature(this.authToken, this.projectKey, params)
+        this.writer.showResults(result)
+
     }
 }

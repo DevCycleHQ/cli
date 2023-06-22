@@ -57,23 +57,17 @@ export default class UpdateEnvironment extends UpdateCommand {
             this.writer.blankLine()
         }
 
-        try {
-            const params = await this.populateParametersWithZod(
-                UpdateEnvironmentDto,
-                this.prompts,
-                flags
-            )
-            const result = await updateEnvironment(
-                this.authToken,
-                this.projectKey,
-                envKey,
-                params
-            )
-            this.writer.showResults(result)
-        } catch (e) {
-            if (e instanceof ZodError) {
-                this.reportZodValidationErrors(e)
-            }
-        }
+        const params = await this.populateParametersWithZod(
+            UpdateEnvironmentDto,
+            this.prompts,
+            flags
+        )
+        const result = await updateEnvironment(
+            this.authToken,
+            this.projectKey,
+            envKey,
+            params
+        )
+        this.writer.showResults(result)
     }
 }
