@@ -57,23 +57,17 @@ export default class UpdateVariable extends UpdateCommand {
             this.writer.blankLine()
         }
 
-        try {
-            const params = await this.populateParametersWithZod(
-                UpdateVariableDto,
-                this.prompts,
-                flags,
-            )
-            const result = await updateVariable(
-                this.authToken,
-                this.projectKey,
-                variableKey,
-                params
-            )
-            this.writer.showResults(result)
-        } catch (e) {
-            if (e instanceof ZodError) {
-                this.reportZodValidationErrors(e)
-            }
-        }
+        const params = await this.populateParametersWithZod(
+            UpdateVariableDto,
+            this.prompts,
+            flags,
+        )
+        const result = await updateVariable(
+            this.authToken,
+            this.projectKey,
+            variableKey,
+            params
+        )
+        this.writer.showResults(result)
     }
 }

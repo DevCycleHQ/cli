@@ -23,7 +23,7 @@ export abstract class ListOptionsPrompt<T> {
 
     /**
      * Returns the list of possible options for this List
-     * @returns 
+     * @returns
      */
     abstract options(): { name: string, value: string }[]
 
@@ -41,7 +41,7 @@ export abstract class ListOptionsPrompt<T> {
         return response.listPromptOption
     }
 
-    /** 
+    /**
      * Implementation should be prescribed by the specific subclass for adding
      * and editing the list of items
      */
@@ -75,7 +75,7 @@ export abstract class ListOptionsPrompt<T> {
             type: 'list',
             choices: list
         }])
-    
+
         const itemToMoveTo = await inquirer.prompt([{
             name: 'itemNewIndex',
             message: `Select the position you would like to move the ${this.itemType} to:`,
@@ -136,7 +136,7 @@ export abstract class ListOptionsPrompt<T> {
             }
         }
         this.printListOptions(newList)
-    
+
         // keep prompting until they choose to continue with the saved changes to the list
         if (response !== 'continue') {
             return this.prompt(newList)

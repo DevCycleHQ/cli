@@ -87,6 +87,13 @@ export default abstract class Base extends Command {
     repoConfig: RepoConfigFromFile | null
     writer: Writer = new Writer()
 
+    async catch(error: unknown) {
+        if (error instanceof ZodError) {
+            this.reportZodValidationErrors(error)
+        } else if (error instanceof Error) {
+            this.writer.showError(error.message)
+        }
+    }
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
 

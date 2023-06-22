@@ -30,21 +30,15 @@ export default class CreateVariable extends CreateCommand {
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateVariable)
         const { key, name, type, feature, headless } = flags
- 
+
         if (headless && (!key || !name || !type || !feature)) {
             this.writer.showError('The key, name, feature, and type flags are required')
             return
         }
         flags._feature = feature
 
-        try {
-            const params = await this.populateParametersWithZod(CreateVariableDto, this.prompts, flags)
-            const result = await createVariable(this.authToken, this.projectKey, params)
-            this.writer.showResults(result)
-        } catch (e) {
-            if (e instanceof ZodError) {
-                this.reportZodValidationErrors(e)
-            }
-        }
+        const params = await this.populateParametersWithZod(CreateVariableDto, this.prompts, flags)
+        const result = await createVariable(this.authToken, this.projectKey, params)
+        this.writer.showResults(result)
     }
 }
