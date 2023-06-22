@@ -42,18 +42,12 @@ export default class CreateEnvironment extends CreateCommand {
             return
         }
 
-        try {
-            const params = await this.populateParametersWithZod(
-                CreateEnvironmentDto,
-                this.prompts,
-                flags,
-            )
-            const result = await createEnvironment(this.authToken, this.projectKey, params)
-            this.writer.showResults(result)
-        } catch (e) {
-            if (e instanceof ZodError) {
-                this.reportZodValidationErrors(e)
-            }
-        }
+        const params = await this.populateParametersWithZod(
+            CreateEnvironmentDto,
+            this.prompts,
+            flags,
+        )
+        const result = await createEnvironment(this.authToken, this.projectKey, params)
+        this.writer.showResults(result)
     }
 }
