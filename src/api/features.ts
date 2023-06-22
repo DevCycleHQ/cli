@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 import apiClient from './apiClient'
-import { CreateFeatureParams, Feature } from './schemas'
+import { CreateFeatureParams, Feature, UpdateFeatureParams } from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
 
@@ -46,6 +46,21 @@ export const createFeature = async (
         headers: buildHeaders(token),
         params: {
             project: project_id
+        }
+    })
+}
+
+export const updateFeature = async (
+    token: string, 
+    project_id: string,
+    feature_id: string,
+    params: UpdateFeatureParams,
+): Promise<Feature> => {
+    return await apiClient.patch(`${FEATURE_URL}/:key`, params, {
+        headers: buildHeaders(token),
+        params: {
+            project: project_id,
+            key: feature_id
         }
     })
 }

@@ -1,3 +1,5 @@
+import { ListOption } from './listPrompts/listOptionsPrompt'
+
 export type PromptResult = {
   token: string,
   projectKey: string
@@ -9,7 +11,14 @@ export type Prompt = {
     type: string
     suffix?: string
     transformer?: (value: string, answers: any, { isFinal }: { isFinal: boolean }) => string
-    choices?: unknown[]
+    choices?: unknown[],
+    transformResponse?: (response: any) => any
+    listOptionsPrompt?: (list?: ListOption<any>[]) => Promise<any>
+}
+
+export type ListPrompt = Prompt & {
+  type: 'listOptions',
+  listOptionsPrompt: (list?: ListOption<any>[]) => Promise<any>
 }
 
 export type AutoCompletePrompt = Prompt & {
