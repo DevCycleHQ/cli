@@ -57,7 +57,6 @@ describe('variations list', () => {
             })
 
     dvcTest()
-        .skip() // TODO: unskip once fixed
         .stdout()
         .command(['variations list', '--headless', '--project', projectKey, ...authFlags])
         .it('does not prompt when using --headless',
