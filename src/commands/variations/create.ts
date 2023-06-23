@@ -42,10 +42,6 @@ export default class CreateVariation extends CreateCommand {
 
         const { args, flags } = await this.parse(CreateVariation)
         const { headless, key, name, variables } = flags
-        if (headless && (!key || !name)) {
-            this.writer.showError('In headless mode, the key and name flags are required')
-            return
-        }
 
         let featureKey
         if (!args.feature) {
@@ -59,39 +55,31 @@ export default class CreateVariation extends CreateCommand {
             featureKey = args.feature
         }
 
-        try {
-            const params = await this.populateParametersWithZod(
-                CreateVariationDto,
-                this.prompts, {
-                    key,
-                    name,
-                    headless
-                }
+        const params = await this.populateParametersWithZod(
+            CreateVariationDto,
+            this.prompts, {
+                key,
+                name,
+                headless
+            }
+        )
+
+        let variableAnswers: Record<string, unknown> = {}
+        if (!variables) {
+            const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, featureKey)
+            variableAnswers = await getVariationVariableValuePrompts(
+                featureKey,
+                variablesForFeature
             )
-
-            let variableAnswers: Record<string, unknown> = {}
-            if (!variables) {
-                const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, featureKey)
-                variableAnswers = await getVariationVariableValuePrompts(
-                    featureKey,
-                    variablesForFeature
-                )
-            }
-
-            const variation = {
-                key: params.key,
-                name: params.name,
-                variables: variables ? JSON.parse(variables) : variableAnswers
-            }
-
-            const result = await createVariation(this.authToken, this.projectKey, featureKey, variation)
-            this.writer.showResults(result)
-
-        } catch (e) {
-            if (e instanceof ZodError) {
-                this.reportZodValidationErrors(e)
-                return
-            }
         }
+
+        const variation = {
+            key: params.key,
+            name: params.name,
+            variables: variables ? JSON.parse(variables) : variableAnswers
+        }
+
+        const result = await createVariation(this.authToken, this.projectKey, featureKey, variation)
+        this.writer.showResults(result)
     }
 }

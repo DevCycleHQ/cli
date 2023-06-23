@@ -279,7 +279,7 @@ export default abstract class Base extends Command {
     }
 
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
-        if (!prompts.length) return
+        if (!prompts.length) return {}
         return inquirer.prompt(prompts, {
             token: this.authToken,
             projectKey: this.projectKey
