@@ -14,7 +14,7 @@ export type Prompt = {
     filter?: (input:string) => string | number
     validate?: (input: string) => boolean | string
     transformer?: (value: string, answers: any, { isFinal }: { isFinal: boolean }) => string
-    choices?: unknown[],
+    choices?: unknown[] | ((...args: any[]) => unknown[])
     transformResponse?: (response: any) => any
     listOptionsPrompt?: (previousResponses?: Record<string, any>) => Promise<any>
 }

@@ -6,6 +6,7 @@ Access and Modify Targeting Rules for a Feature with the Management API.
 * [`dvc targeting disable [FEATURE] [ENVIRONMENT]`](#dvc-targeting-disable-feature-environment)
 * [`dvc targeting enable [FEATURE] [ENVIRONMENT]`](#dvc-targeting-enable-feature-environment)
 * [`dvc targeting get [FEATURE] [ENVIRONMENT]`](#dvc-targeting-get-feature-environment)
+* [`dvc targeting update [FEATURE] [ENVIRONMENT]`](#dvc-targeting-update-feature-environment)
 
 ## `dvc targeting disable [FEATURE] [ENVIRONMENT]`
 
@@ -100,4 +101,36 @@ EXAMPLES
   $ dvc targeting get feature-one
 
   $ dvc targeting get feature-one environment-one
+```
+
+## `dvc targeting update [FEATURE] [ENVIRONMENT]`
+
+Update Targeting rules
+
+```
+USAGE
+  $ dvc targeting update [FEATURE] [ENVIRONMENT] [--config-path <value>] [--auth-path <value>] [--repo-config-path
+    <value>] [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--targets
+    <value>]
+
+ARGUMENTS
+  FEATURE      The Feature for the Targeting Rule.
+  ENVIRONMENT  The Environment where the Targeting Rule will be updated.
+
+FLAGS
+  --targets=<value>  List of targeting rules.
+
+GLOBAL FLAGS
+  --auth-path=<value>         Override the default location to look for an auth.yml file
+  --client-id=<value>         Client ID to use for DevCycle API Authorization
+  --client-secret=<value>     Client Secret to use for DevCycle API Authorization
+  --config-path=<value>       Override the default location to look for the user.yml file
+  --headless                  Disable all interactive flows and format output for easy parsing.
+  --no-api                    Disable API-based enhancements for commands where authorization is optional. Suppresses
+                              warnings about missing credentials.
+  --project=<value>           Project key to use for the DevCycle API requests
+  --repo-config-path=<value>  Override the default location to look for the repo config.yml file
+
+DESCRIPTION
+  Update Targeting rules
 ```

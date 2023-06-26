@@ -2,6 +2,7 @@ import { Args, Flags } from '@oclif/core'
 import Base from './base'
 import { Prompt, handleCustomPrompts } from '../ui/prompts'
 import inquirer from 'inquirer'
+import { chooseFields } from '../utils/prompts'
 
 export default abstract class UpdateCommand extends Base {
     authRequired = true
@@ -24,26 +25,8 @@ export default abstract class UpdateCommand extends Base {
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
         if (!prompts.length) return {}
         let filteredPrompts = [ ...prompts ]
-        const whichFields = await this.chooseFields(prompts)
+        const whichFields = await chooseFields(prompts, this.authToken, this.projectKey)
         filteredPrompts = prompts.filter((prompt) => whichFields.includes(prompt.name))
         return handleCustomPrompts(filteredPrompts, this.authToken, this.projectKey)
-    }
-
-    private async chooseFields(prompts: Prompt[]): Promise<string[]> {
-        const responses = await inquirer.prompt([{
-            name: 'whichFields',
-            type: 'checkbox',
-            message: 'Which fields are you updating',
-            choices: prompts.map((prompt) => {
-                return {
-                    name: prompt.name
-                }
-            })
-        }], {
-            token: this.authToken,
-            projectKey: this.projectKey
-        })
-
-        return responses.whichFields
     }
 }
