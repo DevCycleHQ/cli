@@ -182,11 +182,7 @@ describe('features create', () => {
             key: requestBody.key, 
             description: undefined, 
             listPromptOption: 'continue',
-            sdkVisibility: {
-                mobile: true,
-                client: true,
-                server: true
-            }
+            sdkVisibility: ['mobile', 'server', 'client']
         }))
         .nock(BASE_URL, (api) => api
             .post(`/v1/projects/${projectKey}/features`, {

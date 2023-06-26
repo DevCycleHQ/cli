@@ -18,6 +18,9 @@ export const UpdateEnvironmentDto = schemas.UpdateEnvironmentDto
 export type CreateFeatureParams = z.infer<typeof schemas.CreateFeatureDto>
 export const CreateFeatureDto = schemas.CreateFeatureDto
 
+export type UpdateFeatureParams = z.infer<typeof schemas.UpdateFeatureDto>
+export const UpdateFeatureDto = schemas.UpdateFeatureDto
+
 export type CreateVariableParams = z.infer<typeof schemas.CreateVariableDto>
 export const CreateVariableDto = schemas.CreateVariableDto
 

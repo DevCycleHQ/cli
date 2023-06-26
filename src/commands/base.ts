@@ -14,7 +14,7 @@ import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
 import Writer from '../ui/writer'
 import { errorMap, setDVCReferrer } from '../api/apiClient'
-import { Prompt } from '../ui/prompts'
+import { Prompt, handleCustomPrompts } from '../ui/prompts'
 import { filterPrompts, mergeFlagsAndAnswers, validateParams } from '../utils/prompts'
 import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
 
@@ -280,10 +280,7 @@ export default abstract class Base extends Command {
 
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
         if (!prompts.length) return {}
-        return inquirer.prompt(prompts, {
-            token: this.authToken,
-            projectKey: this.projectKey
-        })
+        return handleCustomPrompts(prompts, this.authToken, this.projectKey)
     }
 
     protected reportZodValidationErrors(error: ZodError): void {

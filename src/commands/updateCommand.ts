@@ -1,6 +1,6 @@
 import { Args, Flags } from '@oclif/core'
 import Base from './base'
-import { Prompt } from '../ui/prompts'
+import { Prompt, handleCustomPrompts } from '../ui/prompts'
 import inquirer from 'inquirer'
 
 export default abstract class UpdateCommand extends Base {
@@ -22,14 +22,11 @@ export default abstract class UpdateCommand extends Base {
     }
 
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
-        if (!prompts.length) return []
+        if (!prompts.length) return {}
         let filteredPrompts = [ ...prompts ]
         const whichFields = await this.chooseFields(prompts)
         filteredPrompts = prompts.filter((prompt) => whichFields.includes(prompt.name))
-        return inquirer.prompt(filteredPrompts, {
-            token: this.authToken,
-            projectKey: this.projectKey
-        })
+        return handleCustomPrompts(filteredPrompts, this.authToken, this.projectKey)
     }
 
     private async chooseFields(prompts: Prompt[]): Promise<string[]> {
