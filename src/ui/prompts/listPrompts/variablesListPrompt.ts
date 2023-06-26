@@ -31,7 +31,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         })))
     })
  
-    async promptAddItem<CreateVariableParams>(): Promise<ListOption<CreateVariableParams>> {
+    async promptAddItem(): Promise<ListOption<CreateVariableParams>> {
         const variable = await inquirer.prompt(this.variablePropertyPrompts)
         CreateVariableDto.parse(variable, { errorMap })
         return {
@@ -40,7 +40,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         }
     }
 
-    async promptEditItem<CreateVariableParams>(
+    async promptEditItem(
         list: ListOption<CreateVariableParams>[]
     ): Promise<void> {
         if (list.length === 0) {

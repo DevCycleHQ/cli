@@ -31,3 +31,42 @@ export type CreateVariationParams = z.infer<typeof schemas.FeatureVariationDto>
 export const CreateVariationDto = schemas.FeatureVariationDto
 
 export type UpdateVariationParams = Partial<CreateVariationParams>
+
+export type UpdateFeatureConfigDto = z.infer<typeof schemas.UpdateFeatureConfigDto>
+export const UpdateFeatureConfigDto = schemas.UpdateFeatureConfigDto
+
+export type UpdateTargetParams = z.infer<typeof schemas.UpdateTargetDto>
+export const UpdateTargetDto = schemas.UpdateTargetDto
+
+export type AudienceOperatorWithAudienceMatchFilter = z.infer<typeof schemas.AudienceOperatorWithAudienceMatchFilter>
+export type Filters = z.infer<typeof schemas.AudienceOperatorWithAudienceMatchFilter.shape.filters>
+
+type AllFilter = z.infer<typeof schemas.AllFilter>
+export const AllFilter = schemas.AllFilter
+
+type UserFilter = z.infer<typeof schemas.UserFilter>
+export const UserFilter = schemas.UserFilter
+
+type UserCountryFilter = z.infer<typeof schemas.UserCountryFilter>
+export const UserCountryFilter = schemas.UserCountryFilter
+
+type UserAppVersionFilter = z.infer<typeof schemas.UserAppVersionFilter>
+export const UserAppVersionFilter = schemas.UserAppVersionFilter
+
+type UserPlatformVersionFilter = z.infer<typeof schemas.UserPlatformVersionFilter>
+export const UserPlatformVersionFilter = schemas.UserPlatformVersionFilter
+
+type UserCustomFilter = z.infer<typeof schemas.UserCustomFilter>
+export const UserCustomFilter = schemas.UserCustomFilter
+
+type AudienceMatchFilter = z.infer<typeof schemas.AudienceMatchFilter>
+export const AudienceMatchFilter = schemas.AudienceMatchFilter
+
+export type Filter = 
+  | AllFilter
+  | UserFilter
+  | UserCountryFilter
+  | UserAppVersionFilter
+  | UserPlatformVersionFilter
+  | UserCustomFilter
+  | AudienceMatchFilter
