@@ -6,7 +6,7 @@ import { Variable } from '../../api/schemas'
 
 import {
     getVariationVariablePrompt,
-    getVariationVariableValuePrompts,
+    promptForVariationVariableValues,
     variationPrompt,
 } from '../../ui/prompts/variationPrompts'
 import { Args, Flags } from '@oclif/core'
@@ -85,8 +85,7 @@ export default class UpdateVariation extends UpdateCommand {
         }, true)
         let variableAnswers: Record<string, unknown> = {}
         if (!variables && data.variables) {
-            variableAnswers = await getVariationVariableValuePrompts(
-                featureKey,
+            variableAnswers = await promptForVariationVariableValues(
                 // This is a hack that's needed since the output from the variable prompt is different
                 // from the input for the --variable flag. That variation variable value data comes from
                 // this prompt.

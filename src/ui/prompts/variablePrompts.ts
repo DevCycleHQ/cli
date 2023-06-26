@@ -51,15 +51,16 @@ export const variableTypePrompt = {
     choices: CreateVariableDto.shape.type.options
 }
 
-export const variableValueStringPrompt = (variableKey: string, defaultValue?: string): Question => {
+export const variableValueStringPrompt = (variableKey: string, defaultValue?: string): Prompt => {
     return {
         name: variableKey,
         default:  defaultValue,
+        type: 'input',
         message: `Variable value for ${variableKey}`,
     }
 }
 
-export const variableValueNumberPrompt = (variableKey: string, defaultValue?: number): Question => {
+export const variableValueNumberPrompt = (variableKey: string, defaultValue?: number): Prompt => {
     return {
         name: variableKey,
         message: `Variable value for ${variableKey}`,
@@ -81,7 +82,7 @@ export const variableValueNumberPrompt = (variableKey: string, defaultValue?: nu
     }
 }
 
-export const variableValueBooleanPrompt  = (variableKey: string, defaultValue?: boolean): ListQuestion => {
+export const variableValueBooleanPrompt  = (variableKey: string, defaultValue?: boolean): Prompt => {
     return {
         name: variableKey,
         message: `Variable value for ${variableKey}`,
@@ -100,7 +101,7 @@ export const variableValueBooleanPrompt  = (variableKey: string, defaultValue?: 
     }
 }
 
-export const variableValueJSONPrompt  = (variableKey: string, defaultValue?: string): Question => {
+export const variableValueJSONPrompt  = (variableKey: string, defaultValue?: string): Prompt => {
     return {
         name: variableKey,
         message: `Variable value for ${variableKey}`,

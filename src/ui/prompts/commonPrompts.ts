@@ -58,7 +58,9 @@ export const handleCustomPrompts = async (prompts: Prompt[], authToken: string, 
         projectKey: projectKey
     })
     for (const prompt of listOptionsPrompts as ListPrompt[]) {
-        result[prompt.name] = await prompt.listOptionsPrompt()
+        const carryForward: Record<string, any> = {}
+        prompt.previousReponseFields?.forEach((field) => carryForward[field] = result[field])
+        result[prompt.name] = await prompt.listOptionsPrompt(carryForward)
     }
 
     return transformResponse(result, prompts)
