@@ -1,0 +1,104 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`features update accepts flags and prompts for missing fields 1`] = `
+"
+
+🤖 Current values:
+🤖 {
+  \\"name\\": \\"Feature Name\\",
+  \\"key\\": \\"feature-key\\",
+  \\"_id\\": \\"id\\",
+  \\"_project\\": \\"string\\",
+  \\"source\\": \\"api\\",
+  \\"_createdBy\\": \\"string\\",
+  \\"createdAt\\": \\"2019-08-24T14:15:22Z\\",
+  \\"updatedAt\\": \\"2019-08-24T14:15:22Z\\",
+  \\"variations\\": [],
+  \\"variables\\": [],
+  \\"tags\\": [],
+  \\"ldLink\\": \\"string\\",
+  \\"readonly\\": true,
+  \\"sdkVisibility\\": {
+    \\"mobile\\": true,
+    \\"client\\": true,
+    \\"server\\": true
+  }
+}
+
+
+{
+  \\"name\\": \\"Feature Name\\",
+  \\"key\\": \\"feature-key\\",
+  \\"_id\\": \\"id\\",
+  \\"_project\\": \\"string\\",
+  \\"source\\": \\"api\\",
+  \\"_createdBy\\": \\"string\\",
+  \\"createdAt\\": \\"2019-08-24T14:15:22Z\\",
+  \\"updatedAt\\": \\"2019-08-24T14:15:22Z\\",
+  \\"variations\\": [],
+  \\"variables\\": [],
+  \\"tags\\": [],
+  \\"ldLink\\": \\"string\\",
+  \\"readonly\\": true,
+  \\"sdkVisibility\\": {
+    \\"mobile\\": true,
+    \\"client\\": true,
+    \\"server\\": true
+  }
+}
+"
+`;
+
+exports[`features update updates a feature after prompting for all fields 1`] = `
+"
+
+🤖 Current values:
+🤖 {
+  \\"name\\": \\"Feature Name\\",
+  \\"key\\": \\"feature-key\\",
+  \\"_id\\": \\"id\\",
+  \\"_project\\": \\"string\\",
+  \\"source\\": \\"api\\",
+  \\"_createdBy\\": \\"string\\",
+  \\"createdAt\\": \\"2019-08-24T14:15:22Z\\",
+  \\"updatedAt\\": \\"2019-08-24T14:15:22Z\\",
+  \\"variations\\": [],
+  \\"variables\\": [],
+  \\"tags\\": [],
+  \\"ldLink\\": \\"string\\",
+  \\"readonly\\": true,
+  \\"sdkVisibility\\": {
+    \\"mobile\\": true,
+    \\"client\\": true,
+    \\"server\\": true
+  }
+}
+
+
+{
+  \\"name\\": \\"Feature Name\\",
+  \\"key\\": \\"feature-key\\",
+  \\"_id\\": \\"id\\",
+  \\"_project\\": \\"string\\",
+  \\"source\\": \\"api\\",
+  \\"_createdBy\\": \\"string\\",
+  \\"createdAt\\": \\"2019-08-24T14:15:22Z\\",
+  \\"updatedAt\\": \\"2019-08-24T14:15:22Z\\",
+  \\"variations\\": [],
+  \\"variables\\": [],
+  \\"tags\\": [],
+  \\"ldLink\\": \\"string\\",
+  \\"readonly\\": true,
+  \\"sdkVisibility\\": {
+    \\"mobile\\": true,
+    \\"client\\": true,
+    \\"server\\": true
+  }
+}
+"
+`;
+
+exports[`features update updates a feature in headless mode 1`] = `
+"{\\"name\\":\\"Feature Name\\",\\"key\\":\\"feature-key\\",\\"_id\\":\\"id\\",\\"_project\\":\\"string\\",\\"source\\":\\"api\\",\\"_createdBy\\":\\"string\\",\\"createdAt\\":\\"2019-08-24T14:15:22Z\\",\\"updatedAt\\":\\"2019-08-24T14:15:22Z\\",\\"variations\\":[],\\"variables\\":[],\\"tags\\":[],\\"ldLink\\":\\"string\\",\\"readonly\\":true,\\"sdkVisibility\\":{\\"mobile\\":true,\\"client\\":true,\\"server\\":true}}
+"
+`;

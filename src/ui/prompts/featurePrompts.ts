@@ -2,7 +2,6 @@ import { PromptResult } from './'
 import { fetchFeatures } from '../../api/features'
 import { Feature } from '../../api/schemas'
 import { autocompleteSearch } from '../autocomplete'
-import inquirer from 'inquirer'
 
 type FeatureChoice = {
     name: string,
@@ -13,7 +12,7 @@ export type FeaturePromptResult = {
     feature: FeatureChoice['value']
 } & PromptResult
 
-let choices: { name: string, value: string }[]
+let choices: FeatureChoice[]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const featureChoices = async (input: Record<string, any>, search: string): Promise<FeatureChoice[]> => {
     if (!choices) {
@@ -47,42 +46,37 @@ type SDKVisibilityChoice = {
     value: 'mobile' | 'client' | 'server',
     checked: boolean
 }
-type SDKVisibilityPromptResult = {
-    sdkVisibility: SDKVisibilityChoice['value'][]
-}
 
 export const getSDKVisibilityChoices = (sdkVisibility?: Feature['sdkVisibility']): SDKVisibilityChoice[] => {
     return [
         {
             name: 'mobile',
             value: 'mobile',
-            checked: sdkVisibility?.mobile || true
+            checked: typeof sdkVisibility?.mobile !== 'undefined' ? sdkVisibility?.mobile : true
         },
         {
             name: 'client',
             value: 'client',
-            checked: sdkVisibility?.client || true
+            checked: typeof sdkVisibility?.client !== 'undefined' ? sdkVisibility?.client : true
         }, 
         {
             name: 'server',
             value: 'server',
-            checked: sdkVisibility?.server || true
+            checked: typeof sdkVisibility?.server !== 'undefined' ? sdkVisibility?.server : true
         },
     ]
 }
 
-export const sdkVisibilityPrompt = async (
-    sdkVisibility?: Feature['sdkVisibility']
-): Promise<Feature['sdkVisibility']> => {
-    const response = await inquirer.prompt<SDKVisibilityPromptResult>([{
+export const getSdkVisibilityPrompt = (feature?: Feature) => {
+    return {
         name: 'sdkVisibility',
         message: 'Which SDKs should this feature be visible to?',
         type: 'checkbox',
-        choices: getSDKVisibilityChoices(sdkVisibility)
-    }])
-    return {
-        mobile: response.sdkVisibility.includes('mobile'),
-        client: response.sdkVisibility.includes('client'),
-        server: response.sdkVisibility.includes('server')
+        choices: getSDKVisibilityChoices(feature?.sdkVisibility),
+        transformResponse: (response: string[]) => ({
+            mobile: response.includes('mobile'),
+            client: response.includes('client'),
+            server: response.includes('server')    
+        })
     }
 }

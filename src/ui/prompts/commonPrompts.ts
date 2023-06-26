@@ -1,5 +1,8 @@
 import chalk from 'chalk'
-import { Prompt } from './types'
+import { ListPrompt, Prompt } from './types'
+import { partition } from 'lodash'
+import inquirer from '../autocomplete'
+
 export const hintTextTransformer = (hint: string) =>
     (value: string, answers: unknown, { isFinal }: { isFinal: boolean }) => {
         let newValue = value
@@ -35,4 +38,28 @@ export const descriptionPrompt: Prompt = {
     suffix: ':',
     transformer: hintTextTransformer('(Optional)'),
     type: 'input'
+}
+
+export const transformResponse = (answers: Record<string, unknown>, prompts: Prompt[]) => {
+    const result = answers
+    prompts.forEach((prompt) => {
+        if (result[prompt.name] && prompt.transformResponse) {
+            result[prompt.name] = prompt.transformResponse(result[prompt.name])
+        }
+    })
+    return result
+}
+
+export const handleCustomPrompts = async (prompts: Prompt[], authToken: string, projectKey: string) => {
+    const [listOptionsPrompts, standardPrompts] = partition(prompts, (prompt) => !!prompt.listOptionsPrompt)
+
+    const result = await inquirer.prompt(standardPrompts, {
+        token: authToken,
+        projectKey: projectKey
+    })
+    for (const prompt of listOptionsPrompts as ListPrompt[]) {
+        result[prompt.name] = await prompt.listOptionsPrompt()
+    }
+
+    return transformResponse(result, prompts)
 }
