@@ -190,7 +190,7 @@ const UserPlatformVersionFilter = z.object({
     comparator: z.enum(['=', '!=', '>', '>=', '<', '<=', 'exist', '!exist']),
     values: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
-    subType: z.literal('appVersion').default('appVersion'),
+    subType: z.literal('platformVersion').default('platformVersion'),
 })
 const UserCustomFilter = z.object({
     comparator: z.enum([

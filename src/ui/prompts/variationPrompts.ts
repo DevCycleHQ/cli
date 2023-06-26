@@ -11,6 +11,7 @@ import {
     variableValueStringPrompt
 } from './variablePrompts'
 import inquirer, { Answers } from 'inquirer'
+import chalk from 'chalk'
 
 type VariationChoice = {
     name: string,
@@ -20,8 +21,9 @@ type VariationChoice = {
 export const variationChoices = async (input: Record<string, any>):Promise<VariationChoice[]> => {
     const variations = await fetchVariations(input.token, input.projectKey, input.featureKey)
     const choices = variations.map((variation) => {
+        const name = variation.name ? `${variation.name} ${chalk.dim(`(${variation.key})`)}` : variation.key
         return {
-            name: variation.name || variation.key,
+            name,
             value: variation
         }
     })

@@ -2,6 +2,7 @@ import { ClassConstructor } from 'class-transformer'
 import { Prompt } from '../ui/prompts'
 import { ValidatorOptions, validateSync } from 'class-validator'
 import { reportValidationErrors } from './reportValidationErrors'
+import inquirer from '../ui/autocomplete'
 
 export function validateParams<ResourceType>(
     paramClass: ClassConstructor<ResourceType>,
@@ -32,4 +33,25 @@ export function mergeFlagsAndAnswers(flags: Record<string, unknown>, answers: Re
         }
     })
     return updatedFlags
+}
+
+export async function chooseFields(prompts: Prompt[], authToken?: string, projectKey?: string): Promise<string[]> {
+    if (prompts.length === 0) {
+        return []
+    }
+    const responses = await inquirer.prompt([{
+        name: 'whichFields',
+        type: 'checkbox',
+        message: 'Which fields are you updating',
+        choices: prompts.map((prompt) => {
+            return {
+                name: prompt.name
+            }
+        })
+    }], {
+        token: authToken,
+        projectKey: projectKey
+    })
+
+    return responses.whichFields
 }
