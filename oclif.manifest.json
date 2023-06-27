@@ -1264,6 +1264,12 @@
           "description": "The variables to create for the feature",
           "multiple": false
         },
+        "variations": {
+          "name": "variations",
+          "type": "option",
+          "description": "The variations to set for the feature",
+          "multiple": false
+        },
         "sdkVisibility": {
           "name": "sdkVisibility",
           "type": "option",
@@ -1628,13 +1634,31 @@
         "variables": {
           "name": "variables",
           "type": "option",
-          "description": "The variables to create for the feature",
+          "description": "The variables to set for the feature",
+          "multiple": false
+        },
+        "variations": {
+          "name": "variations",
+          "type": "option",
+          "description": "The variations to set for the feature",
           "multiple": false
         },
         "sdkVisibility": {
           "name": "sdkVisibility",
           "type": "option",
           "description": "The visibility of the feature for the SDKs",
+          "multiple": false
+        },
+        "key": {
+          "name": "key",
+          "type": "option",
+          "description": "The unique key of the feature",
+          "multiple": false
+        },
+        "description": {
+          "name": "description",
+          "type": "option",
+          "description": "A description of the feature",
           "multiple": false
         }
       },

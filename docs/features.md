@@ -17,13 +17,14 @@ Create a new Feature.
 USAGE
   $ dvc features create [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--key <value>] [--name <value>]
-    [--variables <value>] [--sdkVisibility <value>]
+    [--variables <value>] [--variations <value>] [--sdkVisibility <value>]
 
 FLAGS
   --key=<value>            Unique ID
   --name=<value>           Human readable name
   --sdkVisibility=<value>  The visibility of the feature for the SDKs
   --variables=<value>      The variables to create for the feature
+  --variations=<value>     The variations to set for the feature
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
@@ -121,12 +122,15 @@ Update a Feature.
 USAGE
   $ dvc features update [KEY] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--name <value>] [--variables
-    <value>] [--sdkVisibility <value>]
+    <value>] [--variations <value>] [--sdkVisibility <value>] [--key <value>] [--description <value>]
 
 FLAGS
+  --description=<value>    A description of the feature
+  --key=<value>            The unique key of the feature
   --name=<value>           Human readable name
   --sdkVisibility=<value>  The visibility of the feature for the SDKs
-  --variables=<value>      The variables to create for the feature
+  --variables=<value>      The variables to set for the feature
+  --variations=<value>     The variations to set for the feature
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

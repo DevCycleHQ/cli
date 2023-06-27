@@ -10,15 +10,19 @@ export type Prompt = {
     message: string
     type: string
     suffix?: string
+    default?: unknown
+    filter?: (input:string) => string | number
+    validate?: (input: string) => boolean | string
     transformer?: (value: string, answers: any, { isFinal }: { isFinal: boolean }) => string
     choices?: unknown[],
     transformResponse?: (response: any) => any
-    listOptionsPrompt?: (list?: ListOption<any>[]) => Promise<any>
+    listOptionsPrompt?: (previousResponses?: Record<string, any>) => Promise<any>
 }
 
 export type ListPrompt = Prompt & {
   type: 'listOptions',
-  listOptionsPrompt: (list?: ListOption<any>[]) => Promise<any>
+  listOptionsPrompt: (previousResponses?: Record<string, any>) => Promise<any>
+  previousReponseFields?: string[]
 }
 
 export type AutoCompletePrompt = Prompt & {
