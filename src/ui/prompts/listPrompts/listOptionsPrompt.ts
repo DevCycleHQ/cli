@@ -45,15 +45,15 @@ export abstract class ListOptionsPrompt<T> {
      * Implementation should be prescribed by the specific subclass for adding
      * and editing the list of items
      */
-    abstract promptAddItem<T>(): Promise<ListOption<T>>
-    abstract promptEditItem<T>(list: ListOption<T>[]): void
+    abstract promptAddItem(): Promise<ListOption<T>>
+    abstract promptEditItem(list: ListOption<T>[]): void
 
     /**
      * Returns a list of indices to remove from the list
      * @param ListOption<T>[]
      * @returns number[]
      */
-    async promptDeleteItems<T>(list: ListOption<T>[]): Promise<number[]> {
+    async promptDeleteItems(list: ListOption<T>[]): Promise<number[]> {
         const responses = await inquirer.prompt([{
             name: 'itemsToDelete',
             message: `Select the ${this.itemType} you would like to delete:`,
@@ -68,7 +68,7 @@ export abstract class ListOptionsPrompt<T> {
      * @param ListOption<T>[]
      * @returns [number, number]
      */
-    async promptReorderItem<T>(list: ListOption<T>[]) {
+    async promptReorderItem(list: ListOption<T>[]) {
         const itemToMove = await inquirer.prompt([{
             name: 'itemToReorder',
             message: `Select the ${this.itemType} you would like to move:`,
@@ -97,7 +97,7 @@ export abstract class ListOptionsPrompt<T> {
      * @param ListOption<T>[]
      * @returns T[]
      */
-    async prompt<T>(list?: ListOption<T>[]): Promise<T[]> {
+    async prompt(list?: ListOption<T>[]): Promise<T[]> {
         const newList = [...(list || this.list)] as ListOption<T>[]
 
         // if there's no list passed in, this should be the first prompt call and thus we should print the list
@@ -148,7 +148,7 @@ export abstract class ListOptionsPrompt<T> {
      * Prints the list of human-readable names of the list to the console
      * @param ListOption<T>[]
      */
-    async printListOptions<T>(list?: ListOption<T>[]) {
+    async printListOptions(list?: ListOption<T>[]) {
         const listToPrint = list || this.list
         this.writer.statusMessage(`Current ${this.itemType}s:`)
         this.writer.list(listToPrint.map((item) => item.name))

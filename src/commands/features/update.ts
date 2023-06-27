@@ -8,10 +8,10 @@ import {
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
 import { Flags } from '@oclif/core'
-import { Feature, UpdateFeatureDto } from '../../api/schemas'
-import { ZodError } from 'zod'
+import { UpdateFeatureDto } from '../../api/schemas'
 import inquirer from '../../ui/autocomplete'
 import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
+import { VariationListOptions } from '../../ui/prompts/listPrompts/variationsListPrompt'
 
 export default class UpdateFeature extends UpdateCommand {
     static hidden = false
@@ -20,7 +20,10 @@ export default class UpdateFeature extends UpdateCommand {
     static flags = {
         ...UpdateCommand.flags,
         variables: Flags.string({
-            description: 'The variables to create for the feature'
+            description: 'The variables to set for the feature'
+        }),
+        variations: Flags.string({
+            description: 'The variations to set for the feature'
         }),
         sdkVisibility: Flags.string({
             description: 'The visibility of the feature for the SDKs'
@@ -65,7 +68,13 @@ export default class UpdateFeature extends UpdateCommand {
         this.writer.blankLine()
 
         this.prompts.push((new VariableListOptions([], this.writer)).getVariablesListPrompt(feature.variables))
-        this.prompts.push(getSdkVisibilityPrompt(feature))     
+        this.prompts.push((new VariationListOptions([], this.writer))
+            .getVariationListPrompt( // if variables flags were passed in, treat those as the new variables
+                feature.variations, 
+                variables ? JSON.parse(variables): feature.variables, 
+            )
+        )
+        this.prompts.push(getSdkVisibilityPrompt(feature))  
     
         const params = await this.populateParametersWithZod(UpdateFeatureDto, this.prompts, {
             key,
@@ -76,8 +85,6 @@ export default class UpdateFeature extends UpdateCommand {
             ...(sdkVisibility ? { sdkVisibility: JSON.parse(sdkVisibility) } : {}),
             headless,
         })
-
-        // TODO: Add variation prompt (DVC-7875)
 
         const result = await updateFeature(this.authToken, this.projectKey, feature.key, params)
         this.writer.showResults(result)  

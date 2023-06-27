@@ -4,6 +4,7 @@ import CreateCommand from '../createCommand'
 import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
 import { Flags } from '@oclif/core'
 import { CreateFeatureDto } from '../../api/schemas'
+import { VariationListOptions } from '../../ui/prompts/listPrompts/variationsListPrompt'
 
 export default class CreateFeature extends CreateCommand {
     static hidden = false
@@ -14,9 +15,12 @@ export default class CreateFeature extends CreateCommand {
         variables: Flags.string({
             description: 'The variables to create for the feature'
         }),
+        variations: Flags.string({
+            description: 'The variations to set for the feature'
+        }),
         sdkVisibility: Flags.string({
             description: 'The visibility of the feature for the SDKs'
-        })
+        }),
     }
 
     prompts = [keyPrompt, namePrompt, descriptionPrompt]
@@ -31,7 +35,12 @@ export default class CreateFeature extends CreateCommand {
             return
         }
 
+        this.prompts.push((new VariableListOptions([], this.writer)).getVariablesListPrompt())
+        this.prompts.push(
+            (new VariationListOptions([], this.writer)).getVariationListPrompt()
+        )
         this.prompts.push(getSdkVisibilityPrompt())     
+
         const params = await this.populateParametersWithZod(CreateFeatureDto, this.prompts, {
             key,
             name,
@@ -41,14 +50,6 @@ export default class CreateFeature extends CreateCommand {
             ...(sdkVisibility ? { sdkVisibility: JSON.parse(sdkVisibility) } : {}),
             headless
         })
-
-        if (!headless) {
-            if (!variables) {
-                params.variables = await (new VariableListOptions([], this.writer)).prompt()
-            }
-
-            // TODO: Add variation prompt (DVC-7875)
-        }
 
         const result = await createFeature(this.authToken, this.projectKey, params)
         this.writer.showResults(result)

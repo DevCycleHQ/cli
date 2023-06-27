@@ -1,7 +1,7 @@
 import { Variation } from '../../api/schemas'
 import { fetchVariations } from '../../api/variations'
 import { fetchVariables } from '../../api/variables'
-import { Prompt } from '../../ui/prompts'
+import { Prompt, keyPrompt, namePrompt } from '../../ui/prompts'
 import { Variable } from '../../api/schemas'
 
 import {
@@ -10,16 +10,11 @@ import {
     variableValueNumberPrompt,
     variableValueStringPrompt
 } from './variablePrompts'
-import inquirer, { Answers, ListQuestion, Question } from 'inquirer'
+import inquirer, { Answers } from 'inquirer'
 
 type VariationChoice = {
     name: string,
     value: Variation
-}
-
-type VariableChoice = {
-    name: string,
-    value: Record<string, unknown>
 }
 
 export const variationChoices = async (input: Record<string, any>):Promise<VariationChoice[]> => {
@@ -63,11 +58,10 @@ export const variationPrompt = {
     choices: variationChoices
 }
 
-export async function getVariationVariableValuePrompts(
-    featureKey: string,
+export function getVariationVariablesPrompts(
     variables: Variable[],
     defaultValues: Record<string, boolean | string | number> = {}
-): Promise<Answers> {
+) {
     const variablePrompts = []
     for (const variable of variables) {
         switch (variable.type) {
@@ -92,6 +86,14 @@ export async function getVariationVariableValuePrompts(
                 )
         }
     }
+    return variablePrompts
+}
+
+export async function promptForVariationVariableValues(
+    variables: Variable[],
+    defaultValues: Record<string, boolean | string | number> = {}
+): Promise<Answers> {
+    const variablePrompts = getVariationVariablesPrompts(variables, defaultValues)
     const promptAnswers = await inquirer.prompt(variablePrompts, {})
     const variableAnswers: Answers = {}
     for (const [key, value] of Object.entries(promptAnswers)) {
@@ -101,3 +103,8 @@ export async function getVariationVariableValuePrompts(
     }
     return variableAnswers
 }
+
+export const staticCreateVariationPrompts: Prompt[] = [
+    keyPrompt,
+    namePrompt,
+]

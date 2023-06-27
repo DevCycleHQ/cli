@@ -144,6 +144,7 @@ describe('features create', () => {
             key: undefined,
             name: 'new name',
             description: undefined,
+            listPromptOption: 'continue',
         }))
         .stdout()
         .command([
@@ -163,6 +164,7 @@ describe('features create', () => {
             key: 'new-key',
             name: undefined,
             description: undefined,
+            listPromptOption: 'continue',
         }))
         .stdout()
         .command([
@@ -188,6 +190,7 @@ describe('features create', () => {
             .post(`/v1/projects/${projectKey}/features`, {
                 ...requestBody,
                 variables: [],
+                variations: [],
                 sdkVisibility: {
                     mobile: true,
                     client: true,
