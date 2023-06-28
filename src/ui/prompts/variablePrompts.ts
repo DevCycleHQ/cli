@@ -1,10 +1,9 @@
 import { CreateVariableDto, Variable } from '../../api/schemas'
 import { fetchVariables } from '../../api/variables'
-import { ListQuestion, Question } from 'inquirer'
 import { AutoCompletePrompt, Prompt, PromptResult } from '.'
 import chalk from 'chalk'
 import { autocompleteSearch } from '../autocomplete'
-import { descriptionPrompt, keyPrompt, namePrompt } from './commonPrompts'
+import { descriptionPrompt, hintTextTransformer, keyPrompt, namePrompt } from './commonPrompts'
 import { variableFeaturePrompt } from './featurePrompts'
 
 type VariableChoice = {
@@ -18,7 +17,7 @@ export type VariablePromptResult = {
 
 let choices: { name: string, value: Variable }[]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const variableChoices = async (input: Record<string, any>, search: string):Promise<VariableChoice[]> => {
+export const variableChoices = async (input: Record<string, any>, search: string): Promise<VariableChoice[]> => {
     if (!choices) {
         const variables = await fetchVariables(input.token, input.projectKey)
         choices = variables.map((variable) => {
@@ -54,9 +53,10 @@ export const variableTypePrompt = {
 export const variableValueStringPrompt = (variableKey: string, defaultValue?: string): Prompt => {
     return {
         name: variableKey,
-        default:  defaultValue,
+        default: defaultValue,
         type: 'input',
         message: `Variable value for ${variableKey}`,
+        transformer: hintTextTransformer('(String)'),
     }
 }
 
@@ -66,6 +66,7 @@ export const variableValueNumberPrompt = (variableKey: string, defaultValue?: nu
         message: `Variable value for ${variableKey}`,
         type: 'input',
         default: defaultValue,
+        transformer: hintTextTransformer('(Number)'),
         filter: (input: string): number | string => {
             if (isNaN(Number(input))) {
                 return 'NaN'
@@ -87,6 +88,7 @@ export const variableValueBooleanPrompt  = (variableKey: string, defaultValue?: 
         name: variableKey,
         message: `Variable value for ${variableKey}`,
         type: 'list',
+        suffix: `${chalk.dim(' (Boolean)')}`,
         default: defaultValue,
         choices: [
             {
@@ -101,12 +103,13 @@ export const variableValueBooleanPrompt  = (variableKey: string, defaultValue?: 
     }
 }
 
-export const variableValueJSONPrompt  = (variableKey: string, defaultValue?: string): Prompt => {
+export const variableValueJSONPrompt = (variableKey: string, defaultValue?: string): Prompt => {
     return {
         name: variableKey,
         message: `Variable value for ${variableKey}`,
         type: 'input',
         default: defaultValue,
+        transformer: hintTextTransformer('(JSON)'),
         validate: (input: string): boolean | string => {
             try {
                 const parsedInput = JSON.parse(input)
