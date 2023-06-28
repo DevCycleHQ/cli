@@ -2,6 +2,7 @@ import inquirer from 'inquirer'
 import Writer from '../../writer'
 import { reportZodValidationErrors } from '../../../utils/reportValidationErrors'
 import { ZodError } from 'zod'
+import { AddItemPrompt, ContinuePrompt, EditItemPrompt, ExitPrompt, RemoveItemPrompt } from './promptOptions'
 
 /**
  * Map list items to a human readable name to make it easier to display to the user
@@ -25,7 +26,15 @@ export abstract class ListOptionsPrompt<T> {
      * Returns the list of possible options for this List
      * @returns
      */
-    abstract options(): { name: string, value: string }[]
+    options(): { name: string, value: string }[] {
+        return [
+            ContinuePrompt,
+            AddItemPrompt(this.itemType),
+            EditItemPrompt(this.itemType),
+            RemoveItemPrompt(this.itemType),
+            ExitPrompt
+        ]
+    }
 
     /**
      * Prompts the user to select an option from the list of options()

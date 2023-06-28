@@ -1,7 +1,6 @@
 import { createVariablePrompts } from '../variablePrompts'
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import inquirer from 'inquirer'
-import { AddItemPrompt, EditItemPrompt, RemoveItemPrompt, ContinuePrompt, ExitPrompt } from './promptOptions'
 import { CreateVariableDto, CreateVariableParams, UpdateVariableDto, Variable } from '../../../api/schemas'
 import { errorMap } from '../../../api/apiClient'
 
@@ -9,15 +8,6 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
     itemType = 'Variable'
     messagePrompt = 'Manage your Variables'
 
-    options() {
-        return [
-            AddItemPrompt(this.itemType),
-            EditItemPrompt(this.itemType),
-            RemoveItemPrompt(this.itemType),
-            ContinuePrompt,
-            ExitPrompt
-        ]
-    }
     variablePropertyPrompts = createVariablePrompts.filter((prompt) => prompt.name !== '_feature')
 
     getVariablesListPrompt = (existingVariables?: Variable[]) => ({

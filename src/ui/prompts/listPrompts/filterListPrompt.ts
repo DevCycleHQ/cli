@@ -1,6 +1,5 @@
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import inquirer from 'inquirer'
-import { AddItemPrompt, EditItemPrompt, RemoveItemPrompt, ContinuePrompt, ExitPrompt } from './promptOptions'
 import {
     filterAudiencesPrompt,
     filterComparatorPrompt,
@@ -18,16 +17,6 @@ import { UserSubType } from '../../../api/targeting'
 export class FilterListOptions extends ListOptionsPrompt<Filter> {
     itemType = 'Filter'
     messagePrompt = 'Manage your filters'
-
-    options() {
-        return [
-            AddItemPrompt(this.itemType),
-            EditItemPrompt(this.itemType),
-            RemoveItemPrompt(this.itemType),
-            ContinuePrompt,
-            ExitPrompt
-        ]
-    }
 
     async promptAddItem(): Promise<ListOption<Filter>> {
         const { type } = await inquirer.prompt([filterTypePrompt])
