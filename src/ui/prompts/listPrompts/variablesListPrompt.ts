@@ -35,7 +35,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         const variable = await inquirer.prompt(this.variablePropertyPrompts)
         CreateVariableDto.parse(variable, { errorMap })
         return {
-            name: variable.name,
+            name: variable.name || variable.key,
             value: variable as CreateVariableParams
         }
     }
