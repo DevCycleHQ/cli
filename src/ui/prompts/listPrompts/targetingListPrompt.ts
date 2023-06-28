@@ -1,6 +1,5 @@
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import inquirer from 'inquirer'
-import { AddItemPrompt, EditItemPrompt, RemoveItemPrompt, ContinuePrompt, ExitPrompt } from './promptOptions'
 import { servePrompt, audienceNamePrompt } from '../targetingPrompts'
 import { Filters, UpdateTargetParams } from '../../../api/schemas'
 import { FilterListOptions } from './filterListPrompt'
@@ -18,16 +17,6 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
         this.featureKey = featureKey
         this.authToken = authToken
         this.projectKey = projectKey
-    }
-
-    options() {
-        return [
-            AddItemPrompt(this.itemType),
-            EditItemPrompt(this.itemType),
-            RemoveItemPrompt(this.itemType),
-            ContinuePrompt,
-            ExitPrompt
-        ]
     }
 
     async promptAddItem(): Promise<ListOption<UpdateTargetParams>> {

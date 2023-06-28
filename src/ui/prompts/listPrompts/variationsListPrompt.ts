@@ -4,21 +4,10 @@ import { CreateVariationDto, CreateVariationParams, Variable, Variation } from '
 import inquirer from '../../autocomplete'
 import { getVariationVariablesPrompts, staticCreateVariationPrompts } from '../variationPrompts'
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
-import { AddItemPrompt, EditItemPrompt, RemoveItemPrompt, ContinuePrompt, ExitPrompt } from './promptOptions'
 
 export class VariationListOptions extends ListOptionsPrompt<CreateVariationParams> {
     itemType = 'Variation'
     messagePrompt = 'Manage your Variations'
-
-    options() {
-        return [
-            AddItemPrompt(this.itemType),
-            EditItemPrompt(this.itemType),
-            RemoveItemPrompt(this.itemType),
-            ContinuePrompt,
-            ExitPrompt
-        ]
-    }
 
     featureVariables: Variable[] = []
 
