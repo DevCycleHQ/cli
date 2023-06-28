@@ -24,9 +24,9 @@ export class VariationListOptions extends ListOptionsPrompt<CreateVariationParam
                 const newVariables = previousResponses?.variables
                 this.featureVariables = newVariables || this.featureVariables
 
-                return this.prompt(existingVariations?.map((variation) => ({
+                return this.prompt(existingVariations?.map((variation, index) => ({
                     name: variation.name || variation.key,
-                    value: variation
+                    value: { item: variation, id: index } 
                 })))
             }
         }
@@ -38,7 +38,7 @@ export class VariationListOptions extends ListOptionsPrompt<CreateVariationParam
 
         return {
             name: variation.name,
-            value: variation
+            value: { item: variation }
         }
     }
 
@@ -49,30 +49,30 @@ export class VariationListOptions extends ListOptionsPrompt<CreateVariationParam
             this.writer.warningMessage('No variations to edit')
             return
         }
-        const response = await inquirer.prompt([{
-            name: 'variationToEdit',
+        const { variationListItem } = await inquirer.prompt([{
+            name: 'variationListItem',
             message: 'Which variation would you like to edit?',
             type: 'list',
             choices: list
         }])
-        const index = list.findIndex((listItem) => listItem.value.key === response.variationToEdit.key)
+        const index = list.findIndex((listItem) => listItem.value.item.key === variationListItem.item.key)
 
         // Have a default for each of the prompts that correspond to the previous value of the variable
         const filledOutPrompts = staticCreateVariationPrompts.map((prompt) => ({
             ...prompt,
-            default: response.variationToEdit[prompt.name]
+            default: variationListItem.item[prompt.name]
         }))
 
         const editedVariation = await inquirer.prompt(filledOutPrompts)
         editedVariation.variables = await inquirer.prompt(
-            getVariationVariablesPrompts(this.featureVariables, response.variationToEdit.variables)
+            getVariationVariablesPrompts(this.featureVariables, variationListItem.item.variables)
         )
 
         CreateVariationDto.parse(editedVariation, { errorMap })
         if (index >= 0) {
             list[index] = {
                 name: editedVariation.name || editedVariation.key,
-                value: editedVariation
+                value: { item: editedVariation }
             }
         }
 
@@ -81,7 +81,7 @@ export class VariationListOptions extends ListOptionsPrompt<CreateVariationParam
     transformToListOptions(list: CreateVariationParams[]): ListOption<CreateVariationParams>[] {
         return list.map((createVariation) => ({
             name: createVariation.name,
-            value: createVariation
+            value: { item: createVariation }
         }))
     }
 }

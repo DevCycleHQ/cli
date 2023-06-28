@@ -15,9 +15,9 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         value: 'variables', 
         message: 'Manage variables',
         type: 'listOptions',
-        listOptionsPrompt: () => this.prompt(existingVariables?.map((variable) => ({
+        listOptionsPrompt: () => this.prompt(existingVariables?.map((variable, index) => ({
             name: variable.name || variable.key,
-            value: variable
+            value: { item: variable, id: index }
         })))
     })
  
@@ -25,8 +25,8 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         const variable = await inquirer.prompt(this.variablePropertyPrompts)
         CreateVariableDto.parse(variable, { errorMap })
         return {
-            name: variable.name || variable.key,
-            value: variable as CreateVariableParams
+            name: variable.name,
+            value: { item: variable as CreateVariableParams }
         }
     }
 
@@ -37,18 +37,18 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
             this.writer.warningMessage('No variables to edit')
             return
         }
-        const response = await inquirer.prompt([{
-            name: 'variableToEdit',
+        const { variableListItem } = await inquirer.prompt([{
+            name: 'variableListItem',
             message: 'Which variable would you like to edit?',
             type: 'list',
             choices: list
         }])
-        const index = list.findIndex((listItem) => listItem.name === response.variableToEdit.name)
+        const index = list.findIndex((listItem) => (listItem.value.item.key === variableListItem.item.key)) 
 
         // Have a default for each of the prompts that correspond to the previous value of the variable
         const filledOutPrompts = this.variablePropertyPrompts.map((prompt) => ({
             ...prompt,
-            default: response.variableToEdit[prompt.name]
+            default: variableListItem.item[prompt.name]
         }))
 
         const editedVariable = await inquirer.prompt(filledOutPrompts)
@@ -56,15 +56,15 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         if (index >= 0) {
             list[index] = {
                 name: editedVariable.name || editedVariable.key,
-                value: editedVariable as CreateVariableParams
+                value: { item: editedVariable as CreateVariableParams, id: variableListItem.id }
             }
         }
     }
 
     transformToListOptions(list: CreateVariableParams[]): ListOption<CreateVariableParams>[] {
-        return list.map((createVariable) => ({
+        return list.map((createVariable, index) => ({
             name: createVariable.name || createVariable.key,
-            value: createVariable
+            value: { item: createVariable, id: index } 
         }))
     }
     

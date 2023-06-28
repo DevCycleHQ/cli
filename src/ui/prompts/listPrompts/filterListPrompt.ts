@@ -24,7 +24,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
             const filter = { type: 'all' as const }
             return {
                 name: JSON.stringify(filter),
-                value: filter
+                value: { item: filter }
             }
         } else if (type === 'audienceMatch') {
             const { comparator, audiences } = await inquirer.prompt([filterComparatorPrompt, filterAudiencesPrompt])
@@ -32,7 +32,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
             const filter = { type: 'audienceMatch' as const, comparator, _audiences: audiencesList }
             return {
                 name: JSON.stringify(filter),
-                value: filter
+                value: { item: filter }
             }
         }
         const { subType } = await inquirer.prompt([filterSubTypePrompt])
@@ -51,7 +51,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         const filter = { type: type, ...rest } as Filter
         return {
             name: JSON.stringify(filter),
-            value: filter
+            value: { item: filter }
         }
     }
 
@@ -63,14 +63,15 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
             return
         }
 
-        const { filterToEdit } = await inquirer.prompt<{ filterToEdit: Filter}>([{
-            name: 'filterToEdit',
+        const { filterListItem } = await inquirer.prompt<{ filterListItem: ListOption<Filter>['value']}>([{
+            name: 'filterListItem',
             message: `Which ${this.itemType} would you like to edit?`,
             type: 'list',
             choices: list
         }])
-        const index = list.findIndex((listItem) => listItem.name === JSON.stringify(filterToEdit))
+        const index = list.findIndex((listItem) => listItem.value.id === filterListItem.id)
 
+        const filterToEdit = list[index].value.item
         let prompts = this.getPromptsByType(filterToEdit.type)
         if (filterToEdit.type !== 'all' && filterToEdit.type !== 'audienceMatch') {
             prompts = [...prompts, ...this.getPromptsBySubType(filterToEdit.subType)]
@@ -83,8 +84,9 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         
         prompts = prompts.filter((field) => fieldsToEdit.includes(field.name))
         if (fieldsToEdit.includes('type')) {
-            const fitlerListItem = await this.promptAddItem()
-            list[index] = fitlerListItem
+            const updatedFilterListItem = await this.promptAddItem()
+            list[index] =
+                { name: updatedFilterListItem.name, value: { ...updatedFilterListItem.value, id: filterListItem.id } }
             return
         }
 
@@ -99,7 +101,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
             const filter = { ...filterToEdit, ...rest }
             list[index] = {
                 name: JSON.stringify(filter),
-                value: filter
+                value: { item: filter, id: filterListItem.id }
             }
             return
         }
@@ -138,14 +140,14 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         const filter = { ...filterToEdit, ...rest }
         list[index] = {
             name: JSON.stringify(filter),
-            value: filter
-        }
+            value: { item: filter, id: filterListItem.id }
+        } 
     }
 
     transformToListOptions(list: Filter[]): ListOption<Filter>[] {
-        return list.map((filter) => ({
+        return list.map((filter, index) => ({
             name: JSON.stringify(filter),
-            value: filter
+            value: { item: filter, id: index }
         }))
     }
 

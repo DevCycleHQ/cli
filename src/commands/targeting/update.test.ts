@@ -224,7 +224,7 @@ describe('Targeting update', () => {
             if (promptCount < 3) {
                 promptAnswers =  {
                     listPromptOption: 'edit',
-                    targetToEdit: mockTargetingRule,
+                    targetListItem: { item: mockTargetingRule, id: 0 },
                     name: 'All Users New',
                     serve: { key: 'variation-off' },
                 }
