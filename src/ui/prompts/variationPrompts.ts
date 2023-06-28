@@ -34,7 +34,8 @@ export const featureVariableChoices = async (authToken: string, projectKey: stri
     const variablesMap = await fetchVariables(authToken, projectKey, featureKey)
     const choices = []
     for (const variable of variablesMap) {
-        const item = { name: variable.key, value: variable }
+        const displayVariableType = chalk.dim(`(${variable.type})`)
+        const item = { name: `${variable.key} ${displayVariableType}`, value: variable }
         choices.push(item)
     }
     return choices
