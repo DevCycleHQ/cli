@@ -9,7 +9,7 @@ import { AddItemPrompt, ContinuePrompt, EditItemPrompt, ExitPrompt, RemoveItemPr
  */
 export type ListOption<T> = {
     name: string
-    value: T
+    value: { item: T, id?: number }
 }
 
 export abstract class ListOptionsPrompt<T> {
@@ -118,7 +118,9 @@ export abstract class ListOptionsPrompt<T> {
         try {
             switch (response) {
                 case 'add':
-                    newList.push(await this.promptAddItem())
+                    const newItem = await this.promptAddItem()
+                    newItem.value.id = newList.length
+                    newList.push(newItem)
                     break
                 case 'edit':
                     await this.promptEditItem(newList)
@@ -128,9 +130,14 @@ export abstract class ListOptionsPrompt<T> {
                     indicesToDelete.reverse().forEach((index) => newList.splice(index, 1))
                     break
                 case 'reorder':
+                    if (newList.length < 2) {
+                        this.writer.showError(`You must have at least 2 ${this.itemType}s to reorder.`)
+                        break
+                    }
                     const [oldIndex, newIndex] = await this.promptReorderItem(newList)
-                    newList.splice(newIndex, 0, newList[oldIndex])
-                    newList.splice(oldIndex + 1, 1)
+                    const itemToMove = newList[oldIndex]
+                    newList.splice(oldIndex, 1)
+                    newList.splice(newIndex, 0, itemToMove)
                     break
                 case 'continue':
                     break
@@ -150,7 +157,7 @@ export abstract class ListOptionsPrompt<T> {
         if (response !== 'continue') {
             return this.prompt(newList)
         }
-        return newList.map((item) => item.value)
+        return newList.map((item) => item.value.item)
     }
 
     /**

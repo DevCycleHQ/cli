@@ -1,5 +1,13 @@
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import inquirer from 'inquirer'
+import {
+    AddItemPrompt,
+    EditItemPrompt,
+    RemoveItemPrompt,
+    ContinuePrompt,
+    ExitPrompt,
+    ReorderItemPrompt
+} from './promptOptions'
 import { servePrompt, audienceNamePrompt } from '../targetingPrompts'
 import { Filters, UpdateTargetParams } from '../../../api/schemas'
 import { FilterListOptions } from './filterListPrompt'
@@ -19,6 +27,17 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
         this.projectKey = projectKey
     }
 
+    options() {
+        return [
+            AddItemPrompt(this.itemType),
+            EditItemPrompt(this.itemType),
+            ReorderItemPrompt(this.itemType),
+            RemoveItemPrompt(this.itemType),
+            ContinuePrompt,
+            ExitPrompt
+        ]
+    }
+
     async promptAddItem(): Promise<ListOption<UpdateTargetParams>> {
         const { name, serve } = await inquirer.prompt([audienceNamePrompt, servePrompt], {
             token: this.authToken,
@@ -33,7 +52,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
 
         return {
             name: target.audience.name,
-            value: target as UpdateTargetParams
+            value: { item: target as UpdateTargetParams }
         }
     }
 
@@ -45,22 +64,23 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
             return
         }
 
-        const response = await inquirer.prompt([{
-            name: 'targetToEdit',
+        const { targetListItem } = await inquirer.prompt<{ targetListItem: ListOption<UpdateTargetParams>['value'] }>([{
+            name: 'targetListItem',
             message: `Which ${this.itemType} would you like to edit?`,
             type: 'list',
             choices: list
         }])
         const index = list.findIndex((item) => {
-            if (item.value._id && item.value._id === response.targetToEdit._id) {
-                return true
-            }
-            return item.name === response.targetToEdit.audience.name
+            // if the target to edit has an _id, we know it's an existing target so compare _id
+            if (targetListItem.item._id && targetListItem.item._id === item.value.item._id) return true
+            // otherwise the target is newly added so compare the id that's on the list option
+            return item.value.id === targetListItem.id
         })
+        const targetToEdit = targetListItem.item
 
         const promptsWithDefaults = [
-            { ...audienceNamePrompt, default: response.targetToEdit.audience.name },
-            { ...servePrompt, default: response.targetToEdit.distribution[0]._variation }
+            { ...audienceNamePrompt, default: targetToEdit.audience.name },
+            { ...servePrompt, default: targetToEdit.distribution[0]._variation }
         ]
 
         const { name, serve } = await inquirer.prompt(promptsWithDefaults, {
@@ -69,7 +89,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
             featureKey: this.featureKey
         })
         const filters: Filters =
-            await (new FilterListOptions(response.targetToEdit.audience.filters.filters, this.writer)).prompt()
+            await (new FilterListOptions(targetToEdit.audience.filters.filters, this.writer)).prompt()
         const target = {
             distribution: [{ _variation: serve.key, percentage: 1 }],
             audience: { name, filters: { filters, operator: 'and' } }
@@ -77,7 +97,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
 
         list[index] = {
             name: target.audience.name,
-            value: target as UpdateTargetParams
+            value: { item: target as UpdateTargetParams, id: targetListItem.id }
         }
     }
 
@@ -85,7 +105,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
         // TODO: default name is temporary until we have a better way to identify targeting rules
         return list.map((target, index) => ({
             name: target.audience.name || target.name || `Targeting Rule ${index + 1}`,
-            value: target
+            value: { item: target, id: index }
         }))
     }
 }
