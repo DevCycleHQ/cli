@@ -71,9 +71,10 @@ const insertRulesTree = (rootTree: Tree, targets: FeatureConfig['targets'], vari
 
 const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
     const definitionTree = ux.tree()
-    audience.filters.filters.forEach((filter) => {
+    audience.filters.filters.forEach((filter, index) => {
         if (filter.type === 'all') {
-            definitionTree.insert('All Users')
+            const prefixedProperty = prefixWithAnd('All Users', index)
+            definitionTree.insert(prefixedProperty)
         } else if (filter.type === 'user') {
             const userFilter = ux.tree()
             const values = ux.tree()
@@ -82,12 +83,18 @@ const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
             }
             userFilter.insert(comparatorMap[filter.comparator], values)
             const userProperty = filter.subType === 'customData' ? filter.dataKey : subTypeMap[filter.subType]
-            definitionTree.insert(userProperty, userFilter)
+            const prefixedProperty = prefixWithAnd(userProperty, index)
+            definitionTree.insert(prefixedProperty, userFilter)
+
         } else {
             // TODO handle audienceMatch
         }
     })
     rootTree.insert('definition', definitionTree)
+}
+
+const prefixWithAnd = (value: string, index: number) => {
+    return index !== 0 ? `AND ${value}` : value
 }
 
 const insertServeTree = (rootTree: Tree, distribution: Distribution, variations: Variation[]) => {
