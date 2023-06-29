@@ -1,9 +1,9 @@
 import { fetchFeatures, updateFeature } from '../../api/features'
-import { 
-    descriptionPrompt, 
-    featurePrompt, 
-    getSdkVisibilityPrompt, 
-    keyPrompt, 
+import {
+    descriptionPrompt,
+    featurePrompt,
+    getSdkVisibilityPrompt,
+    keyPrompt,
     namePrompt,
 } from '../../ui/prompts'
 import UpdateCommand from '../updateCommand'
@@ -39,6 +39,9 @@ export default class UpdateFeature extends UpdateCommand {
     prompts = [keyPrompt, namePrompt, descriptionPrompt]
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
         const { flags, args } = await this.parse(UpdateFeature)
         const { headless, key, name, description, variables, variations, sdkVisibility } = flags
         await this.requireProject()
@@ -70,12 +73,12 @@ export default class UpdateFeature extends UpdateCommand {
         this.prompts.push((new VariableListOptions([], this.writer)).getVariablesListPrompt(feature.variables))
         this.prompts.push((new VariationListOptions([], this.writer))
             .getVariationListPrompt( // if variables flags were passed in, treat those as the new variables
-                feature.variations, 
-                variables ? JSON.parse(variables): feature.variables, 
+                feature.variations,
+                variables ? JSON.parse(variables): feature.variables,
             )
         )
-        this.prompts.push(getSdkVisibilityPrompt(feature))  
-    
+        this.prompts.push(getSdkVisibilityPrompt(feature))
+
         const params = await this.populateParametersWithZod(UpdateFeatureDto, this.prompts, {
             key,
             name,
@@ -87,6 +90,6 @@ export default class UpdateFeature extends UpdateCommand {
         })
 
         const result = await updateFeature(this.authToken, this.projectKey, feature.key, params)
-        this.writer.showResults(result)  
+        this.writer.showResults(result)
     }
 }

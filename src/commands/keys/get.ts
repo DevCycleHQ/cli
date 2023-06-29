@@ -24,6 +24,9 @@ export default class GetEnvironmentKey extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
         const { flags } = await this.parse(GetEnvironmentKey)
         await this.requireProject()
 

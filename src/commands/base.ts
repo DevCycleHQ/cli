@@ -218,6 +218,20 @@ export default abstract class Base extends Command {
         setDVCReferrer(this.id, this.config.version, this.caller)
     }
 
+    checkAuthExpired() {
+        if (!this.authToken) {
+            console.info('Authorization Error: Please login using "dvc sso login".')
+            return true
+        }
+        const parsedToken = JSON.parse(
+            Buffer.from(this.authToken.split('.')[1], 'base64').toString()
+        )
+        if (parsedToken.exp < Math.floor(Date.now()/1000)) {
+            console.info('Authorization Error: Please login using "dvc login again".')
+            return true
+        }
+        return false
+    }
     async requireProject(): Promise<void> {
         if (this.projectKey !== '') {
             return
