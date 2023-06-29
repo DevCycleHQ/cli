@@ -108,6 +108,6 @@ export async function promptForVariationVariableValues(
 }
 
 export const staticCreateVariationPrompts: Prompt[] = [
-    keyPrompt,
     namePrompt,
+    keyPrompt
 ]
