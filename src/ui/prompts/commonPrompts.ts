@@ -24,7 +24,7 @@ export const keyPrompt: Prompt = {
         if (answers.name) {
             return answers.name.trim().replace(/\s+/g, '-').toLowerCase()
         }
-        return ''
+        return
     },
     type: 'input'
 }
