@@ -35,9 +35,6 @@ export default class UpdateVariable extends UpdateCommand {
     }
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const { args, flags } = await this.parse(UpdateVariable)
         const { key } = args
         const { headless } = flags

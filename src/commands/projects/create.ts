@@ -17,9 +17,6 @@ export default class CreateProject extends CreateCommand {
     }
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const { flags } = await this.parse(CreateProject)
         const { headless, key, name, description } = flags
         if (headless && (!key || !name)) {
