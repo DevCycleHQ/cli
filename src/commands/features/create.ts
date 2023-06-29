@@ -26,6 +26,9 @@ export default class CreateFeature extends CreateCommand {
     prompts = [keyPrompt, namePrompt, descriptionPrompt]
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
         const { flags } = await this.parse(CreateFeature)
         const { headless, key, name, description, variables, variations, sdkVisibility } = flags
         await this.requireProject()
@@ -39,7 +42,7 @@ export default class CreateFeature extends CreateCommand {
         this.prompts.push(
             (new VariationListOptions([], this.writer)).getVariationListPrompt()
         )
-        this.prompts.push(getSdkVisibilityPrompt())     
+        this.prompts.push(getSdkVisibilityPrompt())
 
         const params = await this.populateParametersWithZod(CreateFeatureDto, this.prompts, {
             key,

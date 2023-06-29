@@ -28,6 +28,10 @@ export default class CreateVariable extends CreateCommand {
     prompts = createVariablePrompts
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
+        await this.requireProject()
         const { flags } = await this.parse(CreateVariable)
         const { key, name, type, feature, headless } = flags
 

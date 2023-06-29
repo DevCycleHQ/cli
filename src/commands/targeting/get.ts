@@ -27,6 +27,9 @@ export default class DetailedTargeting extends Base {
     ]
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
         const { args, flags } = await this.parse(DetailedTargeting)
 
         await this.requireProject()

@@ -34,6 +34,9 @@ export default class UpdateTargeting extends Base {
     }
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
         const { args, flags } = await this.parse(UpdateTargeting)
         const { feature, environment } = args
         const { targets, headless } = flags
