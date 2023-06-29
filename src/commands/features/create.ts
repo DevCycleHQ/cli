@@ -26,9 +26,6 @@ export default class CreateFeature extends CreateCommand {
     prompts = [keyPrompt, namePrompt, descriptionPrompt]
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const { flags } = await this.parse(CreateFeature)
         const { headless, key, name, description, variables, variations, sdkVisibility } = flags
         await this.requireProject()

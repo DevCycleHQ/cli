@@ -6,9 +6,6 @@ export default class ListVariables extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         await this.requireProject()
         const variables = await fetchVariables(this.authToken, this.projectKey)
         const variableKeys = variables.map((variable) => variable.key)

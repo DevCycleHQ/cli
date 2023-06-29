@@ -37,9 +37,6 @@ export default class CreateVariation extends CreateCommand {
     prompts = [keyPrompt, namePrompt]
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         await this.requireProject()
 
         const { args, flags } = await this.parse(CreateVariation)

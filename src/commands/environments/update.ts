@@ -36,9 +36,6 @@ export default class UpdateEnvironment extends UpdateCommand {
     }
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const { args, flags } = await this.parse(UpdateEnvironment)
         const { key } = args
         const { headless } = flags

@@ -34,9 +34,6 @@ export default class CreateEnvironment extends CreateCommand {
     }
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const { flags } = await this.parse(CreateEnvironment)
         const { key, name, type, headless } = flags
 

@@ -5,9 +5,6 @@ export default class SelectOrganization extends AuthCommand {
     authRequired = true
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         await this.setOrganizationAndProject()
     }
 }
