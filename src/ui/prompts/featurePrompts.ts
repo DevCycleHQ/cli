@@ -20,7 +20,7 @@ export const featureChoices = async (input: Record<string, any>, search: string)
         choices = features.map((feature: Feature) => {
             return {
                 name: feature.name || feature.key,
-                value: feature._id
+                value: feature.key
             }
         })
     
