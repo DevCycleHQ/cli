@@ -36,7 +36,7 @@ export default class UpdateFeature extends UpdateCommand {
         }),
     }
 
-    prompts = [keyPrompt, namePrompt, descriptionPrompt]
+    prompts = [namePrompt, keyPrompt, descriptionPrompt]
 
     public async run(): Promise<void> {
         const { flags, args } = await this.parse(UpdateFeature)

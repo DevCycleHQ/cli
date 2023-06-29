@@ -7,7 +7,7 @@ export default class CreateProject extends CreateCommand {
     static hidden = false
     static description = 'Create a new Project'
 
-    prompts = [keyPrompt, namePrompt, descriptionPrompt]
+    prompts = [namePrompt, keyPrompt, descriptionPrompt]
 
     static flags = {
         ...CreateCommand.flags,

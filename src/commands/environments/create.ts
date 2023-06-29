@@ -17,8 +17,8 @@ export default class CreateEnvironment extends CreateCommand {
     static description = 'Create a new Environment for an existing Feature.'
 
     prompts = [
-        keyPrompt,
         namePrompt,
+        keyPrompt,
         descriptionPrompt,
         environmentTypePrompt,
     ]

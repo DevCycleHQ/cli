@@ -34,7 +34,7 @@ export default class CreateVariation extends CreateCommand {
         '<%= config.bin %> <%= command.id %> --variables=\'{ "bool-var": true, "num-var": 80, "string-var": "test" }\''
     ]
 
-    prompts = [keyPrompt, namePrompt]
+    prompts = [namePrompt, keyPrompt]
 
     public async run(): Promise<void> {
         await this.requireProject()

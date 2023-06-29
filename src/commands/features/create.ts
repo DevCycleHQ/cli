@@ -59,31 +59,44 @@ export default class CreateFeature extends CreateCommand {
         }
     }
     
-    async updateTargetingForQuickCreate(featureKey: string, developmentKey: string) {
-        await updateFeatureConfigForEnvironment(
-            this.authToken, 
-            this.projectKey, 
-            featureKey, 
-            developmentKey, {
-                targets: [{
-                    distribution: [{
-                        percentage: 1,
-                        _variation: 'variation-on',
-                    }],
-                    audience: {
-                        name: 'All Users',
-                        filters: {
-                            filters: [
-                                {
-                                    type: 'all'
-                                }
-                            ],
-                            operator: 'and'
+    async setupTargetingForEnvironments(featureKey: string) {
+        const environmentKeys = await this.getEnvironmentKeys()
+        Object.values(environmentKeys).forEach(async (environmentKey) => {
+            await updateFeatureConfigForEnvironment(
+                this.authToken, 
+                this.projectKey, 
+                featureKey, 
+                environmentKey, {
+                    targets: [{
+                        distribution: [{
+                            percentage: 1,
+                            _variation: 'variation-on',
+                        }],
+                        audience: {
+                            name: 'All Users',
+                            filters: {
+                                filters: [
+                                    {
+                                        type: 'all'
+                                    }
+                                ],
+                                operator: 'and'
+                            }
                         }
-                    }
-                }],
-                status: 'active'
-            })
+                    }],
+                    status: environmentKey === 'development' ? 'active' : 'inactive'
+                })
+        })
+    }
+
+    async getEnvironmentKeys() {
+        const configurations = await fetchEnvironments(this.authToken, this.projectKey)
+        const findEnvironmentKey = (type: string) => configurations.find((env) => env.type === type)?.key || type
+        return {
+            developmentKey: findEnvironmentKey('development'),
+            stagingKey: findEnvironmentKey('staging'),
+            productionKey: findEnvironmentKey('production'),
+        }
     }
 
     public async run(): Promise<void> {
@@ -102,9 +115,7 @@ export default class CreateFeature extends CreateCommand {
             )
 
             const result = await createFeature(this.authToken, this.projectKey, params)
-            const configurations = await fetchEnvironments(this.authToken, this.projectKey)
-            const developmentKey = configurations.find((env) => env.type === 'development')?.key || 'development'
-            await this.updateTargetingForQuickCreate(result.key, developmentKey)
+            await this.setupTargetingForEnvironments(result.key)
             this.writer.showResults(result)
             return
         }
