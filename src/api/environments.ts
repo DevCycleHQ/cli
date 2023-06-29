@@ -1,4 +1,5 @@
 import apiClient from './apiClient'
+import { buildHeaders } from './common'
 import { CreateEnvironmentParams, UpdateEnvironmentParams } from './schemas'
 
 export class APIKey {
@@ -13,10 +14,7 @@ export const createEnvironment = async (
     params: CreateEnvironmentParams
 ) => {
     return apiClient.post('/v1/projects/:project/environments', params, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+        headers: buildHeaders(token),
         params: { project: project_id }
     })
 }
@@ -28,10 +26,7 @@ export const updateEnvironment = async (
     params: UpdateEnvironmentParams
 ) => {
     return apiClient.patch('/v1/projects/:project/environments/:key', params, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+        headers: buildHeaders(token),
         params: {
             project: project_id,
             key: environmentKey
@@ -41,10 +36,7 @@ export const updateEnvironment = async (
 
 export const fetchEnvironments = async (token: string, project_id: string) => {
     return apiClient.get('/v1/projects/:project/environments', {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+        headers: buildHeaders(token),
         params: {
             project: project_id
         }
@@ -58,10 +50,7 @@ export const fetchEnvironmentByKey = async (
 ) => {
     try {
         const response = await apiClient.get('/v1/projects/:project/environments/:key', {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
+            headers: buildHeaders(token),
             params: {
                 project: project_id,
                 key

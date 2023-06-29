@@ -1275,6 +1275,13 @@
           "type": "option",
           "description": "The visibility of the feature for the SDKs",
           "multiple": false
+        },
+        "interactive": {
+          "name": "interactive",
+          "type": "boolean",
+          "char": "i",
+          "description": "Interactive Feature Creation Mode",
+          "allowNo": false
         }
       },
       "args": {}

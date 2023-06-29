@@ -150,6 +150,7 @@ describe('features create', () => {
         .command([
             'features create',
             '--project', projectKey,
+            '-i',
             ...authFlags
         ])
         .it('returns an error if key is not provided',
@@ -170,6 +171,7 @@ describe('features create', () => {
         .command([
             'features create',
             '--project', projectKey,
+            '-i',
             ...authFlags
         ])
         .it('returns an error if name is not provided',
@@ -202,6 +204,7 @@ describe('features create', () => {
         .stdout()
         .command([
             'features create',
+            '-i',
             '--project', projectKey,
             '--name', requestBody.name,
             ...authFlags
