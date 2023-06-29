@@ -20,7 +20,12 @@ export const keyPrompt: Prompt = {
     name: 'key',
     message: 'Key',
     suffix: ':',
-    transformer: hintTextTransformer('(Unique ID)'),
+    default: (answers: Record<string, string>) => {
+        if (answers.name) {
+            return answers.name.trim().replace(/\s+/g, '-').toLowerCase()
+        }
+        return ''
+    },
     type: 'input'
 }
 
