@@ -16,7 +16,7 @@ import { reportValidationErrors } from '../../utils/reportValidationErrors'
 export default class UpdateTargeting extends Base {
     static hidden = false
     static description = 'Update Targeting rules'
-
+    authRequired = true
     static args = {
         feature: Args.string({
             description: 'The Feature for the Targeting Rule.'
@@ -34,9 +34,6 @@ export default class UpdateTargeting extends Base {
     }
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const { args, flags } = await this.parse(UpdateTargeting)
         const { feature, environment } = args
         const { targets, headless } = flags

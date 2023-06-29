@@ -1,5 +1,6 @@
 import { expect, test } from '@oclif/test'
 import { AUTH_URL, BASE_URL } from '../../api/common'
+import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import * as fs from 'fs'
 
 const mockVariablesResponse = [
@@ -104,18 +105,8 @@ describe('generate types', () => {
         fs.rmSync(artifactsDir, { recursive: true })
     })
 
-    test
-        .nock(AUTH_URL, (api) => {
-            api.post('/oauth/token', {
-                grant_type: 'client_credentials',
-                client_id: 'client',
-                client_secret: 'secret',
-                audience: 'https://api.devcycle.com/',
-            }).reply(200, {
-                access_token: 'token'
-            })
-        })
-        .nock(BASE_URL, { reqheaders: { authorization: 'token' } }, (api) =>
+    dvcTest()
+        .nock(BASE_URL,  (api) =>
             api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
                 .reply(200, mockVariablesResponse)
         )
@@ -135,18 +126,8 @@ describe('generate types', () => {
             expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
         })
 
-    test
-        .nock(AUTH_URL, (api) => {
-            api.post('/oauth/token', {
-                grant_type: 'client_credentials',
-                client_id: 'client',
-                client_secret: 'secret',
-                audience: 'https://api.devcycle.com/',
-            }).reply(200, {
-                access_token: 'token'
-            })
-        })
-        .nock(BASE_URL, { reqheaders: { authorization: 'token' } }, (api) =>
+    dvcTest()
+        .nock(BASE_URL, (api) =>
             api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
                 .reply(200, mockVariablesResponse)
         )

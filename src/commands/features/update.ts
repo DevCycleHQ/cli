@@ -39,9 +39,6 @@ export default class UpdateFeature extends UpdateCommand {
     prompts = [keyPrompt, namePrompt, descriptionPrompt]
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const { flags, args } = await this.parse(UpdateFeature)
         const { headless, key, name, description, variables, variations, sdkVisibility } = flags
         await this.requireProject()

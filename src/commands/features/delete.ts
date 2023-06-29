@@ -16,9 +16,6 @@ export default class DeleteFeatures extends Base {
     }
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         await this.requireProject()
 
         const { args } = await this.parse(DeleteFeatures)

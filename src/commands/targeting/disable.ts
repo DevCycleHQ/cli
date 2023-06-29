@@ -19,9 +19,6 @@ export default class DisableTargeting extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const { args, flags } = await this.parse(DisableTargeting)
 
         await this.requireProject()

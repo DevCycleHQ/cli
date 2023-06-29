@@ -6,9 +6,6 @@ export default class ListEnvironments extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         await this.requireProject()
         const environments = await fetchEnvironments(this.authToken, this.projectKey)
         const environmentKeys = environments.map((environment) => environment.key)

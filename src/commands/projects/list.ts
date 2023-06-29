@@ -7,9 +7,6 @@ export default class ListProjects extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
-        if (this.checkAuthExpired()) {
-            return
-        }
         const projects = await fetchProjects(this.authToken)
         return this.writer.showResults(projects.map((project) => project.key))
     }
