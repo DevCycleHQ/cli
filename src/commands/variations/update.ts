@@ -40,6 +40,9 @@ export default class UpdateVariation extends UpdateCommand {
     }
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
         await this.requireProject()
 
         const { args, flags } = await this.parse(UpdateVariation)

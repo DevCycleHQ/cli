@@ -6,6 +6,9 @@ export default class ListFeatures extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
         await this.requireProject()
         const features = await fetchFeatures(this.authToken, this.projectKey)
         const featureKeys = features.map((feature) => feature.key)

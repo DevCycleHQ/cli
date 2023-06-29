@@ -13,6 +13,9 @@ export default class DetailedVariables extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
+        if (this.checkAuthExpired()) {
+            return
+        }
         const { flags } = await this.parse(DetailedVariables)
         const keys = flags['keys']?.split(',')
 
