@@ -126,8 +126,8 @@ export const variableValueJSONPrompt = (variableKey: string, defaultValue?: stri
 }
 
 export const createVariablePrompts: (Prompt | AutoCompletePrompt)[] = [
-    keyPrompt,
     namePrompt,
+    keyPrompt,
     descriptionPrompt,
     variableTypePrompt,
     variableFeaturePrompt

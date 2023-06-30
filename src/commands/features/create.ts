@@ -5,6 +5,10 @@ import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListP
 import { Flags } from '@oclif/core'
 import { CreateFeatureDto } from '../../api/schemas'
 import { VariationListOptions } from '../../ui/prompts/listPrompts/variationsListPrompt'
+import { 
+    mergeQuickFeatureParamsWithAnswers, 
+    setupTargetingForEnvironments 
+} from '../../utils/features/quickCreateFeatureUtils'
 
 export default class CreateFeature extends CreateCommand {
     static hidden = false
@@ -21,9 +25,13 @@ export default class CreateFeature extends CreateCommand {
         sdkVisibility: Flags.string({
             description: 'The visibility of the feature for the SDKs'
         }),
+        interactive: Flags.boolean({
+            char: 'i',
+            description: 'Interactive Feature Creation Mode'
+        }),
     }
 
-    prompts = [keyPrompt, namePrompt, descriptionPrompt]
+    prompts = [namePrompt, keyPrompt, descriptionPrompt]
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateFeature)
@@ -33,14 +41,25 @@ export default class CreateFeature extends CreateCommand {
         if (headless && (!key || !name)) {
             this.writer.showError('The key and name flags are required')
             return
+        } 
+
+        if (!flags.interactive) {
+            let params: Record<string, string> = flags
+            if (!flags.headless) {
+                params = await this.populateParametersWithFlags(this.prompts, flags) as Record<string, string>
+            }
+            const featureParams = mergeQuickFeatureParamsWithAnswers(params)
+            const feature = await createFeature(this.authToken, this.projectKey, featureParams)
+            await setupTargetingForEnvironments(this.authToken, this.projectKey, feature.key)
+            this.writer.showResults(feature)
+            return
         }
 
         this.prompts.push((new VariableListOptions([], this.writer)).getVariablesListPrompt())
         this.prompts.push(
             (new VariationListOptions([], this.writer)).getVariationListPrompt()
         )
-        this.prompts.push(getSdkVisibilityPrompt())
-
+        this.prompts.push(getSdkVisibilityPrompt())    
         const params = await this.populateParametersWithZod(CreateFeatureDto, this.prompts, {
             key,
             name,
@@ -53,6 +72,5 @@ export default class CreateFeature extends CreateCommand {
 
         const result = await createFeature(this.authToken, this.projectKey, params)
         this.writer.showResults(result)
-
     }
 }

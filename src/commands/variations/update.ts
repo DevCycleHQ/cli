@@ -17,8 +17,8 @@ export default class UpdateVariation extends UpdateCommand {
     static description = 'Update a Variation.'
 
     prompts = [
-        keyPrompt,
-        namePrompt
+        namePrompt,
+        keyPrompt
     ]
 
     static args = {
