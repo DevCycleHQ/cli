@@ -9,9 +9,10 @@ import {
     ReorderItemPrompt
 } from './promptOptions'
 import { servePrompt, audienceNamePrompt } from '../targetingPrompts'
-import { Filters, UpdateTargetParams } from '../../../api/schemas'
+import { Filters, UpdateTargetParams, Variation } from '../../../api/schemas'
 import { FilterListOptions } from './filterListPrompt'
 import Writer from '../../writer'
+import { renderRulesTree } from '../../targetingTree'
 
 export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> {
     itemType = 'Targeting Rule'
@@ -19,6 +20,8 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
     authToken: string
     projectKey: string
     featureKey: string
+
+    variations: Variation[] = []
 
     constructor(list: UpdateTargetParams[], writer: Writer, authToken: string, projectKey: string, featureKey: string) {
         super(list, writer)
@@ -107,5 +110,13 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
             name: target.audience.name || target.name || `Targeting Rule ${index + 1}`,
             value: { item: target, id: index }
         }))
+    }
+
+    async printListOptions(list?: ListOption<UpdateTargetParams>[]) {
+        const listToPrint = list || this.list
+        this.writer.statusMessage(`Current ${this.itemType}s:`)
+        const values = listToPrint.map((item) => item.value.item)
+        renderRulesTree(values, this.variations)
+        this.writer.divider()
     }
 }
