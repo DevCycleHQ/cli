@@ -29,11 +29,11 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
 
     options() {
         return [
+            ContinuePrompt,
             AddItemPrompt(this.itemType),
             EditItemPrompt(this.itemType),
             ReorderItemPrompt(this.itemType),
             RemoveItemPrompt(this.itemType),
-            ContinuePrompt,
             ExitPrompt
         ]
     }
