@@ -10,6 +10,7 @@ import {
     variationPrompt,
 } from '../../ui/prompts/variationPrompts'
 import { Args, Flags } from '@oclif/core'
+import { fetchFeatureByKey } from '../../api/features'
 
 export default class UpdateVariation extends UpdateCommand {
     static hidden = false
@@ -65,11 +66,14 @@ export default class UpdateVariation extends UpdateCommand {
         } else {
             selectedVariation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, args.key)
         }
-
+        const feature = await fetchFeatureByKey(this.authToken, this.projectKey, featureKey)
+        if (!feature) {
+            throw new Error(`Unable to find feature for key: ${featureKey}`)
+        }
         this.prompts.push(await getVariationVariablePrompt(
             this.authToken,
             this.projectKey,
-            featureKey,
+            feature._id,
         ))
 
         this.writer.blankLine()
