@@ -13,6 +13,7 @@ import { Filter } from '../../../api/schemas'
 import { Prompt } from '../types'
 import { chooseFields } from '../../../utils/prompts'
 import { UserSubType } from '../../../api/targeting'
+import { renderDefinitionTree } from '../../targetingTree'
 
 export class FilterListOptions extends ListOptionsPrompt<Filter> {
     itemType = 'Filter'
@@ -165,5 +166,13 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
             return [filterDataKeyPrompt, filterDataKeyTypePrompt]
         }
         return []
+    }
+
+    async printListOptions(list?: ListOption<Filter>[]) {
+        const listToPrint = list || this.list
+        this.writer.statusMessage(`Current ${this.itemType}s:`)
+        const values = listToPrint.map((item) => item.value.item)
+        renderDefinitionTree(values)
+        this.writer.divider()
     }
 }

@@ -5,7 +5,7 @@ import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import chai from 'chai'
 import inquirer from 'inquirer'
 
-describe('Targeting update', () => {
+describe('targeting update', () => {
     beforeEach(setCurrentTestFile(__filename))
     chai.use(jestSnapshotPlugin())
 
@@ -39,6 +39,13 @@ describe('Targeting update', () => {
         'targets': [ mockTargetingRule ],
         'readonly': false
     }]
+
+    const mockEnvironment = {
+        _id: '648b421gg3f682869c0f22f8',
+        key: envKey,
+        name: 'test-env',
+        type: 'development',
+    }
 
     const mockVariations = [
         {
@@ -180,7 +187,14 @@ describe('Targeting update', () => {
     }
 
     dvcTest()
-        .stdout()
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/environments/${envKey}`)
+            .reply(200, mockEnvironment)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/features/${featureKey}/variations`)
+            .reply(200, mockVariations)
+        )
         .nock(BASE_URL, (api) => api
             .patch(
                 `/v1/projects/${projectKey}/features/${featureKey}/configurations`,
@@ -189,6 +203,7 @@ describe('Targeting update', () => {
             .query({ environment: envKey })
             .reply(200, mockResponseHeadless)
         )
+        .stdout()
         .command([
             'targeting update',
             featureKey,
@@ -217,7 +232,6 @@ describe('Targeting update', () => {
 
     let promptCount = 0
     dvcTest()
-        .stdout()
         .stub(inquirer, 'registerPrompt', () => { return })
         .stub(inquirer, 'prompt', () => {
             let promptAnswers
@@ -248,6 +262,14 @@ describe('Targeting update', () => {
             return promptAnswers
         })
         .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/environments/${envKey}`)
+            .reply(200, mockEnvironment)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/features/${featureKey}/variations`)
+            .reply(200, mockVariations)
+        )
+        .nock(BASE_URL, (api) => api
             .get(`/v1/projects/${projectKey}/features/${featureKey}/configurations`)
             .query({ environment: envKey })
             .reply(200, mockTargetingRules)
@@ -260,6 +282,7 @@ describe('Targeting update', () => {
             .query({ environment: envKey })
             .reply(200, mockResponseInteractive)
         )
+        .stdout()
         .command([
             'targeting update',
             featureKey,
