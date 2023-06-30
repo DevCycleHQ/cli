@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import { ListPrompt, Prompt } from './types'
 import { partition } from 'lodash'
 import inquirer from '../autocomplete'
+import { isValidKey, isRequired, maxLength } from '../../utils/validators'
 
 export const hintTextTransformer = (hint: string) =>
     (value: string, answers: unknown, { isFinal }: { isFinal: boolean }) => {
@@ -26,6 +27,17 @@ export const keyPrompt: Prompt = {
         }
         return
     },
+    validate: (value: string) => {
+        const requiredResult = isRequired('Key', value)
+        if (requiredResult !== true) {
+            return requiredResult
+        }
+        const maxLengthResult = maxLength('Key', value, 100)
+        if (maxLengthResult !== true) {
+            return maxLengthResult
+        }
+        return isValidKey('Key', value)
+    },
     type: 'input'
 }
 
@@ -34,6 +46,13 @@ export const namePrompt: Prompt = {
     message: 'Name',
     suffix: ':',
     transformer: hintTextTransformer('(Human readable name)'),
+    validate: (value: string) => {
+        const requiredResult = isRequired('Name', value)
+        if (requiredResult !== true) {
+            return requiredResult
+        }
+        return maxLength('Name', value, 100)
+    },
     type: 'input'
 }
 

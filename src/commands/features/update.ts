@@ -67,12 +67,16 @@ export default class UpdateFeature extends UpdateCommand {
         this.writer.statusMessage(JSON.stringify(feature, null, 2))
         this.writer.blankLine()
 
-        this.prompts.push((new VariableListOptions([], this.writer)).getVariablesListPrompt(feature.variables))
-        this.prompts.push((new VariationListOptions([], this.writer))
-            .getVariationListPrompt( // if variables flags were passed in, treat those as the new variables
-                feature.variations,
-                variables ? JSON.parse(variables): feature.variables,
+        this.prompts.push((new VariableListOptions(feature.variables ?? [], this.writer)).getVariablesListPrompt())
+        this.prompts.push(
+            (
+                new VariationListOptions(
+                    feature.variations ?? [],
+                    variables ? JSON.parse(variables): feature.variables,
+                    this.writer
+                )
             )
+                .getVariationListPrompt()
         )
         this.prompts.push(getSdkVisibilityPrompt(feature))
 

@@ -2,6 +2,7 @@
 import { errorMap } from '../../../api/apiClient'
 import { CreateVariationDto, CreateVariationParams, Variable, Variation } from '../../../api/schemas'
 import inquirer from '../../autocomplete'
+import Writer from '../../writer'
 import { getVariationVariablesPrompts, staticCreateVariationPrompts } from '../variationPrompts'
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 
@@ -11,9 +12,12 @@ export class VariationListOptions extends ListOptionsPrompt<CreateVariationParam
 
     featureVariables: Variable[] = []
 
-    getVariationListPrompt = (existingVariations?: Variation[], existingVariables?: Variable[]) => {
+    constructor(list: CreateVariationParams[], existingVariables: Variable[], writer: Writer) {
+        super(list, writer)
         this.featureVariables = existingVariables || []
+    }
 
+    getVariationListPrompt = () => {
         return {
             name: 'variations', 
             value: 'variations', 
@@ -22,12 +26,10 @@ export class VariationListOptions extends ListOptionsPrompt<CreateVariationParam
             previousReponseFields: ['variables'], // if variables were just created / updated, use the new variables
             listOptionsPrompt: (previousResponses?: Record<string, any>) => {
                 const newVariables = previousResponses?.variables
-                this.featureVariables = newVariables || this.featureVariables
-
-                return this.prompt(existingVariations?.map((variation, index) => ({
-                    name: variation.name || variation.key,
-                    value: { item: variation, id: index } 
-                })))
+                if (newVariables) {
+                    this.featureVariables = newVariables
+                }
+                return this.prompt()
             }
         }
     }

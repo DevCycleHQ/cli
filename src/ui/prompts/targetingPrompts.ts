@@ -1,16 +1,6 @@
 import { DataKeyType, filterTypes, userSubTypes } from '../../api/targeting'
+import { isRequired } from '../../utils/validators'
 import { variationChoices } from './variationPrompts'
-import { namePrompt } from './commonPrompts'
-
-export const audienceNamePrompt = {
-    ...namePrompt,
-    validate: (value: string) => {
-        if (value.length === 0) {
-            return 'Name cannot be empty'
-        }
-        return true
-    }
-}
 
 export const comparatorChoices = (input: Record<string, any>) => {
     if (input.subType === 'appVersion') {
@@ -53,6 +43,7 @@ export const filterValuesPrompt = {
     name: 'values',
     message: 'List of comma separated values for definition',
     suffix: ':',
+    validate: (input: string) => (isRequired('values', input)),
     type: 'input'
 }
 

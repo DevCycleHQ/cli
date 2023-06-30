@@ -1,17 +1,5 @@
-import { ClassConstructor } from 'class-transformer'
 import { Prompt } from '../ui/prompts'
-import { ValidatorOptions, validateSync } from 'class-validator'
-import { reportValidationErrors } from './reportValidationErrors'
 import inquirer from '../ui/autocomplete'
-
-export function validateParams<ResourceType>(
-    paramClass: ClassConstructor<ResourceType>,
-    params: ResourceType,
-    validatorOptions?: ValidatorOptions
-){
-    const errors = validateSync(params as Record<string, unknown>, { ...validatorOptions })
-    reportValidationErrors(errors)
-}
 
 // Filter out prompts that already have values provided by flags
 export function filterPrompts(prompts: Prompt[], flags: Record<string, unknown>) {

@@ -10,7 +10,6 @@ import {
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 import { CreateEnvironmentDto } from '../../api/schemas'
-import { ZodError } from 'zod'
 
 export default class CreateEnvironment extends CreateCommand {
     static hidden = false
