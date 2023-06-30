@@ -1,7 +1,7 @@
 import { createVariablePrompts } from '../variablePrompts'
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import inquirer from 'inquirer'
-import { CreateVariableDto, CreateVariableParams, UpdateVariableDto, Variable } from '../../../api/schemas'
+import { CreateVariableDto, CreateVariableParams, UpdateVariableDto } from '../../../api/schemas'
 import { errorMap } from '../../../api/apiClient'
 
 export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams> {
@@ -10,15 +10,12 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
 
     variablePropertyPrompts = createVariablePrompts.filter((prompt) => prompt.name !== '_feature')
 
-    getVariablesListPrompt = (existingVariables?: Variable[]) => ({
+    getVariablesListPrompt = () => ({
         name: 'variables', 
         value: 'variables', 
         message: 'Manage variables',
         type: 'listOptions',
-        listOptionsPrompt: () => this.prompt(existingVariables?.map((variable, index) => ({
-            name: variable.name || variable.key,
-            value: { item: variable, id: index }
-        })))
+        listOptionsPrompt: () => this.prompt()
     })
  
     async promptAddItem(): Promise<ListOption<CreateVariableParams>> {
@@ -67,5 +64,4 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
             value: { item: createVariable, id: index } 
         }))
     }
-    
 }

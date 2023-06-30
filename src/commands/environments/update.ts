@@ -11,7 +11,6 @@ import {
 import UpdateCommand from '../updateCommand'
 import { Flags } from '@oclif/core'
 import { CreateEnvironmentDto, UpdateEnvironmentDto } from '../../api/schemas'
-import { ZodError } from 'zod'
 
 export default class UpdateEnvironment extends UpdateCommand {
     static hidden = false

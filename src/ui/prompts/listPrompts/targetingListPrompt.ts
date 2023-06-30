@@ -8,11 +8,12 @@ import {
     ExitPrompt,
     ReorderItemPrompt
 } from './promptOptions'
-import { servePrompt, audienceNamePrompt } from '../targetingPrompts'
+import { servePrompt } from '../targetingPrompts'
 import { Filters, UpdateTargetParams, Variation } from '../../../api/schemas'
 import { FilterListOptions } from './filterListPrompt'
 import Writer from '../../writer'
 import { renderRulesTree } from '../../targetingTree'
+import { namePrompt } from '../commonPrompts'
 
 export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> {
     itemType = 'Targeting Rule'
@@ -42,7 +43,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
     }
 
     async promptAddItem(): Promise<ListOption<UpdateTargetParams>> {
-        const { name, serve } = await inquirer.prompt([audienceNamePrompt, servePrompt], {
+        const { name, serve } = await inquirer.prompt([namePrompt, servePrompt], {
             token: this.authToken,
             projectKey: this.projectKey,
             featureKey: this.featureKey
@@ -82,7 +83,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
         const targetToEdit = targetListItem.item
 
         const promptsWithDefaults = [
-            { ...audienceNamePrompt, default: targetToEdit.audience.name },
+            { ...namePrompt, default: targetToEdit.audience.name },
             { ...servePrompt, default: targetToEdit.distribution[0]._variation }
         ]
 
