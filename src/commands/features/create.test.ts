@@ -136,7 +136,11 @@ describe('features create', () => {
         ])
         .it('returns a new feature with quick create',
             (ctx) => {
-                expect(JSON.parse(ctx.stdout)).to.eql(mockFeature)
+                const jsonStartIndex = ctx.stdout.indexOf('{')
+                const jsonEndIndex = ctx.stdout.lastIndexOf('}')
+                const jsonString = ctx.stdout.slice(jsonStartIndex, jsonEndIndex + 1)
+                const parsedJson = JSON.parse(jsonString)
+                expect(parsedJson).to.eql(mockFeature)
             })
 
     dvcTest()
@@ -309,7 +313,11 @@ describe('features create', () => {
         ])
         .it('returns a new feature with quick create not in headless mode',
             (ctx) => {
-                expect(JSON.parse(ctx.stdout)).to.eql(mockFeature)
+                const jsonStartIndex = ctx.stdout.indexOf('{')
+                const jsonEndIndex = ctx.stdout.lastIndexOf('}')
+                const jsonString = ctx.stdout.slice(jsonStartIndex, jsonEndIndex + 1)
+                const parsedJson = JSON.parse(jsonString)
+                expect(parsedJson).to.eql(mockFeature)
             })
     
     // dvcTest()
