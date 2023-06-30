@@ -52,12 +52,12 @@ export const getSDKVisibilityChoices = (sdkVisibility?: Feature['sdkVisibility']
         {
             name: 'mobile',
             value: 'mobile',
-            checked: typeof sdkVisibility?.mobile !== 'undefined' ? sdkVisibility?.mobile : true
+            checked: typeof sdkVisibility?.mobile !== 'undefined' ? sdkVisibility?.mobile : false
         },
         {
             name: 'client',
             value: 'client',
-            checked: typeof sdkVisibility?.client !== 'undefined' ? sdkVisibility?.client : true
+            checked: typeof sdkVisibility?.client !== 'undefined' ? sdkVisibility?.client : false
         }, 
         {
             name: 'server',
