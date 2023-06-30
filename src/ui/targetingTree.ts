@@ -9,6 +9,7 @@ type Audience = FeatureConfig['targets'][0]['audience']
 type Rollout = FeatureConfig['targets'][0]['rollout']
 type Rule = Pick<FeatureConfig['targets'][0], 'audience' | 'distribution' | 'rollout'>
 type Filters = Audience['filters']['filters']
+type Operator = Audience['filters']['operator']
 
 const subTypeMap = {
     email: 'Email',
@@ -60,9 +61,10 @@ export const renderRulesTree = (
 }
 
 export const renderDefinitionTree = (
-    filters: Filters
+    filters: Filters,
+    operator: Operator
 ) => {
-    const definitionTree = buildDefinitionTree(filters)
+    const definitionTree = buildDefinitionTree(filters, operator)
     definitionTree.display()
 }
 
@@ -97,13 +99,15 @@ const insertRulesTree = (rootTree: Tree, targets: Rule[], variations: Variation[
     rootTree.insert(rulesTitle, rulesTree)
 }
 
-const buildDefinitionTree = (filters: Filters) => {
+const buildDefinitionTree = (filters: Filters, operator: Operator) => {
     const definitionTree = ux.tree()
-    const prefixWithAnd = (value: string, index: number) => index !== 0 ? `AND ${value}` : value
+    const prefixWithOperator = (value: string, index: number) => (
+        index !== 0 ? `${operator.toUpperCase()} ${value}` : value
+    )
 
     filters.forEach((filter, index) => {
         if (filter.type === 'all') {
-            const prefixedProperty = prefixWithAnd('All Users', index)
+            const prefixedProperty = prefixWithOperator('All Users', index)
             definitionTree.insert(prefixedProperty)
         } else if (filter.type === 'user') {
             const userFilter = ux.tree()
@@ -113,7 +117,7 @@ const buildDefinitionTree = (filters: Filters) => {
             }
             userFilter.insert(comparatorMap[filter.comparator], values)
             const userProperty = filter.subType === 'customData' ? filter.dataKey : subTypeMap[filter.subType]
-            const prefixedProperty = prefixWithAnd(userProperty, index)
+            const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
 
         } else {
@@ -124,7 +128,8 @@ const buildDefinitionTree = (filters: Filters) => {
 }
 
 const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
-    const definitionTree = buildDefinitionTree(audience.filters.filters)
+    const { filters, operator } = audience.filters
+    const definitionTree = buildDefinitionTree(filters, operator)
     const definitionTitle = coloredTitle('definition')
     rootTree.insert(definitionTitle, definitionTree)
 }

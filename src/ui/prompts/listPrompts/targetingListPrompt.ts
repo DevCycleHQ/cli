@@ -48,10 +48,13 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
             projectKey: this.projectKey,
             featureKey: this.featureKey
         })
-        const filters: Filters = await (new FilterListOptions([], this.writer)).prompt()
+        const operator = 'and'
+        const filterListOptions = new FilterListOptions([], this.writer)
+        filterListOptions.operator = operator
+        const filters = await filterListOptions.prompt()
         const target = {
             distribution: [{ _variation: serve.key, percentage: 1 }],
-            audience: { name, filters: { filters, operator: 'and' } }
+            audience: { name, filters: { filters, operator } }
         }
 
         return {
@@ -92,8 +95,9 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
             projectKey: this.projectKey,
             featureKey: this.featureKey
         })
-        const filters: Filters =
-            await (new FilterListOptions(targetToEdit.audience.filters.filters, this.writer)).prompt()
+        const filterListOptions = new FilterListOptions(targetToEdit.audience.filters.filters, this.writer)
+        filterListOptions.operator = targetToEdit.audience.filters.operator
+        const filters = await filterListOptions.prompt()
         const target = {
             distribution: [{ _variation: serve.key, percentage: 1 }],
             audience: { name, filters: { filters, operator: 'and' } }
