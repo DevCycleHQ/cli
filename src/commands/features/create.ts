@@ -3,11 +3,11 @@ import { descriptionPrompt, getSdkVisibilityPrompt, keyPrompt, namePrompt } from
 import CreateCommand from '../createCommand'
 import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
 import { Flags } from '@oclif/core'
-import { CreateFeatureDto } from '../../api/schemas'
+import { CreateFeatureDto, Feature } from '../../api/schemas'
 import { VariationListOptions } from '../../ui/prompts/listPrompts/variationsListPrompt'
-import { 
-    mergeQuickFeatureParamsWithAnswers, 
-    setupTargetingForEnvironments 
+import {
+    mergeQuickFeatureParamsWithAnswers,
+    setupTargetingForEnvironments
 } from '../../utils/features/quickCreateFeatureUtils'
 import { fetchProject } from '../../api/projects'
 
@@ -53,6 +53,7 @@ export default class CreateFeature extends CreateCommand {
             const feature = await createFeature(this.authToken, this.projectKey, featureParams)
             await setupTargetingForEnvironments(this.authToken, this.projectKey, feature.key)
             this.writer.showResults(feature)
+            this.showSuggestedCommand(feature)
             return
         }
 
@@ -77,5 +78,13 @@ export default class CreateFeature extends CreateCommand {
 
         const result = await createFeature(this.authToken, this.projectKey, params)
         this.writer.showResults(result)
+    }
+
+    private showSuggestedCommand(feature: Feature) {
+        const message = `\nFeature "${feature.name}" successfully created!\n` +
+            '\nTo update the targeting rules, use: \n\n' +
+            `    dvc targeting update ${feature.key}\n`
+
+        this.writer.showRawResults(message)
     }
 }
