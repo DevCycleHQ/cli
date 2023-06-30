@@ -7,7 +7,7 @@ import jsYaml from 'js-yaml'
 import { RepoConfigFromFile, UserConfigFromFile } from '../types'
 import { ClassConstructor, plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
-import { reportValidationErrors, reportZodValidationErrors } from '../utils/reportValidationErrors'
+import { reportValidationErrors, reportZodValidationErrors, validateParams } from '../utils/reportValidationErrors'
 import { getToken } from '../auth/getToken'
 import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
@@ -15,7 +15,7 @@ import inquirer from 'inquirer'
 import Writer from '../ui/writer'
 import { errorMap, setDVCReferrer } from '../api/apiClient'
 import { Prompt, handleCustomPrompts } from '../ui/prompts'
-import { filterPrompts, mergeFlagsAndAnswers, validateParams } from '../utils/prompts'
+import { filterPrompts, mergeFlagsAndAnswers } from '../utils/prompts'
 import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
 
 export default abstract class Base extends Command {
@@ -258,7 +258,7 @@ export default abstract class Base extends Command {
     ): Promise<ResourceType> {
         if (flags.headless) {
             const params = plainToClass(paramClass, flags)
-            validateParams(paramClass, params, { whitelist: true, skipMissingProperties: isUpdate })
+            validateParams(params, { whitelist: true, skipMissingProperties: isUpdate })
             return params
         }
 
@@ -266,7 +266,7 @@ export default abstract class Base extends Command {
         const answers = await this.populateParametersWithInquirer(filteredPrompts)
 
         const params = plainToClass(paramClass, mergeFlagsAndAnswers(flags, answers))
-        validateParams(paramClass, params, { whitelist: true, skipMissingProperties: isUpdate })
+        validateParams(params, { whitelist: true, skipMissingProperties: isUpdate })
         return params
     }
 

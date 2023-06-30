@@ -1,6 +1,15 @@
 import { ValidationError } from 'class-validator'
 import { ZodError } from 'zod'
 import Writer from '../ui/writer'
+import { ValidatorOptions, validateSync } from 'class-validator'
+
+export function validateParams<ResourceType>(
+    params: ResourceType,
+    validatorOptions?: ValidatorOptions
+){
+    const errors = validateSync(params as Record<string, unknown>, { ...validatorOptions })
+    reportValidationErrors(errors)
+}
 
 export function reportValidationErrors(errors: ValidationError[]): void {
     if (errors.length) {

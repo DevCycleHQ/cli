@@ -59,7 +59,7 @@ export default class CreateFeature extends CreateCommand {
 
         this.prompts.push((new VariableListOptions([], this.writer)).getVariablesListPrompt())
         this.prompts.push(
-            (new VariationListOptions([], this.writer)).getVariationListPrompt()
+            (new VariationListOptions([], [], this.writer)).getVariationListPrompt()
         )
 
         const project = await fetchProject(this.authToken, this.projectKey)

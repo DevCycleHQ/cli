@@ -142,7 +142,7 @@ export abstract class ListOptionsPrompt<T> {
                 case 'continue':
                     break
                 case 'exit':
-                    return this.list.map((item) => item.value) as unknown as T[]
+                    return this.list.map((item) => item.value.item) as unknown as T[]
             }
         } catch (e) {
             if (e instanceof ZodError) {
