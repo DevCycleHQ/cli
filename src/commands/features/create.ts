@@ -9,6 +9,7 @@ import {
     mergeQuickFeatureParamsWithAnswers, 
     setupTargetingForEnvironments 
 } from '../../utils/features/quickCreateFeatureUtils'
+import { fetchProject } from '../../api/projects'
 
 export default class CreateFeature extends CreateCommand {
     static hidden = false
@@ -59,7 +60,11 @@ export default class CreateFeature extends CreateCommand {
         this.prompts.push(
             (new VariationListOptions([], this.writer)).getVariationListPrompt()
         )
-        this.prompts.push(getSdkVisibilityPrompt())    
+
+        const project = await fetchProject(this.authToken, this.projectKey)
+        if (project.settings.sdkTypeVisibility.enabledInFeatureSettings) {
+            this.prompts.push(getSdkVisibilityPrompt())
+        }
         const params = await this.populateParametersWithZod(CreateFeatureDto, this.prompts, {
             key,
             name,

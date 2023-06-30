@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import apiClient from './apiClient'
+import { buildHeaders } from './common'
 
 export class CreateProjectParams {
     @IsString()
@@ -15,12 +16,20 @@ export class CreateProjectParams {
     key: string
 }
 
+const BASE_URL = '/v1/projects'
+
 export const fetchProjects = async (token: string) => {
-    return apiClient.get('/v1/projects', {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+    return apiClient.get(BASE_URL, {
+        headers: buildHeaders(token),
+    })
+}
+
+export const fetchProject = async (token: string, projectKey: string) => {
+    return apiClient.get(`${BASE_URL}/:key`, {
+        headers: buildHeaders(token),
+        params: {
+            key: projectKey,
+        }
     })
 }
 
@@ -28,10 +37,7 @@ export const createProject = async (
     token: string,
     params: CreateProjectParams
 ) => {
-    return apiClient.post('/v1/projects', params, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
+    return apiClient.post(BASE_URL, params, {
+        headers: buildHeaders(token),
     })
 }
