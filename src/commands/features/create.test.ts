@@ -13,6 +13,16 @@ describe('features create', () => {
         description: undefined,
     }
 
+    const mockProject = {
+        name: 'Test Project',
+        key: projectKey,
+        settings: {
+            sdkTypeVisibility: {
+                enabledInFeatureSettings: false,
+            }
+        }
+    }
+
     const mockEnvironments = [
         {
             key: 'development',
@@ -84,6 +94,8 @@ describe('features create', () => {
         .nock(BASE_URL, (api) => api
             .post(`/v1/projects/${projectKey}/features`, requestBody)
             .reply(200, mockFeature)
+            .get(`/v1/projects/${projectKey}`)
+            .reply(200, mockProject)
         )
         .stdout()
         .command([
@@ -137,6 +149,8 @@ describe('features create', () => {
                 ...mockFeature,
                 variables: testVariables
             })
+            .get(`/v1/projects/${projectKey}`)
+            .reply(200, mockProject)
         )
         .stdout()
         .command([
@@ -167,6 +181,8 @@ describe('features create', () => {
                 ...mockFeature,
                 sdkVisibility: testSDKVisibility
             })
+            .get(`/v1/projects/${projectKey}`)
+            .reply(200, mockProject)
         )
         .stdout()
         .command([
@@ -195,6 +211,10 @@ describe('features create', () => {
             description: undefined,
             listPromptOption: 'continue',
         }))
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}`)
+            .reply(200, mockProject)
+        )
         .stdout()
         .command([
             'features create',
@@ -216,6 +236,10 @@ describe('features create', () => {
             description: undefined,
             listPromptOption: 'continue',
         }))
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}`)
+            .reply(200, mockProject)
+        )
         .stdout()
         .command([
             'features create',
@@ -235,20 +259,16 @@ describe('features create', () => {
             key: requestBody.key, 
             description: undefined, 
             listPromptOption: 'continue',
-            sdkVisibility: ['mobile', 'server', 'client']
         }))
         .nock(BASE_URL, (api) => api
             .post(`/v1/projects/${projectKey}/features`, {
                 ...requestBody,
                 variables: [],
                 variations: [],
-                sdkVisibility: {
-                    mobile: true,
-                    client: true,
-                    server: true
-                }
             })
             .reply(200, mockFeature)
+            .get(`/v1/projects/${projectKey}`)
+            .reply(200, mockProject)
         )
         .stdout()
         .command([
