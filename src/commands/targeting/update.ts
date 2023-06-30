@@ -7,11 +7,14 @@ import {
     updateFeatureConfigForEnvironment
 } from '../../api/targeting'
 import { TargetingListOptions } from '../../ui/prompts/listPrompts/targetingListPrompt'
-import { FeatureConfig, UpdateTargetParams } from '../../api/schemas'
 import Base from '../base'
 import { validateSync } from 'class-validator'
 import { plainToClass } from 'class-transformer'
 import { reportValidationErrors } from '../../utils/reportValidationErrors'
+import { renderTargetingTree } from '../../ui/targetingTree'
+import { fetchEnvironmentByKey } from '../../api/environments'
+import { fetchVariations } from '../../api/variations'
+import { FeatureConfig } from '../../api/schemas'
 
 export default class UpdateTargeting extends Base {
     static hidden = false
@@ -35,17 +38,15 @@ export default class UpdateTargeting extends Base {
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(UpdateTargeting)
-        const { feature, environment } = args
-        const { targets, headless } = flags
 
         await this.requireProject()
 
-        if (headless && (!feature || !environment)) {
+        if (flags.headless && (!args.feature || !args.environment)) {
             this.writer.showError('Feature and environment arguments are required')
             return
         }
 
-        let featureKey = feature
+        let featureKey = args.feature
         if (!featureKey) {
             const promptResult = await inquirer.prompt<FeaturePromptResult>(
                 [featurePrompt],
@@ -57,57 +58,44 @@ export default class UpdateTargeting extends Base {
             featureKey = promptResult.feature
         }
 
-        let envKey = environment
+        let envKey = args.environment
         if (!envKey) {
-            const environment = await inquirer.prompt<EnvironmentPromptResult>(
+            const promptResult = await inquirer.prompt<EnvironmentPromptResult>(
                 [environmentPrompt],
                 {
                     token: this.authToken,
                     projectKey: this.projectKey
                 }
             )
-            envKey = environment.environment.key
+            envKey = promptResult.environment.key
         }
 
-        if (targets) {
-            const parsedTargets = JSON.parse(targets)
-            const featureTargets = []
+        const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, envKey)
+        const variations = await fetchVariations(this.authToken, this.projectKey, featureKey)
+
+        let targets = []
+        if (flags.targets) {
+            const parsedTargets = JSON.parse(flags.targets)
+
             for (const t of parsedTargets) {
                 const target = plainToClass(UpdateTargetingParamsInput, t)
                 const errors = validateSync(target)
                 reportValidationErrors(errors)
                 const { name, serve: variation, definition } = target
-                featureTargets.push({
+                targets.push({
                     distribution: [{ _variation: variation, percentage: 1 }],
                     audience: { name, filters: { filters: definition, operator: 'and' as const } }
                 })
             }
-            const featureConfig = {
-                targets: featureTargets
-            }
-
-            const result = await updateFeatureConfigForEnvironment(
-                this.authToken,
-                this.projectKey,
-                featureKey,
-                envKey,
-                featureConfig
+        } else {
+            const [featureTargetingRules] = await fetchTargetingForFeature(
+                this.authToken, this.projectKey, featureKey, envKey
             )
-            this.writer.showResults(result)
-            return
-        }
-
-        const featureTargetingRules: FeatureConfig = (await fetchTargetingForFeature(
-            this.authToken, this.projectKey, featureKey, envKey
-        ))[0]
-        const targetingRules: UpdateTargetParams[] =
-            await (
-                new TargetingListOptions(
-                    featureTargetingRules.targets, this.writer, this.authToken, this.projectKey, featureKey
-                )
-            ).prompt()
-        const featureConfig = {
-            targets: targetingRules
+            const targetingListPrompt = new TargetingListOptions(
+                featureTargetingRules.targets, this.writer, this.authToken, this.projectKey, featureKey
+            )
+            targetingListPrompt.variations = variations
+            targets = await targetingListPrompt.prompt()
         }
 
         const result = await updateFeatureConfigForEnvironment(
@@ -115,10 +103,19 @@ export default class UpdateTargeting extends Base {
             this.projectKey,
             featureKey,
             envKey,
-            featureConfig
+            { targets }
         )
-        this.writer.showResults(result)
-        this.showSuggestedCommand(featureKey, envKey, result)
+
+        if (flags.headless) {
+            this.writer.showResults(result)
+        } else {
+            renderTargetingTree(
+                [result],
+                environment ? [environment] : [],
+                variations
+            )
+            this.showSuggestedCommand(featureKey, envKey, result)
+        }
     }
 
     private showSuggestedCommand(featureKey: string, envKey: string, result: FeatureConfig) {

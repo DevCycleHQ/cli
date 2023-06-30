@@ -1,64 +1,60 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Targeting update updates a target by adding a filter in interactive mode 1`] = `
+exports[`targeting update updates a target by adding a filter in interactive mode 1`] = `
 "🤖 Current Targeting Rules:
-All Users
+└─ 1. All Users
+   ├─ definition
+   │  └─ All Users
+   └─ serve
+      └─ Variation On
 ----------------------------------------
 🤖 Current Filters:
-{\\"type\\":\\"all\\"}
+└─ All Users
 ----------------------------------------
 🤖 Current Filters:
-{\\"type\\":\\"all\\"}
-
-{\\"type\\":\\"user\\",\\"subType\\":\\"user_id\\",\\"comparator\\":\\"=\\",\\"values\\":[\\"not shrek\\"]}
+├─ All Users
+└─ AND User ID
+   └─ is
+      └─ not shrek
 ----------------------------------------
 🤖 Current Filters:
-{\\"type\\":\\"all\\"}
-
-{\\"type\\":\\"user\\",\\"subType\\":\\"user_id\\",\\"comparator\\":\\"=\\",\\"values\\":[\\"not shrek\\"]}
+├─ All Users
+└─ AND User ID
+   └─ is
+      └─ not shrek
 ----------------------------------------
 🤖 Current Targeting Rules:
-All Users New
+└─ 1. All Users New
+   ├─ definition
+   │  ├─ All Users
+   │  └─ AND User ID
+   │     └─ is
+   │        └─ not shrek
+   └─ serve
+      └─ variation-off
 ----------------------------------------
 🤖 Current Targeting Rules:
-All Users New
+└─ 1. All Users New
+   ├─ definition
+   │  ├─ All Users
+   │  └─ AND User ID
+   │     └─ is
+   │        └─ not shrek
+   └─ serve
+      └─ variation-off
 ----------------------------------------
-{
-  \\"_feature\\": \\"647e36gg16d9k4815fi3f97d\\",
-  \\"_environment\\": \\"648b421gg3f682869c0f22f8\\",
-  \\"_createdBy\\": \\"test\\",
-  \\"status\\": \\"inactive\\",
-  \\"updatedAt\\": \\"2023-06-27T03:19:58.541Z\\",
-  \\"targets\\": [
-    {
-      \\"distribution\\": [
-        {
-          \\"_variation\\": \\"variation-off\\",
-          \\"percentage\\": 1
-        }
-      ],
-      \\"audience\\": {
-        \\"name\\": \\"All Users New\\",
-        \\"filters\\": {
-          \\"filters\\": [
-            {
-              \\"type\\": \\"all\\"
-            },
-            {
-              \\"type\\": \\"user\\",
-              \\"subType\\": \\"user_id\\",
-              \\"comparator\\": \\"=\\",
-              \\"values\\": [
-                \\"not shrek\\"
-              ]
-            }
-          ],
-          \\"operator\\": \\"and\\"
-        }
-      }
-    }
-  ]
-}
+└─ test-env
+   ├─ status
+   │  └─ disabled
+   └─ rules
+      └─ 1. All Users New
+         ├─ definition
+         │  ├─ All Users
+         │  └─ AND User ID
+         │     └─ is
+         │        └─ not shrek
+         └─ serve
+            └─ variation-off
 
 To enable this feature on this environment, use:
 
@@ -67,7 +63,7 @@ To enable this feature on this environment, use:
 "
 `;
 
-exports[`Targeting update updates a target in headless mode 1`] = `
+exports[`targeting update updates a target in headless mode 1`] = `
 "{\\"_feature\\":\\"647e36gg16d9k4815fi3f97d\\",\\"_environment\\":\\"648b421gg3f682869c0f22f8\\",\\"_createdBy\\":\\"test\\",\\"status\\":\\"inactive\\",\\"updatedAt\\":\\"2023-06-27T03:19:58.541Z\\",\\"targets\\":[{\\"_id\\":\\"647e36gg16d9k2814fc3f15e\\",\\"audience\\":{\\"name\\":\\"All Users\\",\\"filters\\":{\\"operator\\":\\"and\\",\\"filters\\":[{\\"type\\":\\"all\\"}]}},\\"distribution\\":[{\\"_variation\\":\\"647e36gg16c1d4814fe3f962\\",\\"percentage\\":1}]}],\\"readonly\\":false}
 "
 `;

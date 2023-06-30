@@ -7,6 +7,8 @@ import { COLORS } from './constants/colors'
 type Distribution = FeatureConfig['targets'][0]['distribution']
 type Audience = FeatureConfig['targets'][0]['audience']
 type Rollout = FeatureConfig['targets'][0]['rollout']
+type Rule = Pick<FeatureConfig['targets'][0], 'audience' | 'distribution' | 'rollout'>
+type Filters = Audience['filters']['filters']
 
 const subTypeMap = {
     email: 'Email',
@@ -49,19 +51,32 @@ export const renderTargetingTree = (
     targetingTree.display()
 }
 
+export const renderRulesTree = (
+    targets: Rule[],
+    variations: Variation[]
+) => {
+    const rulesTree = buildRulesTree(targets, variations)
+    rulesTree.display()
+}
+
+export const renderDefinitionTree = (
+    filters: Filters
+) => {
+    const definitionTree = buildDefinitionTree(filters)
+    definitionTree.display()
+}
+
 const insertStatusTree = (rootTree: Tree, status: FeatureConfig['status']) => {
     const statusTree = ux.tree()
     const convertedStatus = status === 'active' ? 'enabled' : 'disabled'
     const displayStatus = coloredStatus(convertedStatus)
     statusTree.insert(displayStatus)
-    const coloredValue = coloredTitle('status')
-    rootTree.insert(coloredValue, statusTree)
+    const statusTitle = coloredTitle('status')
+    rootTree.insert(statusTitle, statusTree)
 }
 
-const insertRulesTree = (rootTree: Tree, targets: FeatureConfig['targets'], variations: Variation[]) => {
-    if (!targets.length) return
-
-    const rules = ux.tree()
+const buildRulesTree = (targets: Rule[], variations: Variation[]) => {
+    const rulesTree = ux.tree()
     targets.forEach((target, idx) => {
         const ruleTree = ux.tree()
 
@@ -69,15 +84,24 @@ const insertRulesTree = (rootTree: Tree, targets: FeatureConfig['targets'], vari
         insertServeTree(ruleTree, target.distribution, variations)
         insertScheduleTree(ruleTree, target.rollout)
 
-        rules.insert(`${idx + 1}. ${target.audience.name || 'Audience'}`, ruleTree)
+        rulesTree.insert(`${idx + 1}. ${target.audience.name || 'Audience'}`, ruleTree)
     })
-    const coloredValue = coloredTitle('rules')
-    rootTree.insert(coloredValue, rules)
+    return rulesTree
 }
 
-const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
+const insertRulesTree = (rootTree: Tree, targets: Rule[], variations: Variation[]) => {
+    if (!targets.length) return
+
+    const rulesTree = buildRulesTree(targets, variations)
+    const rulesTitle = coloredTitle('rules')
+    rootTree.insert(rulesTitle, rulesTree)
+}
+
+const buildDefinitionTree = (filters: Filters) => {
     const definitionTree = ux.tree()
-    audience.filters.filters.forEach((filter, index) => {
+    const prefixWithAnd = (value: string, index: number) => index !== 0 ? `AND ${value}` : value
+
+    filters.forEach((filter, index) => {
         if (filter.type === 'all') {
             const prefixedProperty = prefixWithAnd('All Users', index)
             definitionTree.insert(prefixedProperty)
@@ -96,12 +120,13 @@ const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
             // TODO handle audienceMatch
         }
     })
-    const coloredValue = coloredTitle('definition')
-    rootTree.insert(coloredValue, definitionTree)
+    return definitionTree
 }
 
-const prefixWithAnd = (value: string, index: number) => {
-    return index !== 0 ? `AND ${value}` : value
+const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
+    const definitionTree = buildDefinitionTree(audience.filters.filters)
+    const definitionTitle = coloredTitle('definition')
+    rootTree.insert(definitionTitle, definitionTree)
 }
 
 const insertServeTree = (rootTree: Tree, distribution: Distribution, variations: Variation[]) => {
@@ -125,8 +150,8 @@ const insertServeTree = (rootTree: Tree, distribution: Distribution, variations:
             serveTree.insert(coloredValue, variationTree)
         })
     }
-    const coloredValue = coloredTitle('serve')
-    rootTree.insert(coloredValue, serveTree)
+    const serveTitle = coloredTitle('serve')
+    rootTree.insert(serveTitle, serveTree)
 }
 
 const insertScheduleTree = (rootTree: Tree, rollout?: Rollout) => {
