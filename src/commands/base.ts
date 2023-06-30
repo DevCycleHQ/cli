@@ -278,15 +278,22 @@ export default abstract class Base extends Command {
     ): Promise<z.infer<typeof schema>> {
         let input = flags
         if (!flags.headless) {
-            const filteredPrompts = filterPrompts(prompts, flags)
-            const answers = await this.populateParametersWithInquirer(filteredPrompts)
-            input = mergeFlagsAndAnswers(flags, answers)
+            input = await this.populateParametersWithFlags(prompts, flags)
         }
         const parse = schema.parse(
             input,
             { errorMap }
         )
         return parse
+    }
+
+    public async populateParametersWithFlags(
+        prompts: Prompt[],
+        flags: Record<string, unknown>,
+    ) {
+        const filteredPrompts = filterPrompts(prompts, flags)
+        const answers = await this.populateParametersWithInquirer(filteredPrompts)
+        return mergeFlagsAndAnswers(flags, answers)
     }
 
     protected async populateParametersWithInquirer(prompts: Prompt[]) {

@@ -17,9 +17,10 @@ Create a new Feature.
 USAGE
   $ dvc features create [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--key <value>] [--name <value>]
-    [--variables <value>] [--variations <value>] [--sdkVisibility <value>]
+    [--variables <value>] [--variations <value>] [--sdkVisibility <value>] [-i]
 
 FLAGS
+  -i, --interactive        Interactive Feature Creation Mode
   --key=<value>            Unique ID
   --name=<value>           Human readable name
   --sdkVisibility=<value>  The visibility of the feature for the SDKs

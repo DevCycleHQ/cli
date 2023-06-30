@@ -2,6 +2,7 @@ import { expect } from '@oclif/test'
 import inquirer from 'inquirer'
 import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
+import { mergeQuickFeatureParamsWithAnswers } from '../../utils/features/quickCreateFeatureUtils'
 
 describe('features create', () => {
     const projectKey = 'test-project'
@@ -11,6 +12,24 @@ describe('features create', () => {
         key: 'feature-key',
         description: undefined,
     }
+
+    const mockEnvironments = [
+        {
+            key: 'development',
+            name: 'Development',
+            _id: '647f62ae749bbe90fb222070'
+        },
+        {
+            key: 'staging',
+            name: 'Staging',
+            _id: '637cfe8195279288bc08cb62'
+        },
+        {
+            key: 'production',
+            name: 'Production',
+            _id: '637cfe8195279288bc08cb61'
+        }
+    ]
 
     const mockFeature = {
         'name': 'Feature Name',
@@ -69,6 +88,7 @@ describe('features create', () => {
         .stdout()
         .command([
             'features create',
+            '-i',
             '--name', requestBody.name,
             '--key', requestBody.key,
             '--project', projectKey,
@@ -76,6 +96,33 @@ describe('features create', () => {
             ...authFlags
         ])
         .it('returns a new feature',
+            (ctx) => {
+                expect(JSON.parse(ctx.stdout)).to.eql(mockFeature)
+            })
+
+    dvcTest()
+        .nock(BASE_URL, (api) => api
+            .post(`/v1/projects/${projectKey}/features`)
+            .reply(200, mockFeature)
+            .get(`/v1/projects/${projectKey}/environments`)
+            .reply(200, mockEnvironments)
+            .patch(`/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=development`)
+            .reply(200, {})
+            .patch(`/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=staging`)
+            .reply(200, {})
+            .patch(`/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=production`)
+            .reply(200, {})
+        )
+        .stdout()
+        .command([
+            'features create',
+            '--name', requestBody.name,
+            '--key', requestBody.key,
+            '--project', projectKey,
+            '--headless',
+            ...authFlags
+        ])
+        .it('returns a new feature with quick create',
             (ctx) => {
                 expect(JSON.parse(ctx.stdout)).to.eql(mockFeature)
             })
@@ -94,6 +141,7 @@ describe('features create', () => {
         .stdout()
         .command([
             'features create',
+            '-i',
             '--name', requestBody.name,
             '--key', requestBody.key,
             '--project', projectKey,
@@ -123,6 +171,7 @@ describe('features create', () => {
         .stdout()
         .command([
             'features create',
+            '-i',
             '--name', requestBody.name,
             '--key', requestBody.key,
             '--project', projectKey,
@@ -150,6 +199,7 @@ describe('features create', () => {
         .command([
             'features create',
             '--project', projectKey,
+            '-i',
             ...authFlags
         ])
         .it('returns an error if key is not provided',
@@ -170,6 +220,7 @@ describe('features create', () => {
         .command([
             'features create',
             '--project', projectKey,
+            '-i',
             ...authFlags
         ])
         .it('returns an error if name is not provided',
@@ -202,6 +253,7 @@ describe('features create', () => {
         .stdout()
         .command([
             'features create',
+            '-i',
             '--project', projectKey,
             '--name', requestBody.name,
             ...authFlags
@@ -211,6 +263,33 @@ describe('features create', () => {
                 // TODO: Use snapshot instead to test the entire output
                 const response = ctx.stdout.substring(ctx.stdout.indexOf('{'), ctx.stdout.lastIndexOf('}') + 1)
                 expect(JSON.parse(response)).to.eql(mockFeature)
+            })
+
+    dvcTest()
+        .stub(inquirer, 'registerPrompt', () => { return })
+        .stub(inquirer, 'prompt', () => ({ ...requestBody, description: 'new desc' }))
+        .nock(BASE_URL, (api) => api
+            .post(`/v1/projects/${projectKey}/features`,
+                mergeQuickFeatureParamsWithAnswers({ ...requestBody, description: 'new desc' }) as any)
+            .reply(200, mockFeature)
+            .get(`/v1/projects/${projectKey}/environments`)
+            .reply(200, mockEnvironments)
+            .patch(`/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=development`)
+            .reply(200, {})
+            .patch(`/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=staging`)
+            .reply(200, {})
+            .patch(`/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=production`)
+            .reply(200, {})
+        )
+        .stdout()
+        .command([
+            'features create',
+            '--project', projectKey,
+            ...authFlags
+        ])
+        .it('returns a new feature with quick create not in headless mode',
+            (ctx) => {
+                expect(JSON.parse(ctx.stdout)).to.eql(mockFeature)
             })
     
     // dvcTest()
