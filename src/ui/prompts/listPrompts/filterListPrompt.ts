@@ -9,7 +9,7 @@ import {
     filterTypePrompt,
     filterValuesPrompt
 } from '../targetingPrompts'
-import { Filter } from '../../../api/schemas'
+import { Audience, Filter } from '../../../api/schemas'
 import { Prompt } from '../types'
 import { chooseFields } from '../../../utils/prompts'
 import { UserSubType } from '../../../api/targeting'
@@ -18,6 +18,8 @@ import { renderDefinitionTree } from '../../targetingTree'
 export class FilterListOptions extends ListOptionsPrompt<Filter> {
     itemType = 'Filter'
     messagePrompt = 'Manage your filters'
+
+    operator: Audience['filters']['operator'] = 'and'
 
     async promptAddItem(): Promise<ListOption<Filter>> {
         const { type } = await inquirer.prompt([filterTypePrompt])
@@ -172,7 +174,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         const listToPrint = list || this.list
         this.writer.statusMessage(`Current ${this.itemType}s:`)
         const values = listToPrint.map((item) => item.value.item)
-        renderDefinitionTree(values)
+        renderDefinitionTree(values, this.operator)
         this.writer.divider()
     }
 }
