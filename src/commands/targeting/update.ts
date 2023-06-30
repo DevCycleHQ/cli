@@ -66,7 +66,7 @@ export default class UpdateTargeting extends Base {
                     projectKey: this.projectKey
                 }
             )
-            envKey = environment.environment._id
+            envKey = environment.environment.key
         }
 
         if (targets) {
@@ -109,6 +109,7 @@ export default class UpdateTargeting extends Base {
         const featureConfig = {
             targets: targetingRules
         }
+
         const result = await updateFeatureConfigForEnvironment(
             this.authToken,
             this.projectKey,
@@ -117,5 +118,17 @@ export default class UpdateTargeting extends Base {
             featureConfig
         )
         this.writer.showResults(result)
+        this.showSuggestedCommand(featureKey, envKey, result)
+    }
+
+    private showSuggestedCommand(featureKey: string, envKey: string, result: FeatureConfig) {
+        const { status, targets } = result
+        if (status === 'active' || targets.length === 0)  {
+            return
+        }
+        const message = '\nTo enable this feature on this environment, use:\n\n' +
+            `    dvc targeting enable ${featureKey} ${envKey}\n`
+
+        this.writer.showRawResults(message)
     }
 }

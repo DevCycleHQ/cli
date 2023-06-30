@@ -59,6 +59,11 @@ All Users New
     }
   ]
 }
+
+To enable this feature on this environment, use:
+
+    dvc targeting enable feature-key env-key
+
 "
 `;
 
