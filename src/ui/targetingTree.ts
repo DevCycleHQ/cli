@@ -1,6 +1,8 @@
 import { ux } from '@oclif/core'
 import { Tree } from '@oclif/core/lib/cli-ux/styled/tree'
 import { FeatureConfig, Environment, Variation } from '../api/schemas'
+import chalk from 'chalk'
+import { COLORS } from './constants/colors'
 
 type Distribution = FeatureConfig['targets'][0]['distribution']
 type Audience = FeatureConfig['targets'][0]['audience']
@@ -49,8 +51,11 @@ export const renderTargetingTree = (
 
 const insertStatusTree = (rootTree: Tree, status: FeatureConfig['status']) => {
     const statusTree = ux.tree()
-    statusTree.insert(status === 'active' ? 'enabled' : 'disabled')
-    rootTree.insert('status', statusTree)
+    const convertedStatus = status === 'active' ? 'enabled' : 'disabled'
+    const displayStatus = coloredStatus(convertedStatus)
+    statusTree.insert(displayStatus)
+    const coloredValue = coloredTitle('status')
+    rootTree.insert(coloredValue, statusTree)
 }
 
 const insertRulesTree = (rootTree: Tree, targets: FeatureConfig['targets'], variations: Variation[]) => {
@@ -66,7 +71,8 @@ const insertRulesTree = (rootTree: Tree, targets: FeatureConfig['targets'], vari
 
         rules.insert(`${idx + 1}. ${target.audience.name || 'Audience'}`, ruleTree)
     })
-    rootTree.insert('rules', rules)
+    const coloredValue = coloredTitle('rules')
+    rootTree.insert(coloredValue, rules)
 }
 
 const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
@@ -90,7 +96,8 @@ const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
             // TODO handle audienceMatch
         }
     })
-    rootTree.insert('definition', definitionTree)
+    const coloredValue = coloredTitle('definition')
+    rootTree.insert(coloredValue, definitionTree)
 }
 
 const prefixWithAnd = (value: string, index: number) => {
@@ -107,16 +114,19 @@ const insertServeTree = (rootTree: Tree, distribution: Distribution, variations:
     if (distribution.length === 1) {
         const variationId = distribution[0]._variation
         const variationName = variationById[variationId]?.name
-        serveTree.insert(variationName || variationId)
+        const coloredValue = coloredVariation(variationName || variationId)
+        serveTree.insert(coloredValue)
     } else {
         distribution.forEach((dist) => {
             const variationTree = ux.tree()
             variationTree.insert(`${dist.percentage * 100}%`)
             const variationName = variationById[dist._variation]?.name
-            serveTree.insert(variationName || dist._variation, variationTree)
+            const coloredValue = coloredVariation(variationName || dist._variation)
+            serveTree.insert(coloredValue, variationTree)
         })
     }
-    rootTree.insert('serve', serveTree)
+    const coloredValue = coloredTitle('serve')
+    rootTree.insert(coloredValue, serveTree)
 }
 
 const insertScheduleTree = (rootTree: Tree, rollout?: Rollout) => {
@@ -156,4 +166,16 @@ const insertScheduleTree = (rootTree: Tree, rollout?: Rollout) => {
 
         rootTree.insert('gradual rollout', scheduleTree)
     }
+}
+
+const coloredTitle = (title: string) => {
+    return chalk.hex(COLORS.lightBlue)(title)
+}
+
+const coloredStatus = (status: 'enabled' | 'disabled') => {
+    return status === 'enabled' ? chalk.hex(COLORS.lightGreen)(status) : chalk.hex(COLORS.coral)(status)
+}
+
+const coloredVariation = (variationName: string) => {
+    return chalk.hex(COLORS.lightYellow)(variationName)
 }
