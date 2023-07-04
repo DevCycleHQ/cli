@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 import UpdateCommand from '../updateCommand'
 import { fetchVariationByKey, updateVariation, UpdateVariationParams } from '../../api/variations'
 import { featurePrompt, keyPrompt, namePrompt } from '../../ui/prompts'
-import { Variable } from '../../api/schemas'
+import { Feature, Variable } from '../../api/schemas'
 
 import {
     getVariationVariablePrompt,
@@ -66,10 +66,7 @@ export default class UpdateVariation extends UpdateCommand {
         } else {
             selectedVariation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, args.key)
         }
-        const feature = await fetchFeatureByKey(this.authToken, this.projectKey, featureKey)
-        if (!feature) {
-            throw new Error(`Unable to find feature for key: ${featureKey}`)
-        }
+        const feature = await fetchFeatureByKey(this.authToken, this.projectKey, featureKey) as Feature
         this.prompts.push(await getVariationVariablePrompt(
             this.authToken,
             this.projectKey,
