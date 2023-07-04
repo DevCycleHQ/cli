@@ -138,10 +138,10 @@ describe('variations update', () => {
         )
         .stdout()
         .command([
-            'variations update', featureKey, variationKey,
+            'variations update', featureKey, variationKey.toUpperCase(),
             '--project', projectKey,
             '--name', requestBody.name,
-            '--key', requestBody.key,
+            '--key', requestBody.key.toUpperCase(),
             '--variables', JSON.stringify(requestVariables),
             '--headless',
             ...authFlags
