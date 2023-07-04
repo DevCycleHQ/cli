@@ -10,8 +10,12 @@ export default abstract class UpdateCommand extends Base {
     static args = {
         key: Args.string({
             'key': Flags.string({
-                description: 'Unique ID'
-            })
+                description: 'Unique ID',
+
+            }),
+            parse: async (input: string) => {
+                return input.toLowerCase()
+            }
         }),
     }
 
