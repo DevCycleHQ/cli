@@ -105,6 +105,7 @@ USAGE
 # Command Topics
 
 * [`dvc alias`](docs/alias.md) - Manage repository variable aliases
+* [`dvc autocomplete`](docs/autocomplete.md) - display autocomplete installation instructions
 * [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
 * [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
