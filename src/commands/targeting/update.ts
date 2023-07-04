@@ -18,7 +18,8 @@ import { FeatureConfig } from '../../api/schemas'
 
 export default class UpdateTargeting extends Base {
     static hidden = false
-    static description = 'Update Targeting rules'
+    // eslint-disable-next-line max-len
+    static description = 'Update Targeting rules for a Feature. The definition is the audience for the feature, while serve is the key of the variation to serve to the audience.'
     authRequired = true
     static args = {
         feature: Args.string({
