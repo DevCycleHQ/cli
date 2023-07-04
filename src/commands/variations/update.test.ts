@@ -125,7 +125,11 @@ describe('variations update', () => {
             .reply(200, mockVariation)
         )
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/variables?feature=${featureKey}`)
+            .get(`/v1/projects/${projectKey}/features/${featureKey}`)
+            .reply(200, mockFeature)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/variables?feature=63b5eea3e6e91987bae47f3a`)
             .reply(200, mockVariables)
         )
         .nock(BASE_URL, (api) => api
@@ -153,7 +157,11 @@ describe('variations update', () => {
             .reply(200, mockVariation)
         )
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/variables?feature=${featureKey}`)
+            .get(`/v1/projects/${projectKey}/features/${featureKey}`)
+            .reply(200, mockFeature)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/variables?feature=63b5eea3e6e91987bae47f3a`)
             .reply(200, mockVariables)
         )
         .nock(BASE_URL, (api) => api
@@ -180,13 +188,18 @@ describe('variations update', () => {
             .reply(200, mockVariation)
         )
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/variables?feature=${featureKey}`)
+            .get(`/v1/projects/${projectKey}/features/${featureKey}`)
+            .reply(200, mockFeature)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/variables?feature=63b5eea3e6e91987bae47f3a`)
             .reply(200, mockVariables)
         )
         .nock(BASE_URL, (api) => api
             .patch(`/v1/projects/${projectKey}/features/${featureKey}/variations/${variationKey}`, requestBody)
             .reply(200, mockFeature)
         )
+
         .stub(inquirer, 'registerPrompt', () => { return })
         .stub(inquirer, 'prompt',  () => {
             return {
