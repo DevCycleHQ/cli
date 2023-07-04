@@ -36,7 +36,10 @@ export default class UpdateVariation extends UpdateCommand {
             description: 'The variables to create for the variation'
         }),
         'key': Flags.string({
-            description: 'The variation key'
+            description: 'The variation key',
+            parse: async (input: string) => {
+                return input.toLowerCase()
+            }
         }),
     }
 

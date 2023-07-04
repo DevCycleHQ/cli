@@ -21,6 +21,7 @@ export const keyPrompt: Prompt = {
     name: 'key',
     message: 'Key',
     suffix: ':',
+    transformResponse:(response) => response.toLowerCase(),
     default: (answers: Record<string, string>) => {
         if (answers.name) {
             return answers.name.trim().replace(/\s+/g, '-').toLowerCase()
