@@ -74,7 +74,16 @@ export default class UpdateTargeting extends Base {
         const variations = await fetchVariations(this.authToken, this.projectKey, featureKey)
 
         let targets = []
-        if (flags.targets) {
+        if (!flags.targets && !flags.headless) {
+            const [featureTargetingRules] = await fetchTargetingForFeature(
+                this.authToken, this.projectKey, featureKey, envKey
+            )
+            const targetingListPrompt = new TargetingListOptions(
+                featureTargetingRules.targets, this.writer, this.authToken, this.projectKey, featureKey
+            )
+            targetingListPrompt.variations = variations
+            targets = await targetingListPrompt.prompt()
+        } else if (flags.targets) {
             const parsedTargets = JSON.parse(flags.targets)
 
             for (const t of parsedTargets) {
@@ -87,15 +96,8 @@ export default class UpdateTargeting extends Base {
                     audience: { name, filters: { filters: definition, operator: 'and' as const } }
                 })
             }
-        } else {
-            const [featureTargetingRules] = await fetchTargetingForFeature(
-                this.authToken, this.projectKey, featureKey, envKey
-            )
-            const targetingListPrompt = new TargetingListOptions(
-                featureTargetingRules.targets, this.writer, this.authToken, this.projectKey, featureKey
-            )
-            targetingListPrompt.variations = variations
-            targets = await targetingListPrompt.prompt()
+        } else if (flags.headless) {
+            return
         }
 
         const result = await updateFeatureConfigForEnvironment(
