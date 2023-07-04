@@ -2979,7 +2979,7 @@
     },
     "targeting:update": {
       "id": "targeting:update",
-      "description": "Update Targeting rules",
+      "description": "Update Targeting rules for a Feature. The definition is the audience for the feature, while serve is the key of the variation to serve to the audience.",
       "strict": true,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
