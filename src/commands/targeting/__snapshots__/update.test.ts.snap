@@ -1,28 +1,49 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`targeting update updates a target by adding a filter in interactive mode 1`] = `
-"🤖 Current Targeting Rules:
+"
+
+🤖 Manage your Targeting
+🤖 Current Targeting Rules:
 └─ 1. All Users
    ├─ definition
    │  └─ All Users
    └─ serve
       └─ Variation On
-----------------------------------------
+
+
+
+
+🤖 Manage your filters
 🤖 Current Filters:
 └─ All Users
-----------------------------------------
+
+
+
+
+🤖 Manage your filters
 🤖 Current Filters:
 ├─ All Users
 └─ AND User ID
    └─ is
       └─ not shrek
+
+
 ----------------------------------------
+
+
+🤖 Manage your filters
 🤖 Current Filters:
 ├─ All Users
 └─ AND User ID
    └─ is
       └─ not shrek
+
+
 ----------------------------------------
+
+
+🤖 Manage your Targeting
 🤖 Current Targeting Rules:
 └─ 1. All Users New
    ├─ definition
@@ -32,7 +53,12 @@ exports[`targeting update updates a target by adding a filter in interactive mod
    │        └─ not shrek
    └─ serve
       └─ variation-off
+
+
 ----------------------------------------
+
+
+🤖 Manage your Targeting
 🤖 Current Targeting Rules:
 └─ 1. All Users New
    ├─ definition
@@ -42,6 +68,8 @@ exports[`targeting update updates a target by adding a filter in interactive mod
    │        └─ not shrek
    └─ serve
       └─ variation-off
+
+
 ----------------------------------------
 └─ test-env
    ├─ status

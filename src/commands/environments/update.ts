@@ -50,10 +50,7 @@ export default class UpdateEnvironment extends UpdateCommand {
                 projectKey: this.projectKey
             })
             envKey = environment._id
-            this.writer.blankLine()
-            this.writer.statusMessage('Current values:')
-            this.writer.statusMessage(JSON.stringify(environment, null, 2))
-            this.writer.blankLine()
+            this.writer.printCurrentValues(environment)
         }
 
         const params = await this.populateParametersWithZod(

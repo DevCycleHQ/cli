@@ -18,8 +18,25 @@ export default class Writer {
         if (!this.headless) console.log(chalk.dim(`🤖 ${message}`))
     }
 
+    public infoMessage(message: string): void {
+        if (!this.headless) console.log((`🤖 ${message}`))
+    }
+
+    public title(message: string): void {
+        if (!this.headless) console.log((`🤖 ${chalk.bold(message)}`))
+    }
+
+    public printCurrentValues(values: unknown): void {
+        if (!this.headless) {
+            this.blankLine()
+            this.infoMessage('Current values:')
+            this.infoMessage(JSON.stringify(values, null, 2))
+            this.blankLine()
+        }
+    }
+
     public list(list: string[]): void {
-        if (!this.headless) console.log(list.length ? chalk.dim(`${list.join('\n\r')}`) : chalk.dim('(Empty)'))
+        if (!this.headless) console.log(list.length ? `${list.join('\n\r')}` : '(Empty)')
     }
 
     public blankLine(): void {
