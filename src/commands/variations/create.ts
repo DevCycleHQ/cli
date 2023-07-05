@@ -10,6 +10,7 @@ import { CreateVariationDto } from '../../api/schemas'
 import { createVariation } from '../../api/variations'
 import { promptForVariationVariableValues } from '../../ui/prompts/variationPrompts'
 import { fetchVariables } from '../../api/variables'
+import {fetchFeatureByKey} from "../../api/features";
 
 export default class CreateVariation extends CreateCommand {
     static hidden = false
@@ -43,13 +44,14 @@ export default class CreateVariation extends CreateCommand {
         const { headless, key, name, variables } = flags
 
         let featureKey
+        let feature_id
         if (!args.feature) {
             const { feature } = await inquirer.prompt([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
-
-            featureKey = feature
+            featureKey = feature.key
+            feature_id = feature._id
         } else {
             featureKey = args.feature
         }
@@ -65,7 +67,14 @@ export default class CreateVariation extends CreateCommand {
 
         let variableAnswers: Record<string, unknown> = {}
         if (!variables) {
-            const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, featureKey)
+            if (!feature_id) {
+                const feature = await fetchFeatureByKey(this.authToken, this.projectKey, featureKey)
+                if (!feature) {
+                    throw new Error(`Feature not found for key ${featureKey}`)
+                }
+                feature_id = feature._id
+            }
+            const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, feature_id)
             variableAnswers = await promptForVariationVariableValues(
                 variablesForFeature
             )
