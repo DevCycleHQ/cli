@@ -1,8 +1,10 @@
 import { Args } from '@oclif/core'
-import inquirer from '../../ui/autocomplete'
 import { disableTargeting } from '../../api/targeting'
-import { EnvironmentPromptResult, environmentPrompt, featurePrompt } from '../../ui/prompts'
 import Base from '../base'
+import { fetchEnvironmentByKey, fetchEnvironments } from '../../api/environments'
+import { fetchVariations } from '../../api/variations'
+import { renderTargetingTree } from '../../ui/targetingTree'
+import { getFeatureAndEnvironmentKeyFromArgs } from '../../utils/targeting'
 
 export default class DisableTargeting extends Base {
     static hidden = false
@@ -23,47 +25,30 @@ export default class DisableTargeting extends Base {
 
         await this.requireProject()
 
-        let responses
-
-        const feature = args['feature']
-        const environment = args['environment']
-
-        if (flags.headless && (!feature || !environment)) {
-            throw new Error('In headless mode, both the feature and environment are required')
-        }
-
-        if (feature) {
-            responses = { featureKey: feature }
-        } else {
-            const userSelectedFeature = await inquirer.prompt(
-                [featurePrompt],
-                {
-                    token: this.authToken,
-                    projectKey: this.projectKey
-                }
-            )
-            responses = { featureKey: userSelectedFeature.feature }
-        }
-
-        if (environment) {
-            responses = { ...responses, environmentKey: environment }
-        } else {
-            const userSelectedEnv = await inquirer.prompt<EnvironmentPromptResult>(
-                [environmentPrompt],
-                {
-                    token: this.authToken,
-                    projectKey: this.projectKey
-                }
-            )
-            responses = { ...responses, environmentKey: userSelectedEnv.environment._id }
-        }
-
-        const disableTargetingForFeatureAndEnvironment = await disableTargeting(
+        const responses = await getFeatureAndEnvironmentKeyFromArgs(
+            this.authToken, 
+            this.projectKey, 
+            args, 
+            flags,
+        )
+        const updatedTargeting = await disableTargeting(
             this.authToken,
             this.projectKey,
-            responses.featureKey,
-            responses.environmentKey
-        )
-        return this.writer.showResults(disableTargetingForFeatureAndEnvironment)
+            responses.featureKey as string,
+            responses.environmentKey as string
+        ) 
+    
+        if (flags.headless) {
+            this.writer.showResults(updatedTargeting)
+        } else {
+            // TODO: reuse the data fetched for the prompts
+            const environment = await fetchEnvironmentByKey(
+                this.authToken, 
+                this.projectKey, 
+                responses.environmentKey as string
+            )
+            const variations = await fetchVariations(this.authToken, this.projectKey, responses.featureKey as string)
+            renderTargetingTree([updatedTargeting], [environment], variations)
+        }
     }
 }
