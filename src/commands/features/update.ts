@@ -1,4 +1,4 @@
-import { fetchFeatures, updateFeature } from '../../api/features'
+import { fetchFeatureByKey, updateFeature } from '../../api/features'
 import {
     descriptionPrompt,
     featurePrompt,
@@ -43,7 +43,8 @@ export default class UpdateFeature extends UpdateCommand {
         const { headless, key, name, description, variables, variations, sdkVisibility } = flags
         await this.requireProject()
 
-        let featureKey = args.key
+        const featureKey = args.key
+        let feature
         if (headless && !featureKey) {
             this.writer.showError('The key argument is required')
             return
@@ -52,14 +53,13 @@ export default class UpdateFeature extends UpdateCommand {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
-            featureKey = response.feature
-        }
-        const features = await fetchFeatures(this.authToken, this.projectKey)
-        const feature = features.find((f) => f._id === featureKey || f.key === featureKey)
-
-        if (!feature) {
-            this.writer.showError(`Feature with key ${featureKey} could not be found`)
-            return
+            feature = response.feature
+        } else {
+            feature = await fetchFeatureByKey(this.authToken, this.projectKey, featureKey)
+            if (!feature) {
+                this.writer.showError(`Feature with key ${featureKey} could not be found`)
+                return
+            }
         }
 
         this.writer.printCurrentValues(feature)

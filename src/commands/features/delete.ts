@@ -22,11 +22,11 @@ export default class DeleteFeatures extends Base {
 
         let featureKey
         if (!args.feature) {
-            const { feature  } = await inquirer.prompt([featurePrompt], {
+            const { feature } = await inquirer.prompt([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
-            featureKey = feature
+            featureKey = feature.key
         } else {
             featureKey = args.feature
         }
