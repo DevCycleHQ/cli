@@ -16,5 +16,6 @@ To run the test suite, run `yarn test`
 3. Run `yarn build`
 4. Create a PR for these changes.
 5. Once merged, move the tag from your branch to the new commit on main, and push the tag
-6. create a new Github release using the tag for the latest version.
+6. Create a new Github release using the tag for the latest version.
 7. From `main`, publish to NPM `npm publish --access public`
+8. Update the CLI version in the [docs repo](https://github.com/DevCycleHQ/devcycle-docs/blob/main/docusaurus.config.js#L9)
