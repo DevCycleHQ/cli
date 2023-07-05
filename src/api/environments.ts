@@ -48,22 +48,13 @@ export const fetchEnvironmentByKey = async (
     project_id: string,
     key: string
 ) => {
-    try {
-        const response = await apiClient.get('/v1/projects/:project/environments/:key', {
-            headers: buildHeaders(token),
-            params: {
-                project: project_id,
-                key
-            }
-        })
-
-        return response
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-        if (e.response?.status === 404) {
-            return null
+    const response = await apiClient.get('/v1/projects/:project/environments/:key', {
+        headers: buildHeaders(token),
+        params: {
+            project: project_id,
+            key
         }
-        throw e
-    }
+    })
 
+    return response
 }
