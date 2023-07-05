@@ -119,9 +119,11 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
 
     async printListOptions(list?: ListOption<UpdateTargetParams>[]) {
         const listToPrint = list || this.list
-        this.writer.statusMessage(`Current ${this.itemType}s:`)
+        this.writer.blankLine()
+        this.writer.title(this.messagePrompt)
+        this.writer.infoMessage(`Current ${this.itemType}s:`)
         const values = listToPrint.map((item) => item.value.item)
         renderRulesTree(values, this.variations)
-        this.writer.divider()
+        this.writer.blankLine()
     }
 }

@@ -172,9 +172,11 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
 
     async printListOptions(list?: ListOption<Filter>[]) {
         const listToPrint = list || this.list
-        this.writer.statusMessage(`Current ${this.itemType}s:`)
+        this.writer.blankLine()
+        this.writer.title(this.messagePrompt)
+        this.writer.infoMessage(`Current ${this.itemType}s:`)
         const values = listToPrint.map((item) => item.value.item)
         renderDefinitionTree(values, this.operator)
-        this.writer.divider()
+        this.writer.blankLine()
     }
 }

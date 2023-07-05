@@ -12,7 +12,6 @@ import {
 import UpdateCommand from '../updateCommand'
 import { Flags } from '@oclif/core'
 import { UpdateVariableDto } from '../../api/schemas'
-import { ZodError } from 'zod'
 
 export default class UpdateVariable extends UpdateCommand {
     static hidden = false
@@ -51,10 +50,7 @@ export default class UpdateVariable extends UpdateCommand {
                 projectKey: this.projectKey
             })
             variableKey = variable.key
-            this.writer.blankLine()
-            this.writer.statusMessage('Current values:')
-            this.writer.statusMessage(JSON.stringify(variable, null, 2))
-            this.writer.blankLine()
+            this.writer.printCurrentValues(variable)
         }
 
         const params = await this.populateParametersWithZod(

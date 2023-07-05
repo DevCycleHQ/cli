@@ -43,7 +43,7 @@ export abstract class ListOptionsPrompt<T> {
     async promptListOptions() {
         const response = await inquirer.prompt([{
             name: 'listPromptOption',
-            message: this.messagePrompt,
+            message: 'Select an action:',
             type: 'list',
             choices: this.options()
         }])
@@ -152,7 +152,7 @@ export abstract class ListOptionsPrompt<T> {
             }
         }
         this.printListOptions(newList)
-
+        this.writer.divider()
         // keep prompting until they choose to continue with the saved changes to the list
         if (response !== 'continue') {
             return this.prompt(newList)
@@ -166,9 +166,11 @@ export abstract class ListOptionsPrompt<T> {
      */
     async printListOptions(list?: ListOption<T>[]) {
         const listToPrint = list || this.list
-        this.writer.statusMessage(`Current ${this.itemType}s:`)
+        this.writer.blankLine()
+        this.writer.title(this.messagePrompt)
+        this.writer.infoMessage(`Current ${this.itemType}s:`)
         this.writer.list(listToPrint.map((item) => item.name))
-        this.writer.divider()
+        this.writer.blankLine()
     }
 
     /**

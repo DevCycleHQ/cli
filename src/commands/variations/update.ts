@@ -76,10 +76,7 @@ export default class UpdateVariation extends UpdateCommand {
             feature._id,
         ))
 
-        this.writer.blankLine()
-        this.writer.statusMessage('Current values:')
-        this.writer.statusMessage(JSON.stringify(selectedVariation, null, 2))
-        this.writer.blankLine()
+        this.writer.printCurrentValues(selectedVariation)
 
         const data = await this.populateParameters(UpdateVariationParams, this.prompts, {
             name,
