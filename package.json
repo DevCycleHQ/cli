@@ -79,37 +79,38 @@
       "@oclif/plugin-help",
       "@oclif/plugin-autocomplete"
     ],
+    "helpClass": "./dist/help",
     "topicSeparator": " ",
     "topics": {
       "login": {
-        "description": "Log in to DevCycle"
+        "description": "Log in to DevCycle."
       },
       "features": {
-        "description": "Access or modify Features with the Management API"
+        "description": "Access or modify Features with the Management API."
       },
       "variables": {
-        "description": "Access or modify Variables with the Management API"
+        "description": "Access or modify Variables with the Management API."
       },
       "projects": {
-        "description": "Access Projects with the Management API"
+        "description": "Access Projects with the Management API."
       },
       "org": {
-        "description": "Switch organizations"
+        "description": "Switch organizations."
       },
       "alias": {
-        "description": "Manage repository variable aliases"
+        "description": "Manage repository variable aliases."
       },
       "repo": {
-        "description": "Manage repository configuration"
+        "description": "Manage repository configuration."
       },
       "status": {
-        "description": "Check CLI status"
+        "description": "Check CLI status."
       },
       "targeting": {
-        "description": "Access and Modify Targeting Rules for a Feature with the Management API."
+        "description": "Access or modify Targeting Rules for a Feature with the Management API."
       },
       "generate": {
-        "description": "Generate Devcycle related files"
+        "description": "Generate Devcycle related files."
       }
     }
   },

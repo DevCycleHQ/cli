@@ -104,25 +104,24 @@ USAGE
 <!-- commands -->
 # Command Topics
 
-* [`dvc alias`](docs/alias.md) - Manage repository variable aliases
-* [`dvc autocomplete`](docs/autocomplete.md) - display autocomplete installation instructions
+* [`dvc alias`](docs/alias.md) - Manage repository variable aliases.
 * [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
 * [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
-* [`dvc features`](docs/features.md) - Access or modify Features with the Management API
-* [`dvc generate`](docs/generate.md) - Generate Devcycle related files
+* [`dvc features`](docs/features.md) - Access or modify Features with the Management API.
+* [`dvc generate`](docs/generate.md) - Generate Devcycle related files.
 * [`dvc help`](docs/help.md) - Display help for dvc.
-* [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the management API
-* [`dvc login`](docs/login.md) - Log in to DevCycle
+* [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the Management API.
+* [`dvc login`](docs/login.md) - Log in to DevCycle.
 * [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
-* [`dvc org`](docs/org.md) - Switch organizations
-* [`dvc projects`](docs/projects.md) - Access Projects with the Management API
-* [`dvc repo`](docs/repo.md) - Manage repository configuration
-* [`dvc status`](docs/status.md) - Check CLI status
-* [`dvc targeting`](docs/targeting.md) - Access and Modify Targeting Rules for a Feature with the Management API.
+* [`dvc org`](docs/org.md) - Switch organizations.
+* [`dvc projects`](docs/projects.md) - Access Projects with the Management API.
+* [`dvc repo`](docs/repo.md) - Manage repository configuration.
+* [`dvc status`](docs/status.md) - Check CLI status.
+* [`dvc targeting`](docs/targeting.md) - Access or modify Targeting Rules for a Feature with the Management API.
 * [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
-* [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API
-* [`dvc variations`](docs/variations.md) - Create a new Variation
+* [`dvc variables`](docs/variables.md) - Access or modify Variables with the Management API.
+* [`dvc variations`](docs/variations.md) - Create a new Variation for an existing Feature.
 
 <!-- commandsstop -->
 

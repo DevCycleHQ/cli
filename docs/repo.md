@@ -1,7 +1,7 @@
 `dvc repo`
 ==========
 
-Manage repository configuration
+Manage repository configuration.
 
 * [`dvc repo init`](#dvc-repo-init)
 

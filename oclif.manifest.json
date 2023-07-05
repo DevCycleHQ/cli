@@ -1774,7 +1774,7 @@
     },
     "keys:get": {
       "id": "keys:get",
-      "description": "Retrieve SDK keys from the management API",
+      "description": "Retrieve SDK keys from the Management API.",
       "strict": true,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
@@ -3611,7 +3611,7 @@
     },
     "variations:create": {
       "id": "variations:create",
-      "description": "Create a new Variation",
+      "description": "Create a new Variation for an existing Feature.",
       "strict": true,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
