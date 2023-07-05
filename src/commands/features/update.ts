@@ -62,10 +62,7 @@ export default class UpdateFeature extends UpdateCommand {
             return
         }
 
-        this.writer.blankLine()
-        this.writer.statusMessage('Current values:')
-        this.writer.statusMessage(JSON.stringify(feature, null, 2))
-        this.writer.blankLine()
+        this.writer.printCurrentValues(feature)
 
         this.prompts.push((new VariableListOptions(feature.variables ?? [], this.writer)).getVariablesListPrompt())
         this.prompts.push(
