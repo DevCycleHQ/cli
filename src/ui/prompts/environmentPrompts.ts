@@ -6,6 +6,7 @@ import { PromptResult } from '.'
 import { CreateEnvironmentDto, Environment } from '../../api/schemas'
 
 import { autocompleteSearch } from '../autocomplete'
+
 type EnvironmentChoice = {
     name: string,
     value: Environment
