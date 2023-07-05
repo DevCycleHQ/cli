@@ -39,7 +39,8 @@ export default class DetailedTargeting extends Base {
         await this.requireProject()
 
         const params: Params = {
-            featureKey: args.feature
+            featureKey: args.feature,
+            environment_id: args.environment
         }
 
         // TODO: this should use populateParameters once it's added to Base class
@@ -58,7 +59,7 @@ export default class DetailedTargeting extends Base {
             Object.assign(params, {
                 feature: responses.feature,
                 featureKey: responses.feature.key,
-                environment_id: responses.environment?._id,
+                environment_id: responses.environment?.key,
                 environment: responses.environment
             })
         }
@@ -78,7 +79,6 @@ export default class DetailedTargeting extends Base {
         if (flags.headless) {
             this.writer.showResults(targeting)
         } else {
-            // TODO: reuse the data fetched for the prompts
             const environments = params.environment ?
                 [params.environment] : await fetchEnvironments(this.authToken, this.projectKey)
             const variations = params.feature?.variations

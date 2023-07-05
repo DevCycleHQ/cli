@@ -61,8 +61,8 @@ describe('features update', () => {
     // headless mode:
     dvcTest()
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/features`)
-            .reply(200, [mockFeature])
+            .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+            .reply(200, mockFeature)
         )
         .nock(BASE_URL, (api) => api
             .patch(`/v1/projects/${projectKey}/features/${mockFeature.key}`, requestBodyWithVariables)
@@ -85,7 +85,7 @@ describe('features update', () => {
                 expect(ctx.stdout).toMatchSnapshot()
             }
         )
-    
+
     dvcTest()
         .stdout()
         .command([
@@ -108,14 +108,14 @@ describe('features update', () => {
     // interactive mode:
     dvcTest()
         .stub(inquirer, 'prompt', () => ({
-            ...requestBody, 
+            ...requestBody,
             sdkVisibility: ['mobile', 'server'],
             whichFields: Object.keys(requestBody),
             listPromptOption: 'continue',
         }))
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/features`)
-            .reply(200, [mockFeature])
+            .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+            .reply(200, mockFeature)
         )
         .nock(BASE_URL, (api) => api
             .patch(`/v1/projects/${projectKey}/features/${mockFeature.key}`, requestBody)
@@ -142,8 +142,8 @@ describe('features update', () => {
             listPromptOption: 'continue',
         }))
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/features`)
-            .reply(200, [mockFeature])
+            .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+            .reply(200, mockFeature)
         )
         .nock(BASE_URL, (api) => api
             .patch(`/v1/projects/${projectKey}/features/${mockFeature.key}`, requestBody)

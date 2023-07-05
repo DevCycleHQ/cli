@@ -26,29 +26,26 @@ export default class DisableTargeting extends Base {
         await this.requireProject()
 
         const responses = await getFeatureAndEnvironmentKeyFromArgs(
-            this.authToken, 
-            this.projectKey, 
-            args, 
+            this.authToken,
+            this.projectKey,
+            args,
             flags,
         )
         const updatedTargeting = await disableTargeting(
             this.authToken,
             this.projectKey,
-            responses.featureKey as string,
-            responses.environmentKey as string
-        ) 
-    
+            responses.featureKey,
+            responses.environmentKey
+        )
+
         if (flags.headless) {
             this.writer.showResults(updatedTargeting)
         } else {
-            // TODO: reuse the data fetched for the prompts
-            const environment = await fetchEnvironmentByKey(
-                this.authToken, 
-                this.projectKey, 
-                responses.environmentKey as string
+            renderTargetingTree(
+                [updatedTargeting],
+                [responses.environment],
+                responses.feature.variations
             )
-            const variations = await fetchVariations(this.authToken, this.projectKey, responses.featureKey as string)
-            renderTargetingTree([updatedTargeting], [environment], variations)
         }
     }
 }

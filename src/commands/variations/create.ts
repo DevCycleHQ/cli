@@ -10,7 +10,7 @@ import { CreateVariationDto } from '../../api/schemas'
 import { createVariation } from '../../api/variations'
 import { promptForVariationVariableValues } from '../../ui/prompts/variationPrompts'
 import { fetchVariables } from '../../api/variables'
-import {fetchFeatureByKey} from "../../api/features";
+import { fetchFeatureByKey } from '../../api/features'
 
 export default class CreateVariation extends CreateCommand {
     static hidden = false
