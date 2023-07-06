@@ -5,7 +5,7 @@ import { autocompleteSearch } from '../autocomplete'
 
 type FeatureChoice = {
     name: string,
-    value: string
+    value: Feature
 }
 
 export type FeaturePromptResult = {
@@ -20,10 +20,10 @@ export const featureChoices = async (input: Record<string, any>, search: string)
         choices = features.map((feature: Feature) => {
             return {
                 name: feature.name || feature.key,
-                value: feature.key
+                value: feature
             }
         })
-    
+
     }
 
     return autocompleteSearch(choices, search)
@@ -38,6 +38,7 @@ export const featurePrompt = {
 
 export const variableFeaturePrompt = {
     ...featurePrompt,
+    transformResponse: (response: Feature) => response.key,
     name: '_feature',
 }
 
@@ -58,7 +59,7 @@ export const getSDKVisibilityChoices = (sdkVisibility?: Feature['sdkVisibility']
             name: 'client',
             value: 'client',
             checked: typeof sdkVisibility?.client !== 'undefined' ? sdkVisibility?.client : false
-        }, 
+        },
         {
             name: 'server',
             value: 'server',
@@ -76,7 +77,7 @@ export const getSdkVisibilityPrompt = (feature?: Feature) => {
         transformResponse: (response: string[]) => ({
             mobile: response.includes('mobile'),
             client: response.includes('client'),
-            server: response.includes('server')    
+            server: response.includes('server')
         })
     }
 }

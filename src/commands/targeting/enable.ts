@@ -1,10 +1,9 @@
 import { Args } from '@oclif/core'
 import { enableTargeting } from '../../api/targeting'
+import { Variation } from '../../api/schemas'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import Base from '../base'
-import { fetchVariations } from '../../api/variations'
 import { getFeatureAndEnvironmentKeyFromArgs } from '../../utils/targeting'
-import { fetchEnvironmentByKey } from '../../api/environments'
 
 export default class EnableTargeting extends Base {
     static hidden = false
@@ -25,30 +24,32 @@ export default class EnableTargeting extends Base {
 
         await this.requireProject()
 
-        const responses = await getFeatureAndEnvironmentKeyFromArgs(
-            this.authToken, 
-            this.projectKey, 
-            args, 
+        const {
+            feature,
+            environment,
+            environmentKey,
+            featureKey
+        } = await getFeatureAndEnvironmentKeyFromArgs(
+            this.authToken,
+            this.projectKey,
+            args,
             flags,
         )
         const updatedTargeting = await enableTargeting(
             this.authToken,
             this.projectKey,
-            responses.featureKey as string,
-            responses.environmentKey as string
-        ) 
-    
+            featureKey,
+            environmentKey
+        )
+
         if (flags.headless) {
             this.writer.showResults(updatedTargeting)
         } else {
-            // TODO: reuse the data fetched for the prompts
-            const environment = await fetchEnvironmentByKey(
-                this.authToken, 
-                this.projectKey, 
-                responses.environmentKey as string
+            renderTargetingTree(
+                [updatedTargeting],
+                [environment],
+                feature.variations as Variation[]
             )
-            const variations = await fetchVariations(this.authToken, this.projectKey, responses.featureKey as string)
-            renderTargetingTree([updatedTargeting], [environment], variations)
         }
     }
 }

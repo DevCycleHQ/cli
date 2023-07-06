@@ -2,7 +2,7 @@ import { Args } from '@oclif/core'
 import { deleteFeature } from '../../api/features'
 import Base from '../base'
 import inquirer from 'inquirer'
-import { featurePrompt } from '../../ui/prompts'
+import { featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 
 export default class DeleteFeatures extends Base {
     static hidden = false
@@ -22,11 +22,11 @@ export default class DeleteFeatures extends Base {
 
         let featureKey
         if (!args.feature) {
-            const { feature  } = await inquirer.prompt([featurePrompt], {
+            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
-            featureKey = feature
+            featureKey = feature.key
         } else {
             featureKey = args.feature
         }

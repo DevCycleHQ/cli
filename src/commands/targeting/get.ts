@@ -6,7 +6,14 @@ import { fetchTargetingForFeature } from '../../api/targeting'
 import { environmentPrompt, EnvironmentPromptResult, featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import Base from '../base'
+import { Feature, Environment } from '../../api/schemas'
 
+type Params = {
+    featureKey?: string,
+    environment_id?: string,
+    feature?: Feature,
+    environment?: Environment
+}
 export default class DetailedTargeting extends Base {
     static hidden = false
     static description = 'Retrieve Targeting for a Feature from the Management API'
@@ -31,10 +38,13 @@ export default class DetailedTargeting extends Base {
 
         await this.requireProject()
 
-        const params = Object.assign({}, args)
+        const params: Params = {
+            featureKey: args.feature,
+            environment_id: args.environment
+        }
 
         // TODO: this should use populateParameters once it's added to Base class
-        if (!flags.headless && !params.feature) {
+        if (!flags.headless && !params.featureKey) {
             Object.keys(args).forEach((key) => {
                 this.prompts = this.prompts.filter((prompt) => prompt.name !== key)
             })
@@ -48,11 +58,13 @@ export default class DetailedTargeting extends Base {
             )
             Object.assign(params, {
                 feature: responses.feature,
-                environment: responses.environment?._id
+                featureKey: responses.feature.key,
+                environment_id: responses.environment?.key,
+                environment: responses.environment
             })
         }
 
-        if (!params.feature) {
+        if (!params.featureKey) {
             this.writer.showError('Feature argument is required')
             return
         }
@@ -60,16 +72,17 @@ export default class DetailedTargeting extends Base {
         const targeting = await fetchTargetingForFeature(
             this.authToken,
             this.projectKey,
-            params.feature,
-            params.environment
+            params.featureKey,
+            params.environment_id
         )
 
         if (flags.headless) {
             this.writer.showResults(targeting)
         } else {
-            // TODO: reuse the data fetched for the prompts
-            const environments = await fetchEnvironments(this.authToken, this.projectKey)
-            const variations = await fetchVariations(this.authToken, this.projectKey, params.feature)
+            const environments = params.environment ?
+                [params.environment] : await fetchEnvironments(this.authToken, this.projectKey)
+            const variations = params.feature?.variations
+                || await fetchVariations(this.authToken, this.projectKey, params.featureKey)
             renderTargetingTree(targeting, environments, variations)
         }
     }

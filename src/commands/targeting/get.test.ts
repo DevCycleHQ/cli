@@ -167,7 +167,7 @@ describe('targeting get', () => {
             .reply(200, mockEnvironments)
         )
         .stub(inquirer, 'prompt', () => {
-            return { feature: 'prompted-feature-id' }
+            return { feature:  { key: 'prompted-feature-id' } }
         })
         .stdout()
         .command(['targeting get', ...authFlags])
@@ -176,7 +176,7 @@ describe('targeting get', () => {
                 expect(ctx.stdout).toMatchSnapshot()
             })
 
-    dvcTest() 
+    dvcTest()
         .stdout()
         .command(['targeting get', '--headless', ...authFlags])
         .it('does not prompt when using --headless',
