@@ -1,28 +1,21 @@
-import { Audience, FeatureConfig } from '../../api/schemas'
+import { Audience, AudienceMatchFilter, FeatureConfig, Filter, Target, UpdateTargetParams } from '../../api/schemas'
 
-export const replaceIdsInTargetingWithNames = async (
-    featureConfigs: FeatureConfig[],
-    audiences: Audience[]
+export const buildAudienceNameMap = (audiences?: Audience[]) => {
+    return audiences?.reduce((acc, audience) => {
+        acc[audience._id] = audience.name || audience.key || audience._id
+        return acc
+    }, {} as Record<string, string>) || {}
+}
+
+export const replaceAudienceIdInFilter = (
+    filter: Filter, 
+    audienceNameMap: Record<string, string>
 ) => {
-    return featureConfigs.map((featureConfig) => {
-        const newFeatureConfig = structuredClone(featureConfig) as typeof featureConfig
-        newFeatureConfig.targets = newFeatureConfig.targets.map((target) => {
-            const newTarget = structuredClone(target) as typeof target
-            const filters = newTarget.audience.filters.filters.map((filter) => {
-                const newFilter = { ...filter }
-                if (newFilter.type === 'audienceMatch') {
-                    const audienceIds = newFilter._audiences!
-                    const audienceNames = audienceIds.map((audienceId) => {
-                        const audience = audiences.find((audience) => audience._id === audienceId)
-                        return audience?.name || audienceId
-                    })
-                    newFilter._audiences = audienceNames
-                }
-                return newFilter
-            })
-            newTarget.audience.filters.filters = filters
-            return newTarget
-        })
-        return newFeatureConfig
-    })
+    const newFilter = structuredClone(filter) as typeof filter
+    if (newFilter.type === 'audienceMatch') {
+        const audienceIds = newFilter._audiences!
+        const audienceNames = audienceIds.map((audienceId) => audienceNameMap[audienceId] || audienceId)
+        newFilter._audiences = audienceNames
+    }
+    return newFilter
 }

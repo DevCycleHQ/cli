@@ -9,7 +9,7 @@ import {
     ReorderItemPrompt
 } from './promptOptions'
 import { servePrompt } from '../targetingPrompts'
-import { UpdateTargetParams, Variation } from '../../../api/schemas'
+import { Audience, Filters, UpdateTargetParams, Variation } from '../../../api/schemas'
 import { FilterListOptions } from './filterListPrompt'
 import Writer from '../../writer'
 import { renderRulesTree } from '../../targetingTree'
@@ -23,9 +23,18 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
     featureKey: string
 
     variations: Variation[] = []
+    audiences: Audience[]
 
-    constructor(list: UpdateTargetParams[], writer: Writer, authToken: string, projectKey: string, featureKey: string) {
+    constructor(
+        list: UpdateTargetParams[], 
+        audiences: Audience[], 
+        writer: Writer, 
+        authToken: string, 
+        projectKey: string, 
+        featureKey: string
+    ) {
         super(list, writer)
+        this.audiences = audiences
         this.featureKey = featureKey
         this.authToken = authToken
         this.projectKey = projectKey
@@ -57,7 +66,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
             featureKey: this.featureKey
         })
         const operator = 'and'
-        const filterListOptions = new FilterListOptions([], this.writer)
+        const filterListOptions = new FilterListOptions([], this.audiences, this.writer)
         filterListOptions.operator = operator
         const filters = await filterListOptions.prompt()
         const target = {
@@ -103,7 +112,11 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
             projectKey: this.projectKey,
             featureKey: this.featureKey
         })
-        const filterListOptions = new FilterListOptions(targetToEdit.audience.filters.filters, this.writer)
+        const filterListOptions = new FilterListOptions(
+            targetToEdit.audience.filters.filters, 
+            this.audiences,
+            this.writer
+        )
         filterListOptions.operator = targetToEdit.audience.filters.operator
         const filters = await filterListOptions.prompt()
         const target = {
@@ -125,7 +138,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
         }))
     }
 
-    async printListOptions(list?: ListOption<UpdateTargetParams>[]) {
+    printListOptions(list?: ListOption<UpdateTargetParams>[]) {
         const listToPrint = list || this.list
         if (listToPrint.length === 0) {
             this.writer.infoMessage(`No existing ${this.itemType}s.`)
@@ -135,7 +148,7 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
         this.writer.title(this.messagePrompt)
         this.writer.infoMessage(`Current ${this.itemType}s:`)
         const values = listToPrint.map((item) => item.value.item)
-        renderRulesTree(values, this.variations)
+        renderRulesTree(values, this.variations, this.audiences)
         this.writer.blankLine()
     }
 }

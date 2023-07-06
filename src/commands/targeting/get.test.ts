@@ -127,6 +127,10 @@ describe('targeting get', () => {
             .get(`/v1/projects/${projectKey}/environments`)
             .reply(200, mockEnvironments)
         )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/audiences`)
+            .reply(200, [])
+        )
         .stdout()
         .command(['targeting get', featureKey, ...authFlags])
         .it('returns all targeting for a feature', (ctx) => {
@@ -145,6 +149,10 @@ describe('targeting get', () => {
         .nock(BASE_URL, (api) => api
             .get(`/v1/projects/${projectKey}/environments`)
             .reply(200, mockEnvironments)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/audiences`)
+            .reply(200, [])
         )
         .stdout()
         .command(['targeting get', featureKey, 'development', ...authFlags])
@@ -165,6 +173,10 @@ describe('targeting get', () => {
         .nock(BASE_URL, (api) => api
             .get(`/v1/projects/${projectKey}/environments`)
             .reply(200, mockEnvironments)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/audiences`)
+            .reply(200, [])
         )
         .stub(inquirer, 'prompt', () => {
             return { feature:  { key: 'prompted-feature-id' } }

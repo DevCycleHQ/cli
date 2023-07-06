@@ -3,10 +3,16 @@ import inquirer from '../../ui/autocomplete'
 import { fetchEnvironments } from '../../api/environments'
 import { fetchVariations } from '../../api/variations'
 import { fetchTargetingForFeature } from '../../api/targeting'
-import { environmentPrompt, EnvironmentPromptResult, featurePrompt, FeaturePromptResult } from '../../ui/prompts'
+import { 
+    environmentPrompt, 
+    EnvironmentPromptResult, 
+    featurePrompt, 
+    FeaturePromptResult 
+} from '../../ui/prompts'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import Base from '../base'
 import { Feature, Environment } from '../../api/schemas'
+import { fetchAudiences } from '../../api/audiences'
 
 type Params = {
     featureKey?: string,
@@ -83,7 +89,13 @@ export default class DetailedTargeting extends Base {
                 [params.environment] : await fetchEnvironments(this.authToken, this.projectKey)
             const variations = params.feature?.variations
                 || await fetchVariations(this.authToken, this.projectKey, params.featureKey)
-            renderTargetingTree(targeting, environments, variations)
+            const audiences = await fetchAudiences(this.authToken, this.projectKey)
+            renderTargetingTree(
+                targeting, 
+                environments, 
+                variations,
+                audiences
+            )
         }
     }
 }

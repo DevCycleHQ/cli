@@ -4,6 +4,7 @@ import { Variation } from '../../api/schemas'
 import Base from '../base'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import { getFeatureAndEnvironmentKeyFromArgs } from '../../utils/targeting'
+import { fetchAudiences } from '../../api/audiences'
 
 export default class DisableTargeting extends Base {
     static hidden = false
@@ -45,10 +46,12 @@ export default class DisableTargeting extends Base {
         if (flags.headless) {
             this.writer.showResults(updatedTargeting)
         } else {
+            const audiences = await fetchAudiences(this.authToken, this.projectKey)
             renderTargetingTree(
-                [updatedTargeting],
+                [updatedTargeting], 
                 [environment],
-                feature.variations as Variation[]
+                feature.variations as Variation[],
+                audiences
             )
         }
     }

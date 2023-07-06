@@ -22,6 +22,7 @@ import { fetchVariations } from '../../api/variations'
 import { FeatureConfig, UpdateFeatureConfigDto } from '../../api/schemas'
 import { targetingStatusPrompt } from '../../ui/prompts/targetingPrompts'
 import UpdateCommand from '../updateCommand'
+import { fetchAudiences } from '../../api/audiences'
 
 export default class UpdateTargeting extends UpdateCommand {
     static hidden = false
@@ -86,6 +87,7 @@ export default class UpdateTargeting extends UpdateCommand {
 
         const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, envKey)
         const variations = await fetchVariations(this.authToken, this.projectKey, featureKey)
+        const audiences = await fetchAudiences(this.authToken, this.projectKey)
 
         const status = this.convertStatusFlagValue(flags.status)
         let targets: UpdateFeatureConfigDto['targets']
@@ -111,7 +113,12 @@ export default class UpdateTargeting extends UpdateCommand {
                 this.authToken, this.projectKey, featureKey, envKey
             )
             const targetingListPrompt = new TargetingListOptions(
-                featureTargetingRules.targets, this.writer, this.authToken, this.projectKey, featureKey
+                featureTargetingRules.targets, 
+                audiences,
+                this.writer, 
+                this.authToken, 
+                this.projectKey, 
+                featureKey
             )
             targetingListPrompt.variations = variations
             this.prompts.push(targetingListPrompt.getTargetingListPrompt())
@@ -137,7 +144,8 @@ export default class UpdateTargeting extends UpdateCommand {
             renderTargetingTree(
                 [result],
                 environment ? [environment] : [],
-                variations
+                variations,
+                audiences
             )
             this.showSuggestedCommand(featureKey, envKey, result)
         }
