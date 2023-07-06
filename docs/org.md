@@ -1,7 +1,7 @@
 `dvc org`
 =========
 
-Switch organizations
+Switch organizations.
 
 * [`dvc org`](#dvc-org)
 

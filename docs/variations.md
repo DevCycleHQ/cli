@@ -1,7 +1,7 @@
 `dvc variations`
 ================
 
-Create a new Variation
+Create a new Variation for an existing Feature.
 
 * [`dvc variations create [FEATURE]`](#dvc-variations-create-feature)
 * [`dvc variations get [FEATURE]`](#dvc-variations-get-feature)
@@ -10,7 +10,7 @@ Create a new Variation
 
 ## `dvc variations create [FEATURE]`
 
-Create a new Variation
+Create a new Variation for an existing Feature.
 
 ```
 USAGE
@@ -38,7 +38,7 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 
 DESCRIPTION
-  Create a new Variation
+  Create a new Variation for an existing Feature.
 
 EXAMPLES
   $ dvc variations create

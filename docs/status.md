@@ -1,7 +1,7 @@
 `dvc status`
 ============
 
-Check CLI status
+Check CLI status.
 
 * [`dvc status`](#dvc-status)
 

@@ -1,7 +1,7 @@
 `dvc projects`
 ==============
 
-Access Projects with the Management API
+Access Projects with the Management API.
 
 * [`dvc projects create`](#dvc-projects-create)
 * [`dvc projects list`](#dvc-projects-list)
