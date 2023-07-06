@@ -13,7 +13,7 @@ import { fetchVariables } from '../../api/variables'
 
 export default class CreateVariation extends CreateCommand {
     static hidden = false
-    static description = 'Create a new Variation'
+    static description = 'Create a new Variation for an existing Feature.'
 
     static args = {
         feature: Args.string({

@@ -1,7 +1,7 @@
 `dvc generate`
 ==============
 
-Generate Devcycle related files
+Generate Devcycle related files.
 
 * [`dvc generate types`](#dvc-generate-types)
 

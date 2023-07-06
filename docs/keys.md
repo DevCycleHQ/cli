@@ -1,13 +1,13 @@
 `dvc keys`
 ==========
 
-Retrieve SDK keys from the management API
+Retrieve SDK keys from the Management API.
 
 * [`dvc keys get`](#dvc-keys-get)
 
 ## `dvc keys get`
 
-Retrieve SDK keys from the management API
+Retrieve SDK keys from the Management API.
 
 ```
 USAGE
@@ -32,7 +32,7 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 
 DESCRIPTION
-  Retrieve SDK keys from the management API
+  Retrieve SDK keys from the Management API.
 
 EXAMPLES
   $ dvc keys get
