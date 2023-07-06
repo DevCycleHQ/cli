@@ -56,7 +56,7 @@ export default class UpdateTargeting extends Base {
                     projectKey: this.projectKey
                 }
             )
-            featureKey = promptResult.feature
+            featureKey = promptResult.feature.key
         }
 
         let envKey = args.environment

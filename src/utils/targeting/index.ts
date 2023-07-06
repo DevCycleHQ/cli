@@ -1,34 +1,43 @@
-import { disableTargeting, enableTargeting } from '../../api/targeting'
 import inquirer from '../../ui/autocomplete'
-import { featurePrompt, EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
+import { featurePrompt, EnvironmentPromptResult, environmentPrompt, FeaturePromptResult } from '../../ui/prompts'
+import { fetchFeatureByKey } from '../../api/features'
+import { Feature, Environment } from '../../api/schemas'
+import { fetchEnvironmentByKey } from '../../api/environments'
 
+type Response = {
+    environmentKey: string
+    featureKey: string
+    environment: Environment,
+    feature: Feature
+}
 export const getFeatureAndEnvironmentKeyFromArgs = async (
-    authToken: string, 
+    authToken: string,
     projectKey: string,
     args: Record<string, string | undefined>,
     flags: Record<string, string | undefined>
-) => {
+): Promise<Response> => {
     const featureKey = args['feature']
     const environmentKey = args['environment']
-
-    const responses = {
-        featureKey: featureKey,
-        environmentKey: environmentKey
-    }
+    let feature, environment
 
     if (flags.headless && (!featureKey || !environmentKey)) {
         throw new Error('In headless mode, both the feature and environment are required')
     }
 
     if (!featureKey) {
-        const userSelectedFeature = await inquirer.prompt(
+        const userSelectedFeature = await inquirer.prompt<FeaturePromptResult>(
             [featurePrompt],
             {
                 token: authToken,
                 projectKey: projectKey
             }
         )
-        responses.featureKey = userSelectedFeature.feature
+        feature = userSelectedFeature.feature
+    } else {
+        feature = await fetchFeatureByKey(authToken, projectKey, featureKey)
+        if (!feature) {
+            throw new Error(`No feature found for key ${featureKey}`)
+        }
     }
 
     if (!environmentKey) {
@@ -39,8 +48,19 @@ export const getFeatureAndEnvironmentKeyFromArgs = async (
                 projectKey: projectKey
             }
         )
-        responses.environmentKey = userSelectedEnv.environment._id
+        environment = userSelectedEnv.environment
+    } else {
+        environment = await fetchEnvironmentByKey(
+            authToken,
+            projectKey,
+            environmentKey
+        )
     }
 
-    return responses
+    return {
+        environmentKey: environmentKey || environment._id,
+        featureKey: featureKey || feature.key,
+        environment,
+        feature
+    }
 }

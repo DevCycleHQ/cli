@@ -151,8 +151,12 @@ describe('variations create', () => {
 
     dvcTest()
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/variables?feature=${featureKey}`)
+            .get(`/v1/projects/${projectKey}/variables?feature=${mockFeature._id}`)
             .reply(200, mockVariables)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/features/${featureKey}`)
+            .reply(200, mockFeature)
         )
         .nock(BASE_URL, (api) => api
             .post(`/v1/projects/${projectKey}/features/${featureKey}/variations`, requestBody)

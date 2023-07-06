@@ -1,8 +1,7 @@
 import { Args } from '@oclif/core'
 import { disableTargeting } from '../../api/targeting'
+import { Variation } from '../../api/schemas'
 import Base from '../base'
-import { fetchEnvironmentByKey, fetchEnvironments } from '../../api/environments'
-import { fetchVariations } from '../../api/variations'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import { getFeatureAndEnvironmentKeyFromArgs } from '../../utils/targeting'
 
@@ -25,30 +24,32 @@ export default class DisableTargeting extends Base {
 
         await this.requireProject()
 
-        const responses = await getFeatureAndEnvironmentKeyFromArgs(
-            this.authToken, 
-            this.projectKey, 
-            args, 
+        const {
+            feature,
+            environment,
+            environmentKey,
+            featureKey
+        } = await getFeatureAndEnvironmentKeyFromArgs(
+            this.authToken,
+            this.projectKey,
+            args,
             flags,
         )
         const updatedTargeting = await disableTargeting(
             this.authToken,
             this.projectKey,
-            responses.featureKey as string,
-            responses.environmentKey as string
-        ) 
-    
+            featureKey,
+            environmentKey
+        )
+
         if (flags.headless) {
             this.writer.showResults(updatedTargeting)
         } else {
-            // TODO: reuse the data fetched for the prompts
-            const environment = await fetchEnvironmentByKey(
-                this.authToken, 
-                this.projectKey, 
-                responses.environmentKey as string
+            renderTargetingTree(
+                [updatedTargeting],
+                [environment],
+                feature.variations as Variation[]
             )
-            const variations = await fetchVariations(this.authToken, this.projectKey, responses.featureKey as string)
-            renderTargetingTree([updatedTargeting], [environment], variations)
         }
     }
 }
