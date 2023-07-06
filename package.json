@@ -86,13 +86,13 @@
         "description": "Log in to DevCycle."
       },
       "features": {
-        "description": "Access or modify Features with the Management API."
+        "description": "Create, view, or modify Features with the Management API."
       },
       "variables": {
-        "description": "Access or modify Variables with the Management API."
+        "description": "Create, view, or modify Variables with the Management API."
       },
       "projects": {
-        "description": "Access Projects with the Management API."
+        "description": "Create, or view Projects with the Management API."
       },
       "org": {
         "description": "Switch organizations."
@@ -107,7 +107,7 @@
         "description": "Check CLI status."
       },
       "targeting": {
-        "description": "Access or modify Targeting Rules for a Feature with the Management API."
+        "description": "Create, view, or modify Targeting Rules for a Feature with the Management API."
       },
       "generate": {
         "description": "Generate Devcycle related files."
