@@ -1,5 +1,6 @@
 import { Args } from '@oclif/core'
 import { enableTargeting } from '../../api/targeting'
+import { Variation } from '../../api/schemas'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import Base from '../base'
 import { getFeatureAndEnvironmentKeyFromArgs } from '../../utils/targeting'
@@ -23,7 +24,12 @@ export default class EnableTargeting extends Base {
 
         await this.requireProject()
 
-        const responses = await getFeatureAndEnvironmentKeyFromArgs(
+        const {
+            feature,
+            environment,
+            environmentKey,
+            featureKey
+        } = await getFeatureAndEnvironmentKeyFromArgs(
             this.authToken,
             this.projectKey,
             args,
@@ -32,8 +38,8 @@ export default class EnableTargeting extends Base {
         const updatedTargeting = await enableTargeting(
             this.authToken,
             this.projectKey,
-            responses.featureKey,
-            responses.environmentKey
+            featureKey,
+            environmentKey
         )
 
         if (flags.headless) {
@@ -41,8 +47,8 @@ export default class EnableTargeting extends Base {
         } else {
             renderTargetingTree(
                 [updatedTargeting],
-                [responses.environment],
-                responses.feature.variations
+                [environment],
+                feature.variations as Variation[]
             )
         }
     }

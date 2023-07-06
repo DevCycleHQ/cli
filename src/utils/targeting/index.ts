@@ -1,16 +1,21 @@
-import { disableTargeting, enableTargeting } from '../../api/targeting'
 import inquirer from '../../ui/autocomplete'
-import {featurePrompt, EnvironmentPromptResult, environmentPrompt, FeaturePromptResult} from '../../ui/prompts'
+import { featurePrompt, EnvironmentPromptResult, environmentPrompt, FeaturePromptResult } from '../../ui/prompts'
 import { fetchFeatureByKey } from '../../api/features'
 import { Feature, Environment } from '../../api/schemas'
 import { fetchEnvironmentByKey } from '../../api/environments'
 
+type Response = {
+    environmentKey: string
+    featureKey: string
+    environment: Environment,
+    feature: Feature
+}
 export const getFeatureAndEnvironmentKeyFromArgs = async (
     authToken: string,
     projectKey: string,
     args: Record<string, string | undefined>,
     flags: Record<string, string | undefined>
-) => {
+): Promise<Response> => {
     const featureKey = args['feature']
     const environmentKey = args['environment']
     let feature, environment

@@ -47,7 +47,7 @@ describe('variations list', () => {
             .reply(200, mockVariations)
         )
         .stub(inquirer, 'prompt', () => {
-            return { feature: 'prompted-feature-id' }
+            return { feature: { key: 'prompted-feature-id' } }
         })
         .stdout()
         .command(['variations list', '--project', projectKey, ...authFlags])

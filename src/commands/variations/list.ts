@@ -1,6 +1,6 @@
 import inquirer from 'inquirer'
 import { fetchVariations } from '../../api/variations'
-import {featurePrompt, FeaturePromptResult} from '../../ui/prompts'
+import { featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 import Base from '../base'
 import { Args } from '@oclif/core'
 

@@ -1,6 +1,6 @@
 import inquirer from 'inquirer'
 import { fetchVariations } from '../../api/variations'
-import {featurePrompt, FeaturePromptResult} from '../../ui/prompts'
+import { featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 import Base from '../base'
 import { Args } from '@oclif/core'
 
@@ -30,7 +30,7 @@ export default class GetVariations extends Base {
                 projectKey: this.projectKey
             })
 
-            featureKey = feature
+            featureKey = feature.key
         } else {
             featureKey = args.feature
         }

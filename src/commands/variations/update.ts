@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 import UpdateCommand from '../updateCommand'
 import { fetchVariationByKey, updateVariation, UpdateVariationParams } from '../../api/variations'
-import {featurePrompt, FeaturePromptResult, keyPrompt, namePrompt} from '../../ui/prompts'
+import { featurePrompt, FeaturePromptResult, keyPrompt, namePrompt } from '../../ui/prompts'
 import { Feature, Variable } from '../../api/schemas'
 
 import {

@@ -2,7 +2,7 @@ import { Args } from '@oclif/core'
 import { deleteFeature } from '../../api/features'
 import Base from '../base'
 import inquirer from 'inquirer'
-import {featurePrompt, FeaturePromptResult} from '../../ui/prompts'
+import { featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 
 export default class DeleteFeatures extends Base {
     static hidden = false
