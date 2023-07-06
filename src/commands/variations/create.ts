@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 import { Args, Flags } from '@oclif/core'
 import {
-    featurePrompt,
+    featurePrompt, FeaturePromptResult,
     keyPrompt,
     namePrompt
 } from '../../ui/prompts'
@@ -46,7 +46,7 @@ export default class CreateVariation extends CreateCommand {
         let featureKey
         let feature_id
         if (!args.feature) {
-            const { feature } = await inquirer.prompt([featurePrompt], {
+            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })

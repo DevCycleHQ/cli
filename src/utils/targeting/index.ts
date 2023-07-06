@@ -1,6 +1,6 @@
 import { disableTargeting, enableTargeting } from '../../api/targeting'
 import inquirer from '../../ui/autocomplete'
-import { featurePrompt, EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
+import {featurePrompt, EnvironmentPromptResult, environmentPrompt, FeaturePromptResult} from '../../ui/prompts'
 import { fetchFeatureByKey } from '../../api/features'
 import { Feature, Environment } from '../../api/schemas'
 import { fetchEnvironmentByKey } from '../../api/environments'
@@ -20,7 +20,7 @@ export const getFeatureAndEnvironmentKeyFromArgs = async (
     }
 
     if (!featureKey) {
-        const userSelectedFeature = await inquirer.prompt(
+        const userSelectedFeature = await inquirer.prompt<FeaturePromptResult>(
             [featurePrompt],
             {
                 token: authToken,

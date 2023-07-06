@@ -1,7 +1,7 @@
 import { fetchFeatureByKey, updateFeature } from '../../api/features'
 import {
     descriptionPrompt,
-    featurePrompt,
+    featurePrompt, FeaturePromptResult,
     getSdkVisibilityPrompt,
     keyPrompt,
     namePrompt,
@@ -49,7 +49,7 @@ export default class UpdateFeature extends UpdateCommand {
             this.writer.showError('The key argument is required')
             return
         } else if (!featureKey) {
-            const response = await inquirer.prompt([featurePrompt], {
+            const response = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })

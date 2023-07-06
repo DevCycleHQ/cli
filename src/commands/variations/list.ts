@@ -1,6 +1,6 @@
 import inquirer from 'inquirer'
 import { fetchVariations } from '../../api/variations'
-import { featurePrompt } from '../../ui/prompts'
+import {featurePrompt, FeaturePromptResult} from '../../ui/prompts'
 import Base from '../base'
 import { Args } from '@oclif/core'
 
@@ -25,12 +25,12 @@ export default class ListVariations extends Base {
             this.writer.showError('In headless mode, feature is required')
             return
         } else if (!args.feature) {
-            const { feature } = await inquirer.prompt([featurePrompt], {
+            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
 
-            featureKey = feature
+            featureKey = feature.key
         } else {
             featureKey = args.feature
         }

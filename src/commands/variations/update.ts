@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 import UpdateCommand from '../updateCommand'
 import { fetchVariationByKey, updateVariation, UpdateVariationParams } from '../../api/variations'
-import { featurePrompt, keyPrompt, namePrompt } from '../../ui/prompts'
+import {featurePrompt, FeaturePromptResult, keyPrompt, namePrompt} from '../../ui/prompts'
 import { Feature, Variable } from '../../api/schemas'
 
 import {
@@ -50,11 +50,11 @@ export default class UpdateVariation extends UpdateCommand {
         const { variables, name, key, headless } = flags
         let featureKey
         if (!args.feature) {
-            const { feature } = await inquirer.prompt([featurePrompt], {
+            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
-            featureKey = feature
+            featureKey = feature.key
         } else {
             featureKey = args.feature
         }

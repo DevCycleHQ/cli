@@ -2,9 +2,7 @@ import { Args } from '@oclif/core'
 import { enableTargeting } from '../../api/targeting'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import Base from '../base'
-import { fetchVariations } from '../../api/variations'
 import { getFeatureAndEnvironmentKeyFromArgs } from '../../utils/targeting'
-import { fetchEnvironmentByKey } from '../../api/environments'
 
 export default class EnableTargeting extends Base {
     static hidden = false
