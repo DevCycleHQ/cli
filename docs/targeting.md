@@ -1,7 +1,7 @@
 `dvc targeting`
 ===============
 
-Access or modify Targeting Rules for a Feature with the Management API.
+Create, view, or modify Targeting Rules for a Feature with the Management API.
 
 * [`dvc targeting disable [FEATURE] [ENVIRONMENT]`](#dvc-targeting-disable-feature-environment)
 * [`dvc targeting enable [FEATURE] [ENVIRONMENT]`](#dvc-targeting-enable-feature-environment)
