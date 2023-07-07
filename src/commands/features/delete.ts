@@ -6,6 +6,7 @@ import { featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 
 export default class DeleteFeatures extends Base {
     static hidden = false
+    static description = 'Delete a feature'
     authRequired = true
 
     static args = {

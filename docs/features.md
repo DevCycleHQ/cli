@@ -44,6 +44,8 @@ DESCRIPTION
 
 ## `dvc features delete [FEATURE]`
 
+Delete a feature
+
 ```
 USAGE
   $ dvc features delete [FEATURE] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>]
@@ -62,6 +64,9 @@ GLOBAL FLAGS
                               warnings about missing credentials.
   --project=<value>           Project key to use for the DevCycle API requests
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
+
+DESCRIPTION
+  Delete a feature
 ```
 
 ## `dvc features get`
@@ -98,6 +103,8 @@ EXAMPLES
 
 ## `dvc features list`
 
+View all features in a project
+
 ```
 USAGE
   $ dvc features list [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
@@ -113,6 +120,9 @@ GLOBAL FLAGS
                               warnings about missing credentials.
   --project=<value>           Project key to use for the DevCycle API requests
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
+
+DESCRIPTION
+  View all features in a project
 ```
 
 ## `dvc features update [KEY]`
