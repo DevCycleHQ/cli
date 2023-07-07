@@ -111,13 +111,15 @@ Update Targeting rules for a Feature. The definition is the audience for the fea
 USAGE
   $ dvc targeting update [FEATURE] [ENVIRONMENT] [--config-path <value>] [--auth-path <value>] [--repo-config-path
     <value>] [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--targets
-    <value>]
+    <value>] [--status enable|disable]
 
 ARGUMENTS
   FEATURE      The Feature for the Targeting Rule.
   ENVIRONMENT  The Environment where the Targeting Rule will be updated.
 
 FLAGS
+  --status=<option>  The status to set the targeting rule to.
+                     <options: enable|disable>
   --targets=<value>  List of targeting rules.
 
 GLOBAL FLAGS

@@ -235,18 +235,19 @@ describe('targeting update', () => {
         .stub(inquirer, 'registerPrompt', () => { return })
         .stub(inquirer, 'prompt', () => {
             let promptAnswers
-            if (promptCount < 3) {
+            if (promptCount < 5) {
                 promptAnswers =  {
+                    whichFields: ['targets'],
                     listPromptOption: 'edit',
                     targetListItem: { item: mockTargetingRule, id: 0 },
                     name: 'All Users New',
                     serve: { key: 'variation-off' },
                 }
-            } else if (promptCount === 3) {
+            } else if (promptCount === 5) {
                 promptAnswers = {
                     listPromptOption: 'add',
                 }
-            } else if (promptCount < 7) {
+            } else if (promptCount < 9) {
                 promptAnswers = {
                     type: 'user',
                     subType: 'user_id',
@@ -294,4 +295,3 @@ describe('targeting update', () => {
             expect(ctx.stdout).toMatchSnapshot()
         })
 })
-

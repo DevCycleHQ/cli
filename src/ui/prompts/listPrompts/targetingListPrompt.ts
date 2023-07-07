@@ -9,7 +9,7 @@ import {
     ReorderItemPrompt
 } from './promptOptions'
 import { servePrompt } from '../targetingPrompts'
-import { Filters, UpdateTargetParams, Variation } from '../../../api/schemas'
+import { UpdateTargetParams, Variation } from '../../../api/schemas'
 import { FilterListOptions } from './filterListPrompt'
 import Writer from '../../writer'
 import { renderRulesTree } from '../../targetingTree'
@@ -30,6 +30,14 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
         this.authToken = authToken
         this.projectKey = projectKey
     }
+
+    getTargetingListPrompt = () => ({
+        name: 'targets', 
+        value: 'targets', 
+        message: 'Manage Targeting Rules',
+        type: 'listOptions',
+        listOptionsPrompt: () => this.prompt()
+    })
 
     options() {
         return [
@@ -119,6 +127,10 @@ export class TargetingListOptions extends ListOptionsPrompt<UpdateTargetParams> 
 
     async printListOptions(list?: ListOption<UpdateTargetParams>[]) {
         const listToPrint = list || this.list
+        if (listToPrint.length === 0) {
+            this.writer.infoMessage(`No existing ${this.itemType}s.`)
+            return
+        }
         this.writer.blankLine()
         this.writer.title(this.messagePrompt)
         this.writer.infoMessage(`Current ${this.itemType}s:`)

@@ -9,11 +9,11 @@ import {
     namePrompt,
     variablePrompt,
 } from '../../ui/prompts'
-import UpdateCommand from '../updateCommand'
 import { Flags } from '@oclif/core'
 import { UpdateVariableDto } from '../../api/schemas'
+import UpdateCommandWithCommonProperties from '../updateCommandWithCommonProperties'
 
-export default class UpdateVariable extends UpdateCommand {
+export default class UpdateVariable extends UpdateCommandWithCommonProperties {
     static hidden = false
     static description = 'Update a Variable.'
 
@@ -24,7 +24,7 @@ export default class UpdateVariable extends UpdateCommand {
     ]
 
     static flags = {
-        ...UpdateCommand.flags,
+        ...UpdateCommandWithCommonProperties.flags,
         'description': Flags.string({
             description: 'Description for the variable',
         }),
