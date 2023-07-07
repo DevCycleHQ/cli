@@ -1,7 +1,7 @@
 `dvc features`
 ==============
 
-Access or modify Features with the Management API.
+Create, view, or modify Features with the Management API.
 
 * [`dvc features create`](#dvc-features-create)
 * [`dvc features delete [FEATURE]`](#dvc-features-delete-feature)
