@@ -111,7 +111,7 @@ USAGE
     [--variables <value>] [--key <value>]
 
 ARGUMENTS
-  FEATURE  Feature key or id
+  FEATURE  Feature key or ID
   KEY
 
 FLAGS

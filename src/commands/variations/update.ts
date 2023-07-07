@@ -1,5 +1,4 @@
 import inquirer from 'inquirer'
-import UpdateCommand from '../updateCommand'
 import { fetchVariationByKey, updateVariation, UpdateVariationParams } from '../../api/variations'
 import { featurePrompt, FeaturePromptResult, keyPrompt, namePrompt } from '../../ui/prompts'
 import { Feature, Variable } from '../../api/schemas'
@@ -11,8 +10,9 @@ import {
 } from '../../ui/prompts/variationPrompts'
 import { Args, Flags } from '@oclif/core'
 import { fetchFeatureByKey } from '../../api/features'
+import UpdateCommandWithCommonProperties from '../updateCommandWithCommonProperties'
 
-export default class UpdateVariation extends UpdateCommand {
+export default class UpdateVariation extends UpdateCommandWithCommonProperties {
     static hidden = false
     authRequired = true
     static description = 'Update a Variation.'
@@ -25,13 +25,13 @@ export default class UpdateVariation extends UpdateCommand {
     static args = {
         feature: Args.string({
             name: 'feature',
-            description: 'Feature key or id'
+            description: 'Feature key or ID'
         }),
-        ...UpdateCommand.args
+        ...UpdateCommandWithCommonProperties.args
     }
 
     static flags = {
-        ...UpdateCommand.flags,
+        ...UpdateCommandWithCommonProperties.flags,
         'variables': Flags.string({
             description: 'The variables to create for the variation'
         }),

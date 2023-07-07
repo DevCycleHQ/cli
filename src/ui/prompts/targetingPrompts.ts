@@ -11,6 +11,16 @@ export const comparatorChoices = (input: Record<string, any>) => {
     return ['=', '!=', 'exist', '!exist', 'contain', '!contain']
 }
 
+export const targetingStatusPrompt = {
+    name: 'status',
+    message: 'Status for the environment',
+    type: 'list',
+    choices: [
+        { name: 'enable', value: 'active' },
+        { name: 'disable', value: 'inactive' }
+    ],
+}
+
 export const servePrompt = {
     name: 'serve',
     message: 'Variation to serve',

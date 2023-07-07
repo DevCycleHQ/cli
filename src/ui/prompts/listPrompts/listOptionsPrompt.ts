@@ -166,6 +166,10 @@ export abstract class ListOptionsPrompt<T> {
      */
     async printListOptions(list?: ListOption<T>[]) {
         const listToPrint = list || this.list
+        if (listToPrint.length === 0) {
+            this.writer.infoMessage(`No existing ${this.itemType}s.`)
+            return
+        }
         this.writer.blankLine()
         this.writer.title(this.messagePrompt)
         this.writer.infoMessage(`Current ${this.itemType}s:`)
