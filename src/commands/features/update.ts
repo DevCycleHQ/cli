@@ -6,19 +6,19 @@ import {
     keyPrompt,
     namePrompt,
 } from '../../ui/prompts'
-import UpdateCommand from '../updateCommand'
 import { Flags } from '@oclif/core'
 import { UpdateFeatureDto } from '../../api/schemas'
 import inquirer from '../../ui/autocomplete'
 import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListPrompt'
 import { VariationListOptions } from '../../ui/prompts/listPrompts/variationsListPrompt'
+import UpdateCommandWithCommonProperties from '../updateCommandWithCommonProperties'
 
-export default class UpdateFeature extends UpdateCommand {
+export default class UpdateFeature extends UpdateCommandWithCommonProperties {
     static hidden = false
     authRequired = true
     static description = 'Update a Feature.'
     static flags = {
-        ...UpdateCommand.flags,
+        ...UpdateCommandWithCommonProperties.flags,
         variables: Flags.string({
             description: 'The variables to set for the feature'
         }),

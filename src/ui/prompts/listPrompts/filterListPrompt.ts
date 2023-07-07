@@ -172,6 +172,10 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
 
     async printListOptions(list?: ListOption<Filter>[]) {
         const listToPrint = list || this.list
+        if (listToPrint.length === 0) {
+            this.writer.infoMessage(`No existing ${this.itemType}s.`)
+            return
+        }
         this.writer.blankLine()
         this.writer.title(this.messagePrompt)
         this.writer.infoMessage(`Current ${this.itemType}s:`)

@@ -1,5 +1,11 @@
 import { Args, Flags } from '@oclif/core'
-import { EnvironmentPromptResult, FeaturePromptResult, environmentPrompt, featurePrompt } from '../../ui/prompts'
+import {
+    EnvironmentPromptResult,
+    FeaturePromptResult,
+    Prompt,
+    environmentPrompt,
+    featurePrompt
+} from '../../ui/prompts'
 import inquirer from '../../ui/autocomplete'
 import {
     UpdateTargetingParamsInput,
@@ -7,16 +13,17 @@ import {
     updateFeatureConfigForEnvironment
 } from '../../api/targeting'
 import { TargetingListOptions } from '../../ui/prompts/listPrompts/targetingListPrompt'
-import Base from '../base'
 import { validateSync } from 'class-validator'
 import { plainToClass } from 'class-transformer'
 import { reportValidationErrors } from '../../utils/reportValidationErrors'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import { fetchEnvironmentByKey } from '../../api/environments'
 import { fetchVariations } from '../../api/variations'
-import { FeatureConfig } from '../../api/schemas'
+import { FeatureConfig, UpdateFeatureConfigDto } from '../../api/schemas'
+import { targetingStatusPrompt } from '../../ui/prompts/targetingPrompts'
+import UpdateCommand from '../updateCommand'
 
-export default class UpdateTargeting extends Base {
+export default class UpdateTargeting extends UpdateCommand {
     static hidden = false
     // eslint-disable-next-line max-len
     static description = 'Update Targeting rules for a Feature. The definition is the audience for the feature, while serve is the key of the variation to serve to the audience.'
@@ -31,15 +38,21 @@ export default class UpdateTargeting extends Base {
     }
 
     static flags = {
-        ...Base.flags,
+        ...UpdateCommand.flags,
         targets: Flags.string({
             description: 'List of targeting rules.'
         }),
+        status: Flags.string({
+            description: 'The status to set the targeting rule to.',
+            options: ['enable', 'disable']
+        }),
     }
+
+    prompts: Prompt[] = [targetingStatusPrompt]
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(UpdateTargeting)
-
+        const { headless } = flags
         await this.requireProject()
 
         if (flags.headless && (!args.feature || !args.environment)) {
@@ -74,17 +87,10 @@ export default class UpdateTargeting extends Base {
         const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, envKey)
         const variations = await fetchVariations(this.authToken, this.projectKey, featureKey)
 
-        let targets = []
-        if (!flags.targets && !flags.headless) {
-            const [featureTargetingRules] = await fetchTargetingForFeature(
-                this.authToken, this.projectKey, featureKey, envKey
-            )
-            const targetingListPrompt = new TargetingListOptions(
-                featureTargetingRules.targets, this.writer, this.authToken, this.projectKey, featureKey
-            )
-            targetingListPrompt.variations = variations
-            targets = await targetingListPrompt.prompt()
-        } else if (flags.targets) {
+        const status = this.convertStatusFlagValue(flags.status)
+        let targets: UpdateFeatureConfigDto['targets']
+        if (flags.targets) {
+            targets = []
             const parsedTargets = JSON.parse(flags.targets)
 
             for (const t of parsedTargets) {
@@ -97,16 +103,32 @@ export default class UpdateTargeting extends Base {
                     audience: { name, filters: { filters: definition, operator: 'and' as const } }
                 })
             }
-        } else if (flags.headless) {
-            return
         }
+
+        // Only fetch targeting rules if not in headless mode and user didn't pass in a list of targeting rules
+        if (!headless && !flags.targets) {
+            const [featureTargetingRules] = await fetchTargetingForFeature(
+                this.authToken, this.projectKey, featureKey, envKey
+            )
+            const targetingListPrompt = new TargetingListOptions(
+                featureTargetingRules.targets, this.writer, this.authToken, this.projectKey, featureKey
+            )
+            targetingListPrompt.variations = variations
+            this.prompts.push(targetingListPrompt.getTargetingListPrompt())
+        }
+
+        const params = await this.populateParametersWithZod(UpdateFeatureConfigDto, this.prompts, {
+            status,
+            targets,
+            headless,
+        })
 
         const result = await updateFeatureConfigForEnvironment(
             this.authToken,
             this.projectKey,
             featureKey,
             envKey,
-            { targets }
+            params
         )
 
         if (flags.headless) {
@@ -130,5 +152,12 @@ export default class UpdateTargeting extends Base {
             `    dvc targeting enable ${featureKey} ${envKey}\n`
 
         this.writer.showRawResults(message)
+    }
+
+    private convertStatusFlagValue(status?: string) {
+        if (status === undefined) {
+            return undefined
+        }
+        return status === 'enable' ? 'active' : 'inactive'
     }
 }

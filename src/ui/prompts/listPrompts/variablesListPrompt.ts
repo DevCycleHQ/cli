@@ -17,7 +17,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         type: 'listOptions',
         listOptionsPrompt: () => this.prompt()
     })
- 
+
     async promptAddItem(): Promise<ListOption<CreateVariableParams>> {
         const variable = await inquirer.prompt(this.variablePropertyPrompts)
         CreateVariableDto.parse(variable, { errorMap })

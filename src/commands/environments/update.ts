@@ -8,11 +8,11 @@ import {
     environmentPrompt,
     EnvironmentPromptResult
 } from '../../ui/prompts'
-import UpdateCommand from '../updateCommand'
 import { Flags } from '@oclif/core'
 import { CreateEnvironmentDto, UpdateEnvironmentDto } from '../../api/schemas'
+import UpdateCommandWithCommonProperties from '../updateCommandWithCommonProperties'
 
-export default class UpdateEnvironment extends UpdateCommand {
+export default class UpdateEnvironment extends UpdateCommandWithCommonProperties {
     static hidden = false
     static description = 'Update a Environment.'
 
@@ -21,7 +21,7 @@ export default class UpdateEnvironment extends UpdateCommand {
         descriptionPrompt
     ]
     static flags = {
-        ...UpdateCommand.flags,
+        ...UpdateCommandWithCommonProperties.flags,
         'key': Flags.string({
             description: 'Unique ID'
         }),

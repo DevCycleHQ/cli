@@ -1,30 +1,10 @@
 import { Args, Flags } from '@oclif/core'
 import Base from './base'
 import { Prompt, handleCustomPrompts } from '../ui/prompts'
-import inquirer from 'inquirer'
 import { chooseFields } from '../utils/prompts'
 
 export default abstract class UpdateCommand extends Base {
     authRequired = true
-
-    static args = {
-        key: Args.string({
-            'key': Flags.string({
-                description: 'Unique ID',
-
-            }),
-            parse: async (input: string) => {
-                return input.toLowerCase()
-            }
-        }),
-    }
-
-    static flags = {
-        ...Base.flags,
-        'name': Flags.string({
-            description: 'Human readable name',
-        }),
-    }
 
     protected async populateParametersWithInquirer(prompts: Prompt[]) {
         if (!prompts.length) return {}
