@@ -1371,6 +1371,7 @@
     },
     "features:delete": {
       "id": "features:delete",
+      "description": "Delete a feature",
       "strict": true,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
@@ -1553,6 +1554,7 @@
     },
     "features:list": {
       "id": "features:list",
+      "description": "View all features in a project",
       "strict": true,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
