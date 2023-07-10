@@ -7,7 +7,8 @@ import {
     filterDataKeyTypePrompt,
     filterSubTypePrompt,
     filterTypePrompt,
-    filterValuesPrompt
+    filterValuesPrompt,
+    reusableAudienceFilterPrompt
 } from '../targetingPrompts'
 import { Audience, Filter } from '../../../api/schemas'
 import { Prompt } from '../types'
@@ -38,9 +39,14 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
                 value: { item: filter }
             }
         } else if (type === 'audienceMatch') {
-            const { comparator, audiences } = await inquirer.prompt([filterComparatorPrompt, filterAudiencesPrompt])
-            const audiencesList = audiences.split(',').map((audience: string) => audience.trim())
-            const filter = { type: 'audienceMatch' as const, comparator, _audiences: audiencesList }
+            const { comparator, reusableAudiences } = await inquirer.prompt(
+                [
+                    filterComparatorPrompt, 
+                    reusableAudienceFilterPrompt(this.audiences)
+                ]
+            )
+            const reusableAudiencesList = reusableAudiences.map((audience: Audience) => audience._id)
+            const filter = { type: 'audienceMatch' as const, comparator, _audiences: reusableAudiencesList }
             return {
                 name: JSON.stringify(filter),
                 value: { item: filter }
