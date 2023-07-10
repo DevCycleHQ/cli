@@ -14,12 +14,20 @@ import { Prompt } from '../types'
 import { chooseFields } from '../../../utils/prompts'
 import { UserSubType } from '../../../api/targeting'
 import { renderDefinitionTree } from '../../targetingTree'
+import { buildAudienceNameMap, replaceAudienceIdInFilter } from '../../../utils/audiences'
+import Writer from '../../writer'
 
 export class FilterListOptions extends ListOptionsPrompt<Filter> {
     itemType = 'Filter'
     messagePrompt = 'Manage your filters'
 
     operator: Audience['filters']['operator'] = 'and'
+    audiences: Audience[]
+    
+    constructor(list: Filter[], audiences: Audience[], writer: Writer) {
+        super(list, writer)
+        this.audiences = audiences
+    }
 
     async promptAddItem(): Promise<ListOption<Filter>> {
         const { type } = await inquirer.prompt([filterTypePrompt])
@@ -170,7 +178,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         return []
     }
 
-    async printListOptions(list?: ListOption<Filter>[]) {
+    printListOptions(list?: ListOption<Filter>[]) {
         const listToPrint = list || this.list
         if (listToPrint.length === 0) {
             this.writer.infoMessage(`No existing ${this.itemType}s.`)
@@ -180,7 +188,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         this.writer.title(this.messagePrompt)
         this.writer.infoMessage(`Current ${this.itemType}s:`)
         const values = listToPrint.map((item) => item.value.item)
-        renderDefinitionTree(values, this.operator)
+        renderDefinitionTree(values, this.operator, this.audiences)
         this.writer.blankLine()
     }
 }

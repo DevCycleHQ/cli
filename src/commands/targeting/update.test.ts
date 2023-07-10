@@ -203,6 +203,10 @@ describe('targeting update', () => {
             .query({ environment: envKey })
             .reply(200, mockResponseHeadless)
         )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/audiences`)
+            .reply(200, [])
+        )
         .stdout()
         .command([
             'targeting update',
@@ -274,6 +278,10 @@ describe('targeting update', () => {
             .get(`/v1/projects/${projectKey}/features/${featureKey}/configurations`)
             .query({ environment: envKey })
             .reply(200, mockTargetingRules)
+        )
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/audiences`)
+            .reply(200, [])
         )
         .nock(BASE_URL, (api) => api
             .patch(
