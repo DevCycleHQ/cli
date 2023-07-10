@@ -164,7 +164,7 @@ export abstract class ListOptionsPrompt<T> {
      * Prints the list of human-readable names of the list to the console
      * @param ListOption<T>[]
      */
-    async printListOptions(list?: ListOption<T>[]) {
+    printListOptions(list?: ListOption<T>[]) {
         const listToPrint = list || this.list
         if (listToPrint.length === 0) {
             this.writer.infoMessage(`No existing ${this.itemType}s.`)

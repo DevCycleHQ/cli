@@ -1,8 +1,9 @@
 import { ux } from '@oclif/core'
 import { Tree } from '@oclif/core/lib/cli-ux/styled/tree'
-import { FeatureConfig, Environment, Variation } from '../api/schemas'
+import { FeatureConfig, Environment, Variation, Audience as AudienceSchema } from '../api/schemas'
 import chalk from 'chalk'
 import { COLORS } from './constants/colors'
+import { buildAudienceNameMap, replaceAudienceIdInFilter } from '../utils/audiences'
 
 type Distribution = FeatureConfig['targets'][0]['distribution']
 type Audience = FeatureConfig['targets'][0]['audience']
@@ -36,15 +37,15 @@ const comparatorMap = {
 export const renderTargetingTree = (
     featureConfigs: FeatureConfig[],
     environments: Environment[],
-    variations: Variation[]
+    variations: Variation[],
+    audiences: AudienceSchema[]
 ) => {
     const targetingTree = ux.tree()
-
     featureConfigs.forEach((config) => {
         const environmentTree = ux.tree()
 
         insertStatusTree(environmentTree, config.status)
-        insertRulesTree(environmentTree, config.targets, variations)
+        insertRulesTree(environmentTree, config.targets, variations, audiences)
 
         const environmentName = environments.find((env) => env._id === config._environment)?.name
         targetingTree.insert(environmentName || config._environment, environmentTree)
@@ -54,17 +55,19 @@ export const renderTargetingTree = (
 
 export const renderRulesTree = (
     targets: Rule[],
-    variations: Variation[]
+    variations: Variation[],
+    audiences: AudienceSchema[]
 ) => {
-    const rulesTree = buildRulesTree(targets, variations)
+    const rulesTree = buildRulesTree(targets, variations, audiences)
     rulesTree.display()
 }
 
 export const renderDefinitionTree = (
     filters: Filters,
-    operator: Operator
+    operator: Operator,
+    audiences: AudienceSchema[]
 ) => {
-    const definitionTree = buildDefinitionTree(filters, operator)
+    const definitionTree = buildDefinitionTree(filters, operator, audiences)
     definitionTree.display()
 }
 
@@ -77,12 +80,12 @@ const insertStatusTree = (rootTree: Tree, status: FeatureConfig['status']) => {
     rootTree.insert(statusTitle, statusTree)
 }
 
-const buildRulesTree = (targets: Rule[], variations: Variation[]) => {
+const buildRulesTree = (targets: Rule[], variations: Variation[], audiences: AudienceSchema[]) => {
     const rulesTree = ux.tree()
     targets.forEach((target, idx) => {
         const ruleTree = ux.tree()
 
-        insertDefinitionTree(ruleTree, target.audience)
+        insertDefinitionTree(ruleTree, target.audience, audiences)
         insertServeTree(ruleTree, target.distribution, variations)
         insertScheduleTree(ruleTree, target.rollout)
 
@@ -91,15 +94,20 @@ const buildRulesTree = (targets: Rule[], variations: Variation[]) => {
     return rulesTree
 }
 
-const insertRulesTree = (rootTree: Tree, targets: Rule[], variations: Variation[]) => {
+const insertRulesTree = (
+    rootTree: Tree, 
+    targets: Rule[], 
+    variations: Variation[],
+    audiences: AudienceSchema[]
+) => {
     if (!targets.length) return
 
-    const rulesTree = buildRulesTree(targets, variations)
+    const rulesTree = buildRulesTree(targets, variations, audiences)
     const rulesTitle = coloredTitle('rules')
     rootTree.insert(rulesTitle, rulesTree)
 }
 
-const buildDefinitionTree = (filters: Filters, operator: Operator) => {
+const buildDefinitionTree = (filters: Filters, operator: Operator, audiences: AudienceSchema[]) => {
     const definitionTree = ux.tree()
     const prefixWithOperator = (value: string, index: number) => (
         index !== 0 ? `${operator.toUpperCase()} ${value}` : value
@@ -120,16 +128,22 @@ const buildDefinitionTree = (filters: Filters, operator: Operator) => {
             const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
 
-        } else {
-            // TODO handle audienceMatch
+        } else if (filter.type === 'audienceMatch') {
+            const audienceFilter = ux.tree()
+            const audienceTree = ux.tree()
+            const audienceMap = buildAudienceNameMap(audiences)
+            const replacedIdFilter = (replaceAudienceIdInFilter(filter, audienceMap) || filter) as typeof filter
+            replacedIdFilter._audiences?.forEach((audience) => audienceTree.insert(audience))
+            audienceFilter.insert(comparatorMap[filter.comparator!], audienceTree)
+            definitionTree.insert(prefixWithOperator('Audience', index), audienceFilter)
         }
     })
     return definitionTree
 }
 
-const insertDefinitionTree = (rootTree: Tree, audience: Audience) => {
+const insertDefinitionTree = (rootTree: Tree, audience: Audience, audiences: AudienceSchema[]) => {
     const { filters, operator } = audience.filters
-    const definitionTree = buildDefinitionTree(filters, operator)
+    const definitionTree = buildDefinitionTree(filters, operator, audiences)
     const definitionTitle = coloredTitle('definition')
     rootTree.insert(definitionTitle, definitionTree)
 }
