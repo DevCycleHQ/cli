@@ -1,129 +1,22 @@
 name: CLI Release
 
 on:
-  workflow_dispatch:
-  # schedule:
-  #   - cron: '0 12 * * 2'  # Runs every Tuesday at 12:00 PM (noon) ET
+  push:
+    tags:
+      - '*'
 
 jobs:
-
-  checks:
-    runs-on: ubuntu-latest
-    outputs:
-      HAS_TAG: ${{ steps.check_tag.outputs.has_tag }}
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-      
-      - name: Check if commit has a new tag
-        id: check_tag
-        run: |
-          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
-            echo "has_tag=true" >> $GITHUB_OUTPUT
-            echo true
-          else
-            echo "has_tag=false" >> $GITHUB_OUTPUT
-            echo false
-          fi
-
   release:
     runs-on: ubuntu-latest
-    needs: checks
-    outputs:
-      CLI_VERSION: ${{ steps.get_cli_version.outputs.CLI_VERSION }}
-    if: needs.checks.outputs.HAS_TAG == 'false'
-    steps:      
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Set Git author
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-      
-      - name: Get node version
-        id: get_node_version
-        run: |
-          echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "${{ steps.get_node_version.outputs.NVMRC }}"
-
-      - name: Install dependencies
-        run: yarn install
-        
-      - name: Build
-        run: yarn build
-
-      - name: Bump CLI version
-        run: npm version patch --force
-
-      - name: Read version from package.json
-        id: get_cli_version
-        run: echo "CLI_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-
-      - name: Get latest tag
-        id: get_latest_tag
-        run: echo "LATEST_TAG=$(git describe --abbrev=0 --tags)" >> $GITHUB_OUTPUT
-          
-      - name: Commit and push tag to main branch
-        run: |
-          git add .
-          git commit --amend -m "Release v${{ steps.get_cli_version.outputs.CLI_VERSION }}"
-          git tag -f ${{ steps.get_latest_tag.outputs.LATEST_TAG }}
-          git push origin main --follow-tags
-      
+    steps:
       - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
+        uses: DevCycleHQ/release-action/gh-release@main
         with:
-          name: "v${{ steps.get_cli_version.outputs.CLI_VERSION }}"
-          tag: "v${{ steps.get_cli_version.outputs.CLI_VERSION }}"
-          generateReleaseNotes: "true"
-          makeLatest: "true"
+          draft: true
+          prerelease: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Publish to NPM
-        run: npm publish --access public  
-
-  update_doc:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write 
-    needs: release
-    env:
-      BRANCH_NAME: update-cli-version-to-v${{ needs.release.outputs.CLI_VERSION }}
-    steps:      
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          repository: DevCycleHQ/devcycle-docs
-          # need access token
-          token: ${{ secrets.PAT_TOKEN }}
-
-      - name: Set Git author
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          
-      - name: Update CLI version in docs repo
-        run: |
-          ls -al
-          echo $BRANCH_NAME
-          git checkout -b "$BRANCH_NAME"
-          git branch
-          sed -i 's/const DVC_CLI_VERSION = .*/const DVC_CLI_VERSION = '\''v${{ needs.release.outputs.CLI_VERSION }}'\'' \/\/ auto updated by dvc cli release workflow/' docusaurus.config.js
-          git add docusaurus.config.js
-          git commit -m "Update CLI version to v${{ needs.release.outputs.CLI_VERSION }}"
-
-      - name: Push code to docs repo
-        run:  |
-          git push --set-upstream origin "$BRANCH_NAME"
-
-      - name: Create PR
         env:
-        # need access token
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: gh pr create --repo DevCycleHQ/devcycle-docs --base main --head "$BRANCH_NAME" --title "Update CLI version to v${{ needs.release.outputs.CLI_VERSION }}" --body "This PR was automatically created by the DevCycle CLI release workflow."
-        
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
+        run: npm publish --access public  
