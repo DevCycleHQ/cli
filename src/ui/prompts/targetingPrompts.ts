@@ -1,3 +1,4 @@
+import { Audience } from '../../api/schemas'
 import { DataKeyType, filterTypes, userSubTypes } from '../../api/targeting'
 import { isRequired } from '../../utils/validators'
 import { variationChoices } from './variationPrompts'
@@ -63,6 +64,16 @@ export const filterAudiencesPrompt = {
     suffix: ':',
     type: 'input'
 }
+
+export const reusableAudienceFilterPrompt = (audiences: Audience[]) => ({
+    name: 'reusableAudiences',
+    message: 'List of reusable audiences',
+    type: 'checkbox',
+    choices: audiences.map((audience: Audience) => ({
+        name: audience.name,
+        value: audience
+    }))
+})
 
 export const filterDataKeyPrompt = {
     name: 'dataKey',
