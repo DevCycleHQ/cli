@@ -1,0 +1,39 @@
+name: GitHub release and Publish to NPM
+description: Create a GitHub release and publish to NPM
+
+inputs:
+  github-token:
+    required: true
+    description: 'The GitHub token to use for authentication'
+  release-tag:
+    required: true
+    description: 'The tag to use for the release'
+  draft:
+    required: false
+    description: 'Whether to create a draft (unpublished) release'
+    default: 'true'
+  prerelease:
+    required: false
+    description: 'Whether to create a prerelease release'
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    # Replace with DevCycleHQ/release-action/gh-release@main when it's ready
+    - name: Create GitHub Release
+      uses: ncipollo/release-action@v1
+      with:
+        name: "${{ inputs.release-tag }}"
+        tag: "${{ inputs.release-tag }}"
+        generateReleaseNotes: "true"
+        makeLatest: "true"
+        token: ${{ inputs.github-token }}
+        draft: ${{ inputs.draft }}
+        prerelease: ${{ inputs.prerelease }}
+        
+    - name: Publish to NPM
+      shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
+      run: npm publish --access public
