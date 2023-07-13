@@ -28,9 +28,9 @@ export default class CreateVariable extends CreateCommand {
     prompts = createVariablePrompts
 
     public async run(): Promise<void> {
-        await this.requireProject()
         const { flags } = await this.parse(CreateVariable)
-        const { key, name, type, feature, headless } = flags
+        const { key, name, type, feature, headless, project } = flags
+        await this.requireProject(project, headless)
 
         if (headless && (!key || !name || !type || !feature)) {
             this.writer.showError('The key, name, feature, and type flags are required')

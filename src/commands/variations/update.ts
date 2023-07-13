@@ -44,10 +44,10 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
     }
 
     public async run(): Promise<void> {
-        await this.requireProject()
 
         const { args, flags } = await this.parse(UpdateVariation)
-        const { variables, name, key, headless } = flags
+        const { variables, name, key, headless, project } = flags
+        await this.requireProject(project, headless)
         let featureKey
         if (!args.feature) {
             const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {

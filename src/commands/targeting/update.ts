@@ -53,8 +53,8 @@ export default class UpdateTargeting extends UpdateCommand {
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(UpdateTargeting)
-        const { headless } = flags
-        await this.requireProject()
+        const { project, headless } = flags
+        await this.requireProject(project, headless)
 
         if (flags.headless && (!args.feature || !args.environment)) {
             this.writer.showError('Feature and environment arguments are required')
@@ -113,11 +113,11 @@ export default class UpdateTargeting extends UpdateCommand {
                 this.authToken, this.projectKey, featureKey, envKey
             )
             const targetingListPrompt = new TargetingListOptions(
-                featureTargetingRules.targets, 
+                featureTargetingRules.targets,
                 audiences,
-                this.writer, 
-                this.authToken, 
-                this.projectKey, 
+                this.writer,
+                this.authToken,
+                this.projectKey,
                 featureKey
             )
             targetingListPrompt.variations = variations
