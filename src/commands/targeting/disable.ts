@@ -22,8 +22,8 @@ export default class DisableTargeting extends Base {
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(DisableTargeting)
-
-        await this.requireProject()
+        const { project, headless } = flags
+        await this.requireProject(project, headless)
 
         const {
             feature,

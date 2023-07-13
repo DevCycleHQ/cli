@@ -229,21 +229,32 @@ export default abstract class Base extends Command {
         return parsedToken.exp < Math.floor(Date.now()/1000)
     }
 
-    async requireProject(): Promise<void> {
+    async requireProject(projectFlag?: string, headless?: boolean): Promise<void> {
         if (this.projectKey !== '') {
             return
         }
         const projects = await fetchProjects(this.authToken)
-        const project = await promptForProject(projects)
-        this.projectKey = project.key
-        const { shouldSave } = await inquirer.prompt([{
-            name: 'shouldSave',
-            message: 'Do you want to use this project for all future commands?',
-            type: 'confirm'
-        }])
-        if (shouldSave) {
-            await this.updateUserConfig({ project: this.projectKey })
+        if (headless && !projectFlag) {
+            throw new Error('In headless mode, project flag is required.')
+        } else if (projectFlag) {
+            const project = projects.find((proj) => proj.key === projectFlag)
+            if (!project) {
+                throw new Error(`Project not found for key ${projectFlag}`)
+            }
+            this.projectKey = projectFlag
+        } else {
+            const project = await promptForProject(projects)
+            this.projectKey = project.key
+            const { shouldSave } = await inquirer.prompt([{
+                name: 'shouldSave',
+                message: 'Do you want to use this project for all future commands?',
+                type: 'confirm'
+            }])
+            if (shouldSave) {
+                await this.updateUserConfig({ project: this.projectKey })
+            }
         }
+
     }
 
     hasToken(): boolean {

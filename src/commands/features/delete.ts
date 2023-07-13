@@ -17,10 +17,9 @@ export default class DeleteFeatures extends Base {
     }
 
     public async run(): Promise<void> {
-        await this.requireProject()
-
-        const { args } = await this.parse(DeleteFeatures)
-
+        const { args, flags } = await this.parse(DeleteFeatures)
+        const { headless, project } = flags
+        await this.requireProject(project, headless)
         let featureKey
         if (!args.feature) {
             const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {

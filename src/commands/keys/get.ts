@@ -25,7 +25,8 @@ export default class GetEnvironmentKey extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(GetEnvironmentKey)
-        await this.requireProject()
+        const { project, headless } = flags
+        await this.requireProject(project, headless)
 
         if (flags.headless && !flags.env) {
             throw (new Error('In headless mode, the env flag is required'))

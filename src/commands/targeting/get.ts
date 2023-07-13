@@ -41,8 +41,8 @@ export default class DetailedTargeting extends Base {
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(DetailedTargeting)
-
-        await this.requireProject()
+        const { headless, project } = flags
+        await this.requireProject(project, headless)
 
         const params: Params = {
             featureKey: args.feature,

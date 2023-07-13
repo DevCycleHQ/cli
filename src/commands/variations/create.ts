@@ -38,10 +38,10 @@ export default class CreateVariation extends CreateCommand {
     prompts = [namePrompt, keyPrompt]
 
     public async run(): Promise<void> {
-        await this.requireProject()
 
         const { args, flags } = await this.parse(CreateVariation)
-        const { headless, key, name, variables } = flags
+        const { headless, key, name, variables, project } = flags
+        await this.requireProject(project, headless)
 
         let featureKey
         let feature_id
