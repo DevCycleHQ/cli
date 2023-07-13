@@ -21,7 +21,7 @@ export default abstract class AuthCommand extends Base {
         const { flags } = await this.parse(AuthCommand)
         const organizations = await fetchOrganizations(this.authToken)
         if (flags.headless && !flags.org) {
-            return this.writer.showResults(organizations.map((org) => org.name))
+            throw new Error('In headless mode, org flag is required')
         }
         const selectedOrg = await this.retrieveOrganization(organizations)
         this.authToken = await this.selectOrganization(selectedOrg)

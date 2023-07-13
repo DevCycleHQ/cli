@@ -15,8 +15,8 @@ export default class DetailedVariables extends Base {
     public async run(): Promise<void> {
         const { flags } = await this.parse(DetailedVariables)
         const keys = flags['keys']?.split(',')
-
-        await this.requireProject()
+        const { project, headless } = flags
+        await this.requireProject(project, headless)
 
         let variables = await fetchVariables(this.authToken, this.projectKey)
         if (keys) {

@@ -1,6 +1,5 @@
 import 'reflect-metadata'
 
-import { storeAccessToken } from '../../auth/config'
 import SSOAuth from '../../api/ssoAuth'
 import AuthCommand from '../authCommand'
 
@@ -12,8 +11,6 @@ export default class LoginSSO extends AuthCommand {
     public async run(): Promise<void> {
         const ssoAuth = new SSOAuth(this.writer)
         this.authToken = await ssoAuth.getAccessToken()
-        storeAccessToken(this.authToken, this.authPath)
-
         await this.setOrganizationAndProject()
     }
 }

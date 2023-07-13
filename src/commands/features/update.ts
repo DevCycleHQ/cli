@@ -40,8 +40,8 @@ export default class UpdateFeature extends UpdateCommandWithCommonProperties {
 
     public async run(): Promise<void> {
         const { flags, args } = await this.parse(UpdateFeature)
-        const { headless, key, name, description, variables, variations, sdkVisibility } = flags
-        await this.requireProject()
+        const { headless, key, name, description, variables, variations, sdkVisibility, project } = flags
+        await this.requireProject(project, headless)
 
         const featureKey = args.key
         let feature

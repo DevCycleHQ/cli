@@ -52,7 +52,8 @@ export default class GenerateTypes extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(GenerateTypes)
-        await this.requireProject()
+        const { project, headless } = flags
+        await this.requireProject(project, headless)
 
         const variables = await fetchAllVariables(this.authToken, this.projectKey)
         const typesString = this.getTypesString(variables, flags['react'])

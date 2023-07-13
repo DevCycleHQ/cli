@@ -36,10 +36,10 @@ export default class UpdateVariable extends UpdateCommandWithCommonProperties {
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(UpdateVariable)
         const { key } = args
-        const { headless } = flags
+        const { headless, project } = flags
         flags._feature = flags.feature
 
-        await this.requireProject()
+        await this.requireProject(project, headless)
         let variableKey = key
         if (headless && !variableKey) {
             this.writer.showError('The key argument is required')

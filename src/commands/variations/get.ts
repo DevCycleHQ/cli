@@ -17,9 +17,9 @@ export default class GetVariations extends Base {
     }
 
     public async run(): Promise<void> {
-        await this.requireProject()
         const { args, flags } = await this.parse(GetVariations)
-        const { headless } = flags
+        const { headless, project } = flags
+        await this.requireProject(project, headless)
         let featureKey
         if (headless && !args.feature) {
             this.writer.showError('In headless mode, feature is required')

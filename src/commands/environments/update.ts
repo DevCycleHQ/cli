@@ -37,9 +37,9 @@ export default class UpdateEnvironment extends UpdateCommandWithCommonProperties
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(UpdateEnvironment)
         const { key } = args
-        const { headless } = flags
+        const { headless, project } = flags
 
-        await this.requireProject()
+        await this.requireProject(project, headless)
         let envKey = key
         if (headless && !envKey) {
             this.writer.showError('The key argument is required')

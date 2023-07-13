@@ -36,13 +36,13 @@ export default class CreateFeature extends CreateCommand {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateFeature)
-        const { headless, key, name, description, variables, variations, sdkVisibility } = flags
-        await this.requireProject()
+        const { headless, key, name, description, variables, variations, sdkVisibility, project: projectFlag } = flags
+        await this.requireProject(projectFlag, headless)
 
         if (headless && (!key || !name)) {
             this.writer.showError('The key and name flags are required')
             return
-        } 
+        }
 
         if (!flags.interactive) {
             let params: Record<string, string> = flags

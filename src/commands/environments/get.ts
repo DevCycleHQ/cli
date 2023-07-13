@@ -22,8 +22,8 @@ export default class DetailedEnvironments extends Base {
     public async run(): Promise<void> {
         const { flags } = await this.parse(DetailedEnvironments)
         const keys = flags['keys']?.split(',')
-
-        await this.requireProject()
+        const { headless, project } = flags
+        await this.requireProject(project, headless)
 
         if (flags.headless && !keys) {
             throw (new Error('In headless mode, the keys flag is required'))
