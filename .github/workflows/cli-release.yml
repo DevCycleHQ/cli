@@ -1,0 +1,88 @@
+name: CLI Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      draft-release:
+        description: 'Draft release?'
+        required: false
+        type: boolean
+        default: true
+      prerelease:
+        description: 'Prerelease?'
+        required: false
+        type: boolean
+        default: true
+      npm-version:
+        description: 'NPM version bump?'
+        required: false
+        type: choice
+        options: 
+          - major
+          - minor
+          - patch
+        default: 'patch'
+
+  # schedule:
+  #   - cron: '0 12 * * 2'  # Runs every Tuesday at 12:00 PM (noon) ET
+permissions:
+  contents: write
+
+jobs:
+  cli-release:
+    runs-on: ubuntu-latest
+    steps:      
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.AUTOMATION_USER_TOKEN }}
+
+      - name: Set Git author
+        run: |
+          git config --global user.email "github-tracker-bot@taplytics.com"
+          git config --global user.name "DevCycle Automation"
+
+      - name: Get node version
+        id: get_node_version
+        run: |
+          echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "${{ steps.get_node_version.outputs.NVMRC }}"
+
+      - name: Install dependencies
+        run: yarn install
+        
+      - name: Build
+        run: yarn build
+
+      - name: Bump CLI version
+        run: npm version ${{ inputs.npm-version }} --force
+
+      - name: Get latest tag
+        run: echo "LATEST_TAG=$(git describe --abbrev=0 --tags)" >> $GITHUB_ENV
+          
+      - name: Commit and push tag to main branch
+        run: |
+          git add .
+          git commit --amend -m "Release $LATEST_TAG"
+          git tag -f $LATEST_TAG
+          git push --atomic origin main $LATEST_TAG
+
+      - name: Release
+        uses: ./.github/actions/release
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # cannot read $LATEST_TAG here so using ${{ env.LATEST_TAG }}
+          release-tag: ${{ env.LATEST_TAG }}
+          draft: ${{ inputs.draft-release }}
+          prerelease: ${{ inputs.prerelease }}
+
+      - name: Update Doc
+        uses: ./.github/actions/update-doc
+        with:
+          latest_tag: $LATEST_TAG
+          access_token: ${{ secrets.AUTOMATION_USER_TOKEN }}
