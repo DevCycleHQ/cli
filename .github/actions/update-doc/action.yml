@@ -1,0 +1,55 @@
+name: Update Doc
+
+description: 'Update the CLI version in devcycle-docs'
+
+inputs:
+  latest_tag:
+    required: true
+    description: 'The latest tag from the workflow that uses this action'
+  access_token:
+    required: true
+    description: 'The access token to use for authentication'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+      with:
+        repository: DevCycleHQ/devcycle-docs
+        path: devcycle-docs
+        token: ${{ inputs.access_token }}
+        fetch-depth: 0
+
+    - name: Set Git author
+      shell: bash
+      working-directory: devcycle-docs
+      run: |
+        git config --global user.email "github-tracker-bot@taplytics.com"
+        git config --global user.name "DevCycle Automation"
+
+    - name: Set branch name
+      shell: bash
+      working-directory: devcycle-docs
+      run: echo "BRANCH_NAME=update-cli-version-to-${{ inputs.latest_tag }}" >> $GITHUB_ENV
+
+    - name: Update CLI version in docs repo
+      shell: bash
+      working-directory: devcycle-docs
+      run: |
+        git checkout -b "$BRANCH_NAME"
+        sed -i "s/const DVC_CLI_VERSION = .*/const DVC_CLI_VERSION = '${{ inputs.latest_tag }}' \/\/ auto updated by dvc cli release workflow/" docusaurus.config.js
+        git add docusaurus.config.js
+        git commit -m "Update CLI version to ${{ inputs.latest_tag }}"
+
+    - name: Push code to docs repo
+      shell: bash
+      working-directory: devcycle-docs
+      run: git push --set-upstream origin "$BRANCH_NAME"
+
+    - name: Create PR
+      shell: bash
+      working-directory: devcycle-docs
+      env:
+        GH_TOKEN: ${{ inputs.access_token }}
+      run: gh pr create --repo DevCycleHQ/devcycle-docs --base main --head "$BRANCH_NAME" --title "Update CLI version to $LATEST_TAG" --body "This PR was automatically created by the DevCycle CLI release workflow."
