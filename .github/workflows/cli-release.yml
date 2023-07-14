@@ -80,6 +80,7 @@ jobs:
           release-tag: ${{ env.LATEST_TAG }}
           draft: ${{ inputs.draft-release }}
           prerelease: ${{ inputs.prerelease }}
+          node-auth-token: ${{ secrets.CLI_NPMJS_TOKEN }}
 
       - name: Update Doc
         uses: ./.github/actions/update-doc
