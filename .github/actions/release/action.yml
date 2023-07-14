@@ -16,6 +16,9 @@ inputs:
     required: false
     description: 'Whether to create a prerelease release'
     default: 'true'
+  node-auth-token:
+    required: true
+    description: 'The NPM token to use for authentication'
 
 runs:
   using: 'composite'
@@ -35,5 +38,5 @@ runs:
     - name: Publish to NPM
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ inputs.node-auth-token }}
       run: npm publish --access public
