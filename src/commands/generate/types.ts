@@ -4,13 +4,17 @@ import { fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
 import { Variable } from '../../api/schemas'
 
-const reactImports = `import { DVCVariable, DVCVariableValue } from '@devcycle/js-client-sdk'
+const reactImports = (oldRepos: boolean) => {
+    const jsRepo = oldRepos ? '@devcycle/devcycle-js-sdk' : '@devcycle/js-client-sdk'
+    const reactRepo = oldRepos ? '@devcycle/devcycle-react-sdk' : '@devcycle/react-client-sdk'
+    return `import { DVCVariable, DVCVariableValue } from '${jsRepo}'
 import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue
-} from '@devcycle/react-client-sdk'
+} from '${reactRepo}'
 
 `
+}
 const reactOverrides =
     `
 
@@ -47,6 +51,11 @@ export default class GenerateTypes extends Base {
             description: 'Generate types for use with React',
             default: false
         }),
+        'old-repos': Flags.boolean({
+            description: 'Generate types for use with old DevCycle repos ' +
+                '(@devcycle/devcycle-react-sdk, @devcycle/devcycle-js-sdk)',
+            default: false
+        })
     }
     authRequired = true
 
@@ -56,7 +65,7 @@ export default class GenerateTypes extends Base {
         await this.requireProject(project, headless)
 
         const variables = await fetchAllVariables(this.authToken, this.projectKey)
-        const typesString = this.getTypesString(variables, flags['react'])
+        const typesString = this.getTypesString(variables, flags['react'], flags['old-repos'])
 
         try {
             if (!fs.existsSync(flags['output-dir'])) {
@@ -71,8 +80,8 @@ export default class GenerateTypes extends Base {
         }
     }
 
-    private getTypesString(variables: Variable[], react: boolean): string {
-        let types = (react ? reactImports : '') +
+    private getTypesString(variables: Variable[], react: boolean, oldRepos: boolean): string {
+        let types = (react ? reactImports(oldRepos) : '') +
             'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
             'export type DVCVariableTypes = {\n' +
             `${variables.map((variable) => `    ${this.getVariableKeyAndtype(variable)}`).join('\n')}` +
