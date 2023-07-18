@@ -4,11 +4,11 @@ import { fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
 import { Variable } from '../../api/schemas'
 
-const reactImports = `import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
+const reactImports = `import { DVCVariable, DVCVariableValue } from '@devcycle/js-client-sdk'
 import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue
-} from '@devcycle/devcycle-react-sdk'
+} from '@devcycle/react-client-sdk'
 
 `
 const reactOverrides =
