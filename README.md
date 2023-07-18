@@ -68,9 +68,9 @@ Otherwise, this is chosen during login or set using the [project select command]
 Set the following environment variables:
 
 ```sh-session
-$ export DVC_CLIENT_ID=<your client id>
-$ export DVC_CLIENT_SECRET=<your client secret>
-$ export DVC_PROJECT_KEY=<your project key>
+$ export DEVCYCLE_CLIENT_ID=<your client id>
+$ export DEVCYCLE_CLIENT_SECRET=<your client secret>
+$ export DEVCYCLE_PROJECT_KEY=<your project key>
 ```
 
 ## Command-Line Arguments
