@@ -214,6 +214,7 @@ export default abstract class Base extends Command {
         this.userConfig = this.loadUserConfig(this.configPath)
         this.repoConfig = this.loadRepoConfig(this.repoConfigPath)
         this.projectKey = flags['project']
+            || process.env.DEVCYCLE_PROJECT_KEY
             || process.env.DVC_PROJECT_KEY
             || this.runsInRepo && this.repoConfig?.project
             || this.userConfig?.project
