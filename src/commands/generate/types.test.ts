@@ -63,11 +63,11 @@ export type DVCVariableTypes = {
     'json-var': DVCJSON
 }`
 
-const expectedReactTypesString = `import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
+const expectedReactTypesString = `import { DVCVariable, DVCVariableValue } from '@devcycle/js-client-sdk'
 import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue
-} from '@devcycle/devcycle-react-sdk'
+} from '@devcycle/react-client-sdk'
 
 type DVCJSON = { [key: string]: string | boolean | number }
 
