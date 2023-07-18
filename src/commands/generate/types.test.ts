@@ -1,6 +1,6 @@
-import { expect, test } from '@oclif/test'
-import { AUTH_URL, BASE_URL } from '../../api/common'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { expect } from '@oclif/test'
+import { BASE_URL } from '../../api/common'
+import { dvcTest } from '../../../test-utils'
 import * as fs from 'fs'
 
 const mockVariablesResponse = [
@@ -145,6 +145,30 @@ describe('generate types', () => {
             expect(fs.existsSync(outputDir)).to.be.true
             const typesString = fs.readFileSync(outputDir, 'utf-8')
             expect(typesString).to.equal(expectedReactTypesString)
+            expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
+        })
+
+    dvcTest()
+        .nock(BASE_URL, (api) =>
+            api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
+                .reply(200, mockVariablesResponse)
+        )
+        .stdout()
+        .command([
+            'generate:types',
+            '--react',
+            '--old-repos',
+            '--output-dir', reactOutputDir,
+            '--client-id', 'client',
+            '--client-secret', 'secret',
+            '--project', 'project'
+        ])
+        .it('correctly generates React SDK types', (ctx) => {
+            const outputDir = reactOutputDir + '/dvcVariableTypes.ts'
+            expect(fs.existsSync(outputDir)).to.be.true
+            const typesString = fs.readFileSync(outputDir, 'utf-8')
+            expect(typesString).to.contain('@devcycle/devcycle-js-sdk')
+            expect(typesString).to.contain('@devcycle/devcycle-react-sdk')
             expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
         })
 })
