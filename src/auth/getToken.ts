@@ -12,8 +12,12 @@ type SupportedFlags = {
 }
 
 export async function getToken(authPath: string, flags: SupportedFlags): Promise<string> {
-    const client_id = flags['client-id'] || process.env.DVC_CLIENT_ID
-    const client_secret = flags['client-secret'] || process.env.DVC_CLIENT_SECRET
+    const client_id = flags['client-id']
+        || process.env.DEVCYCLE_CLIENT_ID
+        || process.env.DVC_CLIENT_ID
+    const client_secret = flags['client-secret']
+        || process.env.DEVCYCLE_CLIENT_SECRET
+        || process.env.DVC_CLIENT_SECRET
 
     if (client_id && client_secret) {
         return clientCredentialsAuth(client_id, client_secret)
