@@ -21,17 +21,17 @@ export default class DetailedEnvironments extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(DetailedEnvironments)
-        const keys = flags['keys']?.split(',')
+        const keys = flags['keys']?.split(',') || []
         const { headless, project } = flags
         await this.requireProject(project, headless)
 
         if (flags.headless && !keys) {
             throw (new Error('In headless mode, the keys flag is required'))
         }
-
-        if (keys) {
+        if (keys.length) {
             let environments = await fetchEnvironments(this.authToken, this.projectKey)
-            environments = environments.filter((environment) => keys.includes(environment.key))
+            environments = environments.filter((environment) => 
+                keys.includes(environment.key) || keys.includes(environment._id))
             this.writer.showResults(environments)
         } else {
             const responses = await inquirer.prompt<EnvironmentPromptResult>(
