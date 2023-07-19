@@ -1,5 +1,5 @@
 {
-  "version": "4.6.2",
+  "version": "4.6.3",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -1852,6 +1852,12 @@
           "name": "react",
           "type": "boolean",
           "description": "Generate types for use with React",
+          "allowNo": false
+        },
+        "old-repos": {
+          "name": "old-repos",
+          "type": "boolean",
+          "description": "Generate types for use with old DevCycle repos (@devcycle/devcycle-react-sdk, @devcycle/devcycle-js-sdk)",
           "allowNo": false
         }
       },

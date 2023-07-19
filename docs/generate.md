@@ -13,8 +13,11 @@ Generate Variable Types from the management API
 USAGE
   $ dvc generate types [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--output-dir <value>] [--react]
+    [--old-repos]
 
 FLAGS
+  --old-repos           Generate types for use with old DevCycle repos (@devcycle/devcycle-react-sdk,
+                        @devcycle/devcycle-js-sdk)
   --output-dir=<value>  [default: .] Directory to output the generated types to
   --react               Generate types for use with React
 
