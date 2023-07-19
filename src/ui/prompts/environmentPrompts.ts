@@ -16,6 +16,13 @@ export type EnvironmentPromptResult = {
     environment: EnvironmentChoice['value']
 } & PromptResult
 
+const EnvironmentTypeValue: Record<string, number> = {
+    development: 0,
+    staging: 1,
+    production: 2,
+    disaster_recovery: 3,
+}
+
 let choices: { name: string, value: Environment }[]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const environmentChoices = async (input: Record<string, any>, search: string):Promise<EnvironmentChoice[]> => {
@@ -27,7 +34,7 @@ export const environmentChoices = async (input: Record<string, any>, search: str
                 name,
                 value: environment,
             }
-        })
+        }).sort((a, b) => EnvironmentTypeValue[a.value.type] - EnvironmentTypeValue[b.value.type])
     }
     return autocompleteSearch(choices, search)
 }
