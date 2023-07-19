@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
-import { fetchEnvironmentByKey, fetchEnvironments } from '../../api/environments'
+import { fetchEnvironments } from '../../api/environments'
 import { EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
 import Base from '../base'
 
@@ -25,24 +25,30 @@ export default class DetailedEnvironments extends Base {
         const { headless, project } = flags
         await this.requireProject(project, headless)
 
-        if (flags.headless && !keys) {
-            throw (new Error('In headless mode, the keys flag is required'))
-        }
+        let environments = await fetchEnvironments(this.authToken, this.projectKey)
         if (keys.length) {
-            let environments = await fetchEnvironments(this.authToken, this.projectKey)
             environments = environments.filter((environment) => 
                 keys.includes(environment.key) || keys.includes(environment._id))
             this.writer.showResults(environments)
-        } else {
-            const responses = await inquirer.prompt<EnvironmentPromptResult>(
-                [environmentPrompt],
-                {
-                    token: this.authToken,
-                    projectKey: this.projectKey
-                }
-            )
-            const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, responses.environment._id)
-            this.writer.showResults(environment)
+            return
+        } 
+
+        // show all environments if no keys flag provided in headless mode
+        if (flags.headless) {
+            this.writer.showResults(environments)
+            return
         }
+
+        // prompt for keys in interactive mode 
+        const responses = await inquirer.prompt<EnvironmentPromptResult>(
+            [environmentPrompt],
+            {
+                token: this.authToken,
+                projectKey: this.projectKey
+            }
+        )
+        const environment = environments.find((environment) => environment._id === responses.environment._id)
+        this.writer.showResults(environment)
+        
     }
 }
