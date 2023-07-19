@@ -19,13 +19,12 @@ export default class DetailedFeatures extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(DetailedFeatures)
-        const keys = flags['keys']?.split(',')
+        const keys = flags['keys']?.split(',') || []
         const { project, headless } = flags
         await this.requireProject(project, headless)
-
         let features = await fetchFeatures(this.authToken, this.projectKey)
-        if (keys) {
-            features = features.filter((feature) => keys.includes(feature.key))
+        if (keys.length) {
+            features = features.filter((feature) => keys.includes(feature.key) || keys.includes(feature._id))
         }
         this.writer.showResults(features)
     }
