@@ -14,7 +14,7 @@ USAGE
   $ dvc usages [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--include <value>] [--exclude
     <value>] [--client-name <value>] [--match-pattern <value>] [--var-alias <value>] [--format console|json]
-    [--show-regex]
+    [--show-regex] [--only-unused]
 
 FLAGS
   --client-name=<value>...    Name(s) of the DevCycle client variable to match on. Accepts multiple values.
@@ -27,6 +27,7 @@ FLAGS
   --match-pattern=<value>...  Additional full Regex pattern to use to match variable usages in your code. Should contain
                               exactly one capture group which matches on the key of the variable. Must specify the file
                               extension to override the pattern for, eg. "--match-pattern js=<YOUR PATTERN>"
+  --only-unused               Show usages of variables that are not defined in your DevCycle config.
   --show-regex                Output the regex pattern used to find variable usage
   --var-alias=<value>...      Aliases to use when identifying variables in your code. Should contain a code reference
                               mapped to a DevCycle variable key, eg. "--var-alias "VARIABLES.ENABLE_V1=enable-v1"

@@ -10,6 +10,8 @@ import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 import { VariableMatch, VariableUsageMatch } from '../../utils/parsers/types'
+import { fetchAllVariables } from '../../api/variables'
+import { Variable } from '../../api/schemas'
 
 export default class Usages extends Base {
     static hidden = false
@@ -42,7 +44,10 @@ export default class Usages extends Base {
             options: ['console', 'json'],
             description: 'Format to use when outputting the usage results.'
         }),
-        'show-regex': ShowRegexFlag
+        'show-regex': ShowRegexFlag,
+        'only-unused': Flags.boolean({
+            description: 'Show usages of variables that are not defined in your DevCycle config.'
+        })
     }
 
     useMarkdown = false
@@ -101,13 +106,27 @@ export default class Usages extends Base {
 
         const variableAliases = getVariableAliases(flags, this.repoConfig)
         
-        const matchesByVariable = this.getMatchesByVariable(matchesBySdk, variableAliases)
+        const usages = this.getMatchesByVariable(matchesBySdk, variableAliases)
+        if (flags['only-unused']) {
+            const variablesMap = (await fetchAllVariables(this.authToken, this.projectKey)).reduce((
+                map: Record<string, Variable>,
+                variable
+            ) => {
+                map[variable.key] = variable
+                return map
+            }, {})
+            Object.keys(usages).forEach((variableKey) => {
+                if (variablesMap[variableKey]) {
+                    delete usages[variableKey]
+                }
+            })
+        }
         
         if (flags['format'] === 'json') {
-            const matchesByVariableJSON = this.formatMatchesToJSON(matchesByVariable)
+            const matchesByVariableJSON = this.formatMatchesToJSON(usages)
             this.log(JSON.stringify(matchesByVariableJSON, null, 2))
         } else {
-            this.formatConsoleOutput(matchesByVariable)
+            this.formatConsoleOutput(usages)
         }
     }
 
