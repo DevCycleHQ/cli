@@ -8,7 +8,7 @@ import { RepoConfigFromFile, UserConfigFromFile } from '../types'
 import { ClassConstructor, plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
 import { reportValidationErrors, reportZodValidationErrors, validateParams } from '../utils/reportValidationErrors'
-import { getToken } from '../auth/getToken'
+import { ApiAuth } from '../auth/ApiAuth'
 import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
@@ -96,7 +96,7 @@ export default abstract class Base extends Command {
     }
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
-        this.authToken = await getToken(this.authPath, flags)
+        this.authToken = await new ApiAuth(this.authPath, this.config.cacheDir).getToken(flags)
         if (!this.hasToken()) {
             if (this.authRequired) {
                 throw new Error(
@@ -227,7 +227,7 @@ export default abstract class Base extends Command {
         const parsedToken = JSON.parse(
             Buffer.from(this.authToken.split('.')[1], 'base64').toString()
         )
-        return parsedToken.exp < Math.floor(Date.now()/1000)
+        return parsedToken.exp < Math.floor(Date.now() / 1000)
     }
 
     async requireProject(projectFlag?: string, headless?: boolean): Promise<void> {
