@@ -32,6 +32,7 @@ dvcClient.variable(
 )
 dvcClient.variable(user, VARIABLES.ENUM_VARIABLE, true)
 dvc.variable(user, "renamed-case", true)
+dvcClient.variable(user, "variable-from-api", true)
 
 const assignedToAVar = useVariable(
     'multiline-extra-comma',

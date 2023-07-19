@@ -3308,6 +3308,12 @@
           "type": "boolean",
           "description": "Output the regex pattern used to find variable usage",
           "allowNo": false
+        },
+        "only-unused": {
+          "name": "only-unused",
+          "type": "boolean",
+          "description": "Show usages of variables that are not defined in your DevCycle config.",
+          "allowNo": false
         }
       },
       "args": {}
