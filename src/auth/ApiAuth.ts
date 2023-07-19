@@ -58,7 +58,7 @@ export class ApiAuth {
     }
 
     private async fetchClientToken(client_id: string, client_secret: string): Promise<string> {
-        const cachedToken = await this.tokenCache.get(client_id, client_secret)
+        const cachedToken = this.tokenCache.get(client_id, client_secret)
         if (cachedToken) {
             return cachedToken
         }
@@ -74,7 +74,7 @@ export class ApiAuth {
             })
 
             const accessToken = response.data.access_token
-            await this.tokenCache.set(client_id, client_secret, accessToken)
+            this.tokenCache.set(client_id, client_secret, accessToken)
             return accessToken
         } catch (e) {
             throw new Error('Failed to authenticate with the DevCycle API. Check your credentials.')

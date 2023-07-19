@@ -1,6 +1,6 @@
 import path from 'path'
 import * as crypto from 'crypto'
-import * as fs from 'fs/promises'
+import fs from '../utils/fileSystem'
 
 export class TokenCache {
     filePath: string
@@ -13,21 +13,21 @@ export class TokenCache {
         return crypto.createHash('md5').update(clientId + clientSecret).digest('hex')
     }
 
-    public async set(clientId: string, clientSecret: string, token: string): Promise<void> {
+    public set(clientId: string, clientSecret: string, token: string): void {
         try {
             const identifier = this.hashCredentials(clientId, clientSecret)
             const tokenPayload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
             const expiry = tokenPayload.exp * 1000
-            await fs.writeFile(this.filePath, JSON.stringify({ identifier, token, expiry }))
+            fs.writeFileSync(this.filePath, JSON.stringify({ identifier, token, expiry }))
         } catch (err) {
             // don't throw error
         }
     }
 
-    public async get(clientId: string, clientSecret: string): Promise<string | null> {
+    public get(clientId: string, clientSecret: string): string | null {
         try {
             const identifier = this.hashCredentials(clientId, clientSecret)
-            const fileContent = await fs.readFile(this.filePath)
+            const fileContent = fs.readFileSync(this.filePath)
             const cache = JSON.parse(fileContent.toString())
 
             if (
