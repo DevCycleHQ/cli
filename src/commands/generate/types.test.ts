@@ -106,7 +106,7 @@ describe('generate types', () => {
     })
 
     dvcTest()
-        .nock(BASE_URL,  (api) =>
+        .nock(BASE_URL, (api) =>
             api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
                 .reply(200, mockVariablesResponse)
         )
@@ -120,10 +120,10 @@ describe('generate types', () => {
         ])
         .it('correctly generates JS SDK types', (ctx) => {
             const outputDir = jsOutputDir + '/dvcVariableTypes.ts'
+            expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
             expect(fs.existsSync(outputDir)).to.be.true
             const typesString = fs.readFileSync(outputDir, 'utf-8')
             expect(typesString).to.equal(expectedTypesString)
-            expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
         })
 
     dvcTest()
