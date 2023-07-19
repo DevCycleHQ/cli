@@ -33,7 +33,7 @@ export class AuthConfig {
     sso?: SSOAuthConfig
 }
 
-export function storeAccessToken(accessToken:string, authPath:string): void {
+export function storeAccessToken(accessToken: string, authPath: string): void {
     const configDir = path.dirname(authPath)
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true })
