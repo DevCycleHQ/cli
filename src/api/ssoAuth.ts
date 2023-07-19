@@ -6,6 +6,7 @@ import open from 'open'
 import axios from 'axios'
 import { Organization } from './organizations'
 import Writer from '../ui/writer'
+import { toggleBotSadSvg, toggleBotSvg } from '../ui/togglebot'
 
 const CLI_CLIENT_ID = 'Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
 
@@ -101,18 +102,16 @@ export default class SSOAuth {
         const parsed = url.parse(requestUrl, true)
         if (parsed.pathname === '/callback') {
             if (parsed.query.error) {
-                res.write(this.resultHtml('Authorization error'))
+                res.write(this.resultHtml('Authorization Error', false))
                 res.end()
-                throw new Error(parsed.query.error.toString())
             } else if (parsed.query.code) {
                 const code = parsed.query.code.toString()
                 this.retrieveAccessToken(code)
-                res.write(this.resultHtml('Authorization successful'))
+                res.write(this.resultHtml('Authorization Successful!', true))
                 res.end()
             } else {
-                res.write(this.resultHtml('Unrecognized response'))
+                res.write(this.resultHtml('Unrecognized Response', false))
                 res.end()
-                throw new Error('Unrecognized response')
             }
         } else {
             res.writeHead(404)
@@ -176,12 +175,79 @@ export default class SSOAuth {
         return buffer.toString('base64url')
     }
 
-    private resultHtml(resultMessage: string) {
+    private resultHtml(resultMessage: string, success: boolean) {
+        const fontUrl = 'https://fonts.google.com/share?selection.family=Inter:wght@400;800'
+        const backgroundUrl = 
+            'https://uploads-ssl.webflow.com/614e240a0e0b0fa195b146ed/64b815f3a776eee98d5375a7_backgroundCLI.png'
         return `
-<html><body align='center'>
-<p>${resultMessage}. You may close this browser window.</p>
-<button type="button" onclick="javascript:window.close()">Close Window</button>
-</body></html>
+<html>
+    <head>
+        <link href='${fontUrl}' rel='stylesheet' type='text/css'>
+        <style>
+            #background {
+                background-image: url("${backgroundUrl}");
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            h1 {
+                font-family: 'Inter', sans-serif;
+                font-size: 40px;
+                font-weight: 800;
+                color: #FFFFFF;
+            }
+            p {
+                font-family: 'Inter', sans-serif;
+                font-size: 16px;
+                font-weight: 400;
+                color: #FFFFFF;
+            }
+            .container {
+                height: fit-content;
+                padding-bottom: 2em;
+            }
+            button {
+                background-color: #1D4ED8;
+                color: white;
+                font-family: 'Inter', sans-serif;
+                width: 200px;
+                height: 38px;
+                border-radius: 6px;
+                border-style: none;
+                margin-top: 1em;
+            }
+            button:hover {
+                background-color:#335fdb;
+                transition: 0.2s;
+            }
+        </style>
+    </head>
+    <body align='center' id="background">
+        <script type="text/javascript">
+            var counter = 10;
+            var x = setInterval(function() {
+                counter--;
+                document.getElementById("timer").innerHTML = 
+                    "This page will automatically close in " + counter + " seconds.";
+                if (counter <= 0) {
+                    clearInterval(x);
+                    window.close();
+                }
+            }, 1000);
+        </script>
+        <div class="container">
+            ${success ? toggleBotSvg : toggleBotSadSvg}
+            <h1>
+                ${resultMessage}
+            </h1>
+            <p id="timer">You may now close this page.</p>
+            <button type="button" onclick="javascript:window.close()">Close Page</button>
+        </div>
+    </body>
+</html>
 `
     }
 }
