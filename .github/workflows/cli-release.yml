@@ -52,6 +52,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "${{ steps.get_node_version.outputs.NVMRC }}"
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: yarn install
