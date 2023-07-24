@@ -226,25 +226,12 @@ export default class SSOAuth {
         </style>
     </head>
     <body align='center' id="background">
-        <script type="text/javascript">
-            var counter = 10;
-            var x = setInterval(function() {
-                counter--;
-                document.getElementById("timer").innerHTML = 
-                    "This page will automatically close in " + counter + " seconds.";
-                if (counter <= 0) {
-                    clearInterval(x);
-                    window.close();
-                }
-            }, 1000);
-        </script>
         <div class="container">
             ${success ? toggleBotSvg : toggleBotSadSvg}
             <h1>
                 ${resultMessage}
             </h1>
-            <p id="timer">You may now close this page.</p>
-            <button type="button" onclick="javascript:window.close()">Close Page</button>
+            <p>You may now close this page.</p>
         </div>
     </body>
 </html>
