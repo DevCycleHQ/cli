@@ -19,6 +19,10 @@ export class ClientCredentialsAuthConfig {
 export class SSOAuthConfig {
     @IsString()
     accessToken: string
+
+    @IsString()
+    @IsOptional()
+    refreshToken?: string
 }
 
 export class AuthConfig {
@@ -33,12 +37,12 @@ export class AuthConfig {
     sso?: SSOAuthConfig
 }
 
-export function storeAccessToken(accessToken: string, authPath: string): void {
+export function storeAccessToken(tokens: SSOAuthConfig, authPath: string): void {
     const configDir = path.dirname(authPath)
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true })
     }
     const config = new AuthConfig()
-    config.sso = { accessToken }
+    config.sso = tokens
     fs.writeFileSync(authPath, jsYaml.dump(config))
 }

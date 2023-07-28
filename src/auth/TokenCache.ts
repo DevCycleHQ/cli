@@ -1,6 +1,7 @@
 import path from 'path'
 import * as crypto from 'crypto'
 import fs from '../utils/fileSystem'
+import { getTokenExpiry } from './utils'
 
 export class TokenCache {
     filePath: string
@@ -16,8 +17,7 @@ export class TokenCache {
     public set(clientId: string, clientSecret: string, token: string): void {
         try {
             const identifier = this.hashCredentials(clientId, clientSecret)
-            const tokenPayload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
-            const expiry = tokenPayload.exp * 1000
+            const expiry = getTokenExpiry(token)
             fs.writeFileSync(this.filePath, JSON.stringify({ identifier, token, expiry }))
         } catch (err) {
             // don't throw error
