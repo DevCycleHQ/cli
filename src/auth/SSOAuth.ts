@@ -4,15 +4,16 @@ import url, { URL } from 'url'
 
 import open from 'open'
 import axios from 'axios'
-import { Organization } from './organizations'
+import { Organization } from '../api/organizations'
 import Writer from '../ui/writer'
 import { toggleBotSadSvg, toggleBotSvg } from '../ui/togglebot'
 
-const CLI_CLIENT_ID = 'Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
+export const CLI_CLIENT_ID = 'Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
 
 type OauthResponse = {
     data: {
         access_token: string
+        refresh_token: string
     }
 }
 const SUPPORTED_PORTS = [
@@ -33,19 +34,24 @@ type OauthParams = {
     scope: string
 }
 
+type TokenResponse = {
+    accessToken: string
+    refreshToken: string
+}
+
 export default class SSOAuth {
     private organization: Organization | null
     private server: http.Server
     private done: boolean
     private codeVerifier: string
-    private accessToken: string | null | undefined
+    private tokens: TokenResponse | undefined
     private writer: Writer
 
     constructor(writer: Writer) {
         this.writer = writer
     }
 
-    public async getAccessToken(organization: Organization | null = null): Promise<string> {
+    public async getAccessToken(organization: Organization | null = null): Promise<TokenResponse> {
         this.organization = organization
         this.startLocalServer()
         await this.waitForServerClosed()
@@ -61,9 +67,9 @@ export default class SSOAuth {
         }
     }
 
-    private async waitForToken(): Promise<string> {
-        if (this.accessToken) {
-            return this.accessToken
+    private async waitForToken(): Promise<TokenResponse> {
+        if (this.tokens) {
+            return this.tokens
         } else {
             await new Promise((resolve) => setTimeout(resolve, 100))
             return this.waitForToken()
@@ -138,7 +144,12 @@ export default class SSOAuth {
             })
 
         this.server.close()
-        this.accessToken = response?.data.access_token
+        if (response?.data) {
+            this.tokens = {
+                accessToken: response.data.access_token,
+                refreshToken: response.data.refresh_token,
+            }
+        }
         if (this.organization) {
             this.writer.successMessage(`Access token retrieved for "${this.organization.display_name}" organization`)
         } else {
@@ -163,6 +174,7 @@ export default class SSOAuth {
         url.searchParams.append('code_challenge', code_challenge)
         url.searchParams.append('code_challenge_method', 'S256')
         url.searchParams.append('audience', 'https://api.devcycle.com/')
+        url.searchParams.append('scope', 'offline_access')
         if (this.organization) {
             url.searchParams.append('organization', this.organization.id)
         }

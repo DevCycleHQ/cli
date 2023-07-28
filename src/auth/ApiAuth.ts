@@ -3,10 +3,12 @@ import fs from 'fs'
 import axios from 'axios'
 import { plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
-import { AuthConfig } from './config'
+import { AuthConfig, storeAccessToken } from './config'
 import { reportValidationErrors } from '../utils/reportValidationErrors'
 import { AUTH_URL } from '../api/common'
 import { TokenCache } from './TokenCache'
+import { shouldRefreshToken } from './utils'
+import { CLI_CLIENT_ID } from './SSOAuth'
 
 type SupportedFlags = {
     'client-id'?: string
@@ -48,7 +50,13 @@ export class ApiAuth {
         reportValidationErrors(errors)
 
         if (config.sso) {
-            return config.sso.accessToken || ''
+            const { accessToken, refreshToken } = config.sso
+
+            if (accessToken && refreshToken && shouldRefreshToken(accessToken)) {
+                return this.refreshClientToken(refreshToken)
+            }
+
+            return accessToken || ''
         } else if (config.clientCredentials) {
             const { client_id, client_secret } = config.clientCredentials
             return this.fetchClientToken(client_id, client_secret)
@@ -78,6 +86,26 @@ export class ApiAuth {
             return accessToken
         } catch (e) {
             throw new Error('Failed to authenticate with the DevCycle API. Check your credentials.')
+        }
+    }
+
+    private async refreshClientToken(refresh_token: string): Promise<string> {
+        const url = new URL('/oauth/token', AUTH_URL)
+
+        try {
+            const response = await axios.post(url.href, {
+                client_id: CLI_CLIENT_ID,
+                grant_type: 'refresh_token',
+                refresh_token,
+                audience: 'https://api.devcycle.com/',
+            })
+
+            const accessToken = response.data.access_token
+            const refreshToken = response.data.refresh_token
+            storeAccessToken({ accessToken, refreshToken }, this.authPath)
+            return accessToken
+        } catch (e) {
+            throw new Error('Failed to refresh DevCycle API token.')
         }
     }
 }
