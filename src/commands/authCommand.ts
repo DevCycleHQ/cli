@@ -3,7 +3,7 @@ import 'reflect-metadata'
 import { Flags } from '@oclif/core'
 import { fetchOrganizations, Organization } from '../api/organizations'
 import { fetchProjects } from '../api/projects'
-import SSOAuth from '../api/ssoAuth'
+import SSOAuth from '../auth/SSOAuth'
 import { storeAccessToken } from '../auth/config'
 import { promptForOrganization } from '../ui/promptForOrganization'
 import { promptForProject } from '../ui/promptForProject'
@@ -101,14 +101,14 @@ export default abstract class AuthCommand extends Base {
 
     async selectOrganization(organization: Organization): Promise<string> {
         const ssoAuth = new SSOAuth(this.writer)
-        const token = await ssoAuth.getAccessToken(organization)
+        const tokens = await ssoAuth.getAccessToken(organization)
         const { id, name, display_name } = organization
-        storeAccessToken(token, this.authPath)
+        storeAccessToken(tokens, this.authPath)
         if (this.repoConfig) {
             this.updateRepoConfig({ org: { id, name, display_name } })
         } else if (this.userConfig) {
             this.updateUserConfig({ org: { id, name, display_name } })
         }
-        return token
+        return tokens.accessToken
     }
 }

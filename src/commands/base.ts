@@ -17,6 +17,7 @@ import { errorMap, setDVCReferrer } from '../api/apiClient'
 import { Prompt, handleCustomPrompts } from '../ui/prompts'
 import { filterPrompts, mergeFlagsAndAnswers } from '../utils/prompts'
 import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
+import { getTokenExpiry } from '../auth/utils'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -111,7 +112,7 @@ export default abstract class Base extends Command {
                 )
             }
             return
-        } else if (this.authRequired && this.checkAuthExpired()) {
+        } else if (this.authRequired && this.isAuthExpired()) {
             throw new Error(
                 'Authorization token has expired.\n' +
                 'Please login using "dvc login again" '
@@ -223,11 +224,9 @@ export default abstract class Base extends Command {
         setDVCReferrer(this.id, this.config.version, this.caller)
     }
 
-    checkAuthExpired() {
-        const parsedToken = JSON.parse(
-            Buffer.from(this.authToken.split('.')[1], 'base64').toString()
-        )
-        return parsedToken.exp < Math.floor(Date.now() / 1000)
+    isAuthExpired() {
+        const tokenExpiry = getTokenExpiry(this.authToken)
+        return !tokenExpiry || tokenExpiry < Date.now()
     }
 
     async requireProject(projectFlag?: string, headless?: boolean): Promise<void> {

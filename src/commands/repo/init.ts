@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
 import { storeAccessToken } from '../../auth/config'
-import SSOAuth from '../../api/ssoAuth'
+import SSOAuth from '../../auth/SSOAuth'
 import AuthCommand from '../authCommand'
 
 export default class InitRepo extends AuthCommand {
@@ -17,8 +17,9 @@ export default class InitRepo extends AuthCommand {
         this.repoConfig = await this.updateRepoConfig({})
 
         const ssoAuth = new SSOAuth(this.writer)
-        this.authToken = await ssoAuth.getAccessToken()
-        storeAccessToken(this.authToken, this.authPath)
+        const tokens = await ssoAuth.getAccessToken()
+        this.authToken = tokens.accessToken
+        storeAccessToken(tokens, this.authPath)
 
         await this.setOrganizationAndProject()
     }

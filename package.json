@@ -121,7 +121,7 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
     "prepack": "yarn build && oclif manifest && oclif readme --multi",
-    "test": "mocha test/*.ts src/**/*.test.ts",
+    "test": "mocha test/*.ts \"src/**/*.test.ts\"",
     "test:ci": "yarn test --forbid-only",
     "version": "oclif readme --multi && git add README.md",
     "build:watch": "watch 'yarn build' src"
