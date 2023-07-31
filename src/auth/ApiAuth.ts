@@ -7,7 +7,7 @@ import { AuthConfig, storeAccessToken } from './config'
 import { reportValidationErrors } from '../utils/reportValidationErrors'
 import { AUTH_URL } from '../api/common'
 import { TokenCache } from './TokenCache'
-import { shouldRefreshToken } from './utils'
+import { getTokenExpiry, shouldRefreshToken } from './utils'
 import { CLI_CLIENT_ID } from './SSOAuth'
 
 type SupportedFlags = {
@@ -43,11 +43,24 @@ export class ApiAuth {
         return ''
     }
 
-    private async getTokenFromAuthFile(): Promise<string> {
+    public getPersonalToken(): string {
+        if (this.authPath && fs.existsSync(this.authPath)) {
+            return this.getPersonalTokenFromAuthFile()
+        }
+
+        return ''
+    }
+
+    private loadAuthFile(): AuthConfig {
         const rawConfig = jsYaml.load(fs.readFileSync(this.authPath, 'utf8'))
         const config = plainToClass(AuthConfig, rawConfig)
         const errors = validateSync(config)
         reportValidationErrors(errors)
+        return config
+    }
+
+    private async getTokenFromAuthFile(): Promise<string> {
+        const config = this.loadAuthFile()
 
         if (config.sso) {
             const { accessToken, refreshToken } = config.sso
@@ -60,6 +73,21 @@ export class ApiAuth {
         } else if (config.clientCredentials) {
             const { client_id, client_secret } = config.clientCredentials
             return this.fetchClientToken(client_id, client_secret)
+        }
+
+        return ''
+    }
+
+    private getPersonalTokenFromAuthFile(): string {
+        const config = this.loadAuthFile()
+
+        if (config.sso?.personalAccessToken) {
+            const { personalAccessToken } = config.sso
+
+            const tokenExpiry = getTokenExpiry(personalAccessToken)
+            if (tokenExpiry && tokenExpiry > Date.now()) {
+                return personalAccessToken
+            }
         }
 
         return ''

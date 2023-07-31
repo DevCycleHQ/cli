@@ -18,6 +18,7 @@ import { Prompt, handleCustomPrompts } from '../ui/prompts'
 import { filterPrompts, mergeFlagsAndAnswers } from '../utils/prompts'
 import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
 import { getTokenExpiry } from '../auth/utils'
+import SSOAuth from '../auth/SSOAuth'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -71,6 +72,7 @@ export default abstract class Base extends Command {
     }
 
     authToken = ''
+    personalAccessToken = ''
     projectKey = ''
     authPath = path.join(this.config.configDir, 'auth.yml')
     configPath = path.join(this.config.configDir, 'user.yml')
@@ -82,6 +84,8 @@ export default abstract class Base extends Command {
     authRequired = false
     // Override to true in commands that have "enhanced" functionality enabled by API access
     authSuggested = false
+    // Override to true in commands that must be authorized by a user in order to function
+    userAuthRequired = false
     // Override to true in commands that expect to run in the repo
     runsInRepo = false
 
@@ -98,7 +102,16 @@ export default abstract class Base extends Command {
     }
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
-        this.authToken = await new ApiAuth(this.authPath, this.config.cacheDir).getToken(flags)
+        const auth = new ApiAuth(this.authPath, this.config.cacheDir)
+        this.authToken = await auth.getToken(flags)
+        this.personalAccessToken = auth.getPersonalToken()
+
+        if (!this.personalAccessToken && this.userAuthRequired) {
+            const ssoAuth = new SSOAuth(this.writer, this.authPath)
+            const tokens = await ssoAuth.getAccessToken()
+            this.personalAccessToken = tokens.personalAccessToken
+        }
+
         if (!this.hasToken()) {
             if (this.authRequired) {
                 throw new Error(
