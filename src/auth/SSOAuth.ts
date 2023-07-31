@@ -7,6 +7,7 @@ import axios from 'axios'
 import { Organization } from '../api/organizations'
 import Writer from '../ui/writer'
 import { toggleBotSadSvg, toggleBotSvg } from '../ui/togglebot'
+import { storeAccessToken } from './config'
 
 export const CLI_CLIENT_ID = 'Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
 
@@ -37,6 +38,7 @@ type OauthParams = {
 type TokenResponse = {
     accessToken: string
     refreshToken: string
+    personalAccessToken?: string
 }
 
 export default class SSOAuth {
@@ -46,13 +48,17 @@ export default class SSOAuth {
     private codeVerifier: string
     private tokens: TokenResponse | undefined
     private writer: Writer
+    private authPath: string
 
-    constructor(writer: Writer) {
+    constructor(writer: Writer, authPath: string) {
         this.writer = writer
+        this.authPath = authPath
     }
 
-    public async getAccessToken(organization: Organization | null = null): Promise<TokenResponse> {
-        this.organization = organization
+    public async getAccessToken(): Promise<Required<TokenResponse>>
+    public async getAccessToken(organization: Organization): Promise<Omit<TokenResponse, 'personalAccessToken'>>
+    public async getAccessToken(organization?: Organization): Promise<TokenResponse> {
+        if (organization) this.organization = organization
         this.startLocalServer()
         await this.waitForServerClosed()
         return this.waitForToken()
@@ -144,11 +150,15 @@ export default class SSOAuth {
             })
 
         this.server.close()
+
         if (response?.data) {
+            const { access_token, refresh_token } = response.data
             this.tokens = {
-                accessToken: response.data.access_token,
-                refreshToken: response.data.refresh_token,
+                accessToken: access_token,
+                refreshToken: refresh_token,
+                personalAccessToken: this.organization ? undefined : access_token
             }
+            storeAccessToken(this.tokens, this.authPath)
         }
         if (this.organization) {
             this.writer.successMessage(`Access token retrieved for "${this.organization.display_name}" organization`)

@@ -9,7 +9,7 @@ export default class LoginSSO extends AuthCommand {
     static examples = []
 
     public async run(): Promise<void> {
-        const ssoAuth = new SSOAuth(this.writer)
+        const ssoAuth = new SSOAuth(this.writer, this.authPath)
         const tokens = await ssoAuth.getAccessToken()
         this.authToken = tokens.accessToken
         await this.setOrganizationAndProject()
