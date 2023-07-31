@@ -23,6 +23,10 @@ export class SSOAuthConfig {
     @IsString()
     @IsOptional()
     refreshToken?: string
+
+    @IsString()
+    @IsOptional()
+    personalAccessToken?: string
 }
 
 export class AuthConfig {
@@ -37,12 +41,16 @@ export class AuthConfig {
     sso?: SSOAuthConfig
 }
 
-export function storeAccessToken(tokens: SSOAuthConfig, authPath: string): void {
+export function storeAccessToken(tokens: Partial<SSOAuthConfig>, authPath: string): void {
     const configDir = path.dirname(authPath)
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true })
     }
     const config = new AuthConfig()
-    config.sso = tokens
+    config.sso = config.sso || new SSOAuthConfig()
+    if (tokens.accessToken) config.sso.accessToken = tokens.accessToken
+    if (tokens.refreshToken) config.sso.refreshToken = tokens.refreshToken
+    if (tokens.personalAccessToken) config.sso.personalAccessToken = tokens.personalAccessToken
+
     fs.writeFileSync(authPath, jsYaml.dump(config))
 }

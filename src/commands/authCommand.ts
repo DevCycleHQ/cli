@@ -4,7 +4,6 @@ import { Flags } from '@oclif/core'
 import { fetchOrganizations, Organization } from '../api/organizations'
 import { fetchProjects } from '../api/projects'
 import SSOAuth from '../auth/SSOAuth'
-import { storeAccessToken } from '../auth/config'
 import { promptForOrganization } from '../ui/promptForOrganization'
 import { promptForProject } from '../ui/promptForProject'
 import Base from './base'
@@ -100,10 +99,10 @@ export default abstract class AuthCommand extends Base {
     }
 
     async selectOrganization(organization: Organization): Promise<string> {
-        const ssoAuth = new SSOAuth(this.writer)
+        const ssoAuth = new SSOAuth(this.writer, this.authPath)
         const tokens = await ssoAuth.getAccessToken(organization)
         const { id, name, display_name } = organization
-        storeAccessToken(tokens, this.authPath)
+
         if (this.repoConfig) {
             this.updateRepoConfig({ org: { id, name, display_name } })
         } else if (this.userConfig) {
