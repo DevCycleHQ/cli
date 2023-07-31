@@ -1,5 +1,5 @@
 {
-  "version": "4.6.4",
+  "version": "4.7.0",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -78,7 +78,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "org": {
@@ -167,7 +168,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -250,7 +252,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "key": {
@@ -345,7 +348,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -428,7 +432,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "name": {
@@ -537,7 +542,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "alias": {
@@ -638,7 +644,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "value": {
@@ -778,7 +785,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "file": {
@@ -917,7 +925,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "key": {
@@ -1035,7 +1044,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "keys": {
@@ -1124,7 +1134,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -1208,7 +1219,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "name": {
@@ -1326,7 +1338,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "key": {
@@ -1447,7 +1460,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -1540,7 +1554,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "keys": {
@@ -1630,7 +1645,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -1714,7 +1730,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "name": {
@@ -1838,7 +1855,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "output-dir": {
@@ -1945,7 +1963,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "env": {
@@ -2049,7 +2068,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "org": {
@@ -2140,7 +2160,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "org": {
@@ -2231,7 +2252,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -2315,7 +2337,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "org": {
@@ -2405,7 +2428,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "key": {
@@ -2507,7 +2531,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -2591,7 +2616,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "org": {
@@ -2682,7 +2708,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "org": {
@@ -2772,7 +2799,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -2859,7 +2887,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -2955,7 +2984,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -3052,7 +3082,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -3146,7 +3177,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "targets": {
@@ -3259,7 +3291,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "include": {
@@ -3396,7 +3429,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "key": {
@@ -3515,7 +3549,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "keys": {
@@ -3604,7 +3639,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -3688,7 +3724,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "name": {
@@ -3798,7 +3835,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "key": {
@@ -3905,7 +3943,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -3994,7 +4033,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         }
       },
@@ -4083,7 +4123,8 @@
             "github.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
-            "cli"
+            "cli",
+            "vs_code_extension"
           ]
         },
         "name": {
