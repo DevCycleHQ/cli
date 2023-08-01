@@ -71,7 +71,7 @@ DESCRIPTION
 
 ## `dvc features get`
 
-Retrieve Features from the management API
+Retrieve Features from the Management API
 
 ```
 USAGE
@@ -93,7 +93,7 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 
 DESCRIPTION
-  Retrieve Features from the management API
+  Retrieve Features from the Management API
 
 EXAMPLES
   $ dvc features get
