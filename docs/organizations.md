@@ -1,7 +1,7 @@
 `dvc organizations`
 ===================
 
-List the keys of all organizations available to the current user
+List or switch organizations.
 
 * [`dvc organizations list`](#dvc-organizations-list)
 * [`dvc organizations select`](#dvc-organizations-select)

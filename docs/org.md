@@ -1,4 +1,0 @@
-`dvc org`
-=========
-
-Switch organizations.
