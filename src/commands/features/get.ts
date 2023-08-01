@@ -4,7 +4,7 @@ import Base from '../base'
 
 export default class DetailedFeatures extends Base {
     static hidden = false
-    static description = 'Retrieve Features from the management API'
+    static description = 'Retrieve Features from the Management API'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
         '<%= config.bin %> <%= command.id %> --keys=feature-one,feature-two'
