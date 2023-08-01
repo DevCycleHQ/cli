@@ -34,7 +34,7 @@ The [`login again` command](docs/login.md#dvc-login-again) can be used to retrie
 
 This process will open browser windows to interact with the DevCycle universal login page. It will first obtain a personal access token, then prompt you to choose an organization. A second browser window is used to authenticate the CLI with your chosen organization.
 
-To switch organizations once logged in, the [`org` command](docs/org.md) can be used.
+To switch organizations once logged in, the [`organizations select` command](docs/organizations.md) can be used.
 
 ### Repo Init Command
 The [`repo init` command](docs/repo.md#dvc-repo-init) behaves in the same way as `login sso`, but creates a [repo configuration file](#repo-configuration) and stores the project and organization choices there instead.
@@ -115,7 +115,6 @@ USAGE
 * [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the Management API.
 * [`dvc login`](docs/login.md) - Log in to DevCycle.
 * [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
-* [`dvc org`](docs/org.md) - Switch organizations.
 * [`dvc organizations`](docs/organizations.md) - List the keys of all organizations available to the current user
 * [`dvc projects`](docs/projects.md) - Create, or view Projects with the Management API.
 * [`dvc repo`](docs/repo.md) - Manage repository configuration.
