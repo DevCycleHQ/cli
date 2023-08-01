@@ -93,7 +93,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/4.7.1 linux-x64 node-v18.16.0
+@devcycle/cli/5.0.0 linux-x64 node-v18.16.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -116,6 +116,7 @@ USAGE
 * [`dvc login`](docs/login.md) - Log in to DevCycle.
 * [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
 * [`dvc org`](docs/org.md) - Switch organizations.
+* [`dvc organizations`](docs/organizations.md) - List the keys of all organizations available to the current user
 * [`dvc projects`](docs/projects.md) - Create, or view Projects with the Management API.
 * [`dvc repo`](docs/repo.md) - Manage repository configuration.
 * [`dvc status`](docs/status.md) - Check CLI status.
