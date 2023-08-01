@@ -95,8 +95,8 @@
       "projects": {
         "description": "Create, or view Projects with the Management API."
       },
-      "org": {
-        "description": "Switch organizations."
+      "organizations": {
+        "description": "List or switch organizations."
       },
       "alias": {
         "description": "Manage repository variable aliases."
