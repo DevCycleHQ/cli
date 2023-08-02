@@ -20,13 +20,13 @@ export default class DetailedFeatures extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(DetailedFeatures)
-        const keys = flags['keys']?.split(',') || []
+        const keys = flags['keys']?.split(',')
         const { project, headless } = flags
         await this.requireProject(project, headless)
         let features
         if (keys) {
             features = await batchRequests(
-                keys, 
+                keys,
                 (key) => fetchFeatureByKey(this.authToken, this.projectKey, key)
             )
         } else {
