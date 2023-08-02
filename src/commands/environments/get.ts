@@ -1,8 +1,9 @@
 import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
-import { fetchEnvironments } from '../../api/environments'
+import { fetchEnvironments,fetchEnvironmentByKey } from '../../api/environments'
 import { EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
 import Base from '../base'
+import { batchRequests } from '../../utils/batchRequests'
 
 export default class DetailedEnvironments extends Base {
     static hidden = false
@@ -21,25 +22,27 @@ export default class DetailedEnvironments extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(DetailedEnvironments)
-        const keys = flags['keys']?.split(',') || []
+        const keys = flags['keys']?.split(',')
         const { headless, project } = flags
         await this.requireProject(project, headless)
 
-        let environments = await fetchEnvironments(this.authToken, this.projectKey)
-        if (keys.length) {
-            environments = environments.filter((environment) => 
-                keys.includes(environment.key) || keys.includes(environment._id))
-            this.writer.showResults(environments)
-            return
-        } 
-
-        // show all environments if no keys flag provided in headless mode
-        if (flags.headless) {
+        if (keys) {
+            const environments = await batchRequests(
+                keys, 
+                (key) => fetchEnvironmentByKey(this.authToken, this.projectKey, key)
+            )
             this.writer.showResults(environments)
             return
         }
 
-        // prompt for keys in interactive mode 
+        // show all environments if no keys flag provided in headless mode
+        if (flags.headless) {
+            const environments = await fetchEnvironments(this.authToken, this.projectKey)
+            this.writer.showResults(environments)
+            return
+        }
+
+        // prompt for key in interactive mode 
         const responses = await inquirer.prompt<EnvironmentPromptResult>(
             [environmentPrompt],
             {
@@ -47,8 +50,7 @@ export default class DetailedEnvironments extends Base {
                 projectKey: this.projectKey
             }
         )
-        const environment = environments.find((environment) => environment._id === responses.environment._id)
-        this.writer.showResults(environment)
+        this.writer.showResults(responses.environment)
         
     }
 }
