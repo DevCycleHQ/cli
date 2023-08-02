@@ -1,6 +1,7 @@
 import { Flags } from '@oclif/core'
-import { fetchFeatures } from '../../api/features'
+import { fetchFeatures, fetchFeatureByKey } from '../../api/features'
 import Base from '../base'
+import { batchRequests } from '../../utils/batchRequests'
 
 export default class DetailedFeatures extends Base {
     static hidden = false
@@ -22,10 +23,16 @@ export default class DetailedFeatures extends Base {
         const keys = flags['keys']?.split(',') || []
         const { project, headless } = flags
         await this.requireProject(project, headless)
-        let features = await fetchFeatures(this.authToken, this.projectKey)
-        if (keys.length) {
-            features = features.filter((feature) => keys.includes(feature.key) || keys.includes(feature._id))
+        let features
+        if (keys) {
+            features = await batchRequests(
+                keys, 
+                (key) => fetchFeatureByKey(this.authToken, this.projectKey, key)
+            )
+        } else {
+            features = await fetchFeatures(this.authToken, this.projectKey)
         }
+
         this.writer.showResults(features)
     }
 }
