@@ -1,6 +1,7 @@
 import { Flags } from '@oclif/core'
-import { fetchVariables } from '../../api/variables'
+import { fetchVariables, fetchVariableByKey } from '../../api/variables'
 import Base from '../base'
+import { batchRequests } from '../../utils/batchRequests'
 
 export default class DetailedVariables extends Base {
     static hidden = false
@@ -18,9 +19,15 @@ export default class DetailedVariables extends Base {
         const { project, headless } = flags
         await this.requireProject(project, headless)
 
-        let variables = await fetchVariables(this.authToken, this.projectKey)
+        let variables
         if (keys) {
-            variables = variables.filter((variable) => keys.includes(variable.key))
+            variables = await batchRequests(
+                keys, 
+                (key) => fetchVariableByKey(this.authToken, this.projectKey, key)
+            )
+
+        } else {
+            variables = await fetchVariables(this.authToken, this.projectKey)
         }
         this.writer.showResults(variables)
     }
