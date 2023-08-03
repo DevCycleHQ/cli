@@ -1,5 +1,17 @@
 import Base from '../base'
 
+type StatusInfo = {
+    version: string,
+    repoConfigPath: string,
+    repoConfigExists: boolean,
+    userConfigPath: string,
+    userConfigExists: boolean,
+    authConfigPath: string,
+    hasAccessToken: boolean,
+    organization?: string,
+    a0UserId?: string
+}
+
 export default class ShowStatus extends Base {
     static hidden = false
     static description = 'Print CLI version information, configuration file locations and auth status.'
@@ -47,7 +59,7 @@ export default class ShowStatus extends Base {
 
     async runHeadless(): Promise<void> {
         const loggedInOrg = this.repoConfig?.org || this.userConfig?.org
-        this.writer.showResults({
+        const result: StatusInfo = {
             version: this.config.version,
             repoConfigPath: this.repoConfigPath,
             repoConfigExists: !!this.repoConfig,
@@ -56,6 +68,11 @@ export default class ShowStatus extends Base {
             authConfigPath: this.authPath,
             hasAccessToken: this.hasToken(),
             organization: loggedInOrg?.name
-        })
+        }
+        if (this.hasToken()) {
+            const tokenJson = JSON.parse(Buffer.from(this.authToken.split('.')[1], 'base64').toString())
+            result.a0UserId = tokenJson['sub']
+        }
+        this.writer.showResults(result)
     }
 }
