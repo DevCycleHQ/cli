@@ -1117,13 +1117,6 @@
     "@tufjs/canonical-json" "1.0.0"
     minimatch "^9.0.0"
 
-"@types/axios@^0.14.0":
-  version "0.14.0"
-  resolved "https://registry.npmjs.org/@types/axios/-/axios-0.14.0.tgz"
-  integrity sha512-KqQnQbdYE54D7oa/UmYVMZKq7CO4l8DEENzOKc4aBRwxCXSlJXGz83flFx5L7AWrOQnmuN3kVsRdt+GZPPjiVQ==
-  dependencies:
-    axios "*"
-
 "@types/babel__traverse@^7.0.6":
   version "7.20.1"
   resolved "https://registry.npmjs.org/@types/babel__traverse/-/babel__traverse-7.20.1.tgz"
@@ -1705,15 +1698,6 @@ aws-sdk@^2.1231.0:
     uuid "8.0.0"
     xml2js "0.5.0"
 
-axios@*, axios@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.4.0.tgz"
-  integrity sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==
-  dependencies:
-    follow-redirects "^1.15.0"
-    form-data "^4.0.0"
-    proxy-from-env "^1.1.0"
-
 axios@^0.27.2:
   version "0.27.2"
   resolved "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
@@ -1721,6 +1705,15 @@ axios@^0.27.2:
   dependencies:
     follow-redirects "^1.14.9"
     form-data "^4.0.0"
+
+axios@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.4.0.tgz"
+  integrity sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==
+  dependencies:
+    follow-redirects "^1.15.0"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 babel-plugin-istanbul@^6.1.1:
   version "6.1.1"
