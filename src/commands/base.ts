@@ -65,7 +65,7 @@ export default abstract class Base extends Command {
                 'bitbucket.pr_insights',
                 'bitbucket.code_usages',
                 'cli',
-                'vs_code_extension'
+                'vscode_extension'
             ],
             hidden: true
         }),
