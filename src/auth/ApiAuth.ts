@@ -7,7 +7,7 @@ import { AuthConfig, storeAccessToken } from './config'
 import { reportValidationErrors } from '../utils/reportValidationErrors'
 import { AUTH_URL } from '../api/common'
 import { TokenCache } from './TokenCache'
-import { getTokenExpiry, shouldRefreshToken } from './utils'
+import { getOrgIdFromToken, getTokenExpiry, shouldRefreshToken } from './utils'
 import { CLI_CLIENT_ID } from './SSOAuth'
 
 type SupportedFlags = {
@@ -24,7 +24,7 @@ export class ApiAuth {
         this.tokenCache = new TokenCache(cacheDir)
     }
 
-    public async getToken(flags: SupportedFlags): Promise<string> {
+    public async getToken(flags: SupportedFlags, orgId?: string): Promise<string> {
         const clientId = flags['client-id']
             || process.env.DEVCYCLE_CLIENT_ID
             || process.env.DVC_CLIENT_ID
@@ -37,7 +37,7 @@ export class ApiAuth {
         }
 
         if (this.authPath && fs.existsSync(this.authPath)) {
-            return this.getTokenFromAuthFile()
+            return this.getTokenFromAuthFile(orgId)
         }
 
         return ''
@@ -59,11 +59,19 @@ export class ApiAuth {
         return config
     }
 
-    private async getTokenFromAuthFile(): Promise<string> {
+    private async getTokenFromAuthFile(orgId?: string): Promise<string> {
         const config = this.loadAuthFile()
 
         if (config.sso) {
-            const { accessToken, refreshToken } = config.sso
+            let { accessToken, refreshToken } = config.sso
+            
+            if (orgId) {
+                if (config.sso.orgs && config.sso.orgs[orgId]) {
+                    ({ accessToken, refreshToken } = config.sso.orgs[orgId])
+                } else if (orgId !== getOrgIdFromToken(accessToken)) {
+                    return ''
+                }
+            }
 
             if (accessToken && refreshToken && shouldRefreshToken(accessToken)) {
                 return this.refreshClientToken(refreshToken)

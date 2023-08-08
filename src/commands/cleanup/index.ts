@@ -18,7 +18,6 @@ import {
 
 export default class Cleanup extends Base {
     static hidden = false
-    runsInRepo = true
 
     static description = 'Replace a DevCycle variable with a static value in the current version of your code. ' +
         'Currently only JavaScript is supported.'
