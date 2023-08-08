@@ -45,7 +45,6 @@ type MatchesByTypeEnriched = {
 export default class Diff extends Base {
     static hidden = false
     authSuggested = true
-    runsInRepo = true
 
     static description = 'Print a diff of DevCycle variable usage between two versions of your code.'
     static examples = [

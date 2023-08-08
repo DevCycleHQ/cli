@@ -1,5 +1,7 @@
 type TokenPayload = {
     exp: number
+    'https://devcycle.com/org_id'?: string // client credential tokens
+    org_id?: string // user sso tokens
 }
 
 export const getTokenPayload = (token: string): TokenPayload | undefined => {

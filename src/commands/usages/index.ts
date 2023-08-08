@@ -15,7 +15,6 @@ import { Variable } from '../../api/schemas'
 
 export default class Usages extends Base {
     static hidden = false
-    runsInRepo = true
 
     static description = 'Print all DevCycle variable usages in the current version of your code.'
     static examples = [

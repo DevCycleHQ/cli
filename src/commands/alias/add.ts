@@ -7,7 +7,6 @@ const VARIABLE_DESCRIPTION = 'The DevCycle variable key'
 
 export default class AddAlias extends Base {
     static hidden = false
-    runsInRepo = true
     static description = 'Add a variable alias to the repo configuration'
     static flags = {
         ...Base.flags,

@@ -7,6 +7,7 @@ import {
 import fs from 'fs'
 import path from 'path'
 import jsYaml from 'js-yaml'
+import { getOrgIdFromToken } from './utils'
 
 export class ClientCredentialsAuthConfig {
     @IsString()
@@ -27,6 +28,9 @@ export class SSOAuthConfig {
     @IsString()
     @IsOptional()
     personalAccessToken?: string
+
+    @IsOptional()
+    orgs?: Record<string, Pick<SSOAuthConfig, 'accessToken' | 'refreshToken'>>
 }
 
 export class AuthConfig {
@@ -41,16 +45,25 @@ export class AuthConfig {
     sso?: SSOAuthConfig
 }
 
-export function storeAccessToken(tokens: Partial<SSOAuthConfig>, authPath: string): void {
+export function storeAccessToken(tokens: SSOAuthConfig, authPath: string): void {
     const configDir = path.dirname(authPath)
+    let config: AuthConfig
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true })
+        config = new AuthConfig()
+    } else {
+        config = jsYaml.load(fs.readFileSync(authPath, 'utf8')) as AuthConfig
     }
-    const config = new AuthConfig()
     config.sso = config.sso || new SSOAuthConfig()
-    if (tokens.accessToken) config.sso.accessToken = tokens.accessToken
-    if (tokens.refreshToken) config.sso.refreshToken = tokens.refreshToken
-    if (tokens.personalAccessToken) config.sso.personalAccessToken = tokens.personalAccessToken
+    config.sso.orgs = config.sso.orgs || {}
 
+    const { accessToken, refreshToken, personalAccessToken } = tokens
+    if (accessToken) config.sso.accessToken = accessToken
+    if (refreshToken) config.sso.refreshToken = refreshToken
+    if (personalAccessToken) config.sso.personalAccessToken = personalAccessToken
+
+    const orgId = getOrgIdFromToken(accessToken)
+    if (orgId) config.sso.orgs[orgId] = { accessToken, refreshToken }
+        
     fs.writeFileSync(authPath, jsYaml.dump(config))
 }
