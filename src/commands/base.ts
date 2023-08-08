@@ -74,6 +74,7 @@ export default abstract class Base extends Command {
     authToken = ''
     personalAccessToken = ''
     projectKey = ''
+    orgId = ''
     authPath = path.join(this.config.configDir, 'auth.yml')
     configPath = path.join(this.config.configDir, 'user.yml')
     repoConfigPath = '.devcycle/config.yml'
@@ -86,8 +87,6 @@ export default abstract class Base extends Command {
     authSuggested = false
     // Override to true in commands that must be authorized by a user in order to function
     userAuthRequired = false
-    // Override to true in commands that expect to run in the repo
-    runsInRepo = false
 
     userConfig: UserConfigFromFile | null
     repoConfig: RepoConfigFromFile | null
@@ -103,7 +102,7 @@ export default abstract class Base extends Command {
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
         const auth = new ApiAuth(this.authPath, this.config.cacheDir)
-        this.authToken = await auth.getToken(flags)
+        this.authToken = await auth.getToken(flags, this.orgId)
         this.personalAccessToken = auth.getPersonalToken()
 
         if (!this.personalAccessToken && this.userAuthRequired) {
@@ -231,9 +230,10 @@ export default abstract class Base extends Command {
         this.projectKey = flags['project']
             || process.env.DEVCYCLE_PROJECT_KEY
             || process.env.DVC_PROJECT_KEY
-            || this.runsInRepo && this.repoConfig?.project
+            || this.repoConfig?.project
             || this.userConfig?.project
             || ''
+        this.orgId = flags['org'] || this.repoConfig?.org?.id || this.userConfig?.org?.id
         await this.authorizeApi()
         setDVCReferrer(this.id, this.config.version, this.caller)
     }
