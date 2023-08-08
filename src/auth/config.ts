@@ -47,13 +47,14 @@ export class AuthConfig {
 
 export function storeAccessToken(tokens: SSOAuthConfig, authPath: string): void {
     const configDir = path.dirname(authPath)
-    let config: AuthConfig
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true })
-        config = new AuthConfig()
-    } else {
-        config = jsYaml.load(fs.readFileSync(authPath, 'utf8')) as AuthConfig
     }
+
+    const config = fs.existsSync(authPath)
+        ? jsYaml.load(fs.readFileSync(authPath, 'utf8')) as AuthConfig
+        : new AuthConfig()
+
     config.sso = config.sso || new SSOAuthConfig()
     config.sso.orgs = config.sso.orgs || {}
 
