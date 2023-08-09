@@ -18,7 +18,7 @@ export default abstract class AuthCommand extends Base {
 
     public async setOrganization(): Promise<void> {
         const { flags } = await this.parse(AuthCommand)
-        const organizations = await fetchOrganizations(this.authToken)
+        const organizations = await fetchOrganizations(this.personalAccessToken)
         if (flags.headless && !flags.org) {
             throw new Error('In headless mode, org flag is required')
         }
