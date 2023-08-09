@@ -72,7 +72,11 @@ export default class Writer {
     }
 
     public showError(message: string): void {
-        console.log(chalk.red(`❌ ${message}`))
+        if (this.headless) {
+            console.log(message)
+        } else {
+            console.log(chalk.red(`❌ ${message}`))
+        }
     }
 
     public headless: boolean
