@@ -64,7 +64,13 @@ export default class UpdateFeature extends UpdateCommandWithCommonProperties {
 
         this.writer.printCurrentValues(feature)
 
-        this.prompts.push((new VariableListOptions(feature.variables ?? [], this.writer)).getVariablesListPrompt())
+        const variableListOptions = new VariableListOptions(
+            feature.variables ?? [], 
+            this.writer, 
+            !variations ? feature.variations: undefined // don't prompt for variable values if variations flag provided
+        )
+
+        this.prompts.push(variableListOptions.getVariablesListPrompt())
         this.prompts.push(
             (
                 new VariationListOptions(
@@ -86,6 +92,9 @@ export default class UpdateFeature extends UpdateCommandWithCommonProperties {
             ...(sdkVisibility ? { sdkVisibility: JSON.parse(sdkVisibility) } : {}),
             headless,
         })
+        // if variations were set by the variations list option or flag, 
+        // they should override the variations set by the variables list option
+        params.variations = params.variations || variableListOptions.featureVariations
 
         const result = await updateFeature(this.authToken, this.projectKey, feature.key, params)
         this.writer.showResults(result)
