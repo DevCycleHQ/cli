@@ -73,8 +73,8 @@ exports[`variations create creates a variation and returns the full feature in i
 `;
 
 exports[`variations create errors when missing required flags in headless mode 1`] = `
-"❌ key is a required field
-❌ name is a required field
+"key is a required field
+name is a required field
 "
 `;
 
