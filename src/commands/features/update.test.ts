@@ -50,7 +50,8 @@ describe('features update', () => {
         name: 'New Feature Name',
         key: 'new-feature-key',
         description: 'test description',
-        sdkVisibility: testSDKVisibility
+        sdkVisibility: testSDKVisibility,
+        variations: [],
     }
 
     const requestBodyWithVariables = {
