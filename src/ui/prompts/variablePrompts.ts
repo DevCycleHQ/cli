@@ -1,4 +1,4 @@
-import { CreateVariableDto, Variable } from '../../api/schemas'
+import { CreateVariableDto, Variable, Variation } from '../../api/schemas'
 import { fetchVariables } from '../../api/variables'
 import { AutoCompletePrompt, Prompt, PromptResult } from '.'
 import chalk from 'chalk'
@@ -122,6 +122,23 @@ export const variableValueJSONPrompt = (variableKey: string, defaultValue?: stri
                 return 'Please enter a valid JSON object'
             }
         }
+    }
+}
+
+export const getVariableValuePrompt = (
+    variation: Variation, 
+    variableType: 'String' | 'Boolean' | 'Number' | 'JSON',
+    defaultValue?: string | number | boolean
+) => {
+    switch (variableType) {
+        case 'Boolean':
+            return variableValueBooleanPrompt(variation.key, defaultValue as boolean | undefined)
+        case 'Number':
+            return variableValueNumberPrompt(variation.key, defaultValue as number | undefined)
+        case 'JSON':
+            return variableValueJSONPrompt(variation.key, defaultValue as string | undefined)
+        default:
+            return variableValueStringPrompt(variation.key, defaultValue as string | undefined)
     }
 }
 

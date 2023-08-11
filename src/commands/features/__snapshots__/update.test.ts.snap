@@ -75,6 +75,9 @@ exports[`features update updates a feature after prompting for all fields 1`] = 
 }
 
 
+🤖 No existing Variations.
+🤖 No existing Variations.
+----------------------------------------
 {
   \\"name\\": \\"Feature Name\\",
   \\"key\\": \\"feature-key\\",

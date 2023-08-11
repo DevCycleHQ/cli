@@ -1,14 +1,29 @@
-import { createVariablePrompts } from '../variablePrompts'
+import { createVariablePrompts, getVariableValuePrompt } from '../variablePrompts'
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import inquirer from 'inquirer'
-import { CreateVariableDto, CreateVariableParams, UpdateVariableDto } from '../../../api/schemas'
+import { 
+    CreateVariableDto, 
+    CreateVariableParams, 
+    UpdateVariableDto, 
+    Variable,
+    Variation 
+} from '../../../api/schemas'
 import { errorMap } from '../../../api/apiClient'
+import Writer from '../../writer'
 
 export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams> {
     itemType = 'Variable'
     messagePrompt = 'Manage your Variables'
 
     variablePropertyPrompts = createVariablePrompts.filter((prompt) => prompt.name !== '_feature')
+    featureVariations: Variation[]
+
+    constructor(list: Variable[], writer: Writer, variations?: Variation[]) {
+        super(list, writer)
+        if (variations) {
+            this.featureVariations = variations
+        }
+    }
 
     getVariablesListPrompt = () => ({
         name: 'variables', 
@@ -18,8 +33,26 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         listOptionsPrompt: () => this.prompt()
     })
 
+    private async promptVariationValues(variable: Variable) {
+        if (this.featureVariations?.length) {
+            for (const variation of this.featureVariations) {
+                const variationPrompt = getVariableValuePrompt(
+                    variation, 
+                    variable.type, 
+                    variation.variables?.[variable.key] as string | number | boolean
+                )
+
+                const result = await inquirer.prompt([variationPrompt])
+                variation.variables = variation.variables || {}
+                variation.variables[variable.key] = result[variation.key]
+            }
+        }
+    }
+
     async promptAddItem(): Promise<ListOption<CreateVariableParams>> {
         const variable = await inquirer.prompt(this.variablePropertyPrompts)
+        await this.promptVariationValues(variable)
+
         CreateVariableDto.parse(variable, { errorMap })
         return {
             name: variable.name,
@@ -49,6 +82,8 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         }))
 
         const editedVariable = await inquirer.prompt(filledOutPrompts)
+        await this.promptVariationValues(editedVariable)
+
         UpdateVariableDto.parse(editedVariable, { errorMap })
         if (index >= 0) {
             list[index] = {

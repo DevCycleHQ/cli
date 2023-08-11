@@ -293,7 +293,7 @@ const CreateVariableDto = z.object({
         .regex(/^[a-z0-9-_.]+$/),
     _feature: z.string().optional(),
     type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
-    defaultValue: z.object({}).partial().optional(),
+    defaultValue: z.any().optional(),
     validationSchema: VariableValidationEntity.optional(),
 })
 const Variable = z.object({
@@ -308,7 +308,7 @@ const Variable = z.object({
     _feature: z.string().optional(),
     type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
     status: z.enum(['active', 'archived']),
-    defaultValue: z.object({}).partial().optional(),
+    defaultValue: z.any().optional(),
     source: z.enum([
         'api',
         'dashboard',
