@@ -19,8 +19,15 @@ The CLI can be customized in several ways using command-line args or by creating
 # Setup
 
 ## Install the CLI
+Using NPM
 ```sh-session
 $ npm install -g @devcycle/cli
+```
+Or alternatively, using homebrew
+
+```sh-session
+$ brew tap devcyclehq/cli
+$ brew install devcycle
 ```
 # Authentication
 Many of the CLI commands require DevCycle API authorization. There are several ways to provide these credentials.
