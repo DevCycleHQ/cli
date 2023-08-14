@@ -5,7 +5,6 @@ import {
 import {
     VariablePromptResult,
     descriptionPrompt,
-    variableFeaturePrompt,
     namePrompt,
     variablePrompt,
 } from '../../ui/prompts'
@@ -19,25 +18,20 @@ export default class UpdateVariable extends UpdateCommandWithCommonProperties {
 
     prompts = [
         namePrompt,
-        descriptionPrompt,
-        variableFeaturePrompt
+        descriptionPrompt
     ]
 
     static flags = {
         ...UpdateCommandWithCommonProperties.flags,
         'description': Flags.string({
             description: 'Description for the variable',
-        }),
-        'feature': Flags.string({
-            description: 'The ID of the feature to associate the variable to'
-        }),
+        })
     }
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(UpdateVariable)
         const { key } = args
         const { headless, project } = flags
-        flags._feature = flags.feature
 
         await this.requireProject(project, headless)
         let variableKey = key
