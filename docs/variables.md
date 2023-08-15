@@ -90,11 +90,10 @@ Update a Variable.
 USAGE
   $ dvc variables update [KEY] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--name <value>] [--description
-    <value>] [--feature <value>]
+    <value>]
 
 FLAGS
   --description=<value>  Description for the variable
-  --feature=<value>      The ID of the feature to associate the variable to
   --name=<value>         Human readable name
 
 GLOBAL FLAGS
