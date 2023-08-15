@@ -1,5 +1,5 @@
 {
-  "version": "5.3.0",
+  "version": "5.3.1",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -3908,12 +3908,6 @@
           "name": "description",
           "type": "option",
           "description": "Description for the variable",
-          "multiple": false
-        },
-        "feature": {
-          "name": "feature",
-          "type": "option",
-          "description": "The ID of the feature to associate the variable to",
           "multiple": false
         }
       },
