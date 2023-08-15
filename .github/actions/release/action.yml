@@ -26,6 +26,7 @@ runs:
     # Replace with DevCycleHQ/release-action/gh-release@main when it's ready
     - name: Create GitHub Release
       uses: ncipollo/release-action@v1
+      id: create_release
       with:
         name: "${{ inputs.release-tag }}"
         tag: "${{ inputs.release-tag }}"
@@ -34,6 +35,55 @@ runs:
         token: ${{ inputs.github-token }}
         draft: ${{ inputs.draft }}
         prerelease: ${{ inputs.prerelease }}
+
+    - name: Build Artifacts
+      shell: bash
+      run: yarn build:tar
+
+    - name: Get Path of Linux Artifact
+      id: linux_artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-linux-arm.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload Linux Artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.linux_artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-linux-arm.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Get Path of Windows Artifact
+      id: windows_artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-win32-x64.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload Windows Artifacts
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.windows_artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-win32-x64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Get Path of Darwin Artifact
+      id: darwin_artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-darwin-arm64.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload Darwin Artifacts
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.darwin_artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-darwin-arm64.tar.gz
+        asset_content_type: application/gzip
         
     - name: Publish to NPM
       shell: bash
