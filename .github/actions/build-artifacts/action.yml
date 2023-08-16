@@ -1,0 +1,107 @@
+name: Build Release Artifacts
+
+inputs:
+  upload-url:
+    required: true
+    description: 'Upload url from the release step'
+  release-tag:
+    required: true
+    description: 'The tag to use for the release'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Build Artifacts
+      shell: bash
+      run: yarn build:tar
+
+    - name: Get Path of linux-x64 Artifact
+      id: linux-x64-artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-linux-x64.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload linux-x64 Artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ inputs.upload-url }}
+        asset_path: ${{ steps.linux-x64-artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-linux-x64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Get Path of linux-arm Artifact
+      id: linux-arm-artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-linux-arm.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload linux-arm Artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ inputs.upload-url }}
+        asset_path: ${{ steps.linux-arm-artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-linux-arm.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Get Path of win32-x64 Artifact
+      id: win32-x64-artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-win32-x64.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload win32-x64 Artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ inputs.upload-url }}
+        asset_path: ${{ steps.win32-x64-artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-win32-x64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Get Path of win32-x86 Artifact
+      id: win32-x86-artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-win32-x86.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload win32-x86 Artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ inputs.upload-url }}
+        asset_path: ${{ steps.win32-x86-artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-win32-x86.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Get Path of darwin-x64 Artifact
+      id: darwin-x64-artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-darwin-x64.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload darwin-x64 Artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ inputs.upload-url }}
+        asset_path: ${{ steps.darwin-x64-artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-darwin-x64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Get Path of darwin-arm64 Artifact
+      id: darwin-arm64-artifact
+      shell: bash
+      run: |
+        echo "ARTIFACT_PATH=$(ls dist/*-darwin-arm64.tar.gz)" >> $GITHUB_OUTPUT
+    - name: Upload darwin-arm64 Artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ inputs.upload-url }}
+        asset_path: ${{ steps.darwin-arm64-artifact.outputs.ARTIFACT_PATH }}
+        asset_name: dvc-${{ inputs.release-tag }}-darwin-arm64.tar.gz
+        asset_content_type: application/gzip
+
