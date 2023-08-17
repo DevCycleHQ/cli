@@ -102,7 +102,9 @@ export abstract class BaseParser {
     commentCharacters: string[] = ['//']
 
     constructor(extension: string, protected options: ParseOptions) {
-        this.clientNames = [...(options.clientNames || []), 'dvcClient', 'client', 'devcycle']
+        this.clientNames = [
+            ...(options.clientNames || []), 'devcycleClient', 'devCycleClient', 'dvcClient', 'client', 'devcycle'
+        ]
     }
 
     private buildParameterPattern(
