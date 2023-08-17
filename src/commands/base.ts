@@ -93,10 +93,13 @@ export default abstract class Base extends Command {
     writer: Writer = new Writer()
 
     async catch(error: unknown) {
-        if (error instanceof ZodError) {
-            this.reportZodValidationErrors(error)
-        } else if (error instanceof Error) {
-            this.writer.showError(error.message)
+        if (error instanceof Error) {
+            if (error instanceof ZodError) {
+                this.reportZodValidationErrors(error)
+            } else {
+                this.writer.showError(error.message)
+            }
+            throw error
         }
     }
     private async authorizeApi(): Promise<void> {

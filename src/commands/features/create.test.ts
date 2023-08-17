@@ -77,7 +77,7 @@ describe('features create', () => {
 
     // Headless mode
     dvcTest()
-        .stdout()
+        .stderr()
         .command([
             'features create',
             '--project', projectKey,
@@ -85,10 +85,9 @@ describe('features create', () => {
             '--headless',
             ...authFlags
         ])
-        .it('Errors when called in headless mode with no key',
-            (ctx) => {
-                expect(ctx.stdout).to.contain('The key and name flags are required')
-            })
+        .it('Errors when called in headless mode with no key', (ctx) => {
+            expect(ctx.stderr).to.contain('The key and name flags are required')
+        })
     
     dvcTest()
         .nock(BASE_URL, (api) => api
@@ -219,19 +218,17 @@ describe('features create', () => {
             .get(`/v1/projects/${projectKey}`)
             .reply(200, mockProject)
         )
-        .stdout()
+        .stderr()
         .command([
             'features create',
             '--project', projectKey,
             '-i',
             ...authFlags
         ])
-        .it('returns an error if key is not provided',
-            (ctx) => {
-                expect(ctx.stdout).to.contain(
-                    'key is a required field'
-                )
-            })
+        .catch((err) => null)
+        .it('returns an error if key is not provided', (ctx) => {
+            expect(ctx.stderr).to.contain('key is a required field')
+        })
     
     dvcTest()
         .stub(inquirer, 'prompt', () => ({
@@ -244,19 +241,17 @@ describe('features create', () => {
             .get(`/v1/projects/${projectKey}`)
             .reply(200, mockProject)
         )
-        .stdout()
+        .stderr()
         .command([
             'features create',
             '--project', projectKey,
             '-i',
             ...authFlags
         ])
-        .it('returns an error if name is not provided',
-            (ctx) => {
-                expect(ctx.stdout).to.contain(
-                    'name is a required field'
-                )
-            })
+        .catch((err) => null)
+        .it('returns an error if name is not provided', (ctx) => {
+            expect(ctx.stderr).to.contain('name is a required field')
+        })
 
     dvcTest()
         .stub(inquirer, 'prompt', () => ({

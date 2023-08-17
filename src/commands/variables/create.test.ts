@@ -71,7 +71,7 @@ describe('variables create', () => {
             })
 
     dvcTest()
-        .stdout()
+        .stderr()
         .command([
             'variables create',
             '--project', projectKey,
@@ -81,9 +81,8 @@ describe('variables create', () => {
             '--headless',
             ...authFlags
         ])
-        .it('Errors when called in headless mode with no key',
-            (ctx) => {
-                expect(ctx.stdout).to.contain('The key, name, feature, and type flags are required')
-            })
+        .it('Errors when called in headless mode with no key', (ctx) => {
+            expect(ctx.stderr).to.contain('The key, name, feature, and type flags are required')
+        })
 
 })
