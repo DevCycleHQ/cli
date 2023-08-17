@@ -189,10 +189,10 @@ describe('targeting get', () => {
             })
 
     dvcTest()
-        .stdout()
+        .stderr()
         .command(['targeting get', '--headless', ...authFlags])
         .it('does not prompt when using --headless',
             (ctx) => {
-                expect(ctx.stdout).to.contain('Feature argument is required')
+                expect(ctx.stderr).to.contain('Feature argument is required')
             })
 })

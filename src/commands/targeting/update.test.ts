@@ -222,7 +222,7 @@ describe('targeting update', () => {
         })
 
     dvcTest()
-        .stdout()
+        .stderr()
         .command([
             'targeting update',
             '--project', projectKey,
@@ -231,7 +231,7 @@ describe('targeting update', () => {
             '--targets', '[{ "name": "All Users", "serve": "variation-on", "definition": [{ "type": "all" }] }]'
         ])
         .it('fails to update a target in headless mode without feature key', (ctx) => {
-            expect(ctx.stdout).contains('Feature and environment arguments are required')
+            expect(ctx.stderr).contains('Feature and environment arguments are required')
         })
 
     let promptCount = 0
