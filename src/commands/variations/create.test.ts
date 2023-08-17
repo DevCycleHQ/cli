@@ -191,15 +191,16 @@ describe('variations create', () => {
                 'new-variable': false
             }
         })
-        .stdout()
+        .stderr()
         .command([
             'variations create', featureKey,
             '--project', projectKey,
             '--headless',
             ...authFlags
         ])
+        .catch((err) => null)
         .it('errors when missing required flags in headless mode',
             (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
+                expect(ctx.stderr).toMatchSnapshot()
             })
 })

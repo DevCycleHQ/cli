@@ -57,10 +57,9 @@ describe('variations list', () => {
             })
 
     dvcTest()
-        .stdout()
+        .stderr()
         .command(['variations list', '--headless', '--project', projectKey, ...authFlags])
-        .it('does not prompt when using --headless',
-            (ctx) => {
-                expect(ctx.stdout).to.contain('In headless mode, feature is required')
-            })
+        .it('does not prompt when using --headless', (ctx) => {
+            expect(ctx.stderr).to.contain('In headless mode, feature is required')
+        })
 })

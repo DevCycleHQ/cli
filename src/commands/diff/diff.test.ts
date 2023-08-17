@@ -70,12 +70,13 @@ describe('diff', () => {
                 message: 'Failed auth'
             })
         })
-        .stdout()
+        .stderr()
         .command(['diff', '--file',
             './test-utils/fixtures/diff/e2e',
             '--client-id', 'client', '--client-secret', 'secret', '--project', 'project'])
+        .catch((err) => null)
         .it('runs with failed api authorization', (ctx) => {
-            expect(ctx.stdout).to.contain('Failed to authenticate with the DevCycle API. Check your credentials.')
+            expect(ctx.stderr).to.contain('Failed to authenticate with the DevCycle API. Check your credentials.')
         })
 
     test

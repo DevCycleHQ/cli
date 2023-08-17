@@ -88,7 +88,7 @@ describe('features update', () => {
         )
 
     dvcTest()
-        .stdout()
+        .stderr()
         .command([
             'features update',
             '--project', projectKey,
@@ -102,7 +102,7 @@ describe('features update', () => {
         ])
         .it('returns an error if key is not provided in headless mode',
             (ctx) => {
-                expect(ctx.stdout).to.contain('The key argument is required')
+                expect(ctx.stderr).to.contain('The key argument is required')
             }
         )
 
