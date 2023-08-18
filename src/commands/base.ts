@@ -99,6 +99,7 @@ export default abstract class Base extends Command {
             } else {
                 this.writer.showError(error.message)
             }
+            Object.assign(error, { skipOclifErrorHandling: 1 })
             throw error
         }
     }
