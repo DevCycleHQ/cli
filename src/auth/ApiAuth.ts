@@ -141,7 +141,11 @@ export class ApiAuth {
             storeAccessToken({ accessToken, refreshToken }, this.authPath)
             return accessToken
         } catch (e) {
-            throw new Error('Failed to refresh DevCycle API token.')
+            let msg = 'Failed to refresh DevCycle API token. Please login using "dvc login again"'
+            if (e instanceof Error) {
+                msg += ` ${e.message}`
+            }
+            throw new Error(msg)
         }
     }
 }
