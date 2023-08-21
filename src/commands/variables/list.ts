@@ -6,6 +6,9 @@ export default class ListVariables extends Base {
     static hidden = false
     static flags = {
         ...Base.flags,
+        'search': Flags.string({
+            description: 'Filter variables by search query'
+        }),
         'page': Flags.integer({
             description: 'Page number to fetch'
         }),
@@ -23,6 +26,7 @@ export default class ListVariables extends Base {
         const query = {
             page: flags['page'],
             perPage: flags['per-page'],
+            search: flags['search'],
         }
         const variables = await fetchVariables(this.authToken, this.projectKey, query)
         const variableKeys = variables.map((variable) => variable.key)

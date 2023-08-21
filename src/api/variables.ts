@@ -58,6 +58,7 @@ export const fetchVariables = async (
         feature?: string
         page?: number
         perPage?: number
+        search?: string
     } = {}
 ) => {
     return await apiClient.get('/v1/projects/:project/variables', {

@@ -15,6 +15,15 @@ export default class DetailedFeatures extends Base {
         'keys': Flags.string({
             description: 'Comma-separated list of feature keys to fetch details for',
         }),
+        'search': Flags.string({
+            description: 'Filter features by search query'
+        }),
+        'page': Flags.integer({
+            description: 'Page number to fetch'
+        }),
+        'per-page': Flags.integer({
+            description: 'Number of features to fetch per page'
+        })
     }
     authRequired = true
 
@@ -30,7 +39,12 @@ export default class DetailedFeatures extends Base {
                 (key) => fetchFeatureByKey(this.authToken, this.projectKey, key)
             )
         } else {
-            features = await fetchFeatures(this.authToken, this.projectKey)
+            const query = {
+                page: flags['page'],
+                perPage: flags['per-page'],
+                search: flags['search'],
+            }
+            features = await fetchFeatures(this.authToken, this.projectKey, query)
         }
 
         this.writer.showResults(features)

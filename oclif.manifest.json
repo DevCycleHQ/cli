@@ -3729,6 +3729,12 @@
           "description": "Comma-separated list of variable keys to fetch details for",
           "multiple": false
         },
+        "search": {
+          "name": "search",
+          "type": "option",
+          "description": "Filter variables by search query",
+          "multiple": false
+        },
         "page": {
           "name": "page",
           "type": "option",
@@ -3824,6 +3830,12 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "search": {
+          "name": "search",
+          "type": "option",
+          "description": "Filter variables by search query",
+          "multiple": false
         },
         "page": {
           "name": "page",
