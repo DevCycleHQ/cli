@@ -31,7 +31,7 @@ export const variationChoices = async (input: Record<string, any>):Promise<Varia
 }
 
 export const featureVariableChoices = async (authToken: string, projectKey: string, featureKey: string) => {
-    const variablesMap = await fetchVariables(authToken, projectKey, featureKey)
+    const variablesMap = await fetchVariables(authToken, projectKey, { feature: featureKey })
     const choices = []
     for (const variable of variablesMap) {
         const displayVariableType = chalk.dim(`(${variable.type})`)

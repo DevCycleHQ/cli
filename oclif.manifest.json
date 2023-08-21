@@ -1,5 +1,5 @@
 {
-  "version": "5.4.2",
+  "version": "5.4.3",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -3728,6 +3728,18 @@
           "type": "option",
           "description": "Comma-separated list of variable keys to fetch details for",
           "multiple": false
+        },
+        "page": {
+          "name": "page",
+          "type": "option",
+          "description": "Page number to fetch",
+          "multiple": false
+        },
+        "per-page": {
+          "name": "per-page",
+          "type": "option",
+          "description": "Number of variables to fetch per page",
+          "multiple": false
         }
       },
       "args": {}
@@ -3812,6 +3824,18 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "page": {
+          "name": "page",
+          "type": "option",
+          "description": "Page number to fetch",
+          "multiple": false
+        },
+        "per-page": {
+          "name": "per-page",
+          "type": "option",
+          "description": "Number of variables to fetch per page",
+          "multiple": false
         }
       },
       "args": {}

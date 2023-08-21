@@ -51,18 +51,23 @@ export const updateVariable = async (
         })
 }
 
-export const fetchVariables = async (token: string, project_id: string, feature_id?: string) => {
+export const fetchVariables = async (
+    token: string,
+    project_id: string,
+    queries: {
+        feature?: string
+        page?: number
+        perPage?: number
+    } = {}
+) => {
     return await apiClient.get('/v1/projects/:project/variables', {
         headers: {
-            'Content-Type': 'application/json',
             Authorization: token,
         },
         params: {
             project: project_id,
         },
-        queries: {
-            ...(feature_id && { feature: feature_id })
-        }
+        queries
     })
 }
 
@@ -104,7 +109,6 @@ export const fetchVariableByKey = async (token: string, project_id: string, key:
     try {
         const response = await apiClient.get('/v1/projects/:project/variables/:key', {
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: token,
             },
             params: {
