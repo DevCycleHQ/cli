@@ -74,7 +74,7 @@ export default class CreateVariation extends CreateCommand {
                 }
                 feature_id = feature._id
             }
-            const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, feature_id)
+            const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, { feature: feature_id })
             variableAnswers = await promptForVariationVariableValues(
                 variablesForFeature
             )

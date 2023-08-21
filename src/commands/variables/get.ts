@@ -10,6 +10,12 @@ export default class DetailedVariables extends Base {
         'keys': Flags.string({
             description: 'Comma-separated list of variable keys to fetch details for',
         }),
+        'page': Flags.integer({
+            description: 'Page number to fetch'
+        }),
+        'per-page': Flags.integer({
+            description: 'Number of variables to fetch per page'
+        })
     }
     authRequired = true
 
@@ -27,7 +33,11 @@ export default class DetailedVariables extends Base {
             )
 
         } else {
-            variables = await fetchVariables(this.authToken, this.projectKey)
+            const query = {
+                page: flags['page'],
+                perPage: flags['per-page'],
+            }
+            variables = await fetchVariables(this.authToken, this.projectKey, query)
         }
         this.writer.showResults(variables)
     }
