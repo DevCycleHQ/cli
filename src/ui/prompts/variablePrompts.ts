@@ -19,7 +19,7 @@ let choices: { name: string, value: Variable }[]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const variableChoices = async (input: Record<string, any>, search: string): Promise<VariableChoice[]> => {
     if (!choices) {
-        const variables = await fetchVariables(input.token, input.projectKey)
+        const variables = await fetchVariables(input.token, input.projectKey, { perPage: 1000 })
         choices = variables.map((variable) => {
             const name = variable.name ? `${variable.name} ${chalk.dim(`(${variable.key})`)}` : variable.key
             return {
