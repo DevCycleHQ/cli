@@ -2,66 +2,66 @@ import { expect } from '@oclif/test'
 import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 
-describe('variables get', () => {
+describe('features get', () => {
     const projectKey = 'test-project'
     const authFlags = ['--client-id', 'test-client-id', '--client-secret', 'test-client-secret']
 
-    const mockVariables = [
+    const mockFeatures = [
         {
-            key: 'variable-1',
-            name: 'Variable 1',
+            key: 'feature-1',
+            name: 'Feature 1',
             _id: '61450f3daec96f5cf4a49946'
         },
         {
-            key: 'variable-2',
-            name: 'Variable 2',
+            key: 'feature-2',
+            name: 'Feature 2',
             _id: '61450f3daec96f5cf4a49947',
         }
     ]
 
     dvcTest()
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/variables`)
-            .reply(200, mockVariables)
+            .get(`/v1/projects/${projectKey}/features`)
+            .reply(200, mockFeatures)
         )
         .stdout()
-        .command(['variables get', '--project', projectKey, ...authFlags])
-        .it('returns a list of variable objects', (ctx) => {
-            expect(ctx.stdout).to.contain(JSON.stringify(mockVariables, null, 2))
+        .command(['features get', '--project', projectKey, ...authFlags])
+        .it('returns a list of feature objects', (ctx) => {
+            expect(ctx.stdout).to.contain(JSON.stringify(mockFeatures, null, 2))
         })
 
     dvcTest()
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/variables`)
+            .get(`/v1/projects/${projectKey}/features`)
             .query({ page: 2, perPage: 10 })
-            .reply(200, mockVariables)
+            .reply(200, mockFeatures)
         )
         .stdout()
         .command([
-            'variables get',
+            'features get',
             '--project', projectKey,
             '--page', '2',
             '--per-page', '10',
             ...authFlags
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).to.contain(JSON.stringify(mockVariables, null, 2))
+            expect(ctx.stdout).to.contain(JSON.stringify(mockFeatures, null, 2))
         })
 
     dvcTest()
         .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/variables`)
+            .get(`/v1/projects/${projectKey}/features`)
             .query({ search: 'hello world' })
-            .reply(200, mockVariables)
+            .reply(200, mockFeatures)
         )
         .stdout()
         .command([
-            'variables get',
+            'features get',
             '--project', projectKey,
             '--search', 'hello world',
             ...authFlags
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).to.contain(JSON.stringify(mockVariables, null, 2))
+            expect(ctx.stdout).to.contain(JSON.stringify(mockFeatures, null, 2))
         })
 })

@@ -46,13 +46,14 @@ DESCRIPTION
 ```
 USAGE
   $ dvc variables get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--keys <value>] [--page <value>]
-    [--per-page <value>]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--keys <value>] [--search <value>]
+    [--page <value>] [--per-page <value>]
 
 FLAGS
   --keys=<value>      Comma-separated list of variable keys to fetch details for
   --page=<value>      Page number to fetch
   --per-page=<value>  Number of variables to fetch per page
+  --search=<value>    Filter variables by search query
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
@@ -71,11 +72,13 @@ GLOBAL FLAGS
 ```
 USAGE
   $ dvc variables list [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--page <value>] [--per-page <value>]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--search <value>] [--page <value>]
+    [--per-page <value>]
 
 FLAGS
   --page=<value>      Page number to fetch
   --per-page=<value>  Number of variables to fetch per page
+  --search=<value>    Filter variables by search query
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

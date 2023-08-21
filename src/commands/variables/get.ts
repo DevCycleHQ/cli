@@ -10,6 +10,9 @@ export default class DetailedVariables extends Base {
         'keys': Flags.string({
             description: 'Comma-separated list of variable keys to fetch details for',
         }),
+        'search': Flags.string({
+            description: 'Filter variables by search query'
+        }),
         'page': Flags.integer({
             description: 'Page number to fetch'
         }),
@@ -36,6 +39,7 @@ export default class DetailedVariables extends Base {
             const query = {
                 page: flags['page'],
                 perPage: flags['per-page'],
+                search: flags['search'],
             }
             variables = await fetchVariables(this.authToken, this.projectKey, query)
         }
