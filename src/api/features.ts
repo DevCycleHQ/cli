@@ -6,12 +6,22 @@ import { buildHeaders } from './common'
 
 const FEATURE_URL = '/v1/projects/:project/features'
 
-export const fetchFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
+export const fetchFeatures = async (
+    token: string,
+    project_id: string,
+    queries: {
+        feature?: string
+        page?: number
+        perPage?: number
+        search?: string
+    } = {}
+): Promise<Feature[]> => {
     const response = await apiClient.get(FEATURE_URL, {
         headers: buildHeaders(token),
         params: {
             project: project_id
-        }
+        },
+        queries
     })
 
     return response

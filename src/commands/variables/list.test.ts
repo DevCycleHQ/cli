@@ -26,10 +26,9 @@ describe('variables list', () => {
         )
         .stdout()
         .command(['variables list', '--project', projectKey, ...authFlags])
-        .it('returns a list of variable keys',
-            (ctx) => {
-                expect(ctx.stdout).to.contain(JSON.stringify(['variable-1', 'variable-2'], null, 2))
-            })
+        .it('returns a list of variable keys', (ctx) => {
+            expect(ctx.stdout).to.contain(JSON.stringify(['variable-1', 'variable-2'], null, 2))
+        })
 
     dvcTest()
         .nock(BASE_URL, (api) => api
@@ -45,8 +44,24 @@ describe('variables list', () => {
             '--per-page', '10',
             ...authFlags
         ])
-        .it('passes pagination params to api',
-            (ctx) => {
-                expect(ctx.stdout).to.contain(JSON.stringify(['variable-1', 'variable-2'], null, 2))
-            })
+        .it('passes pagination params to api', (ctx) => {
+            expect(ctx.stdout).to.contain(JSON.stringify(['variable-1', 'variable-2'], null, 2))
+        })
+    
+    dvcTest()
+        .nock(BASE_URL, (api) => api
+            .get(`/v1/projects/${projectKey}/variables`)
+            .query({ search: 'hello world' })
+            .reply(200, mockVariables)
+        )
+        .stdout()
+        .command([
+            'variables list',
+            '--project', projectKey,
+            '--search', 'hello world',
+            ...authFlags
+        ])
+        .it('passes search param to api', (ctx) => {
+            expect(ctx.stdout).to.contain(JSON.stringify(['variable-1', 'variable-2'], null, 2))
+        })
 })
