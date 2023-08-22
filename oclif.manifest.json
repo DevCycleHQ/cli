@@ -1563,6 +1563,24 @@
           "type": "option",
           "description": "Comma-separated list of feature keys to fetch details for",
           "multiple": false
+        },
+        "search": {
+          "name": "search",
+          "type": "option",
+          "description": "Filter features by search query",
+          "multiple": false
+        },
+        "page": {
+          "name": "page",
+          "type": "option",
+          "description": "Page number to fetch",
+          "multiple": false
+        },
+        "per-page": {
+          "name": "per-page",
+          "type": "option",
+          "description": "Number of features to fetch per page",
+          "multiple": false
         }
       },
       "args": {}
@@ -1648,6 +1666,24 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "search": {
+          "name": "search",
+          "type": "option",
+          "description": "Filter features by search query",
+          "multiple": false
+        },
+        "page": {
+          "name": "page",
+          "type": "option",
+          "description": "Page number to fetch",
+          "multiple": false
+        },
+        "per-page": {
+          "name": "per-page",
+          "type": "option",
+          "description": "Number of features to fetch per page",
+          "multiple": false
         }
       },
       "args": {}
