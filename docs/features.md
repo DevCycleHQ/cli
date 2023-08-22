@@ -76,10 +76,14 @@ Retrieve Features from the Management API
 ```
 USAGE
   $ dvc features get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--keys <value>]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--keys <value>] [--search <value>]
+    [--page <value>] [--per-page <value>]
 
 FLAGS
-  --keys=<value>  Comma-separated list of feature keys to fetch details for
+  --keys=<value>      Comma-separated list of feature keys to fetch details for
+  --page=<value>      Page number to fetch
+  --per-page=<value>  Number of features to fetch per page
+  --search=<value>    Filter features by search query
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
@@ -108,7 +112,13 @@ View all features in a project
 ```
 USAGE
   $ dvc features list [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--search <value>] [--page <value>]
+    [--per-page <value>]
+
+FLAGS
+  --page=<value>      Page number to fetch
+  --per-page=<value>  Number of features to fetch per page
+  --search=<value>    Filter features by search query
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
