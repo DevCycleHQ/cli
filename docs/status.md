@@ -29,4 +29,4 @@ DESCRIPTION
   Print CLI version information, configuration file locations and auth status.
 ```
 
-_See code: [dist/commands/status/index.ts](https://github.com/DevCycleHQ/cli/blob/v5.5.0/dist/commands/status/index.ts)_
+_See code: [dist/commands/status/index.ts](https://github.com/DevCycleHQ/cli/blob/v5.6.0/dist/commands/status/index.ts)_
