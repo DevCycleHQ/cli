@@ -9,6 +9,7 @@ import { AUTH_URL } from '../api/common'
 import { TokenCache } from './TokenCache'
 import { getOrgIdFromToken, getTokenExpiry, shouldRefreshToken } from './utils'
 import { CLI_CLIENT_ID } from './SSOAuth'
+import Writer from '../ui/writer'
 
 type SupportedFlags = {
     'client-id'?: string
@@ -16,11 +17,13 @@ type SupportedFlags = {
 }
 
 export class ApiAuth {
-    private authPath: string
     private tokenCache: TokenCache
 
-    constructor(authPath: string, cacheDir: string) {
-        this.authPath = authPath
+    constructor(
+        private authPath: string,
+        cacheDir: string,
+        private writer: Writer
+    ) {
         this.tokenCache = new TokenCache(cacheDir)
     }
 
@@ -145,7 +148,7 @@ export class ApiAuth {
             if (e instanceof Error) {
                 msg += ` ${e.message}`
             }
-            console.log(msg)
+            this.writer.warningMessage(msg)
             return ''
         }
     }
