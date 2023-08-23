@@ -105,7 +105,7 @@ export default abstract class Base extends Command {
     }
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
-        const auth = new ApiAuth(this.authPath, this.config.cacheDir)
+        const auth = new ApiAuth(this.authPath, this.config.cacheDir, this.writer)
         this.authToken = await auth.getToken(flags, this.orgId)
         this.personalAccessToken = auth.getPersonalToken()
 
