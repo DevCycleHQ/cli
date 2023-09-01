@@ -38,7 +38,8 @@ export default class UpdateIdentity extends UpdateCommand {
         if (existingUserId) {
             const { confirmUpdate } = await inquirer.prompt([{
                 name: 'confirmUpdate',
-                message: `A User ID (${existingUserId}) is associated with your account for this project (${this.projectKey}). Would you like to update it?`,
+                message: `A User ID (${existingUserId}) is associated with your account ` +
+                    `for this project (${this.projectKey}). Would you like to update it?`,
                 type: 'confirm'
             }])
 
@@ -55,10 +56,12 @@ export default class UpdateIdentity extends UpdateCommand {
             dvcUserId = flags.userId
         }
 
-        if (dvcUserId.trim() === '') {
+        const isClearingDVCUserId = dvcUserId.trim() === ''
+        if (isClearingDVCUserId) {
             const { confirmClear } = await inquirer.prompt([{
                 name: 'confirmClear',
-                message: `Clearing your DevCycle User ID for project: ${this.projectKey} will remove ALL overrides. Are you sure?`,
+                message: `Clearing your DevCycle User ID for project: ${this.projectKey} ` +
+                    'will remove ALL overrides. Are you sure?',
                 type: 'confirm'
             }])
             if (!confirmClear) {
@@ -71,7 +74,10 @@ export default class UpdateIdentity extends UpdateCommand {
             dvcUserId: dvcUserId
         })
 
-        this.writer.showResults(`Successfully updated the DevCycle User ID for project: ${this.projectKey}`)
+        this.writer.showResults(
+            `Successfully ${isClearingDVCUserId ? 'removed' : 'updated'} ` +
+            `the DevCycle User ID for project: ${this.projectKey}`
+        )
     }
 
     private generateNoChangesMessage(projectKey: string, existingUserId?: string) {
