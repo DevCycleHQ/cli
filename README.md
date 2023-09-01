@@ -119,7 +119,7 @@ USAGE
 * [`dvc features`](docs/features.md) - Create, view, or modify Features with the Management API.
 * [`dvc generate`](docs/generate.md) - Generate Devcycle related files.
 * [`dvc help`](docs/help.md) - Display help for dvc.
-* [`dvc identity`](docs/identity.md) - Update your DevCycle Identity.
+* [`dvc identity`](docs/identity.md) - View or update your DevCycle Identity.
 * [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the Management API.
 * [`dvc login`](docs/login.md) - Log in to DevCycle.
 * [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
