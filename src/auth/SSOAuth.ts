@@ -98,6 +98,15 @@ export default class SSOAuth {
         })
         // prevents keep-alive connections from keeping the server running after close()
         this.server.on('connection', (socket) => { socket.unref() })
+
+        this.server.on('error', (err: Error & { code: string }) => {
+            if (err.code === 'EADDRINUSE') {
+                this.writer.showError(`Port ${PORT} already in use. Unable to log in.`)
+            } else {
+                this.writer.showError(`Error: ${err.message}`)
+            }
+        })
+
         this.server.listen(PORT, host, () => {
             this.writer.statusMessage('Opening browser for authentication...')
             open(authorizeUrl)
