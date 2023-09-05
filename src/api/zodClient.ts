@@ -3426,6 +3426,63 @@ const endpoints = makeApi([
             },
         ],
     },
+    {
+        method: 'get',
+        path: '/v1/projects/:project/features/:feature/overrides/current',
+        alias: 'OverridesController_findOne',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            }
+        ],
+        response: Override,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v1/projects/:project/overrides/current',
+        alias: 'OverridesController_findOverridesForProject',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            }
+        ],
+        response: Override,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+
 ])
 
 export const api = new Zodios(endpoints)
