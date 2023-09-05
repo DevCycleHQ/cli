@@ -12,7 +12,17 @@ export default class DetailedIdentity extends Base {
         await this.requireProject(project, headless)
 
         const identity = await fetchUserProfile(this.authToken, this.projectKey)
-        this.writer.infoMessage(`DevCycle Identity for Project: ${this.projectKey}`)
-        this.writer.showResults(identity)
+        const dvcUserId = identity.dvcUserId ?? '<not set>'
+
+        this.writer.showRawResults(`Current DevCycle Project: ${this.projectKey}`)
+        this.writer.showRawResults(`SDK Associated User ID: ${dvcUserId}`)
+        if (this.hasToken()) {
+            const tokenJson = JSON.parse(Buffer.from(this.authToken.split('.')[1], 'base64').toString())
+            const email = tokenJson['https://devcycle.com/email']
+            this.writer.showRawResults(`Email: ${email}`)
+        }
+        if (!identity.dvcUserId) {
+            this.writer.infoMessageWithCommand('To set up your SDK Associated User ID, use', 'dvc identity update')
+        }
     }
 }
