@@ -1,6 +1,7 @@
 import Base from '../base'
 import { fetchUserProfile } from '../../api/userProfile'
 import { ux } from '@oclif/core'
+import { fetchOverrides } from '../../api/overrides'
 // import inquirer from 'inquirer'
 // import { featurePrompt, FeaturePromptResult } from '../../ui/prompts'
 
@@ -11,10 +12,15 @@ export default class Overrides extends Base {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(Overrides)
-        const { project, headless } = flags
-        await this.requireProject(project, headless)
+        const { feature, environment, headless } = flags        
 
         const identity = await fetchUserProfile(this.authToken, this.projectKey)
+
+        // if (feature) {
+        //     const overrides = await fetchOverrides(this.authToken, this.projectKey)
+        // } else {
+        //     const overrides = await fetchOverrides(this.authToken, this.projectKey, feature)
+        // }
 
         // allow for --feature and --environment flag in the command
         // ask question and show dropdown for answer
