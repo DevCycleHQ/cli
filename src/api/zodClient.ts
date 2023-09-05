@@ -745,6 +745,17 @@ const DeleteMetricAssociationDto = z.object({
     metric: z.string(),
     feature: z.string(),
 })
+const ProjectUserProfile = z.object({
+    _id: z.string(),
+    _project: z.string(),
+    a0_user: z.string(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    dvcUserId: z.string().optional(),
+})
+const UpdateProjectUserProfileDto = z.object({
+    dvcUserId: z.string().nullable(),
+})
 
 export const schemas = {
     EdgeDBSettings,
@@ -823,6 +834,8 @@ export const schemas = {
     MetricAssociation,
     CreateMetricAssociationDto,
     DeleteMetricAssociationDto,
+    ProjectUserProfile,
+    UpdateProjectUserProfileDto,
 }
 
 const endpoints = makeApi([
@@ -3229,6 +3242,71 @@ const endpoints = makeApi([
             {
                 status: 404,
                 schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v1/projects/:project/userProfile/current',
+        alias: 'UserProfileController_findOne',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            }
+        ],
+        response: ProjectUserProfile,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'patch',
+        path: '/v1/projects/:project/userProfile/current',
+        alias: 'UserProfileController_findOneAndUpdate',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'body',
+                type: 'Body',
+                schema: UpdateProjectUserProfileDto,
+            }
+        ],
+        response: ProjectUserProfile,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+            {
+                status: 409,
+                schema: ConflictErrorResponse,
             },
         ],
     },
