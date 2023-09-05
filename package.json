@@ -113,7 +113,7 @@
         "description": "Generate Devcycle related files."
       },
       "identity": {
-        "description": "View or update your DevCycle Identity."
+        "description": "View or manage your DevCycle Identity."
       }
     }
   },

@@ -1,7 +1,7 @@
 `dvc identity`
 ==============
 
-View or update your DevCycle Identity.
+View or manage your DevCycle Identity.
 
 * [`dvc identity get`](#dvc-identity-get)
 * [`dvc identity update`](#dvc-identity-update)
