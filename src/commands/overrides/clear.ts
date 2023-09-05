@@ -33,14 +33,16 @@ export default class DeleteOverrides extends Base {
         }
         await this.requireProject(project, headless)
 
-        const { confirmClear } = await inquirer.prompt([{
-            name: 'confirmClear',
-            message: `Are you sure you want to clear ALL Overrides for project: ${this.projectKey}?`,
-            type: 'confirm'
-        }])
-        if (!confirmClear) {
-            this.writer.warningMessage(`No Overrides cleared for project: ${this.projectKey}`)
-            return
+        if (!headless) {
+            const { confirmClear } = await inquirer.prompt([{
+                name: 'confirmClear',
+                message: `Are you sure you want to clear ALL Overrides for project: ${this.projectKey}?`,
+                type: 'confirm'
+            }])
+            if (!confirmClear) {
+                this.writer.warningMessage(`No Overrides cleared for project: ${this.projectKey}`)
+                return
+            }
         }
 
         await deleteAllProjectOverrides(this.authToken, this.projectKey)

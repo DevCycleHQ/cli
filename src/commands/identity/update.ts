@@ -35,7 +35,7 @@ export default class UpdateIdentity extends UpdateCommand {
         const { dvcUserId: existingUserId } = await fetchUserProfile(this.authToken, this.projectKey)
 
         let dvcUserId
-        if (existingUserId) {
+        if (existingUserId && !headless) {
             const { confirmUpdate } = await inquirer.prompt([{
                 name: 'confirmUpdate',
                 message: `A User ID (${existingUserId}) is associated with your account ` +
@@ -50,14 +50,19 @@ export default class UpdateIdentity extends UpdateCommand {
         }
 
         if (!flags.userId) {
-            const input = await inquirer.prompt([userIdPrompt])
-            dvcUserId = input.userId
+            if (!headless) {
+                const input = await inquirer.prompt([userIdPrompt])
+                dvcUserId = input.userId
+            } else {
+                this.writer.showError('The \'--userId\' flag is required to proceed.')
+                return
+            }
         } else {
             dvcUserId = flags.userId
         }
 
         const isClearingDVCUserId = dvcUserId.trim() === ''
-        if (isClearingDVCUserId) {
+        if (isClearingDVCUserId && !headless) {
             const { confirmClear } = await inquirer.prompt([{
                 name: 'confirmClear',
                 message: `Clearing your DevCycle User ID for project: ${this.projectKey} ` +
