@@ -3334,6 +3334,44 @@ const endpoints = makeApi([
             },
         ],
     },
+    {
+        method: 'delete',
+        path: '/v1/projects/:project/features/:feature/overrides/current',
+        alias: 'OverridesController_deleteFeatureOverrides',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'feature',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'environment',
+                type: 'Query',
+                schema: z.string(),
+            },
+        ],
+        response: z.void(),
+        errors: [
+            {
+                status: 400,
+                schema: BadRequestErrorResponse,
+            },
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+        ],
+    },
 ])
 
 export const api = new Zodios(endpoints)
