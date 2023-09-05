@@ -3276,7 +3276,7 @@ const endpoints = makeApi([
     {
         method: 'patch',
         path: '/v1/projects/:project/userProfile/current',
-        alias: 'UserProfileController_findOneAndUpdate',
+        alias: 'UserProfilesController_createOrUpdate',
         requestFormat: 'json',
         parameters: [
             {
@@ -3307,6 +3307,30 @@ const endpoints = makeApi([
             {
                 status: 409,
                 schema: ConflictErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'delete',
+        path: '/v1/projects/:project/overrides/current',
+        alias: 'OverridesController_deleteOverridesForProject',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.void(),
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
             },
         ],
     },

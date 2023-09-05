@@ -124,6 +124,7 @@ USAGE
 * [`dvc login`](docs/login.md) - Log in to DevCycle.
 * [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
 * [`dvc organizations`](docs/organizations.md) - List or switch organizations.
+* [`dvc overrides`](docs/overrides.md) - Create, view, or modify Overrides for a Project with the Management API.
 * [`dvc projects`](docs/projects.md) - Create, or view Projects with the Management API.
 * [`dvc repo`](docs/repo.md) - Manage repository configuration.
 * [`dvc status`](docs/status.md) - Check CLI status.

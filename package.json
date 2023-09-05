@@ -114,6 +114,9 @@
       },
       "identity": {
         "description": "View or manage your DevCycle Identity."
+      },
+      "overrides": {
+        "description": "Create, view, or modify Overrides for a Project with the Management API."
       }
     }
   },
