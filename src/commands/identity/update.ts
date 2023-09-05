@@ -44,7 +44,7 @@ export default class UpdateIdentity extends UpdateCommand {
             }])
 
             if (!confirmUpdate) {
-                this.writer.printCurrentValues(this.generateNoChangesMessage(this.projectKey, existingUserId))
+                this.writer.warningMessage(this.generateNoChangesMessage(this.projectKey, existingUserId))
                 return
             }
         }
@@ -65,7 +65,7 @@ export default class UpdateIdentity extends UpdateCommand {
                 type: 'confirm'
             }])
             if (!confirmClear) {
-                this.writer.printCurrentValues(this.generateNoChangesMessage(this.projectKey))
+                this.writer.warningMessage(this.generateNoChangesMessage(this.projectKey))
                 return
             }
         }
@@ -74,7 +74,7 @@ export default class UpdateIdentity extends UpdateCommand {
             dvcUserId: dvcUserId
         })
 
-        this.writer.showResults(
+        this.writer.successMessage(
             `Successfully ${isClearingDVCUserId ? 'removed' : 'updated'} ` +
             `the DevCycle User ID for project: ${this.projectKey}`
         )

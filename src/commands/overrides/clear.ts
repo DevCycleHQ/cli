@@ -39,12 +39,12 @@ export default class DeleteOverrides extends Base {
             type: 'confirm'
         }])
         if (!confirmClear) {
-            this.writer.showResults(`No Overrides cleared for project: ${this.projectKey}`)
+            this.writer.warningMessage(`No Overrides cleared for project: ${this.projectKey}`)
             return
         }
 
         await deleteAllProjectOverrides(this.authToken, this.projectKey)
-        this.writer.showResults(
+        this.writer.successMessage(
             `Successfully cleared all overrides for project: ${this.projectKey}`
         )
     }
