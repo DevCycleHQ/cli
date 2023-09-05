@@ -2734,7 +2734,7 @@
     },
     "overrides:clear": {
       "id": "overrides:clear",
-      "description": "Clear Overrides for a given Project.",
+      "description": "Clear Overrides for a given Feature or Project.",
       "strict": true,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
@@ -2819,6 +2819,18 @@
           "type": "boolean",
           "description": "All Overrides for the Project",
           "allowNo": false
+        },
+        "feature": {
+          "name": "feature",
+          "type": "option",
+          "description": "The key or id of the Feature to clear the Override for",
+          "multiple": false
+        },
+        "environment": {
+          "name": "environment",
+          "type": "option",
+          "description": "The key or id of the Environment to clear the Override for",
+          "multiple": false
         }
       },
       "args": {}

@@ -7,15 +7,18 @@ Create, view, or modify Overrides for a Project with the Management API.
 
 ## `dvc overrides clear`
 
-Clear Overrides for a given Project.
+Clear Overrides for a given Feature or Project.
 
 ```
 USAGE
   $ dvc overrides clear [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--all]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--all] [--feature <value>]
+    [--environment <value>]
 
 FLAGS
-  --all  All Overrides for the Project
+  --all                  All Overrides for the Project
+  --environment=<value>  The key or id of the Environment to clear the Override for
+  --feature=<value>      The key or id of the Feature to clear the Override for
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
@@ -29,5 +32,5 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 
 DESCRIPTION
-  Clear Overrides for a given Project.
+  Clear Overrides for a given Feature or Project.
 ```
