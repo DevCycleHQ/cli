@@ -22,6 +22,10 @@ export default class Writer {
         if (!this.headless) console.log((`🤖 ${message}`))
     }
 
+    public infoMessageWithCommand(message: string, command: string): void {
+        if (!this.headless) console.log((`🤖 ${message} ${chalk.bold(command)}`))
+    }
+
     public title(message: string): void {
         if (!this.headless) console.log((`🤖 ${chalk.bold(message)}`))
     }
