@@ -3022,6 +3022,18 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "feature": {
+          "name": "feature",
+          "type": "option",
+          "description": "The key or id of the Feature to get Overrides for",
+          "multiple": false
+        },
+        "environment": {
+          "name": "environment",
+          "type": "option",
+          "description": "The key or id of the Environment to get Overrides for",
+          "multiple": false
         }
       },
       "args": {}

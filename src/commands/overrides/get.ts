@@ -7,19 +7,12 @@ import {
     FeaturePromptResult 
 } from '../../ui/prompts'
 import Base from '../base'
-import { Feature, Environment } from '../../api/schemas'
 import { fetchOverrides } from '../../api/overrides'
 
-type Params = {
-    featureKey?: string,
-    environment_id?: string,
-    feature?: Feature,
-    environment?: Environment
-}
 export default class DetailedTargeting extends Base {
     static hidden = false
     authRequired = true
-    static description = 'Retrieve Targeting for a Feature from the Management API'
+    static description = 'View the overrides associated with your DevCycle Identity in your current project.'
     prompts = [
         featurePrompt,
         environmentPrompt
@@ -42,36 +35,54 @@ export default class DetailedTargeting extends Base {
         const { headless, project, feature, environment } = flags
 
         await this.requireProject(project, headless)
-        const params: Params = {}
+        let overrides
+        let featureKey, environmentKey
 
         if (!headless) {
             Object.keys(args).forEach((key) => {
                 this.prompts = this.prompts.filter((prompt) => prompt.name !== key)
             })
 
-            if (!feature && !environment) {
-                const responses = await inquirer.prompt<FeaturePromptResult & EnvironmentPromptResult>(
-                    this.prompts,
-                    {
+            featureKey = feature
+            if (!feature) {
+                const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
+                    token: this.authToken,
+                    projectKey: this.projectKey
+                })
+                featureKey = featurePromptResult.feature.key
+            }
+    
+            environmentKey = environment
+            if (!environment) {
+                const { environment: environmentPromptResult } = await inquirer.prompt<EnvironmentPromptResult>(
+                    [environmentPrompt], {
                         token: this.authToken,
                         projectKey: this.projectKey
-                    }
-                )
-                Object.assign(params, {
-                    feature: responses.feature,
-                    featureKey: responses.feature.key,
-                    environment_id: responses.environment?.key,
-                    environment: responses.environment
-                })
+                    })
+                environmentKey = environmentPromptResult.key
             }
-        }
 
-        if (headless && !feature && !environment) {
+            overrides = await fetchOverrides(this.authToken, this.projectKey, featureKey)
+        } else if (!feature || !environment) {
             this.writer.showError('Feature and environment arguments are required')
             return
         }
 
-        const overrides = await fetchOverrides(this.authToken, this.projectKey, feature)
+        // TODO: figure out how to access variationKey from overrides object
+        const variationKey = overrides && overrides[0] ? overrides[0]._variation : '<not-set>' // always returns '<not-set>' :(
+
+        // access the override object's environment, and set variationKey to <not-set> if it's not the environment the user chose
+        this.writer.showResults(`Override for feature: ${featureKey?.toLowerCase()} on environment: ${environmentKey?.toLowerCase()} is variation: ${variationKey}`) 
         this.writer.showResults(overrides)
     }
 }
+
+// NOTE: ANY TEST CASE WHERE AN OVERRIDE SHOULD BE RETURNED SHOWS A VARIATIONKEY OF '<not-set>'
+// test: headless no flags ✅
+// test: headless and feature flag ✅
+// test: headless and environment flag ✅
+// test: headless and both flags ❌ only returns override for environment using overrides, environment flag is essentially ignored
+// test: not headless, no flags ✅
+// test: not headless, feature flag ✅
+// test: not headless, environment flag ✅
+// test: not headless, both flags ✅

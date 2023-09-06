@@ -44,7 +44,12 @@ View the overrides associated with your DevCycle Identity in your current projec
 ```
 USAGE
   $ dvc overrides get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--feature <value>] [--environment
+    <value>]
+
+FLAGS
+  --environment=<value>  The key or id of the Environment to get Overrides for
+  --feature=<value>      The key or id of the Feature to get Overrides for
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
