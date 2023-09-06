@@ -3,7 +3,13 @@ import { fetchUserProfile } from '../../api/userProfile'
 import { ux } from '@oclif/core'
 import { fetchOverrides } from '../../api/overrides'
 import inquirer from '../../ui/autocomplete'
-import { environmentPrompt, EnvironmentPromptResult, featurePrompt, FeaturePromptResult, PromptResult } from '../../ui/prompts'
+import { 
+    environmentPrompt, 
+    EnvironmentPromptResult, 
+    featurePrompt, 
+    FeaturePromptResult, 
+    PromptResult 
+} from '../../ui/prompts'
 import { ListOption, ListOptionsPrompt } from '../../ui/prompts/listPrompts/listOptionsPrompt'
 
 export default class Overrides extends Base {
@@ -22,7 +28,7 @@ export default class Overrides extends Base {
 
     public async run(): Promise<void> {
         const { args, flags } = await this.parse(Overrides)
-        const { feature, environment, headless } = flags // does this actually get the flag values or just check to see if the flag was added?
+        const { feature, environment, headless } = flags
 
         type AllOrFeaturePromptResult = {
             allOrFeature: 'all' | 'feature'
@@ -38,7 +44,6 @@ export default class Overrides extends Base {
             projectKey: this.projectKey
         })
         this.writer.showResults(allOrFeature) // why does this show up as undefined?
-
 
         // if [USER SELECTS ALL IN THE PROMPT]
         //     const overrides = await fetchOverrides(this.authToken, this.projectKey)
@@ -74,7 +79,6 @@ export default class Overrides extends Base {
         // })
         // this.writer.printCurrentValues(environment)
 
-
         // WIP IDK HOW TO MAKE THIS TABLE PRINT THINGS OUT
         // const overrides = await fetchOverrides(this.authToken, this.projectKey, featureKey)
         // ux.table(overrides, {
@@ -89,5 +93,3 @@ export default class Overrides extends Base {
         // })
     }
 }
-
-

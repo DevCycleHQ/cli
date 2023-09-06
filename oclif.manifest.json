@@ -2943,7 +2943,7 @@
     },
     "overrides:get": {
       "id": "overrides:get",
-      "description": "View your Self-Targeting overrides.",      
+      "description": "View the overrides associated with your DevCycle Identity in your current project.",
       "strict": true,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
@@ -3022,18 +3022,6 @@
             "cli",
             "vscode_extension"
           ]
-        },
-        "feature": {
-          "name": "feature",
-          "type": "option",
-          "description": "The key or ID of the feature to view Self-Targeting overrides for",
-          "multiple": false
-        },
-        "environment": {
-          "name": "environment",
-          "type": "option",
-          "description": "The key or ID of the environment to view Self-Targeting overrides for",
-          "multiple": false
         }
       },
       "args": {}
