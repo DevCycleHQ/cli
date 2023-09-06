@@ -10,6 +10,7 @@ export type Feature = z.infer<typeof schemas.Feature>
 export type FeatureConfig = z.infer<typeof schemas.FeatureConfig>
 export type Audience = z.infer<typeof schemas.Audience>
 export type Target = z.infer<typeof schemas.Target>
+export type Override = z.infer<typeof schemas.Override>
 
 export type CreateEnvironmentParams = z.infer<typeof schemas.CreateEnvironmentDto>
 export const CreateEnvironmentDto = schemas.CreateEnvironmentDto
@@ -64,7 +65,10 @@ export const UserCustomFilterSchema = schemas.UserCustomFilter
 export type AudienceMatchFilter = z.infer<typeof schemas.AudienceMatchFilter>
 export const AudienceMatchFilterSchema = schemas.AudienceMatchFilter
 
-export type Filter = 
+export type UpdateOverrideParams = z.infer<typeof schemas.UpdateUserOverrideDto>
+export const UpdateOverrideDto = schemas.UpdateUserOverrideDto
+
+export type Filter =
   | AllFilter
   | UserFilter
   | UserCountryFilter
