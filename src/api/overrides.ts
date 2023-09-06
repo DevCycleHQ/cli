@@ -1,5 +1,6 @@
 import apiClient from './apiClient'
 import { buildHeaders } from './common'
+import { Override, UpdateOverrideParams } from './schemas'
 
 const BASE_URL = '/v1/projects/:project'
 
@@ -34,3 +35,20 @@ export const deleteFeatureOverrides = async (
             },
         })
 }
+export const updateOverride = async (
+    token: string,
+    project_id: string,
+    feature_id: string,
+    params: UpdateOverrideParams,
+): Promise<Override> => {
+    return await apiClient.put(`${BASE_URL}/features/:feature/overrides/current`, params, {
+        headers: buildHeaders(token),
+        params: {
+            project: project_id,
+            feature: feature_id,
+            environment: params.environment,
+            variation: params.variation
+        }
+    })
+}
+
