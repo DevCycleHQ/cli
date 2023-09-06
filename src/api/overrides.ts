@@ -63,7 +63,7 @@ export const fetchOverrides = async (
         headers: buildHeaders(token),
         params: {
             project: project_id,
-            feature: feature_id,
+            feature: feature_id ?? '',
         }
     })
 }

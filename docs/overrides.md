@@ -9,7 +9,7 @@ Create, view, or modify Overrides for a Project with the Management API.
 
 ## `dvc overrides get`
 
-View your Self-Targeting overrides.
+View Overrides for a given Project.
 
 ```
 USAGE
@@ -29,7 +29,7 @@ GLOBAL FLAGS
   --project=<value>           Project key to use for the DevCycle API requests
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 DESCRIPTION
-  View the overrides associated with your DevCycle Identity.
+  View Overrides for a given Project.
 ```
 
 ## `dvc overrides clear`

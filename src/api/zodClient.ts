@@ -766,6 +766,7 @@ const Override = z.object({
     updatedAt: z.string().datetime(),
     a0_user: z.string().optional(),
 })
+const Overrides = z.array(Override)
 const UpdateUserOverrideDto = z.object({
     environment: z.string(),
     variation: z.string(),
@@ -852,6 +853,7 @@ export const schemas = {
     UpdateProjectUserProfileDto,
     UpdateUserOverrideDto,
     Override,
+    Overrides,
 }
 
 const endpoints = makeApi([
@@ -3438,7 +3440,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             }
         ],
-        response: Override,
+        response: Overrides,
         errors: [
             {
                 status: 401,
@@ -3466,7 +3468,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             }
         ],
-        response: Override,
+        response: Overrides,
         errors: [
             {
                 status: 401,
