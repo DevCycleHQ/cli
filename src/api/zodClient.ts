@@ -756,6 +756,20 @@ const ProjectUserProfile = z.object({
 const UpdateProjectUserProfileDto = z.object({
     dvcUserId: z.string().nullable(),
 })
+const Override = z.object({
+    _project: z.string(),
+    _environment: z.string(),
+    _feature: z.string(),
+    _variation: z.string(),
+    dvcUserId: z.string(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    a0_user: z.string().optional(),
+})
+const UpdateUserOverrideDto = z.object({
+    environment: z.string(),
+    variation: z.string(),
+})
 
 export const schemas = {
     EdgeDBSettings,
@@ -836,6 +850,8 @@ export const schemas = {
     DeleteMetricAssociationDto,
     ProjectUserProfile,
     UpdateProjectUserProfileDto,
+    UpdateUserOverrideDto,
+    Override,
 }
 
 const endpoints = makeApi([
@@ -3307,6 +3323,44 @@ const endpoints = makeApi([
             {
                 status: 409,
                 schema: ConflictErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'put',
+        path: '/v1/projects/:project/features/:feature/overrides/current',
+        alias: 'OverridesController_updateFeatureOverride',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'feature',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'body',
+                type: 'Body',
+                schema: UpdateUserOverrideDto,
+            }
+        ],
+        response: Override,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
             },
         ],
     },
