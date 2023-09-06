@@ -1,95 +1,77 @@
-import Base from '../base'
-import { fetchUserProfile } from '../../api/userProfile'
-import { ux } from '@oclif/core'
-import { fetchOverrides } from '../../api/overrides'
+import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
 import { 
     environmentPrompt, 
     EnvironmentPromptResult, 
     featurePrompt, 
-    FeaturePromptResult, 
-    PromptResult 
+    FeaturePromptResult 
 } from '../../ui/prompts'
-import { ListOption, ListOptionsPrompt } from '../../ui/prompts/listPrompts/listOptionsPrompt'
+import Base from '../base'
+import { Feature, Environment } from '../../api/schemas'
+import { fetchOverrides } from '../../api/overrides'
 
-export default class Overrides extends Base {
+type Params = {
+    featureKey?: string,
+    environment_id?: string,
+    feature?: Feature,
+    environment?: Environment
+}
+export default class DetailedTargeting extends Base {
     static hidden = false
     authRequired = true
-    static description = 'View the overrides associated with your DevCycle Identity in your current project.'
-
-    // allow for --feature and --environment flag in the command
-    // ask question and show dropdown for answer
-    // use answer to make the associated api call
-
-    // questions
-    // what's required in headless mode? --feature and --environment flags?
-    // why is it not recognizing the --feature flag?
-    // how do I write a prompt and save the value?
+    static description = 'Retrieve Targeting for a Feature from the Management API'
+    prompts = [
+        featurePrompt,
+        environmentPrompt
+    ]
+    static args = {}
+    static flags = {
+        feature: Flags.string({
+            name: 'feature',
+            description: 'The key or id of the Feature to get Overrides for',
+        }),
+        environment: Flags.string({
+            name: 'environment',
+            description: 'The key or id of the Environment to get Overrides for',
+        }),
+        ...Base.flags,
+    }
 
     public async run(): Promise<void> {
-        const { args, flags } = await this.parse(Overrides)
-        const { feature, environment, headless } = flags
+        const { args, flags } = await this.parse(DetailedTargeting)
+        const { headless, project, feature, environment } = flags
 
-        type AllOrFeaturePromptResult = {
-            allOrFeature: 'all' | 'feature'
-        } & PromptResult
-        const allOrFeaturePrompt = {
-            name: 'all or feature',
-            message: 'Would you like to see all active overrides associated to yourself or for a particular feature?',
-            choices: ['all', 'feature'],
+        await this.requireProject(project, headless)
+        const params: Params = {}
+
+        if (!headless) {
+            Object.keys(args).forEach((key) => {
+                this.prompts = this.prompts.filter((prompt) => prompt.name !== key)
+            })
+
+            if (!feature && !environment) {
+                const responses = await inquirer.prompt<FeaturePromptResult & EnvironmentPromptResult>(
+                    this.prompts,
+                    {
+                        token: this.authToken,
+                        projectKey: this.projectKey
+                    }
+                )
+                Object.assign(params, {
+                    feature: responses.feature,
+                    featureKey: responses.feature.key,
+                    environment_id: responses.environment?.key,
+                    environment: responses.environment
+                })
+            }
         }
-        // write ALL/FEATURE PROMPT
-        const { allOrFeature } = await inquirer.prompt<AllOrFeaturePromptResult>([allOrFeaturePrompt], {
-            token: this.authToken,
-            projectKey: this.projectKey
-        })
-        this.writer.showResults(allOrFeature) // why does this show up as undefined?
 
-        // if [USER SELECTS ALL IN THE PROMPT]
-        //     const overrides = await fetchOverrides(this.authToken, this.projectKey)
-        //     ux.table(overrides, {
-        //         createdAt: {minWidth: 7},
-        //         updatedAt: {minWidth: 7},
-        //         _project: {},
-        //         _feature: {},
-        //         _environment: {},
-        //         _variation: {},
-        //         dvcUserId: {},
-        //         a0_user: {},
-        //     })
-        //     return
-        // }
+        if (headless && !feature && !environment) {
+            this.writer.showError('Feature and environment arguments are required')
+            return
+        }
 
-        // let featureKey
-        // if (feature) { // IF THEY SELECT FEATURE FROM THE ALL/FEATURE PROMPT INSTEAD OF ADDING IT AS A FLAG
-        //     const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
-        //         token: this.authToken,
-        //         projectKey: this.projectKey
-        //     })
-        //     featureKey = feature.key
-        // } else {
-        //     featureKey = feature // THEY ADDED THE FEATURE FLAG
-        // }
-        // this.writer.showResult(featureKey)
-
-        // IF THEY SELECT FEATURE FROM THE PROMPT OR ADDED IT AS A FLAG BUT DIDN'T ADD THE ENVIRONMENT AS A FLAG
-        // const { environment } = await inquirer.prompt<EnvironmentPromptResult>([environmentPrompt], {
-        //     token: this.authToken,
-        //     projectKey: this.projectKey
-        // })
-        // this.writer.printCurrentValues(environment)
-
-        // WIP IDK HOW TO MAKE THIS TABLE PRINT THINGS OUT
-        // const overrides = await fetchOverrides(this.authToken, this.projectKey, featureKey)
-        // ux.table(overrides, {
-        //     createdAt: {minWidth: 7},
-        //     updatedAt: {minWidth: 7},
-        //     _project: {},
-        //     _feature: {},
-        //     _environment: {},
-        //     _variation: {},
-        //     dvcUserId: {},
-        //     a0_user: {},
-        // })
+        const overrides = await fetchOverrides(this.authToken, this.projectKey, feature)
+        this.writer.showResults(overrides)
     }
 }
