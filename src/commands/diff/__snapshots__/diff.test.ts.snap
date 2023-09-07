@@ -160,6 +160,13 @@ DevCycle Variable Changes:
 "
 `;
 
+exports[`diff returns "No DevCycle Variables Changed" when there are no changes 1`] = `
+"
+No DevCycle Variables Changed
+
+"
+`;
+
 exports[`diff runs against a test file 1`] = `
 "
 DevCycle Variable Changes:
