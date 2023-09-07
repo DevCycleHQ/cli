@@ -236,6 +236,12 @@ export default class Diff extends Base {
             )
             headerIcon = `${buildIcon(lightTogglebot)}${buildIcon(darkTogglebot)} `
         }
+
+        const totalChanges = totalAdditions + totalDeletions + totalNotices + totalCleanup
+        if (totalChanges === 0) {
+            this.log(`\n${subHeaderPrefix}${headerIcon}No DevCycle Variables Changed\n`)
+            return
+        }
         this.log(`\n${headerPrefix}${headerIcon}${headerText}`)
 
         if (totalNotices) {

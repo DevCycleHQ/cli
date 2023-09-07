@@ -192,4 +192,14 @@ describe('diff', () => {
                 expect(ctx.stdout).to.contain('Pattern for javascript parser')
 
             })
+
+    test
+        .stdout()
+        .command(['diff', '--file',
+            'test-utils/fixtures/diff/no-change', '--no-api'
+        ])
+        .it('returns "No DevCycle Variables Changed" when there are no changes',
+            (ctx) => {
+                expect(ctx.stdout).toMatchSnapshot()
+            })
 })
