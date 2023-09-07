@@ -771,6 +771,13 @@ const UpdateUserOverrideDto = z.object({
     environment: z.string(),
     variation: z.string(),
 })
+const FeatureOverride = z.object({
+    _environment: z.string(),
+    _variation: z.string(),
+})
+const FeatureOverrideResponse = z.object({
+    overrides: z.array(FeatureOverride)
+})
 
 export const schemas = {
     EdgeDBSettings,
@@ -854,6 +861,7 @@ export const schemas = {
     UpdateUserOverrideDto,
     Override,
     Overrides,
+    FeatureOverrideResponse,
 }
 
 const endpoints = makeApi([
@@ -3440,7 +3448,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             }
         ],
-        response: Override,
+        response: FeatureOverrideResponse,
         errors: [
             {
                 status: 401,

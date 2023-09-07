@@ -1,13 +1,16 @@
 import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
 import { 
+    environmentChoices,
     environmentPrompt, 
     EnvironmentPromptResult, 
     featurePrompt, 
     FeaturePromptResult 
 } from '../../ui/prompts'
 import Base from '../base'
-import { fetchOverrides } from '../../api/overrides'
+import { fetchFeatureOverridesForUser } from '../../api/overrides'
+import { fetchEnvironmentByKey, fetchEnvironments } from '../../api/environments'
+import { fetchVariationByKey } from '../../api/variations'
 
 export default class DetailedTargeting extends Base {
     static hidden = false
@@ -31,59 +34,56 @@ export default class DetailedTargeting extends Base {
     }
 
     public async run(): Promise<void> {
-        const { args, flags } = await this.parse(DetailedTargeting)
-        const { headless, project, feature, environment } = flags
-
+        const { flags } = await this.parse(DetailedTargeting)
+        const { headless, project } = flags
+        let { feature: featureKey, environment: environmentKey } = flags
         await this.requireProject(project, headless)
         let overrides
-        let featureKey, environmentKey
 
-        featureKey = feature
-        environmentKey = environment
-
-        if (!headless) {
-            Object.keys(args).forEach((key) => {
-                this.prompts = this.prompts.filter((prompt) => prompt.name !== key)
+        if (!featureKey) {
+            if (headless) {
+                this.writer.showError('Feature argument is required')
+                return
+            }
+            const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
+                token: this.authToken,
+                projectKey: this.projectKey
             })
+            featureKey = featurePromptResult.feature.key
+        }
 
-            if (!feature) {
-                const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
+        if (!environmentKey) {
+            if (headless) {
+                this.writer.showError('Environment argument is required')
+                return
+            }
+            const { environment: environmentPromptResult } = await inquirer.prompt<EnvironmentPromptResult>(
+                [environmentPrompt], {
                     token: this.authToken,
                     projectKey: this.projectKey
                 })
-                featureKey = featurePromptResult.feature.key
-            }
-    
-            if (!environment) {
-                const { environment: environmentPromptResult } = await inquirer.prompt<EnvironmentPromptResult>(
-                    [environmentPrompt], {
-                        token: this.authToken,
-                        projectKey: this.projectKey
-                    })
-                environmentKey = environmentPromptResult.key
-            }
-        } else if (!feature || !environment) {
-            this.writer.showError('Feature and environment arguments are required')
-            return
+            environmentKey = environmentPromptResult.key
         }
 
-        overrides = await fetchOverrides(this.authToken, this.projectKey, featureKey) 
+        overrides = await fetchFeatureOverridesForUser(this.authToken, this.projectKey, featureKey) 
+        const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, environmentKey)
+        const override = overrides.overrides.find((override) => override._environment === environment._id)
 
-        // TODO: figure out how to access variationKey from overrides object... currently always returning '<not-set>'
-        // TODO: set variationKey to <not-set> if environment stored in overrides object !== user-selected environment
-        const variationKey = overrides?._variation ?? '<not-set>'
-
-        this.writer.showResults(`Override for feature: ${featureKey?.toLowerCase()} on environment: ${environmentKey?.toLowerCase()} is variation: ${variationKey}`) 
-        this.writer.showResults(overrides) // displays an object with a single key, 'overrides', which is an array of Override objects: {_environment, _variation}
+        if (!override) {
+            if (headless) {
+                this.writer.showResults({environment: environment.key, variation: null})
+                return
+            }
+            this.writer.showError(`Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`)
+            this.writer.infoMessageWithCommand('To set an override, use: ', 'dvc overrides update')
+            return
+        }
+        const variation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, override._variation)
+        
+        if (headless) {
+            this.writer.showResults({environment: environment.key, variation: variation.key})
+            return
+        }
+        this.writer.successMessage(`Override for feature: ${featureKey} on environment: ${environment.key} is variation: ${variation.key}`) 
     }
 }
-
-// NOTE: ANY TEST CASE WHERE AN OVERRIDE SHOULD BE RETURNED SHOWS A VARIATIONKEY OF '<not-set>'
-// test: headless no flags ✅
-// test: headless and feature flag ✅
-// test: headless and environment flag ✅
-// test: headless and both flags ❌ only returns override for environment using overrides, environment flag is essentially ignored
-// test: not headless, no flags ✅
-// test: not headless, feature flag ✅
-// test: not headless, environment flag ✅
-// test: not headless, both flags ✅
