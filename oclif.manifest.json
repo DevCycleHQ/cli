@@ -2943,7 +2943,7 @@
     },
     "overrides:get": {
       "id": "overrides:get",
-      "description": "View the overrides associated with your DevCycle Identity in your current project.",
+      "description": "View the Overrides associated with your DevCycle Identity in your current project.",
       "strict": true,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",

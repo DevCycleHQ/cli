@@ -39,7 +39,7 @@ DESCRIPTION
 
 ## `dvc overrides get`
 
-View the overrides associated with your DevCycle Identity in your current project.
+View the Overrides associated with your DevCycle Identity in your current project.
 
 ```
 USAGE
@@ -63,7 +63,7 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 
 DESCRIPTION
-  View the overrides associated with your DevCycle Identity in your current project.
+  View the Overrides associated with your DevCycle Identity in your current project.
 ```
 
 ## `dvc overrides update`

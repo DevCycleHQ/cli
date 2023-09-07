@@ -11,10 +11,10 @@ import { fetchFeatureOverridesForUser } from '../../api/overrides'
 import { fetchEnvironmentByKey } from '../../api/environments'
 import { fetchVariationByKey } from '../../api/variations'
 
-export default class DetailedTargeting extends Base {
+export default class DetailedOverrides extends Base {
     static hidden = false
     authRequired = true
-    static description = 'View the overrides associated with your DevCycle Identity in your current project.'
+    static description = 'View the Overrides associated with your DevCycle Identity in your current project.'
     prompts = [
         featurePrompt,
         environmentPrompt
@@ -33,7 +33,7 @@ export default class DetailedTargeting extends Base {
     }
 
     public async run(): Promise<void> {
-        const { flags } = await this.parse(DetailedTargeting)
+        const { flags } = await this.parse(DetailedOverrides)
         const { headless, project } = flags
         let { feature: featureKey, environment: environmentKey } = flags
         await this.requireProject(project, headless)
@@ -71,10 +71,10 @@ export default class DetailedTargeting extends Base {
                 this.writer.showResults({ environment: environment.key, variation: null })
                 return
             }
-            this.writer.showResults(
+            this.writer.showRawResults(
                 `Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`
             )
-            this.writer.infoMessageWithCommand('To set an override, use: ', 'dvc overrides update')
+            this.writer.infoMessageWithCommand('To set an override, use:', 'dvc overrides update')
             return
         }
 
