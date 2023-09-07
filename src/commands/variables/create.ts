@@ -39,15 +39,17 @@ export default class CreateVariable extends CreateCommand {
         flags._feature = feature
 
         let params = await this.populateParametersWithZod(CreateVariableDto, this.prompts, flags)
-        const { attachToFeature } = await inquirer.prompt([{
-            name: 'attachToFeature',
-            message: 'Attach to a feature?',
-            type: 'confirm',
-            default: false
-        }])
-
-        if (attachToFeature) {
-            params = await this.populateParametersWithZod(CreateVariableDto, [variableFeaturePrompt], params)
+        if (!headless) {
+            const { associateToFeature } = await inquirer.prompt([{
+                name: 'associateToFeature',
+                message: 'Would you like to associate this variable to a feature?',
+                type: 'confirm',
+                default: false
+            }])
+    
+            if (associateToFeature) {
+                params = await this.populateParametersWithZod(CreateVariableDto, [variableFeaturePrompt], params)
+            }
         }
         const result = await createVariable(this.authToken, this.projectKey, params)
         this.writer.showResults(result)
