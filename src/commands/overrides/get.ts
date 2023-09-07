@@ -38,12 +38,14 @@ export default class DetailedTargeting extends Base {
         let overrides
         let featureKey, environmentKey
 
+        featureKey = feature
+        environmentKey = environment
+
         if (!headless) {
             Object.keys(args).forEach((key) => {
                 this.prompts = this.prompts.filter((prompt) => prompt.name !== key)
             })
 
-            featureKey = feature
             if (!feature) {
                 const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
                     token: this.authToken,
@@ -52,7 +54,6 @@ export default class DetailedTargeting extends Base {
                 featureKey = featurePromptResult.feature.key
             }
     
-            environmentKey = environment
             if (!environment) {
                 const { environment: environmentPromptResult } = await inquirer.prompt<EnvironmentPromptResult>(
                     [environmentPrompt], {
@@ -61,19 +62,19 @@ export default class DetailedTargeting extends Base {
                     })
                 environmentKey = environmentPromptResult.key
             }
-
-            overrides = await fetchOverrides(this.authToken, this.projectKey, featureKey)
         } else if (!feature || !environment) {
             this.writer.showError('Feature and environment arguments are required')
             return
         }
 
-        // TODO: figure out how to access variationKey from overrides object
-        const variationKey = overrides && overrides[0] ? overrides[0]._variation : '<not-set>' // always returns '<not-set>' :(
+        overrides = await fetchOverrides(this.authToken, this.projectKey, featureKey) 
 
-        // access the override object's environment, and set variationKey to <not-set> if it's not the environment the user chose
+        // TODO: figure out how to access variationKey from overrides object... currently always returning '<not-set>'
+        // TODO: set variationKey to <not-set> if environment stored in overrides object !== user-selected environment
+        const variationKey = overrides?._variation ?? '<not-set>'
+
         this.writer.showResults(`Override for feature: ${featureKey?.toLowerCase()} on environment: ${environmentKey?.toLowerCase()} is variation: ${variationKey}`) 
-        this.writer.showResults(overrides)
+        this.writer.showResults(overrides) // displays an object with a single key, 'overrides', which is an array of Override objects: {_environment, _variation}
     }
 }
 

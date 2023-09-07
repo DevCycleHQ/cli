@@ -3440,7 +3440,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             }
         ],
-        response: Overrides,
+        response: Override,
         errors: [
             {
                 status: 401,
@@ -3468,7 +3468,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             }
         ],
-        response: Overrides,
+        response: Override,
         errors: [
             {
                 status: 401,
