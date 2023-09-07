@@ -60,7 +60,9 @@ export default class DetailedTargeting extends Base {
             environmentKey = environmentPromptResult.key
         }
 
-        const overrides = await fetchFeatureOverridesForUser(this.authToken, this.projectKey, featureKey, environmentKey) 
+        const overrides = await fetchFeatureOverridesForUser(
+            this.authToken, this.projectKey, featureKey, environmentKey
+        )
         const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, environmentKey)
         const override = overrides.overrides.find((override) => override._environment === environment._id)
 
