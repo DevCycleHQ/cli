@@ -1,7 +1,6 @@
 import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
-import { 
-    environmentChoices,
+import {
     environmentPrompt, 
     EnvironmentPromptResult, 
     featurePrompt, 
@@ -9,7 +8,7 @@ import {
 } from '../../ui/prompts'
 import Base from '../base'
 import { fetchFeatureOverridesForUser } from '../../api/overrides'
-import { fetchEnvironmentByKey, fetchEnvironments } from '../../api/environments'
+import { fetchEnvironmentByKey } from '../../api/environments'
 import { fetchVariationByKey } from '../../api/variations'
 
 export default class DetailedTargeting extends Base {
@@ -38,7 +37,6 @@ export default class DetailedTargeting extends Base {
         const { headless, project } = flags
         let { feature: featureKey, environment: environmentKey } = flags
         await this.requireProject(project, headless)
-        let overrides
 
         if (!featureKey) {
             if (headless) {
@@ -65,25 +63,29 @@ export default class DetailedTargeting extends Base {
             environmentKey = environmentPromptResult.key
         }
 
-        overrides = await fetchFeatureOverridesForUser(this.authToken, this.projectKey, featureKey) 
+        const overrides = await fetchFeatureOverridesForUser(this.authToken, this.projectKey, featureKey) 
         const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, environmentKey)
         const override = overrides.overrides.find((override) => override._environment === environment._id)
 
         if (!override) {
             if (headless) {
-                this.writer.showResults({environment: environment.key, variation: null})
+                this.writer.showResults({ environment: environment.key, variation: null })
                 return
             }
-            this.writer.showError(`Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`)
+            this.writer.showError(
+                `Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`
+            )
             this.writer.infoMessageWithCommand('To set an override, use: ', 'dvc overrides update')
             return
         }
         const variation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, override._variation)
         
         if (headless) {
-            this.writer.showResults({environment: environment.key, variation: variation.key})
+            this.writer.showResults({ environment: environment.key, variation: variation.key })
             return
         }
-        this.writer.successMessage(`Override for feature: ${featureKey} on environment: ${environment.key} is variation: ${variation.key}`) 
+        this.writer.successMessage(
+            `Override for feature: ${featureKey} on environment: ${environment.key} is variation: ${variation.key}`
+        ) 
     }
 }
