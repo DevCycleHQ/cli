@@ -146,6 +146,5 @@ export const createVariablePrompts: (Prompt | AutoCompletePrompt)[] = [
     namePrompt,
     keyPrompt,
     descriptionPrompt,
-    variableTypePrompt,
-    variableFeaturePrompt
+    variableTypePrompt
 ]
