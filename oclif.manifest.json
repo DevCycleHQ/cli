@@ -2835,6 +2835,103 @@
       },
       "args": {}
     },
+    "overrides:get": {
+      "id": "overrides:get",
+      "description": "View the Overrides associated with your DevCycle Identity in your current project.",
+      "strict": true,
+      "pluginName": "@devcycle/cli",
+      "pluginAlias": "@devcycle/cli",
+      "pluginType": "core",
+      "hidden": false,
+      "aliases": [],
+      "flags": {
+        "config-path": {
+          "name": "config-path",
+          "type": "option",
+          "description": "Override the default location to look for the user.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "auth-path": {
+          "name": "auth-path",
+          "type": "option",
+          "description": "Override the default location to look for an auth.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "repo-config-path": {
+          "name": "repo-config-path",
+          "type": "option",
+          "description": "Override the default location to look for the repo config.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "client-id": {
+          "name": "client-id",
+          "type": "option",
+          "description": "Client ID to use for DevCycle API Authorization",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "client-secret": {
+          "name": "client-secret",
+          "type": "option",
+          "description": "Client Secret to use for DevCycle API Authorization",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "project": {
+          "name": "project",
+          "type": "option",
+          "description": "Project key to use for the DevCycle API requests",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "no-api": {
+          "name": "no-api",
+          "type": "boolean",
+          "description": "Disable API-based enhancements for commands where authorization is optional. Suppresses warnings about missing credentials.",
+          "helpGroup": "Global",
+          "allowNo": false
+        },
+        "headless": {
+          "name": "headless",
+          "type": "boolean",
+          "description": "Disable all interactive flows and format output for easy parsing.",
+          "helpGroup": "Global",
+          "allowNo": false
+        },
+        "caller": {
+          "name": "caller",
+          "type": "option",
+          "description": "The integration that is calling the CLI.",
+          "hidden": true,
+          "helpGroup": "Global",
+          "multiple": false,
+          "options": [
+            "github.pr_insights",
+            "github.code_usages",
+            "bitbucket.pr_insights",
+            "bitbucket.code_usages",
+            "cli",
+            "vscode_extension"
+          ]
+        },
+        "feature": {
+          "name": "feature",
+          "type": "option",
+          "description": "The key or id of the Feature to get Overrides for",
+          "multiple": false
+        },
+        "environment": {
+          "name": "environment",
+          "type": "option",
+          "description": "The key or id of the Environment to get Overrides for",
+          "multiple": false
+        }
+      },
+      "args": {}
+    },
     "overrides:update": {
       "id": "overrides:update",
       "description": "Update an Override",
@@ -2936,103 +3033,6 @@
           "name": "variation",
           "type": "option",
           "description": "The variation that will be used as the Override",
-          "multiple": false
-        }
-      },
-      "args": {}
-    },
-    "overrides:get": {
-      "id": "overrides:get",
-      "description": "View the Overrides associated with your DevCycle Identity in your current project.",
-      "strict": true,
-      "pluginName": "@devcycle/cli",
-      "pluginAlias": "@devcycle/cli",
-      "pluginType": "core",
-      "hidden": false,
-      "aliases": [],
-      "flags": {
-        "config-path": {
-          "name": "config-path",
-          "type": "option",
-          "description": "Override the default location to look for the user.yml file",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "auth-path": {
-          "name": "auth-path",
-          "type": "option",
-          "description": "Override the default location to look for an auth.yml file",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "repo-config-path": {
-          "name": "repo-config-path",
-          "type": "option",
-          "description": "Override the default location to look for the repo config.yml file",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "client-id": {
-          "name": "client-id",
-          "type": "option",
-          "description": "Client ID to use for DevCycle API Authorization",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "client-secret": {
-          "name": "client-secret",
-          "type": "option",
-          "description": "Client Secret to use for DevCycle API Authorization",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "project": {
-          "name": "project",
-          "type": "option",
-          "description": "Project key to use for the DevCycle API requests",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "no-api": {
-          "name": "no-api",
-          "type": "boolean",
-          "description": "Disable API-based enhancements for commands where authorization is optional. Suppresses warnings about missing credentials.",
-          "helpGroup": "Global",
-          "allowNo": false
-        },
-        "headless": {
-          "name": "headless",
-          "type": "boolean",
-          "description": "Disable all interactive flows and format output for easy parsing.",
-          "helpGroup": "Global",
-          "allowNo": false
-        },
-        "caller": {
-          "name": "caller",
-          "type": "option",
-          "description": "The integration that is calling the CLI.",
-          "hidden": true,
-          "helpGroup": "Global",
-          "multiple": false,
-          "options": [
-            "github.pr_insights",
-            "github.code_usages",
-            "bitbucket.pr_insights",
-            "bitbucket.code_usages",
-            "cli",
-            "vscode_extension"
-          ]
-        },
-        "feature": {
-          "name": "feature",
-          "type": "option",
-          "description": "The key or id of the Feature to get Overrides for",
-          "multiple": false
-        },
-        "environment": {
-          "name": "environment",
-          "type": "option",
-          "description": "The key or id of the Environment to get Overrides for",
           "multiple": false
         }
       },
