@@ -60,7 +60,7 @@ export default class DetailedTargeting extends Base {
             environmentKey = environmentPromptResult.key
         }
 
-        const overrides = await fetchFeatureOverridesForUser(this.authToken, this.projectKey, featureKey) 
+        const overrides = await fetchFeatureOverridesForUser(this.authToken, this.projectKey, featureKey, environmentKey) 
         const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, environmentKey)
         const override = overrides.overrides.find((override) => override._environment === environment._id)
 
@@ -69,7 +69,7 @@ export default class DetailedTargeting extends Base {
                 this.writer.showResults({ environment: environment.key, variation: null })
                 return
             }
-            this.writer.showError(
+            this.writer.showResults(
                 `Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`
             )
             this.writer.infoMessageWithCommand('To set an override, use: ', 'dvc overrides update')

@@ -56,7 +56,8 @@ export const updateOverride = async (
 export const fetchFeatureOverridesForUser = async (
     token: string,
     project_id: string,
-    feature_id: string
+    feature_id: string,
+    environment_id: string
 ) => {
     const endpoint = '/features/:feature/overrides/current'
     return apiClient.get(`${BASE_URL}${endpoint}`, {
@@ -64,6 +65,9 @@ export const fetchFeatureOverridesForUser = async (
         params: {
             project: project_id,
             feature: feature_id,
-        }
+        },
+        queries: {
+            environment: environment_id,
+        },
     })
 }

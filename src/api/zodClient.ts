@@ -3446,7 +3446,18 @@ const endpoints = makeApi([
                 name: 'project',
                 type: 'Path',
                 schema: z.string(),
-            }
+            },
+            {
+                name: 'feature',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'environment',
+                type: 'Query',
+                schema: z.string(),
+            },
+
         ],
         response: FeatureOverrideResponse,
         errors: [
