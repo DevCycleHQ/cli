@@ -38,11 +38,12 @@ export default class DetailedTargeting extends Base {
         let { feature: featureKey, environment: environmentKey } = flags
         await this.requireProject(project, headless)
 
+        if (headless && (!featureKey || !environmentKey)) {
+            this.writer.showError('Feature and Environment arguments are required')
+            return
+        }
+
         if (!featureKey) {
-            if (headless) {
-                this.writer.showError('Feature argument is required')
-                return
-            }
             const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
@@ -51,10 +52,6 @@ export default class DetailedTargeting extends Base {
         }
 
         if (!environmentKey) {
-            if (headless) {
-                this.writer.showError('Environment argument is required')
-                return
-            }
             const { environment: environmentPromptResult } = await inquirer.prompt<EnvironmentPromptResult>(
                 [environmentPrompt], {
                     token: this.authToken,
@@ -78,12 +75,14 @@ export default class DetailedTargeting extends Base {
             this.writer.infoMessageWithCommand('To set an override, use: ', 'dvc overrides update')
             return
         }
+
         const variation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, override._variation)
-        
+
         if (headless) {
             this.writer.showResults({ environment: environment.key, variation: variation.key })
             return
         }
+
         this.writer.successMessage(
             `Override for feature: ${featureKey} on environment: ${environment.key} is variation: ${variation.key}`
         ) 
