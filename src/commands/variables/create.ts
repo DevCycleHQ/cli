@@ -3,9 +3,9 @@ import {
     createVariable,
 } from '../../api/variables'
 import CreateCommand from '../createCommand'
-import { createVariablePrompts } from '../../ui/prompts'
+import { createVariablePrompts, variableFeaturePrompt } from '../../ui/prompts'
 import { CreateVariableDto } from '../../api/schemas'
-import { ZodError } from 'zod'
+import inquirer from '../../ui/autocomplete'
 
 export default class CreateVariable extends CreateCommand {
     static hidden = false
@@ -38,7 +38,19 @@ export default class CreateVariable extends CreateCommand {
         }
         flags._feature = feature
 
-        const params = await this.populateParametersWithZod(CreateVariableDto, this.prompts, flags)
+        let params = await this.populateParametersWithZod(CreateVariableDto, this.prompts, flags)
+        if (!headless) {
+            const { associateToFeature } = await inquirer.prompt([{
+                name: 'associateToFeature',
+                message: 'Would you like to associate this variable to a feature?',
+                type: 'confirm',
+                default: false
+            }])
+    
+            if (associateToFeature) {
+                params = await this.populateParametersWithZod(CreateVariableDto, [variableFeaturePrompt], params)
+            }
+        }
         const result = await createVariable(this.authToken, this.projectKey, params)
         this.writer.showResults(result)
     }

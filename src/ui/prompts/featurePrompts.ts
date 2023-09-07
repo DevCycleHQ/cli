@@ -23,9 +23,7 @@ export const featureChoices = async (input: Record<string, any>, search: string)
                 value: feature
             }
         })
-
     }
-
     return autocompleteSearch(choices, search)
 }
 
