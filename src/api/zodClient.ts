@@ -766,9 +766,17 @@ const Override = z.object({
     updatedAt: z.string().datetime(),
     a0_user: z.string().optional(),
 })
+const Overrides = z.array(Override)
 const UpdateUserOverrideDto = z.object({
     environment: z.string(),
     variation: z.string(),
+})
+const FeatureOverride = z.object({
+    _environment: z.string(),
+    _variation: z.string(),
+})
+const FeatureOverrideResponse = z.object({
+    overrides: z.array(FeatureOverride)
 })
 
 export const schemas = {
@@ -852,6 +860,8 @@ export const schemas = {
     UpdateProjectUserProfileDto,
     UpdateUserOverrideDto,
     Override,
+    Overrides,
+    FeatureOverrideResponse,
 }
 
 const endpoints = makeApi([
@@ -3426,6 +3436,74 @@ const endpoints = makeApi([
             },
         ],
     },
+    {
+        method: 'get',
+        path: '/v1/projects/:project/features/:feature/overrides/current',
+        alias: 'OverridesController_findOne',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'feature',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'environment',
+                type: 'Query',
+                schema: z.string(),
+            },
+
+        ],
+        response: FeatureOverrideResponse,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v1/projects/:project/overrides/current',
+        alias: 'OverridesController_findOverridesForProject',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            }
+        ],
+        response: Override,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+
 ])
 
 export const api = new Zodios(endpoints)
