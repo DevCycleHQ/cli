@@ -100,7 +100,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/5.7.0 darwin-arm64 node-v18.16.0
+@devcycle/cli/5.8.0 linux-x64 node-v18.16.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
