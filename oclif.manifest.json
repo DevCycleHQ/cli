@@ -2917,6 +2917,12 @@
             "vscode_extension"
           ]
         },
+        "all": {
+          "name": "all",
+          "type": "boolean",
+          "description": "All Overrides for the Project",
+          "allowNo": false
+        },
         "feature": {
           "name": "feature",
           "type": "option",
@@ -2928,6 +2934,79 @@
           "type": "option",
           "description": "The key or id of the Environment to get Overrides for",
           "multiple": false
+        },
+        "columns": {
+          "name": "columns",
+          "type": "option",
+          "description": "only show provided columns (comma-separated)",
+          "multiple": false,
+          "exclusive": [
+            "extended"
+          ]
+        },
+        "sort": {
+          "name": "sort",
+          "type": "option",
+          "description": "property to sort by (prepend '-' for descending)",
+          "multiple": false
+        },
+        "filter": {
+          "name": "filter",
+          "type": "option",
+          "description": "filter property by partial string matching, ex: name=foo",
+          "multiple": false
+        },
+        "csv": {
+          "name": "csv",
+          "type": "boolean",
+          "description": "output is csv format [alias: --output=csv]",
+          "allowNo": false,
+          "exclusive": [
+            "no-truncate"
+          ]
+        },
+        "output": {
+          "name": "output",
+          "type": "option",
+          "description": "output in a more machine friendly format",
+          "multiple": false,
+          "options": [
+            "csv",
+            "json",
+            "yaml"
+          ],
+          "exclusive": [
+            "no-truncate",
+            "csv"
+          ]
+        },
+        "extended": {
+          "name": "extended",
+          "type": "boolean",
+          "char": "x",
+          "description": "show extra columns",
+          "allowNo": false,
+          "exclusive": [
+            "columns"
+          ]
+        },
+        "no-truncate": {
+          "name": "no-truncate",
+          "type": "boolean",
+          "description": "do not truncate output to fit screen",
+          "allowNo": false,
+          "exclusive": [
+            "csv"
+          ]
+        },
+        "no-header": {
+          "name": "no-header",
+          "type": "boolean",
+          "description": "hide table header from output",
+          "allowNo": false,
+          "exclusive": [
+            "csv"
+          ]
         }
       },
       "args": {}
