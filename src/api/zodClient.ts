@@ -778,6 +778,15 @@ const FeatureOverride = z.object({
 const FeatureOverrideResponse = z.object({
     overrides: z.array(FeatureOverride)
 })
+const UserOverride = z.object({
+    _feature: z.string(),
+    featureName: z.string(),
+    _environment: z.string(),
+    environmentName: z.string(),
+    _variation: z.string(),
+    variationName: z.string(),
+})
+const UserOverrides = z.array(UserOverride)
 
 export const schemas = {
     EdgeDBSettings,
@@ -862,6 +871,8 @@ export const schemas = {
     Override,
     Overrides,
     FeatureOverrideResponse,
+    UserOverride,
+    UserOverrides,
 }
 
 const endpoints = makeApi([
@@ -3487,7 +3498,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             }
         ],
-        response: Override,
+        response: UserOverrides,
         errors: [
             {
                 status: 401,
@@ -3503,7 +3514,6 @@ const endpoints = makeApi([
             },
         ],
     },
-
 ])
 
 export const api = new Zodios(endpoints)
