@@ -71,3 +71,15 @@ export const fetchFeatureOverridesForUser = async (
         },
     })
 }
+
+export const fetchProjectOverridesForUser = async (
+    token: string,
+    project_id: string,
+) => {
+    return apiClient.get(`${BASE_URL}/overrides/current`, {
+        headers: buildHeaders(token),
+        params: {
+            project: project_id,
+        },
+    })
+}

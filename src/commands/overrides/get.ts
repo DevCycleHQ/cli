@@ -1,13 +1,13 @@
-import { Flags } from '@oclif/core'
+import { Flags, ux } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
 import {
-    environmentPrompt, 
-    EnvironmentPromptResult, 
-    featurePrompt, 
-    FeaturePromptResult 
+    environmentPrompt,
+    EnvironmentPromptResult,
+    featurePrompt,
+    FeaturePromptResult
 } from '../../ui/prompts'
 import Base from '../base'
-import { fetchFeatureOverridesForUser } from '../../api/overrides'
+import { fetchFeatureOverridesForUser, fetchProjectOverridesForUser } from '../../api/overrides'
 import { fetchEnvironmentByKey } from '../../api/environments'
 import { fetchVariationByKey } from '../../api/variations'
 
@@ -21,6 +21,11 @@ export default class DetailedOverrides extends Base {
     ]
     static args = {}
     static flags = {
+        all: Flags.boolean({
+            name: 'all',
+            description: 'All Overrides for the Project',
+            allowNo: false,
+        }),
         feature: Flags.string({
             name: 'feature',
             description: 'The key or id of the Feature to get Overrides for',
@@ -30,13 +35,30 @@ export default class DetailedOverrides extends Base {
             description: 'The key or id of the Environment to get Overrides for',
         }),
         ...Base.flags,
+        ...ux.table.flags(),
     }
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(DetailedOverrides)
-        const { headless, project } = flags
+        const { all, headless, project } = flags
         let { feature: featureKey, environment: environmentKey } = flags
         await this.requireProject(project, headless)
+
+        if (all) {
+            const overrides = await fetchProjectOverridesForUser(this.authToken, this.projectKey)
+            if (headless) {
+                this.writer.showResults(overrides)
+                return
+            }
+            ux.table(overrides, {
+                featureName: { header: 'Feature', minWidth: 20 },
+                environmentName: { header: 'Environment', minWidth: 20 },
+                variationName: { header: 'Override Variation', minWidth: 20 }
+            }, {
+                ...flags
+            })
+            return
+        }
 
         if (headless && (!featureKey || !environmentKey)) {
             this.writer.showError('Feature and Environment arguments are required')
@@ -87,6 +109,6 @@ export default class DetailedOverrides extends Base {
 
         this.writer.successMessage(
             `Override for feature: ${featureKey} on environment: ${environment.key} is variation: ${variation.key}`
-        ) 
+        )
     }
 }
