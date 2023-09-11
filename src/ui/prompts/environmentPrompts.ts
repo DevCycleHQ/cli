@@ -7,7 +7,7 @@ import { CreateEnvironmentDto, Environment } from '../../api/schemas'
 
 import { autocompleteSearch } from '../autocomplete'
 
-type EnvironmentChoice = {
+export type EnvironmentChoice = {
     name: string,
     value: Environment
 }
@@ -25,7 +25,7 @@ const EnvironmentTypeValue: Record<string, number> = {
 
 let choices: { name: string, value: Environment }[]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const environmentChoices = async (input: Record<string, any>, search: string):Promise<EnvironmentChoice[]> => {
+export const environmentChoices = async (input: Record<string, any>, search: string): Promise<EnvironmentChoice[]> => {
     if (!choices) {
         const environments = await fetchEnvironments(input.token, input.projectKey)
         choices = environments.map((environment) => {

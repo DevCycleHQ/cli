@@ -3,7 +3,7 @@ import { fetchFeatures } from '../../api/features'
 import { Feature } from '../../api/schemas'
 import { autocompleteSearch } from '../autocomplete'
 
-type FeatureChoice = {
+export type FeatureChoice = {
     name: string,
     value: Feature
 }

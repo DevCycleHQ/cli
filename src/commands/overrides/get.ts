@@ -11,6 +11,7 @@ import { fetchFeatureOverridesForUser } from '../../api/overrides'
 import { fetchEnvironmentByKey } from '../../api/environments'
 import { fetchVariationByKey } from '../../api/variations'
 import { UserOverride } from '../../api/schemas'
+import { fetchUserProfile } from '../../api/userProfile'
 
 export default class DetailedOverrides extends Base {
     static hidden = false
@@ -39,6 +40,13 @@ export default class DetailedOverrides extends Base {
         let { feature: featureKey, environment: environmentKey } = flags
         let feature
         await this.requireProject(project, headless)
+
+        const identity = await fetchUserProfile(this.authToken, this.projectKey)
+        if (!identity.dvcUserId) {
+            this.writer.showError('You must set your DevCycle Identity before you can update an Override')
+            this.writer.infoMessageWithCommand('To set up your SDK Associated User ID, use', 'dvc identity update')
+            return
+        }
 
         if (headless && (!featureKey || !environmentKey)) {
             this.writer.showError('Feature and Environment arguments are required')

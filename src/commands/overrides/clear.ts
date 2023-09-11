@@ -1,9 +1,11 @@
 import inquirer from 'inquirer'
 
 import { Flags } from '@oclif/core'
-import { deleteAllProjectOverrides, deleteFeatureOverrides } from '../../api/overrides'
+import { deleteAllProjectOverrides, deleteFeatureOverrides, fetchProjectOverridesForUser } from '../../api/overrides'
 import Base from '../base'
-import { FeaturePromptResult, featurePrompt, EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
+import { EnvironmentPromptResult, FeaturePromptResult } from '../../ui/prompts'
+import { overridesEnvironmentPrompt, overridesFeaturePrompt } from '../../ui/prompts/overridePrompts'
+import { fetchUserProfile } from '../../api/userProfile'
 
 export default class DeleteOverrides extends Base {
     static hidden = false
@@ -34,9 +36,21 @@ export default class DeleteOverrides extends Base {
     public async run(): Promise<void> {
 
         const { flags } = await this.parse(DeleteOverrides)
-        const { headless, project, all, feature, environment } = flags
+        const { headless, project, all } = flags
 
+        let { feature: featureKey, environment: environmentKey } = flags
+        let environment = null
+        let feature = null
         await this.requireProject(project, headless)
+
+        const identity = await fetchUserProfile(this.authToken, this.projectKey)
+        if (!identity.dvcUserId) {
+            this.writer.showError('You must set your DevCycle Identity before you can update an Override')
+            this.writer.infoMessageWithCommand('To set up your SDK Associated User ID, use', 'dvc identity update')
+            return
+        }
+
+        const projectOverrides = await fetchProjectOverridesForUser(this.authToken, this.projectKey)
 
         if (all) {
             if (!headless) {
@@ -58,23 +72,30 @@ export default class DeleteOverrides extends Base {
             return
         }
 
-        let featureKey = feature
-        if (!feature && !headless) {
-            const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
+        if (projectOverrides.length === 0) {
+            this.writer.showError(`No Overrides found for project: ${this.projectKey}`)
+            this.writer.infoMessageWithCommand('To set up Overrides, use', 'dvc overrides update')
+            return
+        }
+
+        if (!featureKey && !headless) {
+            const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([overridesFeaturePrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey
             })
             featureKey = featurePromptResult.feature.key
+            feature = featurePromptResult.feature
         }
 
-        let environmentKey = environment
-        if (!environment && !headless) {
+        if (!environmentKey && !headless) {
             const { environment: environmentPromptResult } = await inquirer.prompt<EnvironmentPromptResult>(
-                [environmentPrompt], {
+                [overridesEnvironmentPrompt], {
                     token: this.authToken,
-                    projectKey: this.projectKey
+                    projectKey: this.projectKey,
+                    featureKey: featureKey
                 })
             environmentKey = environmentPromptResult._id
+            environment = environmentPromptResult
         }
 
         if (!featureKey || !environmentKey) {
@@ -83,7 +104,7 @@ export default class DeleteOverrides extends Base {
             )
             return
         }
-                
+
         await deleteFeatureOverrides(
             this.authToken,
             this.projectKey,
@@ -91,8 +112,8 @@ export default class DeleteOverrides extends Base {
             environmentKey
         )
         this.writer.successMessage(
-            `Successfully cleared all overrides for the Feature '${featureKey}'`
-                    + ` and Environment '${environmentKey}'`
+            `Successfully cleared all overrides for the Feature '${feature?.name}'`
+            + ` and Environment '${environment?.name}'`
         )
     }
 }

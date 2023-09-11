@@ -3466,7 +3466,7 @@ const endpoints = makeApi([
             {
                 name: 'environment',
                 type: 'Query',
-                schema: z.string(),
+                schema: z.string().optional(),
             },
 
         ],
