@@ -10,6 +10,7 @@ import { UpdateOverrideDto } from '../../api/schemas'
 import { updateOverride } from '../../api/overrides'
 import Base from '../base'
 import { fetchUserProfile } from '../../api/userProfile'
+import { UserOverride } from '../../api/schemas'
 
 export default class UpdateOverride extends Base {
     static hidden = false
@@ -45,6 +46,9 @@ export default class UpdateOverride extends Base {
         }
 
         let { feature, environment, variation } = flags
+        let featureName
+        let environmentName
+        let variationName
         if (headless && (!feature || !environment || !variation)) {
             this.writer.showError('The feature, environment, and variation flag must be set when using headless mode')
             return
@@ -62,6 +66,7 @@ export default class UpdateOverride extends Base {
                 projectKey: this.projectKey
             })
             feature = response.feature.key
+            featureName = response.feature.name
         }
         if (!environment) {
             const responses = await inquirer.prompt<EnvironmentPromptResult>(
@@ -72,6 +77,7 @@ export default class UpdateOverride extends Base {
                 }
             )
             environment = responses.environment.key
+            environmentName = responses.environment.name
         }
         if (!variation) {
             const response = await inquirer.prompt([variationPrompt], {
@@ -80,6 +86,7 @@ export default class UpdateOverride extends Base {
                 featureKey: feature,
             })
             variation = response.variation.key
+            variationName = response.variation.name
         }
 
         const params = await this.populateParametersWithZod(UpdateOverrideDto, this.prompts, {
@@ -87,9 +94,12 @@ export default class UpdateOverride extends Base {
         })
 
         const result = await updateOverride(this.authToken, this.projectKey, feature, params)
-        this.writer.successMessage(
-            `Successfully added Override for User ID: ${result.dvcUserId}` +
-            ` for feature: ${feature} on environment: ${environment}` +
-            ` to variation: ${variation}`)
+        const resultToPrint = { 
+            featureName: featureName ?? feature, 
+            variationName: variationName ?? variation,
+            environmentName: environmentName ?? environment,
+            ...result }
+
+        this.tableOutput.printOverrides<UserOverride>([resultToPrint])
     }
 }

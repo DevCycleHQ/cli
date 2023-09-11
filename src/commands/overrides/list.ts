@@ -2,7 +2,6 @@ import { ux } from '@oclif/core'
 import Base from '../base'
 import { fetchProjectOverridesForUser } from '../../api/overrides'
 import { UserOverride } from '../../api/schemas'
-import { over } from 'lodash'
 
 export default class DetailedOverrides extends Base {
     static hidden = false
