@@ -76,3 +76,5 @@ export type Filter =
   | UserPlatformVersionFilter
   | UserCustomFilter
   | AudienceMatchFilter
+
+export type UserOverride = z.infer<typeof schemas.UserOverride>

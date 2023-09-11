@@ -19,6 +19,7 @@ import { filterPrompts, mergeFlagsAndAnswers } from '../utils/prompts'
 import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
 import { getTokenExpiry } from '../auth/utils'
 import SSOAuth from '../auth/SSOAuth'
+import TableOutput from '../ui/tableOutput'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -91,6 +92,7 @@ export default abstract class Base extends Command {
     userConfig: UserConfigFromFile | null
     repoConfig: RepoConfigFromFile | null
     writer: Writer = new Writer()
+    tableOutput: TableOutput = new TableOutput()
 
     async catch(error: unknown) {
         if (error instanceof Error) {
@@ -300,21 +302,21 @@ export default abstract class Base extends Command {
     }
 
     public async populateParametersWithZod
-    <ResourceType extends Record<string, ZodTypeAny>>(
+        <ResourceType extends Record<string, ZodTypeAny>>(
         schema: ZodObject<ResourceType>,
         prompts: Prompt[],
         flags: Record<string, unknown>,
     ): Promise<z.infer<typeof schema>> {
-        let input = flags
-        if (!flags.headless) {
-            input = await this.populateParametersWithFlags(prompts, flags)
+            let input = flags
+            if (!flags.headless) {
+                input = await this.populateParametersWithFlags(prompts, flags)
+            }
+            const parse = schema.parse(
+                input,
+                { errorMap }
+            )
+            return parse
         }
-        const parse = schema.parse(
-            input,
-            { errorMap }
-        )
-        return parse
-    }
 
     public async populateParametersWithFlags(
         prompts: Prompt[],
