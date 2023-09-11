@@ -2,6 +2,8 @@ import { ux } from '@oclif/core'
 import Base from '../base'
 import { fetchProjectOverridesForUser } from '../../api/overrides'
 import { UserOverride } from '../../api/schemas'
+import { orderOverridesForDisplay } from '../../utils/overrides'
+import { fetchEnvironments } from '../../api/environments'
 
 export default class DetailedOverrides extends Base {
     static hidden = false
@@ -19,6 +21,7 @@ export default class DetailedOverrides extends Base {
         const { headless, project } = flags
         await this.requireProject(project, headless)
 
+        const environments = await fetchEnvironments(this.authToken, this.projectKey)
         const overrides = await fetchProjectOverridesForUser(this.authToken, this.projectKey)
         if (overrides.length === 0) {
             this.writer.infoMessage('No Overrides found for this project.')
@@ -28,6 +31,9 @@ export default class DetailedOverrides extends Base {
             this.writer.showResults(overrides)
             return
         }
-        this.tableOutput.printOverrides<UserOverride>(overrides, flags)
+        const sortedOverrides = orderOverridesForDisplay(overrides, environments)
+        this.tableOutput.printOverrides<UserOverride>(sortedOverrides, {
+            ...flags
+        })
     }
 }
