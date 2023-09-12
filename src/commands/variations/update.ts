@@ -103,7 +103,7 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
             {
                 key: data.key,
                 name: data.name,
-                variables: variables ? JSON.parse(variables) : variableAnswers
+                variables: variables ? JSON.parse(variables) : { ...selectedVariation.variables, ...variableAnswers }
             }
         )
         this.writer.showResults(result)
