@@ -12,7 +12,7 @@ describe('variations update', () => {
     const authFlags = ['--client-id', 'test-client-id', '--client-secret', 'test-client-secret']
     const featureKey = 'spam'
     const variationKey = 'variation'
-    const requestVariables = { 'first-feature': true }
+    const requestVariables = { 'first-feature': true, 'new-variable': false }
 
     const requestBody = {
         'name': 'Test Variation',
