@@ -16,7 +16,7 @@ USAGE
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--org <value>]
 
 FLAGS
-  --org=<value>  The `name` of the org to sign in as (not the `display_name`)
+  --org=<value>  The name or ID of the org to sign into
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
@@ -46,7 +46,7 @@ USAGE
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--org <value>]
 
 FLAGS
-  --org=<value>  The `name` of the org to sign in as (not the `display_name`)
+  --org=<value>  The name or ID of the org to sign into
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
