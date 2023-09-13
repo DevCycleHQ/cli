@@ -1,5 +1,5 @@
 {
-  "version": "5.9.0",
+  "version": "5.9.1",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -85,7 +85,7 @@
         "org": {
           "name": "org",
           "type": "option",
-          "description": "The `name` of the org to sign in as (not the `display_name`)",
+          "description": "The name or ID of the org to sign into",
           "multiple": false
         }
       },
@@ -2287,7 +2287,7 @@
         "org": {
           "name": "org",
           "type": "option",
-          "description": "The `name` of the org to sign in as (not the `display_name`)",
+          "description": "The name or ID of the org to sign into",
           "multiple": false
         }
       },
@@ -2379,7 +2379,7 @@
         "org": {
           "name": "org",
           "type": "option",
-          "description": "The `name` of the org to sign in as (not the `display_name`)",
+          "description": "The name or ID of the org to sign into",
           "multiple": false
         }
       },
@@ -2726,7 +2726,7 @@
         "org": {
           "name": "org",
           "type": "option",
-          "description": "The `name` of the org to sign in as (not the `display_name`)",
+          "description": "The name or ID of the org to sign into",
           "multiple": false
         }
       },
@@ -3554,7 +3554,7 @@
         "org": {
           "name": "org",
           "type": "option",
-          "description": "The `name` of the org to sign in as (not the `display_name`)",
+          "description": "The name or ID of the org to sign into",
           "multiple": false
         }
       },
@@ -3646,7 +3646,7 @@
         "org": {
           "name": "org",
           "type": "option",
-          "description": "The `name` of the org to sign in as (not the `display_name`)",
+          "description": "The name or ID of the org to sign into",
           "multiple": false
         }
       },
