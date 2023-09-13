@@ -8,20 +8,21 @@ import { promptForOrganization } from '../ui/promptForOrganization'
 import { promptForProject } from '../ui/promptForProject'
 import Base from './base'
 import { Project } from '../api/schemas'
+import { ApiAuth } from '../auth/ApiAuth'
 export default abstract class AuthCommand extends Base {
     static flags = {
         ...Base.flags,
         'org': Flags.string({
-            description: 'The `name` of the org to sign in as (not the `display_name`)',
+            description: 'The name or ID of the org to sign into',
         }),
     }
 
     public async setOrganization(): Promise<void> {
         const { flags } = await this.parse(AuthCommand)
-        const organizations = await fetchOrganizations(this.personalAccessToken)
         if (flags.headless && !flags.org) {
             throw new Error('In headless mode, org flag is required')
         }
+        const organizations = await fetchOrganizations(this.personalAccessToken)
         const selectedOrg = await this.retrieveOrganization(organizations)
         this.authToken = await this.selectOrganization(selectedOrg)
     }
@@ -88,9 +89,9 @@ export default abstract class AuthCommand extends Base {
             throw (new Error('You are not a member of any organizations'))
         }
         if (flags.org) {
-            const matchingOrg = organizations.find((org) => org.name === flags.org)
+            const matchingOrg = organizations.find((org) => org.id === flags.org || org.name === flags.org)
             if (!matchingOrg) {
-                throw (new Error(`You are not a member of an org with the name ${flags.org}`))
+                throw (new Error(`You are not a member of an org with the name or ID ${flags.org}`))
             }
             return matchingOrg
         } else {
@@ -99,15 +100,23 @@ export default abstract class AuthCommand extends Base {
     }
 
     async selectOrganization(organization: Organization): Promise<string> {
-        const ssoAuth = new SSOAuth(this.writer, this.authPath)
-        const tokens = await ssoAuth.getAccessToken(organization)
+        const { flags } = await this.parse(AuthCommand)
         const { id, name, display_name } = organization
 
-        if (this.repoConfig) {
-            this.updateRepoConfig({ org: { id, name, display_name } })
-        } else if (this.userConfig) {
-            this.updateUserConfig({ org: { id, name, display_name } })
+        const auth = new ApiAuth(this.authPath, this.config.cacheDir, this.writer)
+        let accessToken = await auth.getToken(flags, id)
+        if (!accessToken) {
+            const ssoAuth = new SSOAuth(this.writer, this.authPath)
+            const tokens = await ssoAuth.getAccessToken(organization)
+            accessToken = tokens.accessToken
         }
-        return tokens.accessToken
+
+        const config = { org: { id, name, display_name } }
+        if (this.repoConfig) {
+            this.updateRepoConfig(config)
+        } else if (this.userConfig) {
+            this.updateUserConfig(config)
+        }
+        return accessToken
     }
 }
