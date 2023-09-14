@@ -1,5 +1,5 @@
 {
-  "version": "5.9.1",
+  "version": "5.9.2",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -76,6 +76,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -166,6 +168,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -250,6 +254,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -346,6 +352,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -430,6 +438,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -540,6 +550,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -642,6 +654,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -783,6 +797,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -923,6 +939,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1042,6 +1060,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1132,6 +1152,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1217,6 +1239,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1336,6 +1360,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1458,6 +1484,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1552,6 +1580,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1661,6 +1691,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1764,6 +1796,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1889,6 +1923,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -1993,6 +2029,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2078,6 +2116,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2173,6 +2213,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2278,6 +2320,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2370,6 +2414,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2462,6 +2508,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2547,6 +2595,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2632,6 +2682,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2717,6 +2769,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2808,6 +2862,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -2911,6 +2967,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3008,6 +3066,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3169,6 +3229,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3272,6 +3334,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3375,6 +3439,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3460,6 +3526,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3545,6 +3613,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3637,6 +3707,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3728,6 +3800,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3816,6 +3890,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -3913,6 +3989,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4011,6 +4089,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4106,6 +4186,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4220,6 +4302,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4358,6 +4442,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4478,6 +4564,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4586,6 +4674,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4689,6 +4779,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4794,6 +4886,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4902,6 +4996,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -4992,6 +5088,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
@@ -5082,6 +5180,8 @@
           "options": [
             "github.pr_insights",
             "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
             "bitbucket.pr_insights",
             "bitbucket.code_usages",
             "cli",
