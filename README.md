@@ -166,9 +166,7 @@ codeInsights:
   ## map the values used in your code to the corresponding variable key in DevCycle
   variableAliases:
     "VARIABLES.ENABLE_V1": "enable-v1"
-  ## fully override the regex patterns used to match variables for a specific file extension
-  ## each pattern should contain exactly one capture group which matches on the key of the variable
-  ## make sure the captured value contains the entire key parameter (including quotes, if applicable)
+  ## additional regex patterns used to match variables for a specific file extension
   matchPatterns:
     ## file extension to override for, containing a list of patterns to use
     js:
@@ -179,4 +177,37 @@ codeInsights:
   ## an array of file glob patterns to exclude from usage scan
   excludeFiles:
     - "dist/*"
+```
+
+## Match Patterns
+When identifying variable usages in the code, the CLI will identify DevCycle SDK methods by default. To capture 
+other usages you may define match patterns. Match patterns are defined by file extension, and each pattern should 
+contain exactly one capture group which matches the key of the variable. Make sure the captured value contains the 
+entire key parameter (including quotes, if applicable).
+
+Match patterns can be defined in the configuration file, for example:
+
+```yml
+codeInsights:
+  matchPatterns:
+    js:
+      - customVariableGetter\(\s*["']([^"']*)["']
+    ts:
+      - customVariableGetter\(\s*["']([^"']*)["']
+    jsx:
+      - customVariableHook\(\s*["']([^"']*)["']
+      - customVariableGetter\(\s*["']([^"']*)["']
+    tsx:
+      - customVariableHook\(\s*["']([^"']*)["']
+      - customVariableGetter\(\s*["']([^"']*)["']
+```
+
+Match patterns can also be passed directly to relevant commands using the `--match-pattern` flag:
+```
+dvc usages --match-pattern ts="customVariableGetter\(\s*[\"']([^\"']*)[\"']" js="customVariableGetter\(\s*[\"']([^\"']*)[\"']"
+```
+
+When testing your regex the `--show-regex` flag can be helpful. This will print all patterns used to find matches in your codebase.
+```
+dvc usages --show-regex
 ```
