@@ -1949,6 +1949,18 @@
           "type": "boolean",
           "description": "Generate types for use with old DevCycle repos (@devcycle/devcycle-react-sdk, @devcycle/devcycle-js-sdk)",
           "allowNo": false
+        },
+        "inline-comments": {
+          "name": "inline-comments",
+          "type": "boolean",
+          "description": "Inline variable informaton comment on the same line as the type definition",
+          "allowNo": false
+        },
+        "include-descriptions": {
+          "name": "include-descriptions",
+          "type": "boolean",
+          "description": "Include variable descriptions in the variable information comment",
+          "allowNo": false
         }
       },
       "args": {}
