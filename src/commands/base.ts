@@ -63,6 +63,8 @@ export default abstract class Base extends Command {
             options: [
                 'github.pr_insights',
                 'github.code_usages',
+                'gitlab.pr_insights',
+                'gitlab.code_usages',
                 'bitbucket.pr_insights',
                 'bitbucket.code_usages',
                 'cli',
