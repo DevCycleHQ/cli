@@ -311,7 +311,7 @@ export abstract class BaseParser {
                 end: matchingLines[matchingLines.length - 1].ln
             }
 
-            const bufferedStart = Math.max(range.start - buffer, 0)
+            const bufferedStart = Math.max(range.start - buffer, 1)
             const bufferedEnd = Math.min(range.end + buffer, file.lines.length)
             const bufferedContent = file.lines
                 .filter((line) => range.start - buffer <= line.ln && range.end + buffer >= line.ln)
