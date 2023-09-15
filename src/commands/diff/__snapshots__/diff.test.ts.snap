@@ -260,6 +260,37 @@ DevCycle Variable Changes:
 "
 `;
 
+exports[`diff runs against a test file and linkifies the output for a gitlab MR 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  6 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  2. duplicate-case
+	   Locations:
+	    - [test-utils/fixtures/diff/sampleDiff.js:L2](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+	    - [test-utils/fixtures/diff/sampleDiff.js:L3](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  3. single-quotes
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L5](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  4. multi-line
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L11](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  5. multi-line-comment
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L21](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  6. duplicate-same-line
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L26](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+
+🔴 Removed
+
+  1. simple-case
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+"
+`;
+
 exports[`diff runs against a test file with a custom matcher 1`] = `
 "
 DevCycle Variable Changes:
