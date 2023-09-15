@@ -97,6 +97,16 @@ describe('diff', () => {
         })
 
     test
+        .stdout()
+        .command([
+            'diff', '--file', './test-utils/fixtures/diff/e2e', '--no-api',
+            '--pr-link', 'https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6'
+        ])
+        .it('runs against a test file and linkifies the output for a gitlab MR', (ctx) => {
+            expect(ctx.stdout).toMatchSnapshot()
+        })
+
+    test
         .nock(AUTH_URL, (api) => {
             api.post('/oauth/token', {
                 grant_type: 'client_credentials',
