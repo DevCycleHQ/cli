@@ -7,6 +7,7 @@ import { parseFiles } from '../../utils/diff/parse'
 import { VariableDiffMatch } from '../../utils/parsers/types'
 import Base from '../base'
 import { sha256 } from 'js-sha256'
+import { createHash } from 'node:crypto'
 import { fetchVariableByKey } from '../../api/variables'
 import ClientNameFlag, { getClientNames } from '../../flags/client-name'
 import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
@@ -327,9 +328,16 @@ export default class Diff extends Base {
     private logLocations(matches: VariableDiffMatch[], mode: 'add' | 'remove', prLink?: string) {
         const formatPrLink = (fileName: string, line: number) => {
             const displayName = `${fileName}:L${line}`
-            const link = prLink?.includes('bitbucket')
-                ? `${prLink}#L${fileName}${mode === 'add' ? 'T' : 'F'}${line}`
-                : `${prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line}`
+            let link = ''
+            if (prLink?.includes('bitbucket')) {
+                link = `${prLink}#L${fileName}${mode === 'add' ? 'T' : 'F'}${line}`
+            } else if (prLink?.includes('gitlab')) {
+                // TODO: include line number in link if possible
+                const sha1Hash = createHash('sha1').update(fileName).digest('hex')
+                link = `${prLink}/diffs#diff-content-${sha1Hash}`
+            } else {
+                link = `${prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line}`
+            }
 
             return `[${displayName}](${link})`
         }
