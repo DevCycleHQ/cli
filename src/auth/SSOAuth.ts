@@ -8,6 +8,7 @@ import { Organization } from '../api/organizations'
 import Writer from '../ui/writer'
 import { toggleBotSadSvg, toggleBotSvg } from '../ui/togglebot'
 import { storeAccessToken } from './config'
+import { exit } from 'process'
 
 export const CLI_CLIENT_ID = 'Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
 
@@ -60,6 +61,14 @@ export default class SSOAuth {
     public async getAccessToken(organization?: Organization): Promise<TokenResponse> {
         if (organization) this.organization = organization
         this.startLocalServer()
+
+        setTimeout(() => {
+            if (!this.done || !this.tokens) {
+                this.writer.showError('Timed out waiting for authentication. Please try again')
+                exit(1)
+            }
+        }, 120000)
+
         await this.waitForServerClosed()
         return this.waitForToken()
     }
@@ -105,6 +114,7 @@ export default class SSOAuth {
             } else {
                 this.writer.showError(`Error: ${err.message}`)
             }
+            exit(1)
         })
 
         this.server.listen(PORT, host, () => {
