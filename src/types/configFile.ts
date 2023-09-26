@@ -62,7 +62,7 @@ function ValidateVariableAliases(validationOptions?: ValidationOptions) {
     }
 }
 
-class SavedOrganization {
+export class SavedOrganization {
     @IsString()
     id: string
 

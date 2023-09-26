@@ -4,7 +4,7 @@ import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import jsYaml from 'js-yaml'
-import { RepoConfigFromFile, UserConfigFromFile } from '../types'
+import { RepoConfigFromFile, SavedOrganization, UserConfigFromFile } from '../types'
 import { ClassConstructor, plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
 import { reportValidationErrors, reportZodValidationErrors, validateParams } from '../utils/reportValidationErrors'
@@ -78,6 +78,7 @@ export default abstract class Base extends Command {
     personalAccessToken = ''
     projectKey = ''
     orgId = ''
+    organization: SavedOrganization | undefined = undefined 
     authPath = path.join(this.config.configDir, 'auth.yml')
     configPath = path.join(this.config.configDir, 'user.yml')
     repoConfigPath = '.devcycle/config.yml'
@@ -241,7 +242,8 @@ export default abstract class Base extends Command {
             || this.repoConfig?.project
             || this.userConfig?.project
             || ''
-        this.orgId = flags['org'] || this.repoConfig?.org?.id || this.userConfig?.org?.id
+        this.organization = this.repoConfig?.org || this.userConfig?.org
+        this.orgId = flags['org'] || this.organization?.id
         await this.authorizeApi()
         setDVCReferrer(this.id, this.config.version, this.caller)
     }
