@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import Base from '../base'
 
 type StatusInfo = {
@@ -9,6 +10,7 @@ type StatusInfo = {
     authConfigPath: string,
     hasAccessToken: boolean,
     organization?: string,
+    project?: string,
     a0UserId?: string
 }
 
@@ -45,10 +47,13 @@ export default class ShowStatus extends Base {
 
         this.writer.statusMessage(`Auth config path ${this.authPath}`)
 
-        const loggedInOrg = this.repoConfig?.org || this.userConfig?.org
         if (this.hasToken()) {
-            if (loggedInOrg) {
-                this.writer.successMessage(`Currently logged in to DevCycle as a member of ${loggedInOrg.display_name}`)
+            if (this.organization) {
+                this.writer.successMessage('Logged into DevCycle with:')
+                this.writer.showRawResults(chalk.green(`\tOrganization: ${this.organization.display_name}`))
+                if (this.projectKey) {
+                    this.writer.showRawResults(chalk.green(`\tProject Key: ${this.projectKey}`))
+                }
             } else {
                 this.writer.successMessage('Currently logged in to DevCycle')
             }
@@ -58,7 +63,6 @@ export default class ShowStatus extends Base {
     }
 
     async runHeadless(): Promise<void> {
-        const loggedInOrg = this.repoConfig?.org || this.userConfig?.org
         const result: StatusInfo = {
             version: this.config.version,
             repoConfigPath: this.repoConfigPath,
@@ -67,7 +71,8 @@ export default class ShowStatus extends Base {
             userConfigExists: !!this.userConfig,
             authConfigPath: this.authPath,
             hasAccessToken: this.hasToken(),
-            organization: loggedInOrg?.name
+            organization: this.organization?.display_name,
+            project: this.projectKey
         }
         if (this.hasToken()) {
             const tokenJson = JSON.parse(Buffer.from(this.authToken.split('.')[1], 'base64').toString())

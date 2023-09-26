@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 
 import AuthCommand from '../authCommand'
+import chalk from 'chalk'
 
 export default class LoginAgain extends AuthCommand {
     static hidden = false
@@ -16,5 +17,8 @@ export default class LoginAgain extends AuthCommand {
             throw (new Error('No saved authorization choices to use'))
         }
         this.authToken = await this.selectOrganization(organization)
+        if (this.projectKey) {
+            this.writer.infoMessage(`Using previously selected project with key ${chalk.green(this.projectKey)}`)
+        }
     }
 }
