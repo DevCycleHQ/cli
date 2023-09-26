@@ -62,7 +62,7 @@ export default class SSOAuth {
         if (organization) this.organization = organization
         this.startLocalServer()
 
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
             if (!this.done || !this.tokens) {
                 this.writer.showError('Timed out waiting for authentication. Please try again')
                 exit(1)
@@ -70,7 +70,9 @@ export default class SSOAuth {
         }, 120000)
 
         await this.waitForServerClosed()
-        return this.waitForToken()
+        const tokens = await this.waitForToken()
+        clearTimeout(timeout)
+        return tokens
     }
 
     private async waitForServerClosed(): Promise<void> {
