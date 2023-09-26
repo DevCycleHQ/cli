@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import { fetchProjects } from '../../api/projects'
 import Base from '../base'
 
@@ -8,6 +9,13 @@ export default class ListProjects extends Base {
 
     public async run(): Promise<void> {
         const projects = await fetchProjects(this.authToken)
-        return this.writer.showResults(projects.map((project) => project.key))
+        const projectsKeys = projects.map((project) => {
+            if (project.key === this.projectKey) {
+                return chalk.green(`  "${project.key}"`)
+            }
+            return `  "${project.key}"`
+        })
+        const projectsString = `[\n${projectsKeys.join(',\n')}\n]`
+        return this.writer.showRawResults(projectsString)
     }
 }

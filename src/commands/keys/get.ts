@@ -3,6 +3,7 @@ import inquirer from '../../ui/autocomplete'
 import { APIKey, fetchEnvironmentByKey } from '../../api/environments'
 import { EnvironmentPromptResult, environmentPrompt, sdkKeyTypePrompt as sdkTypePrompt } from '../../ui/prompts'
 import Base from '../base'
+import chalk from 'chalk'
 
 export default class GetEnvironmentKey extends Base {
     static hidden = false
@@ -59,6 +60,10 @@ export default class GetEnvironmentKey extends Base {
         if (flags.env) {
             return flags.env
         }
+        this.writer.infoMessage(
+            // eslint-disable-next-line max-len
+            `Fetched keys from project with key ${chalk.green(this.projectKey)} in organization ${chalk.green(this.organization?.display_name)}`
+        )
         const responses = await inquirer.prompt<EnvironmentPromptResult>([environmentPrompt],
             {
                 token: this.authToken,
