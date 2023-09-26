@@ -12,6 +12,7 @@ export default class LoginSSO extends AuthCommand {
         const ssoAuth = new SSOAuth(this.writer, this.authPath)
         const tokens = await ssoAuth.getAccessToken()
         this.authToken = tokens.accessToken
+        this.personalAccessToken = tokens.personalAccessToken
         await this.setOrganizationAndProject()
     }
 }
