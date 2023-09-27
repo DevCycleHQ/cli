@@ -55,7 +55,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
 
         CreateVariableDto.parse(variable, { errorMap })
         return {
-            name: variable.name,
+            name: variable.key,
             value: { item: variable as CreateVariableParams }
         }
     }
@@ -87,7 +87,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         UpdateVariableDto.parse(editedVariable, { errorMap })
         if (index >= 0) {
             list[index] = {
-                name: editedVariable.name || editedVariable.key,
+                name: editedVariable.key,
                 value: { item: editedVariable as CreateVariableParams, id: variableListItem.id }
             }
         }
@@ -95,7 +95,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
 
     transformToListOptions(list: CreateVariableParams[]): ListOption<CreateVariableParams>[] {
         return list.map((createVariable, index) => ({
-            name: createVariable.name || createVariable.key,
+            name: createVariable.key,
             value: { item: createVariable, id: index } 
         }))
     }
