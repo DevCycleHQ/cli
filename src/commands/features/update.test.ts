@@ -51,6 +51,10 @@ describe('features update', () => {
         key: 'new-feature-key',
         description: 'test description',
         sdkVisibility: testSDKVisibility,
+    }
+
+    const requestBodyWithVariations = {
+        ...requestBody,
         variations: [],
     }
 
@@ -109,9 +113,9 @@ describe('features update', () => {
     // interactive mode:
     dvcTest()
         .stub(inquirer, 'prompt', () => ({
-            ...requestBody,
+            ...requestBodyWithVariations,
             sdkVisibility: ['mobile', 'server'],
-            whichFields: Object.keys(requestBody),
+            whichFields: Object.keys(requestBodyWithVariations),
             listPromptOption: 'continue',
         }))
         .nock(BASE_URL, (api) => api
@@ -119,7 +123,7 @@ describe('features update', () => {
             .reply(200, mockFeature)
         )
         .nock(BASE_URL, (api) => api
-            .patch(`/v1/projects/${projectKey}/features/${mockFeature.key}`, requestBody)
+            .patch(`/v1/projects/${projectKey}/features/${mockFeature.key}`, requestBodyWithVariations)
             .reply(200, mockFeature)
         )
         .stdout()

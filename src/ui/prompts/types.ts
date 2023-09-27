@@ -24,6 +24,8 @@ export type ListPrompt = Prompt & {
   type: 'listOptions',
   listOptionsPrompt: (previousResponses?: Record<string, any>) => Promise<any>
   previousReponseFields?: string[]
+  // Checks if prompt modified other properties. Returns a map of property names to values
+  checkForAdditionalProperties?: () => Record<string, any>
 }
 
 export type AutoCompletePrompt = Prompt & {

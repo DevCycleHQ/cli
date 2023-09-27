@@ -17,6 +17,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
 
     variablePropertyPrompts = createVariablePrompts.filter((prompt) => prompt.name !== '_feature')
     featureVariations: Variation[]
+    variationsModified = false
 
     constructor(list: Variable[], writer: Writer, variations?: Variation[]) {
         super(list, writer)
@@ -30,7 +31,10 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         value: 'variables', 
         message: 'Manage variables',
         type: 'listOptions',
-        listOptionsPrompt: () => this.prompt()
+        listOptionsPrompt: () => this.prompt(),
+        checkForAdditionalProperties: () => (
+            this.variationsModified ? { 'variations': this.featureVariations } : {}
+        )
     })
 
     private async promptVariationValues(variable: Variable) {
@@ -46,6 +50,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
                 variation.variables = variation.variables || {}
                 variation.variables[variable.key] = result[variation.key]
             }
+            this.variationsModified = true
         }
     }
 
