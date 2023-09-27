@@ -92,10 +92,6 @@ export default class UpdateFeature extends UpdateCommandWithCommonProperties {
             ...(sdkVisibility ? { sdkVisibility: JSON.parse(sdkVisibility) } : {}),
             headless,
         })
-        // if variations were set by the variations list option or flag, 
-        // they should override the variations set by the variables list option
-        params.variations = params.variations || variableListOptions.featureVariations
-
         const result = await updateFeature(this.authToken, this.projectKey, feature.key, params)
         this.writer.showResults(result)
     }

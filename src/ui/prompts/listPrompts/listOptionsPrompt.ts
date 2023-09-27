@@ -17,6 +17,8 @@ export abstract class ListOptionsPrompt<T> {
     abstract itemType: string
     writer: Writer
     list: ListOption<T>[]
+    additionalProperties = []
+
     constructor(list: T[], writer: Writer) {
         this.list = this.transformToListOptions(list)
         this.writer = writer
