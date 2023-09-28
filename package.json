@@ -133,7 +133,7 @@
     "build:watch": "watch 'yarn build' src"
   },
   "engines": {
-    "node": ">=14.18.0"
+    "node": ">=16.0.0"
   },
   "bugs": "https://github.com/DevCycleHQ/cli/issues",
   "keywords": [
