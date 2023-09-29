@@ -60,9 +60,9 @@ export default class Usages extends Base {
         const includeFile = (filepath: string) => {
             const includeGlobs = flags['include'] || codeInsightsConfig.includeFiles
             return includeGlobs
-                ? includeGlobs.some((glob) => {
-                    return minimatch(filepath, minimatch.escape(glob), { matchBase: true })
-                })
+                ? includeGlobs.some((glob) =>
+                    minimatch(filepath, minimatch.escape(glob), { matchBase: true })
+                )
                 : true
         }
 
@@ -179,7 +179,7 @@ export default class Usages extends Base {
         return Object.keys(matches).map((key) => {
             return {
                 key,
-                references: matches[key].map((match) => formatVariableMatchToReference(match)) 
+                references: matches[key].map((match) => formatVariableMatchToReference(match))
             }
         })
     }
