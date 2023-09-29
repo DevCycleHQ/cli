@@ -55,17 +55,27 @@ export const variableTypePrompt = {
     choices: CreateVariableDto.shape.type.options
 }
 
-export const variableValueStringPrompt = (
-    entity: VariablePromptEntity, 
-    defaultValue?: string
+const baseVariableValuePrompt = (
+    entity: VariablePromptEntity,
+    defaultValue?: string | number | boolean
 ): Prompt => {
     const key = entity.value.key
     const messageIdentifier = entity.type === 'variation' ? entity.value.name : entity.value.key
     return {
         name: key,
-        default: defaultValue,
-        type: 'input',
         message: `Variable value for ${messageIdentifier}`,
+        type: 'input',
+        default: defaultValue,
+    }
+}
+
+export const variableValueStringPrompt = (
+    entity: VariablePromptEntity, 
+    defaultValue?: string
+): Prompt => {
+    const basePrompt = baseVariableValuePrompt(entity, defaultValue)
+    return {
+        ...basePrompt,
         transformer: hintTextTransformer('(String)'),
     }
 }
@@ -74,13 +84,9 @@ export const variableValueNumberPrompt = (
     entity: VariablePromptEntity,
     defaultValue?: number
 ): Prompt => {
-    const key = entity.value.key
-    const messageIdentifier = entity.type === 'variation' ? entity.value.name : entity.value.key
+    const basePrompt = baseVariableValuePrompt(entity, defaultValue)
     return {
-        name: key,
-        message: `Variable value for ${messageIdentifier}`,
-        type: 'input',
-        default: defaultValue,
+        ...basePrompt,
         transformer: hintTextTransformer('(Number)'),
         filter: (input: string): number | string => {
             if (isNaN(Number(input))) {
@@ -102,11 +108,9 @@ export const variableValueBooleanPrompt  = (
     entity: VariablePromptEntity,
     defaultValue?: boolean
 ): Prompt => {
-    const key = entity.value.key
-    const messageIdentifier = entity.type === 'variation' ? entity.value.name : entity.value.key
+    const basePrompt = baseVariableValuePrompt(entity, defaultValue)
     return {
-        name: key,
-        message: `Variable value for ${messageIdentifier}`,
+        ...basePrompt,
         type: 'list',
         suffix: `${chalk.dim(' (Boolean)')}`,
         default: defaultValue,
@@ -127,13 +131,9 @@ export const variableValueJSONPrompt = (
     entity: VariablePromptEntity,
     defaultValue?: string,
 ): Prompt => {
-    const key = entity.value.key
-    const messageIdentifier = entity.type === 'variation' ? entity.value.name : entity.value.key
+    const basePrompt = baseVariableValuePrompt(entity, defaultValue)
     return {
-        name: key,
-        message: `Variable value for ${messageIdentifier}`,
-        type: 'input',
-        default: defaultValue,
+        ...basePrompt,
         transformer: hintTextTransformer('(JSON)'),
         validate: (input: string): boolean | string => {
             try {
