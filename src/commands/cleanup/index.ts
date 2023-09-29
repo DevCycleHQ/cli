@@ -98,7 +98,9 @@ export default class Cleanup extends Base {
             variable.type = input.type
         }
         if (!variable.value) {
-            const input = await inquirer.prompt([variableValueStringPrompt(variable.key)])
+            const input = await inquirer.prompt([
+                variableValueStringPrompt({ value: variable, type: 'cleanupVariable' })
+            ])
             variable.value = input[variable.key]
         }
 

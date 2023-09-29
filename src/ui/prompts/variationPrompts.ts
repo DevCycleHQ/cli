@@ -70,22 +70,34 @@ export function getVariationVariablesPrompts(
         switch (variable.type) {
             case 'Boolean':
                 variablePrompts.push(
-                    variableValueBooleanPrompt(variable.key, defaultValues[variable.key] as boolean | undefined)
+                    variableValueBooleanPrompt(
+                        { value: variable, type: 'variable' },
+                        defaultValues[variable.key] as boolean | undefined
+                    )
                 )
                 break
             case 'Number':
                 variablePrompts.push(
-                    variableValueNumberPrompt(variable.key, defaultValues[variable.key] as number | undefined)
+                    variableValueNumberPrompt(
+                        { value: variable, type: 'variable' },
+                        defaultValues[variable.key] as number | undefined
+                    )
                 )
                 break
             case 'JSON':
                 variablePrompts.push(
-                    variableValueJSONPrompt(variable.key, defaultValues[variable.key] as string | undefined)
+                    variableValueJSONPrompt(
+                        { value: variable, type: 'variable' },
+                        defaultValues[variable.key] as string | undefined
+                    )
                 )
                 break
             default:
                 variablePrompts.push(
-                    variableValueStringPrompt(variable.key, defaultValues[variable.key] as string | undefined)
+                    variableValueStringPrompt(
+                        { value: variable, type: 'variable' },
+                        defaultValues[variable.key] as string | undefined
+                    )
                 )
         }
     }
