@@ -22,7 +22,7 @@ describe('TokenCache', () => {
         tokenCacheStub_set.restore()
 
         writeFileStub = sinon.stub(fs, 'writeFileSync')
-        readFileStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from(JSON.stringify(cachedPayload), 'utf8'))
+        readFileStub = sinon.stub(fs, 'readFileSync').returns(JSON.stringify(cachedPayload))
     })
 
     afterEach(() => {
