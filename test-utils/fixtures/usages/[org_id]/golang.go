@@ -1,0 +1,1 @@
+testVariable, _ := client.Variable(user, "special-character-path", "test")

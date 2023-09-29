@@ -19,6 +19,25 @@ DevCycle Variable Usage:
 "
 `;
 
+exports[`usages runs against a dart test file with special characters in the path 1`] = `
+"
+DevCycle Variable Usage:
+
+1. string-variable
+	- test-utils/fixtures/usages/[org_id]/sample.dart:L81
+2. boolean-variable
+	- test-utils/fixtures/usages/[org_id]/sample.dart:L92
+3. integer-variable
+	- test-utils/fixtures/usages/[org_id]/sample.dart:L102
+4. decimal-variable
+	- test-utils/fixtures/usages/[org_id]/sample.dart:L112
+5. json-array-variable
+	- test-utils/fixtures/usages/[org_id]/sample.dart:L122
+6. json-object-variable
+	- test-utils/fixtures/usages/[org_id]/sample.dart:L135
+"
+`;
+
 exports[`usages runs against a go test file 1`] = `
 "
 DevCycle Variable Usage:
@@ -78,6 +97,32 @@ DevCycle Variable Usage:
 "
 `;
 
+exports[`usages runs against a node test file with special characters in the path 1`] = `
+"
+DevCycle Variable Usage:
+
+1. special-character-path
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L1
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L2
+2. single-quotes
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L4
+3. multi-line
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L10
+4. multi-line-comment
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L20
+5. user-object
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L23
+6. user-constructor
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L24
+7. multi-line-user-object
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L25
+8. variable-from-api
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L35
+9. multiline-extra-comma
+	- test-utils/fixtures/usages/[org_id]/nodejs.js:L37
+"
+`;
+
 exports[`usages runs against a react test file 1`] = `
 "
 DevCycle Variable Usage:
@@ -86,5 +131,25 @@ DevCycle Variable Usage:
 	- test-utils/fixtures/usages/react.js:L1
 	- test-utils/fixtures/usages/react.js:L6
 	- test-utils/fixtures/usages/react.js:L11
+"
+`;
+
+exports[`usages runs against a react test file with special characters in the path 1`] = `
+"
+DevCycle Variable Usage:
+
+1. special-character-path
+	- test-utils/fixtures/usages/[org_id]/react.js:L1
+	- test-utils/fixtures/usages/[org_id]/react.js:L6
+	- test-utils/fixtures/usages/[org_id]/react.js:L11
+"
+`;
+
+exports[`usages runs against a react test file with special characters in the path 2`] = `
+"
+DevCycle Variable Usage:
+
+1. special-character-path
+	- test-utils/fixtures/usages/[org_id]/golang.go:L1
 "
 `;

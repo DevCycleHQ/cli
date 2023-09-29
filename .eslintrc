@@ -36,5 +36,4 @@
     "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   "ignorePatterns": ["dist"]
-
 }

@@ -1,4 +1,4 @@
-import minimatch from 'minimatch'
+import { minimatch } from 'minimatch'
 import { Flags, Args } from '@oclif/core'
 import chalk from 'chalk'
 import inquirer from '../../ui/autocomplete'
@@ -106,7 +106,7 @@ export default class Cleanup extends Base {
             const includeGlobs = flags['include'] || codeInsightsConfig.includeFiles
             return includeGlobs
                 ? includeGlobs.some((glob) =>
-                    minimatch(filepath, glob, { matchBase: true }),
+                    minimatch(filepath, minimatch.escape(glob), { matchBase: true }),
                 )
                 : true
         }
@@ -115,7 +115,7 @@ export default class Cleanup extends Base {
             const excludeGlobs = flags['exclude'] || codeInsightsConfig.excludeFiles
             return excludeGlobs
                 ? excludeGlobs.some((glob) =>
-                    minimatch(filepath, glob, { matchBase: true }),
+                    minimatch(filepath, minimatch.escape(glob), { matchBase: true }),
                 )
                 : false
         }

@@ -1,5 +1,5 @@
 import fs from 'fs'
-import minimatch from 'minimatch'
+import { minimatch } from 'minimatch'
 import { Flags } from '@oclif/core'
 import { lsFiles } from '../../utils/git/ls-files'
 import { parseFiles } from '../../utils/usages/parse'
@@ -60,14 +60,16 @@ export default class Usages extends Base {
         const includeFile = (filepath: string) => {
             const includeGlobs = flags['include'] || codeInsightsConfig.includeFiles
             return includeGlobs
-                ? includeGlobs.some((glob) => minimatch(filepath, glob, { matchBase: true }))
+                ? includeGlobs.some((glob) =>
+                    minimatch(filepath, minimatch.escape(glob), { matchBase: true })
+                )
                 : true
         }
 
         const excludeFile = (filepath: string) => {
             const excludeGlobs = flags['exclude'] || codeInsightsConfig.excludeFiles
             return excludeGlobs
-                ? excludeGlobs.some((glob) => minimatch(filepath, glob, { matchBase: true }))
+                ? excludeGlobs.some((glob) => minimatch(filepath, minimatch.escape(glob), { matchBase: true }))
                 : false
         }
 
@@ -86,7 +88,7 @@ export default class Usages extends Base {
                 name: filepath,
                 lines
             }
-        } 
+        }
 
         const files = lsFiles()
             .filter((filepath) => includeFile(filepath) && !excludeFile(filepath))
@@ -104,7 +106,7 @@ export default class Usages extends Base {
         })
 
         const variableAliases = getVariableAliases(flags, this.repoConfig)
-        
+
         const usages = this.getMatchesByVariable(matchesBySdk, variableAliases)
         if (flags['only-unused']) {
             const variablesMap = (await fetchAllVariables(this.authToken, this.projectKey)).reduce((
@@ -120,7 +122,7 @@ export default class Usages extends Base {
                 }
             })
         }
-        
+
         if (flags['format'] === 'json') {
             const matchesByVariableJSON = this.formatMatchesToJSON(usages)
             this.log(JSON.stringify(matchesByVariableJSON, null, 2))
@@ -177,7 +179,7 @@ export default class Usages extends Base {
         return Object.keys(matches).map((key) => {
             return {
                 key,
-                references: matches[key].map((match) => formatVariableMatchToReference(match)) 
+                references: matches[key].map((match) => formatVariableMatchToReference(match))
             }
         })
     }
