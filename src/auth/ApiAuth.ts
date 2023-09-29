@@ -1,6 +1,7 @@
+import 'reflect-metadata'
 import jsYaml from 'js-yaml'
-import fs from 'fs'
 import axios from 'axios'
+import fs from '../utils/fileSystem'
 import { plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
 import { AuthConfig, storeAccessToken } from './config'
@@ -18,6 +19,7 @@ type SupportedFlags = {
 
 export class ApiAuth {
     private tokenCache: TokenCache
+    refreshInProgress = false
 
     constructor(
         private authPath: string,
@@ -55,7 +57,7 @@ export class ApiAuth {
     }
 
     private loadAuthFile(): AuthConfig {
-        const rawConfig = jsYaml.load(fs.readFileSync(this.authPath, 'utf8'))
+        const rawConfig = jsYaml.load(fs.readFileSync(this.authPath))
         const config = plainToClass(AuthConfig, rawConfig)
         const errors = validateSync(config)
         reportValidationErrors(errors)
@@ -76,7 +78,12 @@ export class ApiAuth {
                 }
             }
 
-            if (accessToken && refreshToken && shouldRefreshToken(accessToken)) {
+            if (
+                accessToken &&
+                refreshToken &&
+                !this.refreshInProgress &&
+                shouldRefreshToken(accessToken)
+            ) {
                 return this.refreshClientToken(refreshToken)
             }
 
@@ -129,6 +136,7 @@ export class ApiAuth {
     }
 
     private async refreshClientToken(refresh_token: string): Promise<string> {
+        this.refreshInProgress = true
         const url = new URL('/oauth/token', AUTH_URL)
 
         try {
@@ -150,6 +158,8 @@ export class ApiAuth {
             }
             this.writer.warningMessage(msg)
             return ''
+        } finally {
+            this.refreshInProgress = false
         }
     }
 }

@@ -28,7 +28,7 @@ export class TokenCache {
         try {
             const identifier = this.hashCredentials(clientId, clientSecret)
             const fileContent = fs.readFileSync(this.filePath)
-            const cache = JSON.parse(fileContent.toString())
+            const cache = JSON.parse(fileContent)
 
             if (
                 cache &&
