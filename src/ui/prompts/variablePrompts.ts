@@ -4,7 +4,6 @@ import { AutoCompletePrompt, Prompt, PromptResult } from '.'
 import chalk from 'chalk'
 import { autocompleteSearch } from '../autocomplete'
 import { descriptionPrompt, hintTextTransformer, keyPrompt, namePrompt } from './commonPrompts'
-import { variableFeaturePrompt } from './featurePrompts'
 
 type VariableChoice = {
     name: string,
@@ -50,20 +49,20 @@ export const variableTypePrompt = {
     choices: CreateVariableDto.shape.type.options
 }
 
-export const variableValueStringPrompt = (variableKey: string, defaultValue?: string): Prompt => {
+export const variableValueStringPrompt = (key: string, defaultValue?: string, name?: string): Prompt => {
     return {
-        name: variableKey,
+        name: key,
         default: defaultValue,
         type: 'input',
-        message: `Variable value for ${variableKey}`,
+        message: `Variable value for ${name || key}`,
         transformer: hintTextTransformer('(String)'),
     }
 }
 
-export const variableValueNumberPrompt = (variableKey: string, defaultValue?: number): Prompt => {
+export const variableValueNumberPrompt = (key: string, defaultValue?: number, name?: string): Prompt => {
     return {
-        name: variableKey,
-        message: `Variable value for ${variableKey}`,
+        name: key,
+        message: `Variable value for ${name || key}`,
         type: 'input',
         default: defaultValue,
         transformer: hintTextTransformer('(Number)'),
@@ -83,10 +82,10 @@ export const variableValueNumberPrompt = (variableKey: string, defaultValue?: nu
     }
 }
 
-export const variableValueBooleanPrompt  = (variableKey: string, defaultValue?: boolean): Prompt => {
+export const variableValueBooleanPrompt  = (key: string, defaultValue?: boolean, name?: string): Prompt => {
     return {
-        name: variableKey,
-        message: `Variable value for ${variableKey}`,
+        name: key,
+        message: `Variable value for ${name || key}`,
         type: 'list',
         suffix: `${chalk.dim(' (Boolean)')}`,
         default: defaultValue,
@@ -103,10 +102,10 @@ export const variableValueBooleanPrompt  = (variableKey: string, defaultValue?: 
     }
 }
 
-export const variableValueJSONPrompt = (variableKey: string, defaultValue?: string): Prompt => {
+export const variableValueJSONPrompt = (key: string, defaultValue?: string, name?: string): Prompt => {
     return {
-        name: variableKey,
-        message: `Variable value for ${variableKey}`,
+        name: key,
+        message: `Variable value for ${name || key}`,
         type: 'input',
         default: defaultValue,
         transformer: hintTextTransformer('(JSON)'),
@@ -132,13 +131,13 @@ export const getVariableValuePrompt = (
 ) => {
     switch (variableType) {
         case 'Boolean':
-            return variableValueBooleanPrompt(variation.key, defaultValue as boolean | undefined)
+            return variableValueBooleanPrompt(variation.key, defaultValue as boolean | undefined, variation.name)
         case 'Number':
-            return variableValueNumberPrompt(variation.key, defaultValue as number | undefined)
+            return variableValueNumberPrompt(variation.key, defaultValue as number | undefined, variation.name)
         case 'JSON':
-            return variableValueJSONPrompt(variation.key, defaultValue as string | undefined)
+            return variableValueJSONPrompt(variation.key, defaultValue as string | undefined, variation.name)
         default:
-            return variableValueStringPrompt(variation.key, defaultValue as string | undefined)
+            return variableValueStringPrompt(variation.key, defaultValue as string | undefined, variation.name)
     }
 }
 
