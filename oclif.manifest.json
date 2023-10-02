@@ -4731,6 +4731,12 @@
           "description": "The key or id of the feature to create the variable for",
           "multiple": false
         },
+        "variations": {
+          "name": "variations",
+          "type": "option",
+          "description": "Set a value for this variable in each variation of the associated feature. Should be a JSON object with the keys being variation keys.",
+          "multiple": false
+        },
         "description": {
           "name": "description",
           "type": "option",

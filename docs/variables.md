@@ -17,7 +17,7 @@ Create a new Variable for an existing Feature.
 USAGE
   $ dvc variables create [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--key <value>] [--name <value>]
-    [--type String|Boolean|Number|JSON] [--feature <value>] [--description <value>]
+    [--type String|Boolean|Number|JSON] [--feature <value>] [--variations <value>] [--description <value>]
 
 FLAGS
   --description=<value>  Description for the dashboard
@@ -26,6 +26,8 @@ FLAGS
   --name=<value>         Human readable name
   --type=<option>        The type of variable
                          <options: String|Boolean|Number|JSON>
+  --variations=<value>   Set a value for this variable in each variation of the associated feature. Should be a JSON
+                         object with the keys being variation keys.
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

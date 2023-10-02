@@ -25,20 +25,43 @@ describe('variables create', () => {
         'createdAt': '2023-06-14T18:56:21.270Z',
         'updatedAt': '2023-06-14T18:56:21.270Z'
     }
+    const mockFeature = {
+        'key': 'spam',
+        'variables': [
+            {
+                '_feature': featureId,
+                'key': mockVariable.key,
+                'type': mockVariable.type,
+                'name': mockVariable.name
+            }
+        ],
+        'variations': [
+            {
+                'key': 'variation-on',
+                'name': 'Variation On',
+                'variables': {
+                    'spam': 'ayyy',
+                }
+            },
+            {
+                'key': 'variation-off',
+                'name': 'Variation Off',
+                'variables': {
+                    'spam': 'lmao',
+                }
+            }
+        ]
+    }
     // Headless mode
     dvcTest()
         .nock(BASE_URL, (api) => api
-            .post(`/v1/projects/${projectKey}/variables`, {
-                ...requestBody,
-                _feature: featureId
-            })
+            .post(`/v1/projects/${projectKey}/variables`, requestBody)
             .reply(200, mockVariable)
         )
         .stdout()
         .command([
             'variables create',
             '--project', projectKey,
-            '--feature', featureId,
             '--type', requestBody.type,
             '--name', requestBody.name,
             '--key', requestBody.key,
@@ -49,20 +72,19 @@ describe('variables create', () => {
             (ctx) => {
                 expect(JSON.parse(ctx.stdout)).to.eql(mockVariable)
             })
-    
+
     dvcTest()
         .stderr()
         .command([
             'variables create',
             '--project', projectKey,
-            '--feature', featureId,
             '--type', requestBody.type,
             '--name', requestBody.name,
             '--headless',
             ...authFlags
         ])
         .it('Errors when called in headless mode with no key', (ctx) => {
-            expect(ctx.stderr).to.contain('The key, name, feature, and type flags are required')
+            expect(ctx.stderr).to.contain('The key, name, and type flags are required')
         })
 
     dvcTest()
@@ -88,31 +110,47 @@ describe('variables create', () => {
 
     dvcTest()
         .nock(BASE_URL, (api) => api
-            .post(`/v1/projects/${projectKey}/variables`, {
-                ...requestBody,
-                _feature: featureId
+            .get(`/v1/projects/${projectKey}/features/${featureId}`)
+            .reply(200, {
+                key: mockVariable.key,
+                _id: featureId,
+                variations: [
+                    {
+                        '_id': '64b05702053947be0d079ef3',
+                        'key': 'variation-on',
+                        'name': 'Variation On',
+                        'variables': {}
+                    },
+                    {
+                        '_id': '64b05702053947be0d079ef4',
+                        'key': 'variation-off',
+                        'name': 'Variation Off',
+                        'variables': {}
+                    }
+                ],
+                variables: []
             })
-            .reply(200, mockVariable)
+            .patch(`/v1/projects/${projectKey}/features/spam`, mockFeature)
+            .reply(200, mockFeature)
         )
-        .stub(inquirer, 'prompt', () => {
-            return { 
-                key: requestBody.key, 
-                description: undefined, 
-                associateToFeature: true, 
-                _feature: featureId
-            }
-        })
         .stdout()
         .command([
             'variables create',
             '--project', projectKey,
             '--type', requestBody.type,
+            '--key', requestBody.key,
             '--name', requestBody.name,
+            '--feature', featureId,
+            '--variations', '{"variation-on": "ayyy","variation-off": "lmao"}',
+            '--headless',
             ...authFlags
         ])
         .it('includes _feature in request when user selects to attach to a feature',
             (ctx) => {
-                expect(JSON.parse(ctx.stdout)).to.eql(mockVariable)
+                expect(ctx.stdout).to.contain(
+                    // eslint-disable-next-line max-len
+                    'The variable was associated to the existing feature spam. Use "dvc feature get spam" to see its details'
+                )
             })
 
 })
