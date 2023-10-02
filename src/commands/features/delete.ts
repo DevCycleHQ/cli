@@ -2,7 +2,7 @@ import { Args } from '@oclif/core'
 import { deleteFeature } from '../../api/features'
 import Base from '../base'
 import inquirer from 'inquirer'
-import { featurePrompt, FeaturePromptResult } from '../../ui/prompts'
+import { featurePrompt, FeaturePromptResult, getStringMatchConfirmationPrompt } from '../../ui/prompts'
 
 export default class DeleteFeatures extends Base {
     static hidden = false
@@ -31,6 +31,15 @@ export default class DeleteFeatures extends Base {
             featureKey = args.feature
         }
 
+        if (!headless) {
+            const { confirm } = 
+                await inquirer.prompt<{ confirm: string }>([getStringMatchConfirmationPrompt(featureKey)])
+            if (confirm === featureKey) {
+                await deleteFeature(this.authToken, this.projectKey, featureKey)
+                this.writer.successMessage('Feature successfully deleted')
+            }
+            return
+        }
         await deleteFeature(this.authToken, this.projectKey, featureKey)
         this.writer.successMessage('Feature successfully deleted')
     }
