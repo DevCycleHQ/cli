@@ -93,3 +93,15 @@ export const handleCustomPrompts = async (prompts: Prompt[], authToken: string, 
 
     return transformResponse(result, prompts)
 }
+
+export const getStringMatchConfirmationPrompt = (string: string) => ({
+    name: 'confirm',
+    message: `Please type "${string}" to confirm or "cancel" to cancel`,
+    type: 'input',
+    validate: (value: string) => {
+        if (value === string || value === 'cancel') {
+            return true
+        }
+        return `Invalid input. Please type "${string}" or "cancel"`
+    }
+})
