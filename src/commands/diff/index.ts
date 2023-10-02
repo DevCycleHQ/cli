@@ -56,6 +56,16 @@ export default class Diff extends Base {
 
     static flags = {
         ...Base.flags,
+        'include': Flags.string({
+            description: 'Files to include in the diff. By default all files are included. ' +
+                'Accepts multiple glob patterns.',
+            multiple: true
+        }),
+        'exclude': Flags.string({
+            description: 'Files to exclude in the diff. By default all files are included. ' +
+                'Accepts multiple glob patterns.',
+            multiple: true
+        }),
         file: Flags.string({ char: 'f', description: 'File path of existing diff file to inspect.' }),
         'client-name': ClientNameFlag,
         'match-pattern': MatchPatternFlag,
@@ -89,12 +99,15 @@ export default class Diff extends Base {
             this.writer.showError('Must provide a diff pattern')
             return
         }
+        const codeInsightsConfig = this.repoConfig?.codeInsights || {}
 
         this.useMarkdown = flags.format.includes('markdown')
         this.useHTML = flags.format === 'markdown'
 
         const parsedDiff = flags.file ? executeFileDiff(flags.file) :
-            args['diff-pattern'] ? executeDiff(args['diff-pattern']) : []
+            args['diff-pattern'] ?
+                executeDiff(args['diff-pattern'], flags, codeInsightsConfig) 
+                : []
 
         const matchesBySdk = parseFiles(parsedDiff, {
             clientNames: getClientNames(flags, this.repoConfig),

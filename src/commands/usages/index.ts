@@ -1,7 +1,5 @@
 import fs from 'fs'
-import { minimatch } from 'minimatch'
 import { Flags } from '@oclif/core'
-import { lsFiles } from '../../utils/git/ls-files'
 import { parseFiles } from '../../utils/usages/parse'
 import Base from '../base'
 import { File, JSONMatch, LineItem, VariableReference } from './types'
@@ -12,6 +10,7 @@ import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 import { VariableMatch, VariableUsageMatch } from '../../utils/parsers/types'
 import { fetchAllVariables } from '../../api/variables'
 import { Variable } from '../../api/schemas'
+import { getFilteredFiles } from '../../utils/getFilteredFiles'
 
 export default class Usages extends Base {
     static hidden = false
@@ -57,22 +56,6 @@ export default class Usages extends Base {
 
         this.useMarkdown = flags.format === 'markdown'
 
-        const includeFile = (filepath: string) => {
-            const includeGlobs = flags['include'] || codeInsightsConfig.includeFiles
-            return includeGlobs
-                ? includeGlobs.some((glob) =>
-                    minimatch(filepath, minimatch.escape(glob), { matchBase: true })
-                )
-                : true
-        }
-
-        const excludeFile = (filepath: string) => {
-            const excludeGlobs = flags['exclude'] || codeInsightsConfig.excludeFiles
-            return excludeGlobs
-                ? excludeGlobs.some((glob) => minimatch(filepath, minimatch.escape(glob), { matchBase: true }))
-                : false
-        }
-
         const processFile = (filepath: string): File => {
             let lines: LineItem[] = []
             try {
@@ -90,9 +73,7 @@ export default class Usages extends Base {
             }
         }
 
-        const files = lsFiles()
-            .filter((filepath) => includeFile(filepath) && !excludeFile(filepath))
-            .map(processFile)
+        const files = getFilteredFiles(flags, codeInsightsConfig).map(processFile)
 
         if (!files.length) {
             this.warn('No files found to process.')
