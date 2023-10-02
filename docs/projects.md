@@ -70,7 +70,14 @@ Retrieve all projects in the current Organization
 ```
 USAGE
   $ dvc projects get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless]
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--sortBy
+    key|name|updatedAt|createdAt] [--sortOrder asc|desc]
+
+FLAGS
+  --sortBy=<option>     Sort By
+                        <options: key|name|updatedAt|createdAt>
+  --sortOrder=<option>  Sort Order
+                        <options: asc|desc>
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
