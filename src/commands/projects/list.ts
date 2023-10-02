@@ -3,6 +3,7 @@ import { fetchProjects } from '../../api/projects'
 import Base from '../base'
 
 export default class ListProjects extends Base {
+    static aliases: string[] = ['projects:ls']
     static description = 'List the keys of all projects in the current Organization'
     static hidden = false
     authRequired = true

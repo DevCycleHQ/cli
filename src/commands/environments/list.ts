@@ -2,6 +2,7 @@ import { fetchEnvironments } from '../../api/environments'
 import Base from '../base'
 
 export default class ListEnvironments extends Base {
+    static aliases: string[] = ['environments:ls']
     static hidden = false
     authRequired = true
 

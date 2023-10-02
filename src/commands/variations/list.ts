@@ -5,6 +5,7 @@ import Base from '../base'
 import { Args } from '@oclif/core'
 
 export default class ListVariations extends Base {
+    static aliases: string[] = ['variations:ls']
     static hidden = false
     authRequired = true
     static description = 'List the keys of all variations in a feature'

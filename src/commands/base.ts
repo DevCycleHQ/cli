@@ -78,7 +78,7 @@ export default abstract class Base extends Command {
     personalAccessToken = ''
     projectKey = ''
     orgId = ''
-    organization: SavedOrganization | undefined = undefined 
+    organization: SavedOrganization | undefined = undefined
     authPath = path.join(this.config.configDir, 'auth.yml')
     configPath = path.join(this.config.configDir, 'user.yml')
     repoConfigPath = '.devcycle/config.yml'
@@ -305,22 +305,21 @@ export default abstract class Base extends Command {
         return params
     }
 
-    public async populateParametersWithZod
-        <ResourceType extends Record<string, ZodTypeAny>>(
+    public async populateParametersWithZod<ResourceType extends Record<string, ZodTypeAny>>(
         schema: ZodObject<ResourceType>,
         prompts: Prompt[],
         flags: Record<string, unknown>,
     ): Promise<z.infer<typeof schema>> {
-            let input = flags
-            if (!flags.headless) {
-                input = await this.populateParametersWithFlags(prompts, flags)
-            }
-            const parse = schema.parse(
-                input,
-                { errorMap }
-            )
-            return parse
+        let input = flags
+        if (!flags.headless) {
+            input = await this.populateParametersWithFlags(prompts, flags)
         }
+        const parse = schema.parse(
+            input,
+            { errorMap }
+        )
+        return parse
+    }
 
     public async populateParametersWithFlags(
         prompts: Prompt[],
