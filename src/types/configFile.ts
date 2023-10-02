@@ -73,7 +73,7 @@ export class SavedOrganization {
     display_name: string
 }
 
-class CodeInsights {
+export class CodeInsights {
     @IsString({ each: true })
     @IsOptional()
     clientNames?: string[]

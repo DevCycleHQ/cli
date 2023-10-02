@@ -805,6 +805,18 @@
             "vscode_extension"
           ]
         },
+        "include": {
+          "name": "include",
+          "type": "option",
+          "description": "Files to include in the diff. By default all files are included. Accepts multiple glob patterns.",
+          "multiple": true
+        },
+        "exclude": {
+          "name": "exclude",
+          "type": "option",
+          "description": "Files to exclude in the diff. By default all files are included. Accepts multiple glob patterns.",
+          "multiple": true
+        },
         "file": {
           "name": "file",
           "type": "option",
