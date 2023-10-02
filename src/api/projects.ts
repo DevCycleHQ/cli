@@ -16,11 +16,21 @@ export class CreateProjectParams {
     key: string
 }
 
+export class GetProjectsParams {
+    @IsString()
+    @IsOptional()
+    sortBy: string
+
+    @IsOptional()
+    sortOrder: 'asc' | 'desc'
+}
+
 const BASE_URL = '/v1/projects'
 
-export const fetchProjects = async (token: string) => {
+export const fetchProjects = async (token: string, queries?: GetProjectsParams) => {
     return apiClient.get(BASE_URL, {
         headers: buildHeaders(token),
+        queries
     })
 }
 
