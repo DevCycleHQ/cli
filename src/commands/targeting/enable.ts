@@ -1,9 +1,9 @@
 import { Args } from '@oclif/core'
-import { enableTargeting } from '../../api/targeting'
+import { enableTargeting, fetchTargetingForFeature } from '../../api/targeting'
 import { Variation } from '../../api/schemas'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import Base from '../base'
-import { getFeatureAndEnvironmentKeyFromArgs } from '../../utils/targeting'
+import { createTargetAndEnable, getFeatureAndEnvironmentKeyFromArgs } from '../../utils/targeting'
 import { fetchAudiences } from '../../api/audiences'
 
 export default class EnableTargeting extends Base {
@@ -36,6 +36,24 @@ export default class EnableTargeting extends Base {
             args,
             flags,
         )
+        if (!headless) {
+            const [targetingRules] = await fetchTargetingForFeature(
+                this.authToken, this.projectKey, featureKey, environmentKey
+            )
+
+            if (targetingRules.targets.length === 0) {
+                await createTargetAndEnable(
+                    targetingRules.targets,
+                    featureKey,
+                    environmentKey,
+                    this.authToken, 
+                    this.projectKey, 
+                    this.writer
+                )
+                return
+            }
+        }
+
         const updatedTargeting = await enableTargeting(
             this.authToken,
             this.projectKey,
