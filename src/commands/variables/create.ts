@@ -74,8 +74,8 @@ export default class CreateVariable extends CreateCommand {
                 )
                 await variableListOptions.promptVariationValues(params as Variable)
                 await updateFeature(this.authToken, this.projectKey, feature.key, feature)
-                const message = `The variable was associated to the existing feature ${feature.key}.` +
-                    `Use "dvc feature get ${feature.key}" to see its details`
+                const message = `The variable was associated to the existing feature ${feature.key}. ` +
+                    `Use "dvc features get --keys=${feature.key}" to see its details`
                 this.writer.successMessage(message)
             } else {
                 const result = await createVariable(this.authToken, this.projectKey, params)
@@ -96,7 +96,7 @@ export default class CreateVariable extends CreateCommand {
                 }
                 await updateFeature(this.authToken, this.projectKey, feature.key, feature)
                 const message = `The variable was associated to the existing feature ${feature.key}. ` +
-                `Use "dvc feature get ${feature.key}" to see its details.`
+                `Use "dvc features get --keys=${feature.key}" to see its details.`
                 this.writer.showRawResults(message)
             } else {
                 const result = await createVariable(this.authToken, this.projectKey, params)

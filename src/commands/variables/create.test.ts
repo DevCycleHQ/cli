@@ -149,7 +149,7 @@ describe('variables create', () => {
             (ctx) => {
                 expect(ctx.stdout).to.contain(
                     // eslint-disable-next-line max-len
-                    'The variable was associated to the existing feature spam. Use "dvc feature get spam" to see its details'
+                    'The variable was associated to the existing feature spam. Use "dvc features get --keys=spam" to see its details'
                 )
             })
 
