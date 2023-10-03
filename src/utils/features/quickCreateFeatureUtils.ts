@@ -42,7 +42,7 @@ export const setupTargetingForEnvironments = async (
         projectKey, 
         featureKey, 
         environment.key, {
-            targets: [{
+            targets: environment.type !== 'development' ? [] :[{
                 distribution: [{
                     percentage: 1,
                     _variation: 'variation-on',
@@ -59,6 +59,6 @@ export const setupTargetingForEnvironments = async (
                     }
                 }
             }],
-            status: environment.key === 'development' ? 'active' : 'inactive'
+            status: environment.type === 'development' ? 'active' : 'inactive'
         })))
 }
