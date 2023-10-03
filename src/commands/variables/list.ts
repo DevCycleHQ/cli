@@ -3,6 +3,7 @@ import { fetchVariables } from '../../api/variables'
 import Base from '../base'
 
 export default class ListVariables extends Base {
+    static aliases: string[] = ['variables:ls']
     static hidden = false
     static flags = {
         ...Base.flags,

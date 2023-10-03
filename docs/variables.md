@@ -6,6 +6,7 @@ Create, view, or modify Variables with the Management API.
 * [`dvc variables create`](#dvc-variables-create)
 * [`dvc variables get`](#dvc-variables-get)
 * [`dvc variables list`](#dvc-variables-list)
+* [`dvc variables ls`](#dvc-variables-ls)
 * [`dvc variables update [KEY]`](#dvc-variables-update-key)
 
 ## `dvc variables create`
@@ -90,6 +91,37 @@ GLOBAL FLAGS
                               warnings about missing credentials.
   --project=<value>           Project key to use for the DevCycle API requests
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
+
+ALIASES
+  $ dvc variables ls
+```
+
+## `dvc variables ls`
+
+```
+USAGE
+  $ dvc variables ls [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
+    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--search <value>] [--page <value>]
+    [--per-page <value>]
+
+FLAGS
+  --page=<value>      Page number to fetch
+  --per-page=<value>  Number of variables to fetch per page
+  --search=<value>    Filter variables by search query
+
+GLOBAL FLAGS
+  --auth-path=<value>         Override the default location to look for an auth.yml file
+  --client-id=<value>         Client ID to use for DevCycle API Authorization
+  --client-secret=<value>     Client Secret to use for DevCycle API Authorization
+  --config-path=<value>       Override the default location to look for the user.yml file
+  --headless                  Disable all interactive flows and format output for easy parsing.
+  --no-api                    Disable API-based enhancements for commands where authorization is optional. Suppresses
+                              warnings about missing credentials.
+  --project=<value>           Project key to use for the DevCycle API requests
+  --repo-config-path=<value>  Override the default location to look for the repo config.yml file
+
+ALIASES
+  $ dvc variables ls
 ```
 
 ## `dvc variables update [KEY]`
