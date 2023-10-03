@@ -1,8 +1,15 @@
 import inquirer from '../../ui/autocomplete'
 import { featurePrompt, EnvironmentPromptResult, environmentPrompt, FeaturePromptResult } from '../../ui/prompts'
 import { fetchFeatureByKey } from '../../api/features'
-import { Feature, Environment } from '../../api/schemas'
+import { Feature, Environment, Variation, FeatureConfig, UpdateTargetParams } from '../../api/schemas'
 import { fetchEnvironmentByKey } from '../../api/environments'
+import { servePrompt } from '../../ui/prompts/targetingPrompts'
+import { updateFeatureConfigForEnvironment } from '../../api/targeting'
+import { TargetingListOptions } from '../../ui/prompts/listPrompts/targetingListPrompt'
+import Writer from '../../ui/writer'
+import { fetchAudiences } from '../../api/audiences'
+import { fetchVariations } from '../../api/variations'
+import { renderTargetingTree } from '../../ui/targetingTree'
 
 type Response = {
     environmentKey: string
@@ -63,4 +70,126 @@ export const getFeatureAndEnvironmentKeyFromArgs = async (
         environment,
         feature
     }
+}
+
+export const createTargetAndEnable = async (
+    targetingRules: UpdateTargetParams[],
+    featureKey: string,
+    environmentKey: string, 
+    authToken: string, 
+    projectKey: string, 
+    writer: Writer,
+    variations?: Variation[],
+    environment?: Environment
+) => {
+    let updatedFeatureConfig: FeatureConfig | undefined
+
+    const { targetingChoice } = await inquirer.prompt({
+        name: 'targetingChoice',
+        message: 'Cannot enable an environment without any targeting rules.' +
+             ' Would you like to add a targeting rule?',
+        type: 'list',
+        choices: [{
+            name: 'Target All Users',
+            value: 'allUsers',
+        },
+        {
+            name: 'Custom Target',
+            value: 'custom',
+        },
+        {
+            name: 'Cancel',
+            value: 'cancel',
+        },],
+    })
+
+    if (targetingChoice === 'cancel') { 
+        return
+    } 
+
+    const fetchedVariations = variations || (await fetchVariations(authToken, projectKey, featureKey))
+    const audiences = await fetchAudiences(authToken, projectKey)
+    
+    if (targetingChoice === 'allUsers') {
+        const { serve } = await inquirer.prompt([servePrompt], {
+            token: authToken,
+            projectKey: projectKey,
+            featureKey
+        })
+
+        updatedFeatureConfig = await updateFeatureConfigForEnvironment(
+            authToken,
+            projectKey,
+            featureKey,
+            environmentKey,
+            { 
+                targets: [{
+                    distribution: [{
+                        percentage: 1,
+                        _variation: serve._id,
+                    }],
+                    audience: {
+                        name: 'All Users',
+                        filters: {
+                            filters: [{ type: 'all' }],
+                            operator: 'and'
+                        }
+                    }
+                }], 
+            }
+        )
+    } else {
+        const targetingListPrompt = new TargetingListOptions(
+            targetingRules,
+            audiences,
+            writer,
+            authToken,
+            projectKey,
+            featureKey
+        )
+        targetingListPrompt.variations = fetchedVariations
+        const newTarget = await targetingListPrompt.promptAddItem()
+        updatedFeatureConfig = await updateFeatureConfigForEnvironment(
+            authToken,
+            projectKey,
+            featureKey,
+            environmentKey,
+            { 
+                targets: [newTarget.value.item], 
+            }
+        )
+    }
+
+    const fetchedEnvironment = environment || await fetchEnvironmentByKey(authToken, projectKey, environmentKey)
+    
+    updatedFeatureConfig && renderTargetingTree(
+        [updatedFeatureConfig], 
+        [fetchedEnvironment],
+        fetchedVariations,
+        audiences,
+    )
+
+    const { confirm } = await inquirer.prompt({
+        name: 'confirm',
+        message: 'Targeting rule added. Would you like to enable the environment now? Y/n',
+        type: 'confirm',
+    })
+
+    if (confirm) {
+        updatedFeatureConfig = await updateFeatureConfigForEnvironment(
+            authToken,
+            projectKey,
+            featureKey,
+            environmentKey,
+            { status: 'active' }
+        )
+        updatedFeatureConfig && renderTargetingTree(
+            [updatedFeatureConfig], 
+            [fetchedEnvironment],
+            fetchedVariations,
+            audiences,
+        )
+    }
+    return updatedFeatureConfig
+
 }
