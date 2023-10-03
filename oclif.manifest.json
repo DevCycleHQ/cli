@@ -1204,7 +1204,9 @@
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
       "hidden": false,
-      "aliases": [],
+      "aliases": [
+        "environments:ls"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -1743,7 +1745,9 @@
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
       "hidden": false,
-      "aliases": [],
+      "aliases": [
+        "features:ls"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -2746,7 +2750,9 @@
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
       "hidden": false,
-      "aliases": [],
+      "aliases": [
+        "organizations:ls"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3130,7 +3136,9 @@
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
       "hidden": false,
-      "aliases": [],
+      "aliases": [
+        "overrides:ls"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3699,7 +3707,9 @@
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
       "hidden": false,
-      "aliases": [],
+      "aliases": [
+        "projects:ls"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -4847,7 +4857,9 @@
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
       "hidden": false,
-      "aliases": [],
+      "aliases": [
+        "variables:ls"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -5261,7 +5273,9 @@
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
       "hidden": false,
-      "aliases": [],
+      "aliases": [
+        "variations:ls"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",

@@ -3,6 +3,7 @@ import { fetchFeatures } from '../../api/features'
 import Base from '../base'
 
 export default class ListFeatures extends Base {
+    static aliases: string[] = ['features:ls']
     static hidden = false
     static description = 'View all features in a project'
     static flags = {

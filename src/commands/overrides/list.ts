@@ -6,6 +6,7 @@ import { orderOverridesForDisplay } from '../../utils/overrides'
 import { fetchEnvironments } from '../../api/environments'
 
 export default class DetailedOverrides extends Base {
+    static aliases: string[] = ['overrides:ls']
     static hidden = false
     authRequired = true
     static description = 'View the Overrides associated with your DevCycle Identity in your current project.'
