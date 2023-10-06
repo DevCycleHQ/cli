@@ -1,12 +1,12 @@
 import { createVariablePrompts, getVariableValuePrompt } from '../variablePrompts'
 import { ListOption, ListOptionsPrompt } from './listOptionsPrompt'
 import inquirer from 'inquirer'
-import { 
-    CreateVariableDto, 
-    CreateVariableParams, 
-    UpdateVariableDto, 
+import {
+    CreateVariableDto,
+    CreateVariableParams,
+    UpdateVariableDto,
     Variable,
-    Variation 
+    Variation
 } from '../../../api/schemas'
 import { errorMap } from '../../../api/apiClient'
 import Writer from '../../writer'
@@ -27,8 +27,8 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
     }
 
     getVariablesListPrompt = () => ({
-        name: 'variables', 
-        value: 'variables', 
+        name: 'variables',
+        value: 'variables',
         message: 'Manage variables',
         type: 'listOptions',
         listOptionsPrompt: () => this.prompt(),
@@ -37,12 +37,12 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         )
     })
 
-    private async promptVariationValues(variable: Variable) {
+    async promptVariationValues(variable: Variable) {
         if (this.featureVariations?.length) {
             for (const variation of this.featureVariations) {
                 const variationPrompt = getVariableValuePrompt(
-                    variation, 
-                    variable.type, 
+                    variation,
+                    variable.type,
                     variation.variables?.[variable.key] as string | number | boolean
                 )
 
@@ -78,7 +78,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
             type: 'list',
             choices: list
         }])
-        const index = list.findIndex((listItem) => (listItem.value.item.key === variableListItem.item.key)) 
+        const index = list.findIndex((listItem) => (listItem.value.item.key === variableListItem.item.key))
 
         // Have a default for each of the prompts that correspond to the previous value of the variable
         const filledOutPrompts = this.variablePropertyPrompts.map((prompt) => ({
@@ -101,7 +101,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
     transformToListOptions(list: CreateVariableParams[]): ListOption<CreateVariableParams>[] {
         return list.map((createVariable, index) => ({
             name: createVariable.key,
-            value: { item: createVariable, id: index } 
+            value: { item: createVariable, id: index }
         }))
     }
 }
