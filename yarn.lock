@@ -1146,10 +1146,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/estraverse@^5.1.1":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@types/estraverse/-/estraverse-5.1.2.tgz"
-  integrity sha512-3Rndn7sxqRc57WCN+LEaTmwgHAxrGUylgUk5zZsKzqioCbXpk7nSBxDWjPLoE96ZeykGFORMJ45V7N1TFaPg6A==
+"@types/estraverse@^5.1.5":
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/@types/estraverse/-/estraverse-5.1.5.tgz#4a95d42d29eb69af71ee60dd4b0e8221a6f2417c"
+  integrity sha512-HbVDqIkxBwbIClGoum3GtXhrZkDHCw26+9jTLHRUeUPLlOwHCeGgXw+0b8xK+j6zfuf6Rv1y9Jke3MtSujcFng==
   dependencies:
     "@types/estree" "*"
 
