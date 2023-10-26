@@ -47,7 +47,7 @@
     "parse-diff": "^0.9.0",
     "recast": "^0.21.1",
     "reflect-metadata": "^0.1.13",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@oclif/test": "^2.3.22",
