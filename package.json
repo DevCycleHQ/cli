@@ -20,7 +20,7 @@
     "@babel/parser": "^7.23.0",
     "@oclif/core": "^2.8.5",
     "@oclif/plugin-autocomplete": "^2.3.1",
-    "@oclif/plugin-help": "^5.2.9",
+    "@oclif/plugin-help": "^6.0.4",
     "@types/estraverse": "^5.1.5",
     "@types/inquirer": "^8.2.0",
     "@types/inquirer-autocomplete-prompt": "^2.0.0",
