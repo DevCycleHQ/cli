@@ -1,6 +1,5 @@
 import { executeDiff } from '../../utils/diff/diff'
 import { Flags, Args } from '@oclif/core'
-import * as emoji from 'node-emoji'
 import { uniqBy } from 'lodash'
 import { executeFileDiff } from '../../utils/diff/fileDiff'
 import { parseFiles } from '../../utils/diff/parse'
@@ -16,10 +15,10 @@ import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 import { Variable } from '../../api/schemas'
 
 const EMOJI = {
-    add: emoji.get('large_green_circle'),
-    remove: emoji.get('red_circle'),
-    notice: emoji.get('warning'),
-    cleanup: emoji.get('broom')
+    add: '🟢',
+    remove: '🔴',
+    notice: '⚠️',
+    cleanup: '🧹'
 }
 
 type MatchesByType = {
