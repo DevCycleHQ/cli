@@ -881,6 +881,37 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
+"@oclif/core@^3.9.1":
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.9.1.tgz#056cf2e5b0962eac371a31d12963b188ca314716"
+  integrity sha512-ZVz2TY8f0cA2HHIWdIAYOjpKynEyF481cKs1J6olDViLZ4OJonuLgGWUFs9luaadBcYtRoVuM3Ox1cdSqeUWFw==
+  dependencies:
+    ansi-escapes "^4.3.2"
+    ansi-styles "^4.3.0"
+    cardinal "^2.1.1"
+    chalk "^4.1.2"
+    clean-stack "^3.0.1"
+    cli-progress "^3.12.0"
+    debug "^4.3.4"
+    ejs "^3.1.9"
+    get-package-type "^0.1.0"
+    globby "^11.1.0"
+    hyperlinker "^1.0.0"
+    indent-string "^4.0.0"
+    is-wsl "^2.2.0"
+    js-yaml "^3.14.1"
+    natural-orderby "^2.0.3"
+    object-treeify "^1.1.33"
+    password-prompt "^1.1.2"
+    slice-ansi "^4.0.0"
+    string-width "^4.2.3"
+    strip-ansi "^6.0.1"
+    supports-color "^8.1.1"
+    supports-hyperlinks "^2.2.0"
+    widest-line "^3.1.0"
+    wordwrap "^1.0.0"
+    wrap-ansi "^7.0.0"
+
 "@oclif/plugin-autocomplete@^2.3.10":
   version "2.3.10"
   resolved "https://registry.yarnpkg.com/@oclif/plugin-autocomplete/-/plugin-autocomplete-2.3.10.tgz#787f6208cdfe10ffc68ad89e9e7f1a7ad0e8987f"
@@ -890,12 +921,19 @@
     chalk "^4.1.0"
     debug "^4.3.4"
 
-"@oclif/plugin-help@^5.1.19", "@oclif/plugin-help@^5.2.9":
+"@oclif/plugin-help@^5.1.19":
   version "5.2.10"
   resolved "https://registry.npmjs.org/@oclif/plugin-help/-/plugin-help-5.2.10.tgz"
   integrity sha512-l3hnloPkXOLGGrepLLdj8NsBpVhhEpg4jclIeIBaZzIo6+c+/uqcL2LjvOogmSEf5g4zooRtxivwUpcFiBSaBg==
   dependencies:
     "@oclif/core" "^2.8.7"
+
+"@oclif/plugin-help@^6.0.5":
+  version "6.0.5"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-6.0.5.tgz#4457212909c60bf67939b8c88773696f448f910a"
+  integrity sha512-PnwmnpNGE3y7zZBKMH7Le+iFKuvKViO1lboJbz8BEhM+XXvTDkIJ1TYFlETMHzK+KSB2JyFCJmqn2AnAKSyTKA==
+  dependencies:
+    "@oclif/core" "^3.9.1"
 
 "@oclif/plugin-not-found@^2.3.7":
   version "2.3.26"
@@ -2522,7 +2560,7 @@ eastasianwidth@^0.2.0:
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz"
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
-ejs@^3.1.8:
+ejs@^3.1.8, ejs@^3.1.9:
   version "3.1.9"
   resolved "https://registry.npmjs.org/ejs/-/ejs-3.1.9.tgz"
   integrity sha512-rC+QVNMJWv+MtPgkt0y+0rVEIdbtxVADApW9JXrUVlzHetgcyczP/E7DJmWJ4fJCZF2cPcBk0laWO9ZHMG3DmQ==
