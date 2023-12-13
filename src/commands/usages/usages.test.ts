@@ -37,6 +37,12 @@ describe('usages', () => {
         .it('runs against a node test file with special characters in the path', (ctx) => {
             expect(ctx.stdout).toMatchSnapshot()
         })
+    
+    test.stdout()
+        .command(['usages', '--include', 'test-utils/fixtures/usages/*/*.js'])
+        .it('runs against all js files', (ctx) => {
+            expect(ctx.stdout).toMatchSnapshot()
+        })
 
     test
         .nock(BASE_URL, (api) => api
