@@ -41,7 +41,7 @@
     "lodash": "^4.17.21",
     "minimatch": "^9.0.0",
     "mocha-chai-jest-snapshot": "^1.1.4",
-    "open": "^8.4.2",
+    "open": "^10.0.2",
     "openapi-zod-client": "^1.7.1",
     "parse-diff": "^0.9.0",
     "recast": "^0.21.1",
