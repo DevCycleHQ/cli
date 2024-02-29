@@ -100,7 +100,8 @@ export default class GenerateClient extends Base {
 
         const hashedKey = obfuscate ? this.encryptKey(variable.key) : variable.key
 
-        return `export const ${hookName} = (defaultValue: ${this.getVariableType(variable)}) => useVariableValue('${hashedKey}', defaultValue)`
+        return `export const ${methodName} = () => '${hashedKey}'
+export const ${hookName} = (defaultValue: ${this.getVariableType(variable)}) => useVariableValue(${methodName}(), defaultValue)`
     }
 
     private checkDuplicateMethod(methodName: string, key: string) {
