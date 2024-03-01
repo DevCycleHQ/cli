@@ -4,16 +4,25 @@ import { fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
 import { Project, Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
-import { camelCase, upperFirst } from 'lodash'
+import { camelCase, upperCase, upperFirst } from 'lodash'
 import aesjs from 'aes-js'
+import GenerateTypes from './types'
 
 const reactImports = () => {
     const reactSDK = '@devcycle/react-client-sdk'
     return `import {
-    useVariableValue
+    useVariableValue as _useVariableValue,
 } from '${reactSDK}'
 import { DVCJSON } from '@devcycle/types'
+import { DVCVariableValue } from '@devcycle/js-client-sdk'
 
+type ObfuscatedKey<T extends string> = T & { __brand: 'DevCycleObfuscatedKey' }
+
+export const useVariableValue = <K extends string, T extends DVCVariableValue>(
+    key: ObfuscatedKey<K>, defaultValue: T
+) => {
+    return _useVariableValue(key, defaultValue)
+}
 `
 }
 
@@ -41,13 +50,15 @@ export default class GenerateClient extends Base {
 
     project: Project
 
+    orgMembers: OrganizationMember[] = []
+
     public async run(): Promise<void> {
         const { flags } = await this.parse(GenerateClient)
         const { project, headless, obfuscate } = flags
         this.project = await this.requireProject(project, headless)
 
         const variables = await fetchAllVariables(this.authToken, this.projectKey)
-        const orgMembers = await fetchOrganizationMembers(this.authToken)
+        this.orgMembers = await fetchOrganizationMembers(this.authToken)
         const typesString = await this.getTypesString(variables, flags['react'], obfuscate)
         //@ts-ignore
         const shouldObfuscate = obfuscate || this.project.settings.obfuscation?.required
@@ -88,11 +99,12 @@ export default class GenerateClient extends Base {
 
         const hashedKey = obfuscate ? this.encryptKey(variable.key) : variable.key
 
-        return `export const ${methodName} = (defaultValue: ${this.getVariableType(variable)}) => client.variableValue('${hashedKey}', defaultValue)`
+        return `export const ${methodName} = (defaultValue: ${GenerateTypes.getVariableType(variable)}) => client.variableValue('${hashedKey}', defaultValue)`
     }
 
     private getVariableMethodReact(variable: Variable, obfuscate: boolean) {
         const methodName = camelCase(variable.key)
+        const constantName = upperCase(variable.key).replace(/\s/g, '_')
         const hookName = `use${upperFirst(methodName)}`
         this.checkDuplicateMethod(hookName, variable.key)
 
@@ -100,8 +112,10 @@ export default class GenerateClient extends Base {
 
         const hashedKey = obfuscate ? this.encryptKey(variable.key) : variable.key
 
-        return `export const ${methodName} = () => '${hashedKey}'
-export const ${hookName} = (defaultValue: ${this.getVariableType(variable)}) => useVariableValue(${methodName}(), defaultValue)`
+        return `
+${GenerateTypes.getVariableInfoComment(variable, this.orgMembers, true, false, true)}
+export const ${constantName} = '${hashedKey}' as ObfuscatedKey<'${variable.key}'>
+export const ${hookName} = (defaultValue: ${GenerateTypes.getVariableType(variable)}) => useVariableValue(${constantName}, defaultValue)`
     }
 
     private checkDuplicateMethod(methodName: string, key: string) {
@@ -110,68 +124,12 @@ export const ${hookName} = (defaultValue: ${this.getVariableType(variable)}) => 
         }
     }
 
-    private getVariableType(variable: Variable) {
-        if (variable.validationSchema && variable.validationSchema.schemaType === 'enum') {
-            // TODO fix the schema so it doesn't think enumValues is an object
-            const enumValues = variable.validationSchema.enumValues as string[] | number []
-            if (enumValues === undefined || enumValues.length === 0) {
-                return variable.type.toLocaleLowerCase()
-            }
-            return enumValues.map((value) => `'${value}'`).join(' | ')
-        }
-        if (variable.type === 'JSON') {
-            return 'DVCJSON'
-        }
-        return variable.type.toLocaleLowerCase()
-    }
-
-    private async getVariableInfoComment(variable: Variable, orgMembers: OrganizationMember[]) {
-        const { flags } = await this.parse(GenerateClient)
-        const { 'include-descriptions': includeDescriptions, 'inline-comments': inlineComments } = flags
-
-        const descriptionText = includeDescriptions && variable.description
-            ? `${this.sanitizeDescription(variable.description)}`
-            : ''
-
-        const creator = variable._createdBy ? this.findCreatorName(orgMembers, variable._createdBy) : 'Unknown User'
-        const createdDate = variable.createdAt.split('T')[0]
-        const creationInfo = `created by ${creator} on ${createdDate}`
-
-        return inlineComments
-            ? this.inlineComment(descriptionText, creationInfo)
-            : this.blockComment(descriptionText, creator, createdDate)
-    }
-
-    private sanitizeDescription(description: string) {
-        // Remove newlines, tabs, and carriage returns for proper display
-        return description.replace(/[\r\n\t]/g, ' ').trim()
-    }
-
-    private findCreatorName(orgMembers: OrganizationMember[], creatorId: string) {
-        return orgMembers.find((member) => member.user_id === creatorId)?.name || 'Unknown User'
-    }
-
-    private inlineComment(description: string, creationInfo: string) {
-        const descriptionText = description ? `(${description}) ` : ''
-        return ` // ${descriptionText}${creationInfo}`
-    }
-
-    private blockComment(description: string, creator: string, createdDate: string) {
-        return (
-            '    /*\n' +
-            (description !== '' ? `    description: ${description}\n` : '') +
-            `    created by: ${creator}\n` +
-            `    created on: ${createdDate}\n` +
-            '    */'
-        )
-    }
-
     private encryptKey(variableKey: string) {
         //@ts-ignore
         const key = this.project.settings.obfuscation.key
         const textBytes = aesjs.utils.utf8.toBytes(variableKey)
         const aesCtr = new aesjs.ModeOfOperation.ctr(key)
         const encryptedBytes = aesCtr.encrypt(textBytes)
-        return aesjs.utils.hex.fromBytes(encryptedBytes)
+        return `dvc_obfs_${aesjs.utils.hex.fromBytes(encryptedBytes)}`
     }
 }
