@@ -5,6 +5,7 @@ import * as fs from 'fs'
 
 const mockVariablesResponse = [
     {
+        _id: '644aae12eb9d66fdd57fbd04',
         name: 'enum-var',
         key: 'enum-var',
         type: 'String',
@@ -17,6 +18,7 @@ const mockVariablesResponse = [
         },
     },
     {
+        _id: '644aae12eb9d66fdd57fbd05',
         name: 'regex-var',
         key: 'regex-var',
         type: 'String',
@@ -28,6 +30,7 @@ const mockVariablesResponse = [
         },
     },
     {
+        _id: '644aae12eb9d66fdd57fcd04',
         name: 'string-var',
         key: 'string-var',
         type: 'String',
@@ -35,6 +38,7 @@ const mockVariablesResponse = [
         createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
+        _id: '644aae12eb9e66fdd57fbd04',
         name: 'boolean-var',
         key: 'boolean-var',
         type: 'Boolean',
@@ -42,6 +46,7 @@ const mockVariablesResponse = [
         createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
+        _id: '644aaf12eb9d66fdd57fbd04',
         name: 'number-var',
         key: 'number-var',
         type: 'Number',
@@ -49,6 +54,7 @@ const mockVariablesResponse = [
         createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
+        _id: '644bae12eb9d66fdd57fbd04',
         name: 'json-var',
         key: 'json-var',
         type: 'JSON',
