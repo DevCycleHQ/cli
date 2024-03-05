@@ -6,6 +6,7 @@ import { Project, Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 import { upperCase } from 'lodash'
 import aesjs from 'aes-js'
+import { sha256 } from 'js-sha256'
 
 const reactImports = (oldRepos: boolean) => {
     const jsRepo = oldRepos
@@ -195,7 +196,7 @@ export default class GenerateTypes extends Base {
     }
 
     private getVariableKeyAndType(variable: Variable) {
-        return `'${this.obfuscate ? this.encryptKey(variable.key) : variable.key}': ${getVariableType(variable)}`
+        return `'${this.obfuscate ? this.encryptKey(variable) : variable.key}': ${getVariableType(variable)}`
     }
 
     private async getVariableInfoComment(variable: Variable, indent: boolean) {
@@ -219,7 +220,7 @@ export default class GenerateTypes extends Base {
         const constantName = this.getVariableGeneratedName(variable)
 
         const hashedKey = this.obfuscate
-            ? this.encryptKey(variable.key)
+            ? this.encryptKey(variable)
             : variable.key
 
         return `
@@ -240,12 +241,9 @@ export const ${constantName} = '${hashedKey}' as const`
         return constantName
     }
 
-    private encryptKey(variableKey: string) {
-        const key = this.project.settings.obfuscation.key
-        const textBytes = aesjs.utils.utf8.toBytes(variableKey)
-        const aesCtr = new aesjs.ModeOfOperation.ctr(key)
-        const encryptedBytes = aesCtr.encrypt(textBytes)
-        return `dvc_obfs_${aesjs.utils.hex.fromBytes(encryptedBytes)}`
+    private encryptKey(variable: Variable) {
+        const textBytes = sha256(variable.key + variable._id)
+        return `dvc_obfs_${textBytes}`
     }
 }
 
