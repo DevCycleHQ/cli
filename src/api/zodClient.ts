@@ -32,7 +32,7 @@ const ProjectSettings = z.object({
     edgeDB: EdgeDBSettings,
     optIn: OptInSettings,
     sdkTypeVisibility: SDKTypeVisibilitySettings,
-    obfuscation: ObfuscationSettings
+    obfuscation: ObfuscationSettings,
 })
 const CreateProjectDto = z.object({
     name: z.string().max(100),

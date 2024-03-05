@@ -1,141 +1,143 @@
 {
-  "name": "@devcycle/cli",
-  "version": "5.12.3",
-  "description": "DevCycle CLI Tool",
-  "author": "support@devcycle.com",
-  "bin": {
-    "dvc": "./bin/run"
-  },
-  "homepage": "https://github.com/DevCycleHQ/cli",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "repository": "DevCycleHQ/cli",
-  "files": [
-    "/bin",
-    "/dist",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
-  ],
-  "dependencies": {
-    "@babel/parser": "^7.23.0",
-    "@oclif/core": "^2.8.5",
-    "@oclif/plugin-autocomplete": "^2.3.10",
-    "@oclif/plugin-help": "^6.0.5",
-    "@types/estraverse": "^5.1.5",
-    "@types/inquirer": "^8.2.0",
-    "@types/inquirer-autocomplete-prompt": "^2.0.0",
-    "@types/js-yaml": "^4.0.5",
-    "@types/validator": "^13.7.1",
-    "@zodios/core": "^10.9.1",
-    "@zodios/openapi": "^10.4.7",
-    "aes-js": "^3.1.2",
-    "axios": "^1.4.0",
-    "chalk": "^4.1.0",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
-    "estraverse": "^5.3.0",
-    "fuzzy": "^0.1.3",
-    "inquirer": "^8.2.0",
-    "inquirer-autocomplete-prompt": "^2.0.0",
-    "js-sha256": "^0.11.0",
-    "js-yaml": "^4.1.0",
-    "lodash": "^4.17.21",
-    "minimatch": "^9.0.0",
-    "mocha-chai-jest-snapshot": "^1.1.4",
-    "open": "^8.4.2",
-    "openapi-zod-client": "^1.7.1",
-    "parse-diff": "^0.9.0",
-    "recast": "^0.21.1",
-    "reflect-metadata": "^0.1.13",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@oclif/test": "^2.3.22",
-    "@types/aes-js": "^3.1.4",
-    "@types/chai": "^4",
-    "@types/minimatch": "^5.1.2",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "^16.9.4",
-    "chai": "^4",
-    "eslint": "^7.32.0",
-    "eslint-config-oclif": "^4",
-    "eslint-config-oclif-typescript": "^1.0.2",
-    "globby": "^11",
-    "mocha": "^9",
-    "nock": "^13.2.2",
-    "oclif": "^3.9.0",
-    "shx": "^0.3.3",
-    "sinon": "^15.2.0",
-    "ts-node": "^10.2.1",
-    "tslib": "^2.3.1",
-    "typescript": "^4.4.3"
-  },
-  "oclif": {
-    "bin": "dvc",
-    "dirname": "devcycle",
-    "commands": "./dist/commands",
-    "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-autocomplete"
+    "name": "@devcycle/cli",
+    "version": "5.12.3",
+    "description": "DevCycle CLI Tool",
+    "author": "support@devcycle.com",
+    "bin": {
+        "dvc": "./bin/run"
+    },
+    "homepage": "https://github.com/DevCycleHQ/cli",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "repository": "DevCycleHQ/cli",
+    "files": [
+        "/bin",
+        "/dist",
+        "/npm-shrinkwrap.json",
+        "/oclif.manifest.json"
     ],
-    "helpClass": "./dist/help",
-    "topicSeparator": " ",
-    "topics": {
-      "login": {
-        "description": "Log in to DevCycle."
-      },
-      "features": {
-        "description": "Create, view, or modify Features with the Management API."
-      },
-      "variables": {
-        "description": "Create, view, or modify Variables with the Management API."
-      },
-      "projects": {
-        "description": "Create, or view Projects with the Management API."
-      },
-      "organizations": {
-        "description": "List or switch organizations."
-      },
-      "alias": {
-        "description": "Manage repository variable aliases."
-      },
-      "repo": {
-        "description": "Manage repository configuration."
-      },
-      "status": {
-        "description": "Check CLI status."
-      },
-      "targeting": {
-        "description": "Create, view, or modify Targeting Rules for a Feature with the Management API."
-      },
-      "generate": {
-        "description": "Generate Devcycle related files."
-      },
-      "identity": {
-        "description": "View or manage your DevCycle Identity."
-      },
-      "overrides": {
-        "description": "Create, view, or modify Overrides for a Project with the Management API."
-      }
-    }
-  },
-  "scripts": {
-    "build": "shx rm -rf dist && tsc -b && oclif manifest && oclif readme --multi",
-    "build:tar": "oclif pack tarballs",
-    "lint": "eslint . --ext .ts --config .eslintrc",
-    "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint",
-    "prepack": "yarn build && oclif manifest && oclif readme --multi",
-    "test": "mocha test/*.ts \"src/**/*.test.ts\"",
-    "test:ci": "yarn test --forbid-only",
-    "version": "oclif readme --multi && git add README.md"
-  },
-  "engines": {
-    "node": ">=16.0.0"
-  },
-  "bugs": "https://github.com/DevCycleHQ/cli/issues",
-  "keywords": [
-    "oclif"
-  ],
-  "types": "dist/index.d.ts"
+    "dependencies": {
+        "@babel/parser": "^7.23.0",
+        "@oclif/core": "^2.8.5",
+        "@oclif/plugin-autocomplete": "^2.3.10",
+        "@oclif/plugin-help": "^6.0.5",
+        "@types/estraverse": "^5.1.5",
+        "@types/inquirer": "^8.2.0",
+        "@types/inquirer-autocomplete-prompt": "^2.0.0",
+        "@types/js-yaml": "^4.0.5",
+        "@types/validator": "^13.7.1",
+        "@zodios/core": "^10.9.1",
+        "@zodios/openapi": "^10.4.7",
+        "aes-js": "^3.1.2",
+        "axios": "^1.4.0",
+        "chalk": "^4.1.0",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.0",
+        "estraverse": "^5.3.0",
+        "fuzzy": "^0.1.3",
+        "inquirer": "^8.2.0",
+        "inquirer-autocomplete-prompt": "^2.0.0",
+        "js-sha256": "^0.11.0",
+        "js-yaml": "^4.1.0",
+        "lodash": "^4.17.21",
+        "minimatch": "^9.0.0",
+        "mocha-chai-jest-snapshot": "^1.1.4",
+        "open": "^8.4.2",
+        "openapi-zod-client": "^1.7.1",
+        "parse-diff": "^0.9.0",
+        "recast": "^0.21.1",
+        "reflect-metadata": "^0.1.13",
+        "zod": "^3.22.4"
+    },
+    "devDependencies": {
+        "@oclif/test": "^2.3.22",
+        "@types/aes-js": "^3.1.4",
+        "@types/chai": "^4",
+        "@types/minimatch": "^5.1.2",
+        "@types/mocha": "^9.0.0",
+        "@types/node": "^16.9.4",
+        "chai": "^4",
+        "eslint": "^7.32.0",
+        "eslint-config-oclif": "^4",
+        "eslint-config-oclif-typescript": "^1.0.2",
+        "eslint-config-prettier": "9.1.0",
+        "globby": "^11",
+        "mocha": "^9",
+        "nock": "^13.2.2",
+        "oclif": "^3.9.0",
+        "prettier": "3.2.5",
+        "shx": "^0.3.3",
+        "sinon": "^15.2.0",
+        "ts-node": "^10.2.1",
+        "tslib": "^2.3.1",
+        "typescript": "^4.4.3"
+    },
+    "oclif": {
+        "bin": "dvc",
+        "dirname": "devcycle",
+        "commands": "./dist/commands",
+        "plugins": [
+            "@oclif/plugin-help",
+            "@oclif/plugin-autocomplete"
+        ],
+        "helpClass": "./dist/help",
+        "topicSeparator": " ",
+        "topics": {
+            "login": {
+                "description": "Log in to DevCycle."
+            },
+            "features": {
+                "description": "Create, view, or modify Features with the Management API."
+            },
+            "variables": {
+                "description": "Create, view, or modify Variables with the Management API."
+            },
+            "projects": {
+                "description": "Create, or view Projects with the Management API."
+            },
+            "organizations": {
+                "description": "List or switch organizations."
+            },
+            "alias": {
+                "description": "Manage repository variable aliases."
+            },
+            "repo": {
+                "description": "Manage repository configuration."
+            },
+            "status": {
+                "description": "Check CLI status."
+            },
+            "targeting": {
+                "description": "Create, view, or modify Targeting Rules for a Feature with the Management API."
+            },
+            "generate": {
+                "description": "Generate Devcycle related files."
+            },
+            "identity": {
+                "description": "View or manage your DevCycle Identity."
+            },
+            "overrides": {
+                "description": "Create, view, or modify Overrides for a Project with the Management API."
+            }
+        }
+    },
+    "scripts": {
+        "build": "shx rm -rf dist && tsc -b && oclif manifest && oclif readme --multi",
+        "build:tar": "oclif pack tarballs",
+        "lint": "eslint . --ext .ts --config .eslintrc",
+        "postpack": "shx rm -f oclif.manifest.json",
+        "posttest": "yarn lint",
+        "prepack": "yarn build && oclif manifest && oclif readme --multi",
+        "test": "mocha test/*.ts \"src/**/*.test.ts\"",
+        "test:ci": "yarn test --forbid-only",
+        "version": "oclif readme --multi && git add README.md"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    },
+    "bugs": "https://github.com/DevCycleHQ/cli/issues",
+    "keywords": [
+        "oclif"
+    ],
+    "types": "dist/index.d.ts"
 }

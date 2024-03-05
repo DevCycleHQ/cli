@@ -4,10 +4,18 @@ import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import jsYaml from 'js-yaml'
-import { RepoConfigFromFile, SavedOrganization, UserConfigFromFile } from '../types'
+import {
+    RepoConfigFromFile,
+    SavedOrganization,
+    UserConfigFromFile,
+} from '../types'
 import { ClassConstructor, plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
-import { reportValidationErrors, reportZodValidationErrors, validateParams } from '../utils/reportValidationErrors'
+import {
+    reportValidationErrors,
+    reportZodValidationErrors,
+    validateParams,
+} from '../utils/reportValidationErrors'
 import { ApiAuth } from '../auth/ApiAuth'
 import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
@@ -26,39 +34,44 @@ export default abstract class Base extends Command {
     static hidden = true
     static flags = {
         'config-path': Flags.string({
-            description: 'Override the default location to look for the user.yml file',
-            helpGroup: 'Global'
+            description:
+                'Override the default location to look for the user.yml file',
+            helpGroup: 'Global',
         }),
         'auth-path': Flags.string({
-            description: 'Override the default location to look for an auth.yml file',
-            helpGroup: 'Global'
+            description:
+                'Override the default location to look for an auth.yml file',
+            helpGroup: 'Global',
         }),
         'repo-config-path': Flags.string({
-            description: 'Override the default location to look for the repo config.yml file',
-            helpGroup: 'Global'
+            description:
+                'Override the default location to look for the repo config.yml file',
+            helpGroup: 'Global',
         }),
         'client-id': Flags.string({
             description: 'Client ID to use for DevCycle API Authorization',
-            helpGroup: 'Global'
+            helpGroup: 'Global',
         }),
         'client-secret': Flags.string({
             description: 'Client Secret to use for DevCycle API Authorization',
-            helpGroup: 'Global'
+            helpGroup: 'Global',
         }),
-        'project': Flags.string({
+        project: Flags.string({
             description: 'Project key to use for the DevCycle API requests',
-            helpGroup: 'Global'
+            helpGroup: 'Global',
         }),
         'no-api': Flags.boolean({
-            description: 'Disable API-based enhancements for commands where authorization is optional. Suppresses ' +
+            description:
+                'Disable API-based enhancements for commands where authorization is optional. Suppresses ' +
                 'warnings about missing credentials.',
-            helpGroup: 'Global'
+            helpGroup: 'Global',
         }),
-        'headless': Flags.boolean({
-            description: 'Disable all interactive flows and format output for easy parsing.',
-            helpGroup: 'Global'
+        headless: Flags.boolean({
+            description:
+                'Disable all interactive flows and format output for easy parsing.',
+            helpGroup: 'Global',
         }),
-        'caller': Flags.string({
+        caller: Flags.string({
             description: 'The integration that is calling the CLI.',
             helpGroup: 'Global',
             options: [
@@ -69,9 +82,9 @@ export default abstract class Base extends Command {
                 'bitbucket.pr_insights',
                 'bitbucket.code_usages',
                 'cli',
-                'vscode_extension'
+                'vscode_extension',
             ],
-            hidden: true
+            hidden: true,
         }),
     }
 
@@ -111,7 +124,11 @@ export default abstract class Base extends Command {
     }
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
-        const auth = new ApiAuth(this.authPath, this.config.cacheDir, this.writer)
+        const auth = new ApiAuth(
+            this.authPath,
+            this.config.cacheDir,
+            this.writer,
+        )
         this.authToken = await auth.getToken(flags, this.orgId)
         this.personalAccessToken = auth.getPersonalToken()
 
@@ -125,20 +142,20 @@ export default abstract class Base extends Command {
             if (this.authRequired) {
                 throw new Error(
                     'Authorization is required to use this command.\n' +
-                    'Please login using "dvc login sso" ' +
-                    'or pass credentials using the --client-id and --client-secret flags.'
+                        'Please login using "dvc login sso" ' +
+                        'or pass credentials using the --client-id and --client-secret flags.',
                 )
             } else if (this.authSuggested && !flags['no-api']) {
                 this.writer.warningMessage(
                     'This command has limited functionality without Authorization.' +
-                    'Use the "--no-api" flag to suppress this warning',
+                        'Use the "--no-api" flag to suppress this warning',
                 )
             }
             return
         } else if (this.authRequired && this.isAuthExpired()) {
             throw new Error(
                 'Authorization token has expired.\n' +
-                'Please login using "dvc login again" '
+                    'Please login using "dvc login again" ',
             )
         }
     }
@@ -170,7 +187,7 @@ export default abstract class Base extends Command {
     }
 
     updateUserConfig(
-        changes: Partial<UserConfigFromFile>
+        changes: Partial<UserConfigFromFile>,
     ): UserConfigFromFile | null {
         let config = this.loadUserConfig(this.configPath)
         if (!config) {
@@ -181,7 +198,7 @@ export default abstract class Base extends Command {
 
         config = {
             ...config,
-            ...changes
+            ...changes,
         }
 
         fs.writeFileSync(this.configPath, jsYaml.dump(config))
@@ -191,7 +208,7 @@ export default abstract class Base extends Command {
     }
 
     updateRepoConfig(
-        changes: Partial<RepoConfigFromFile>
+        changes: Partial<RepoConfigFromFile>,
     ): RepoConfigFromFile | null {
         let config = this.loadRepoConfig(this.repoConfigPath)
         if (!config) {
@@ -202,11 +219,13 @@ export default abstract class Base extends Command {
 
         config = {
             ...config,
-            ...changes
+            ...changes,
         }
 
         fs.writeFileSync(this.repoConfigPath, jsYaml.dump(config))
-        this.writer.successMessage(`Repo configuration saved to ${this.repoConfigPath}`)
+        this.writer.successMessage(
+            `Repo configuration saved to ${this.repoConfigPath}`,
+        )
 
         return config
     }
@@ -237,12 +256,13 @@ export default abstract class Base extends Command {
 
         this.userConfig = this.loadUserConfig(this.configPath)
         this.repoConfig = this.loadRepoConfig(this.repoConfigPath)
-        this.projectKey = flags['project']
-            || process.env.DEVCYCLE_PROJECT_KEY
-            || process.env.DVC_PROJECT_KEY
-            || this.repoConfig?.project
-            || this.userConfig?.project
-            || ''
+        this.projectKey =
+            flags['project'] ||
+            process.env.DEVCYCLE_PROJECT_KEY ||
+            process.env.DVC_PROJECT_KEY ||
+            this.repoConfig?.project ||
+            this.userConfig?.project ||
+            ''
         this.organization = this.repoConfig?.org || this.userConfig?.org
         this.orgId = flags['org'] || this.organization?.id
         await this.authorizeApi()
@@ -254,13 +274,20 @@ export default abstract class Base extends Command {
         return !tokenExpiry || tokenExpiry < Date.now()
     }
 
-    async requireProject(projectFlag?: string, headless?: boolean): Promise<Project> {
+    async requireProject(
+        projectFlag?: string,
+        headless?: boolean,
+    ): Promise<Project> {
         const projects = await fetchProjects(this.authToken)
 
         if (this.projectKey !== '') {
-            const project =  projects.find((proj) => proj.key === this.projectKey)
+            const project = projects.find(
+                (proj) => proj.key === this.projectKey,
+            )
             if (!project) {
-                throw new Error(`Project details could not be retrieved for configured project: ${this.projectKey}`)
+                throw new Error(
+                    `Project details could not be retrieved for configured project: ${this.projectKey}`,
+                )
             }
             return project
         }
@@ -276,19 +303,24 @@ export default abstract class Base extends Command {
         } else {
             const project = await promptForProject(projects)
             this.projectKey = project.key
-            const { shouldSave } = await inquirer.prompt([{
-                name: 'shouldSave',
-                message: 'Do you want to use this project for all future commands?',
-                type: 'confirm'
-            }])
+            const { shouldSave } = await inquirer.prompt([
+                {
+                    name: 'shouldSave',
+                    message:
+                        'Do you want to use this project for all future commands?',
+                    type: 'confirm',
+                },
+            ])
             if (shouldSave) {
                 await this.updateUserConfig({ project: this.projectKey })
             }
         }
 
-        const project =  projects.find((proj) => proj.key === this.projectKey)
+        const project = projects.find((proj) => proj.key === this.projectKey)
         if (!project) {
-            throw new Error(`Project details could not be retrieved for configured project: ${this.projectKey}`)
+            throw new Error(
+                `Project details could not be retrieved for configured project: ${this.projectKey}`,
+            )
         }
         return project
     }
@@ -305,19 +337,31 @@ export default abstract class Base extends Command {
     ): Promise<ResourceType> {
         if (flags.headless) {
             const params = plainToClass(paramClass, flags)
-            validateParams(params, { whitelist: true, skipMissingProperties: isUpdate })
+            validateParams(params, {
+                whitelist: true,
+                skipMissingProperties: isUpdate,
+            })
             return params
         }
 
         const filteredPrompts = filterPrompts(prompts, flags)
-        const answers = await this.populateParametersWithInquirer(filteredPrompts)
+        const answers =
+            await this.populateParametersWithInquirer(filteredPrompts)
 
-        const params = plainToClass(paramClass, mergeFlagsAndAnswers(flags, answers))
-        validateParams(params, { whitelist: true, skipMissingProperties: isUpdate })
+        const params = plainToClass(
+            paramClass,
+            mergeFlagsAndAnswers(flags, answers),
+        )
+        validateParams(params, {
+            whitelist: true,
+            skipMissingProperties: isUpdate,
+        })
         return params
     }
 
-    public async populateParametersWithZod<ResourceType extends Record<string, ZodTypeAny>>(
+    public async populateParametersWithZod<
+        ResourceType extends Record<string, ZodTypeAny>,
+    >(
         schema: ZodObject<ResourceType>,
         prompts: Prompt[],
         flags: Record<string, unknown>,
@@ -326,10 +370,7 @@ export default abstract class Base extends Command {
         if (!flags.headless) {
             input = await this.populateParametersWithFlags(prompts, flags)
         }
-        const parse = schema.parse(
-            input,
-            { errorMap }
-        )
+        const parse = schema.parse(input, { errorMap })
         return parse
     }
 
@@ -338,7 +379,8 @@ export default abstract class Base extends Command {
         flags: Record<string, unknown>,
     ) {
         const filteredPrompts = filterPrompts(prompts, flags)
-        const answers = await this.populateParametersWithInquirer(filteredPrompts)
+        const answers =
+            await this.populateParametersWithInquirer(filteredPrompts)
         return mergeFlagsAndAnswers(flags, answers)
     }
 
