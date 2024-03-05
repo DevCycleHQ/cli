@@ -5,7 +5,6 @@ import { Flags } from '@oclif/core'
 import { Project, Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 import { upperCase } from 'lodash'
-import { sha256 } from 'js-sha256'
 
 const reactImports = (oldRepos: boolean) => {
     const jsRepo = oldRepos
@@ -103,13 +102,6 @@ export default class GenerateTypes extends Base {
             this.project.settings.obfuscation.required
         ) {
             this.obfuscate = true
-        }
-
-        if (this.obfuscate && !this.project.settings.obfuscation.key?.length) {
-            this.writer.failureMessage(
-                `Obfuscation is enabled but no obfuscation key is set on project ${this.project.key}`,
-            )
-            return
         }
 
         if (this.obfuscate) {
