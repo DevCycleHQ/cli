@@ -32,7 +32,6 @@ axiosClient.interceptors.response.use(
             )
         } else if (error.response?.data) {
             const responseData = error.response?.data as Record<string, any>
-            console.log(error.response)
             console.info('DevCycle Error:', responseData?.message)
         } else if (error) {
             console.info('DevCycle Error:', error.code)
