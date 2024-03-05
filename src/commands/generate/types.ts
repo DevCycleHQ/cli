@@ -2,8 +2,10 @@ import Base from '../base'
 import fs from 'fs'
 import { fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
-import { Variable } from '../../api/schemas'
+import { Project, Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
+import { upperCase } from 'lodash'
+import aesjs from 'aes-js'
 
 const reactImports = (oldRepos: boolean) => {
     const jsRepo = oldRepos ? '@devcycle/devcycle-js-sdk' : '@devcycle/js-client-sdk'
@@ -18,14 +20,12 @@ import {
 }
 const reactOverrides =
     `
-
 export type UseVariableValue = <
-    K extends string & keyof DVCVariableTypes,
-    T extends DVCVariableValue & DVCVariableTypes[K],
+    K extends string & keyof DVCVariableTypes
 >(
     key: K,
-    defaultValue: T
-) => DVCVariable<T>['value']
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariableTypes[K]
 
 export const useVariableValue: UseVariableValue = originalUseVariableValue
 
@@ -34,7 +34,7 @@ export type UseVariable = <
     T extends DVCVariableValue & DVCVariableTypes[K],
 >(
     key: K,
-    defaultValue: T
+    defaultValue: DVCVariableTypes[K]
 ) => DVCVariable<T>
 
 export const useVariable: UseVariable = originalUseVariable`
@@ -63,19 +63,53 @@ export default class GenerateTypes extends Base {
         }),
         'include-descriptions': Flags.boolean({
             description: 'Include variable descriptions in the variable information comment',
-            default: false
+            default: true
         }),
+        'obfuscate': Flags.boolean({
+            description: 'Obfuscate the variable keys',
+            default: false
+        })
     }
     authRequired = true
+    methodNames : Record<string, string[]> = {}
+    orgMembers: OrganizationMember[]
+    includeDescriptions = false
+    inlineComments = false
+    obfuscate = false
+    project: Project
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(GenerateTypes)
-        const { project, headless } = flags
-        await this.requireProject(project, headless)
+        const {
+            project,
+            headless,
+            'include-descriptions': includeDescriptions,
+            'inline-comments': inlineComments,
+            obfuscate
+        } = flags
+        this.includeDescriptions = includeDescriptions
+        this.inlineComments = inlineComments
+        this.obfuscate = obfuscate
+        this.project = await this.requireProject(project, headless)
+
+        if (this.project.settings.obfuscation.enabled && this.project.settings.obfuscation.required) {
+            this.obfuscate = true
+        }
+
+        if (this.obfuscate && !this.project.settings.obfuscation.key?.length) {
+            this.writer.failureMessage(
+                `Obfuscation is enabled but no obfuscation key is set on project ${this.project.key}`
+            )
+            return
+        }
+
+        if (this.obfuscate) {
+            this.writer.infoMessage('Writing types with obfuscated variable keys')
+        }
 
         const variables = await fetchAllVariables(this.authToken, this.projectKey)
-        const orgMembers = await fetchOrganizationMembers(this.authToken)
-        const typesString = await this.getTypesString(variables, orgMembers, flags['react'], flags['old-repos'])
+        this.orgMembers = await fetchOrganizationMembers(this.authToken)
+        const typesString = await this.getTypesString(variables, flags['react'], flags['old-repos'])
 
         try {
             if (!fs.existsSync(flags['output-dir'])) {
@@ -92,105 +126,144 @@ export default class GenerateTypes extends Base {
 
     private async getTypesString(
         variables: Variable[],
-        orgMembers: OrganizationMember[],
         react: boolean,
         oldRepos: boolean
     ) {
-        const typePromises = variables.map((variable) => this.getTypeDefinitionLine(variable, orgMembers))
+        const typePromises = variables.map((variable) => this.getTypeDefinitionLine(variable))
         const typeLines = await Promise.all(typePromises)
+        const definitionLines = await Promise.all(variables.map((variable) => this.getVariableDefinition(variable)))
         let types = (react ? reactImports(oldRepos) : '') +
             'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
             'export type DVCVariableTypes = {\n' +
             typeLines.join('\n') +
             '\n}'
+        types += '\n' + definitionLines.join('\n')
+        types += '\n' + ''
         if (react) {
             types += reactOverrides
         }
         return types
     }
 
-    private async getTypeDefinitionLine(variable: Variable, orgMembers: OrganizationMember[]) {
+    private async getTypeDefinitionLine(variable: Variable) {
         const { flags } = await this.parse(GenerateTypes)
         const { 'inline-comments': inlineComments } = flags
+        if (this.obfuscate) {
+            return `    ${this.getVariableKeyAndType(variable)}`
+        }
         if (inlineComments) {
             return (
-                `    ${this.getVariableKeyAndtype(variable)}` +
-                `${await this.getVariableInfoComment(variable, orgMembers)}`
+                `    ${this.getVariableKeyAndType(variable)}` +
+                `${await this.getVariableInfoComment(variable, true)}`
             )
         }
         return (
-            `${await this.getVariableInfoComment(variable, orgMembers)}\n` +
-            `    ${this.getVariableKeyAndtype(variable)}`
+            `${await this.getVariableInfoComment(variable, true)}\n` +
+            `    ${this.getVariableKeyAndType(variable)}`
         )
     }
 
-    private getVariableKeyAndtype(variable: Variable) {
-        return `'${variable.key}': ${GenerateTypes.getVariableType(variable)}`
+    private getVariableKeyAndType(variable: Variable) {
+        return `'${this.obfuscate ? this.encryptKey(variable.key) : variable.key}': ${getVariableType(variable)}`
     }
 
-    static getVariableType(variable: Variable) {
-        if (variable.validationSchema && variable.validationSchema.schemaType === 'enum') {
-            // TODO fix the schema so it doesn't think enumValues is an object
-            const enumValues = variable.validationSchema.enumValues as string[] | number []
-            if (enumValues === undefined || enumValues.length === 0) {
-                return variable.type.toLocaleLowerCase()
-            }
-            return enumValues.map((value) => `'${value}'`).join(' | ')
-        }
-        if (variable.type === 'JSON') {
-            return 'DVCJSON'
-        }
-        return variable.type.toLocaleLowerCase()
-    }
-
-    private async getVariableInfoComment(variable: Variable, orgMembers: OrganizationMember[]) {
+    private async getVariableInfoComment(variable: Variable, indent: boolean) {
         const { flags } = await this.parse(GenerateTypes)
         const { 'include-descriptions': includeDescriptions, 'inline-comments': inlineComments } = flags
 
-        return GenerateTypes.getVariableInfoComment(variable, orgMembers, includeDescriptions, inlineComments)
+        return getVariableInfoComment(variable, this.orgMembers, includeDescriptions, inlineComments, this.obfuscate, indent)
     }
 
-    static getVariableInfoComment(variable: Variable,
-                                  orgMembers: OrganizationMember[],
-                                  includeDescriptions: boolean,
-                                  inlineComments: boolean,
-                                  includeKey = false
-    ) {
-        const descriptionText = includeDescriptions && variable.description
-            ? `${GenerateTypes.sanitizeDescription(variable.description)}`
-            : ''
+    private async getVariableDefinition(variable: Variable) {
+        const constantName = this.getVariableGeneratedName(variable)
 
-        const creator = variable._createdBy ? GenerateTypes.findCreatorName(orgMembers, variable._createdBy) : 'Unknown User'
-        const createdDate = variable.createdAt.split('T')[0]
-        const creationInfo = `created by ${creator} on ${createdDate}`
+        const hashedKey = this.obfuscate ? this.encryptKey(variable.key) : variable.key
 
-        return inlineComments
-            ? GenerateTypes.inlineComment(descriptionText, creationInfo)
-            : GenerateTypes.blockComment(descriptionText, creator, createdDate, includeKey ? variable.key : undefined)
+        return `
+${await this.getVariableInfoComment(variable, false)}
+export const ${constantName} = '${hashedKey}' as const`
     }
 
-    static sanitizeDescription(description: string) {
-        // Remove newlines, tabs, and carriage returns for proper display
-        return description.replace(/[\r\n\t]/g, ' ').trim()
+    getVariableGeneratedName(variable: Variable) {
+        let constantName = upperCase(variable.key).replace(/\s/g, '_')
+
+        if (this.methodNames[constantName]?.length) {
+            constantName = `${constantName}_${this.methodNames[constantName].length}`
+        }
+
+        this.methodNames[constantName] ||= []
+        this.methodNames[constantName].push(variable.key)
+
+        return constantName
     }
 
-    static findCreatorName(orgMembers: OrganizationMember[], creatorId: string) {
-        return orgMembers.find((member) => member.user_id === creatorId)?.name || 'Unknown User'
+    private encryptKey(variableKey: string) {
+        const key = this.project.settings.obfuscation.key
+        const textBytes = aesjs.utils.utf8.toBytes(variableKey)
+        const aesCtr = new aesjs.ModeOfOperation.ctr(key)
+        const encryptedBytes = aesCtr.encrypt(textBytes)
+        return `dvc_obfs_${aesjs.utils.hex.fromBytes(encryptedBytes)}`
     }
+}
 
-    static inlineComment(description: string, creationInfo: string) {
-        const descriptionText = description ? `(${description}) ` : ''
-        return ` // ${descriptionText}${creationInfo}`
-    }
+export function getVariableInfoComment(
+    variable: Variable,
+    orgMembers: OrganizationMember[],
+    includeDescriptions: boolean,
+    inlineComments: boolean,
+    includeKey: boolean,
+    indent: boolean
+) {
+    const descriptionText = includeDescriptions && variable.description
+        ? `${sanitizeDescription(variable.description)}`
+        : ''
 
-    static blockComment(description: string, creator: string, createdDate: string, key?: string) {
-        return (
-            '    /*\n' +
-            (key ? `    key: ${key}\n` : '') +
-            (description !== '' ? `    description: ${description}\n` : '') +
-            `    created by: ${creator}\n` +
-            `    created on: ${createdDate}\n` +
-            '    */'
-        )
+    const creator = variable._createdBy ? findCreatorName(orgMembers, variable._createdBy) : 'Unknown User'
+    const createdDate = variable.createdAt.split('T')[0]
+    const creationInfo = `created by ${creator} on ${createdDate}`
+
+    return inlineComments
+        ? inlineComment(descriptionText, creationInfo)
+        : blockComment(descriptionText, creator, createdDate, indent, includeKey ? variable.key : undefined)
+}
+
+export function sanitizeDescription(description: string) {
+    // Remove newlines, tabs, and carriage returns for proper display
+    return description.replace(/[\r\n\t]/g, ' ').trim()
+}
+
+export function findCreatorName(orgMembers: OrganizationMember[], creatorId: string) {
+    return orgMembers.find((member) => member.user_id === creatorId)?.name || 'Unknown User'
+}
+
+export function inlineComment(description: string, creationInfo: string) {
+    const descriptionText = description ? `(${description}) ` : ''
+    return ` // ${descriptionText}${creationInfo}`
+}
+
+export function blockComment(description: string, creator: string, createdDate: string, indent: boolean, key?: string) {
+    const indentString = indent ? '    ' : ''
+    return (
+        indentString + '/**\n' +
+        (key ? `    key: ${key}\n` : '') +
+        (description !== '' ? `    description: ${description}\n` : '') +
+        `${indentString}    created by: ${creator}\n` +
+        `${indentString}    created on: ${createdDate}\n` +
+        indentString + '*/'
+    )
+}
+
+export function getVariableType(variable: Variable) {
+    if (variable.validationSchema && variable.validationSchema.schemaType === 'enum') {
+        // TODO fix the schema so it doesn't think enumValues is an object
+        const enumValues = variable.validationSchema.enumValues as string[] | number []
+        if (enumValues === undefined || enumValues.length === 0) {
+            return variable.type.toLocaleLowerCase()
+        }
+        return enumValues.map((value) => `'${value}'`).join(' | ')
     }
+    if (variable.type === 'JSON') {
+        return 'DVCJSON'
+    }
+    return variable.type.toLocaleLowerCase()
 }
