@@ -5,3 +5,5 @@ bin
 docs
 oclif.manifest.json
 README.md
+**/*.snap
+test-utils/fixtures
