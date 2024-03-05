@@ -1,7 +1,5 @@
 import { Flags } from '@oclif/core'
-import {
-    createVariable,
-} from '../../api/variables'
+import { createVariable } from '../../api/variables'
 import CreateCommand from '../createCommand'
 import { createVariablePrompts, featurePrompt } from '../../ui/prompts'
 import { CreateVariableDto, Variable } from '../../api/schemas'
@@ -15,18 +13,20 @@ export default class CreateVariable extends CreateCommand {
 
     static flags = {
         ...CreateCommand.flags,
-        'type': Flags.string({
+        type: Flags.string({
             description: 'The type of variable',
-            options: CreateVariableDto.shape.type.options
+            options: CreateVariableDto.shape.type.options,
         }),
-        'feature': Flags.string({
-            description: 'The key or id of the feature to create the variable for'
+        feature: Flags.string({
+            description:
+                'The key or id of the feature to create the variable for',
         }),
-        'variations': Flags.string({
-            description: 'Set a value for this variable in each variation of the associated feature. ' +
-                'Should be a JSON object with the keys being variation keys.'
+        variations: Flags.string({
+            description:
+                'Set a value for this variable in each variation of the associated feature. ' +
+                'Should be a JSON object with the keys being variation keys.',
         }),
-        'description': Flags.string({
+        description: Flags.string({
             description: 'Description for the dashboard',
         }),
     }
@@ -35,7 +35,8 @@ export default class CreateVariable extends CreateCommand {
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(CreateVariable)
-        const { key, name, type, feature, headless, project, variations } = flags
+        const { key, name, type, feature, headless, project, variations } =
+            flags
         await this.requireProject(project, headless)
 
         if (headless && (!key || !name || !type)) {
@@ -44,48 +45,77 @@ export default class CreateVariable extends CreateCommand {
         }
         flags._feature = feature
         if (headless && variations && !flags._feature) {
-            this.writer.showError('Cannot modify variations without associating to a feature')
+            this.writer.showError(
+                'Cannot modify variations without associating to a feature',
+            )
             return
         }
 
-        const params = await this.populateParametersWithZod(CreateVariableDto, this.prompts, flags)
+        const params = await this.populateParametersWithZod(
+            CreateVariableDto,
+            this.prompts,
+            flags,
+        )
         if (!headless) {
-            const { associateToFeature } = await inquirer.prompt([{
-                name: 'associateToFeature',
-                message: 'Would you like to associate this variable to a feature?',
-                type: 'confirm',
-                default: false
-            }])
+            const { associateToFeature } = await inquirer.prompt([
+                {
+                    name: 'associateToFeature',
+                    message:
+                        'Would you like to associate this variable to a feature?',
+                    type: 'confirm',
+                    default: false,
+                },
+            ])
 
             if (associateToFeature) {
                 const { feature } = await inquirer.prompt([featurePrompt], {
                     token: this.authToken,
-                    projectKey: this.projectKey
+                    projectKey: this.projectKey,
                 })
                 if (!feature) {
-                    this.writer.showError(`Feature with key ${feature.key} could not be found`)
+                    this.writer.showError(
+                        `Feature with key ${feature.key} could not be found`,
+                    )
                     return
                 }
                 feature.variables.push(params)
                 const variableListOptions = new VariableListOptions(
                     [params as Variable],
                     this.writer,
-                    !variations ? feature.variations: undefined // don't prompt for variations if flag provided
+                    !variations ? feature.variations : undefined, // don't prompt for variations if flag provided
                 )
-                await variableListOptions.promptVariationValues(params as Variable)
-                await updateFeature(this.authToken, this.projectKey, feature.key, feature)
-                const message = `The variable was associated to the existing feature ${feature.key}. ` +
+                await variableListOptions.promptVariationValues(
+                    params as Variable,
+                )
+                await updateFeature(
+                    this.authToken,
+                    this.projectKey,
+                    feature.key,
+                    feature,
+                )
+                const message =
+                    `The variable was associated to the existing feature ${feature.key}. ` +
                     `Use "dvc features get --keys=${feature.key}" to see its details`
                 this.writer.successMessage(message)
             } else {
-                const result = await createVariable(this.authToken, this.projectKey, params)
+                const result = await createVariable(
+                    this.authToken,
+                    this.projectKey,
+                    params,
+                )
                 this.writer.showResults(result)
             }
         } else {
             if (flags._feature) {
-                const feature = await fetchFeatureByKey(this.authToken, this.projectKey, flags._feature)
+                const feature = await fetchFeatureByKey(
+                    this.authToken,
+                    this.projectKey,
+                    flags._feature,
+                )
                 if (!feature) {
-                    this.writer.showError(`Feature with key ${flags._feature} could not be found`)
+                    this.writer.showError(
+                        `Feature with key ${flags._feature} could not be found`,
+                    )
                     return
                 }
                 const parsedVariations = JSON.parse(variations as string)
@@ -94,12 +124,22 @@ export default class CreateVariable extends CreateCommand {
                     vari.variables = vari.variables || {}
                     vari.variables[params.key] = parsedVariations[vari.key]
                 }
-                await updateFeature(this.authToken, this.projectKey, feature.key, feature)
-                const message = `The variable was associated to the existing feature ${feature.key}. ` +
-                `Use "dvc features get --keys=${feature.key}" to see its details.`
+                await updateFeature(
+                    this.authToken,
+                    this.projectKey,
+                    feature.key,
+                    feature,
+                )
+                const message =
+                    `The variable was associated to the existing feature ${feature.key}. ` +
+                    `Use "dvc features get --keys=${feature.key}" to see its details.`
                 this.writer.showRawResults(message)
             } else {
-                const result = await createVariable(this.authToken, this.projectKey, params)
+                const result = await createVariable(
+                    this.authToken,
+                    this.projectKey,
+                    params,
+                )
                 this.writer.showResults(result)
             }
         }

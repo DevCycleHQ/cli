@@ -1,14 +1,25 @@
 import { ux } from '@oclif/core'
 import { Tree } from '@oclif/core/lib/cli-ux/styled/tree'
-import { FeatureConfig, Environment, Variation, Audience as AudienceSchema } from '../api/schemas'
+import {
+    FeatureConfig,
+    Environment,
+    Variation,
+    Audience as AudienceSchema,
+} from '../api/schemas'
 import chalk from 'chalk'
 import { COLORS } from './constants/colors'
-import { buildAudienceNameMap, replaceAudienceIdInFilter } from '../utils/audiences'
+import {
+    buildAudienceNameMap,
+    replaceAudienceIdInFilter,
+} from '../utils/audiences'
 
 type Distribution = FeatureConfig['targets'][0]['distribution']
 type Audience = FeatureConfig['targets'][0]['audience']
 type Rollout = FeatureConfig['targets'][0]['rollout']
-type Rule = Pick<FeatureConfig['targets'][0], 'audience' | 'distribution' | 'rollout'>
+type Rule = Pick<
+    FeatureConfig['targets'][0],
+    'audience' | 'distribution' | 'rollout'
+>
 type Filters = Audience['filters']['filters']
 type Operator = Audience['filters']['operator']
 
@@ -19,14 +30,14 @@ const subTypeMap = {
     platformVersion: 'Platform Version',
     deviceModel: 'Device Model',
     country: 'Country',
-    appVersion: 'App Version'
+    appVersion: 'App Version',
 }
 const comparatorMap = {
     '=': 'is',
     '!=': 'is not',
-    'contain': 'contains',
+    contain: 'contains',
     '!contain': 'does not contain',
-    'exist': 'exists',
+    exist: 'exists',
     '!exist': 'does not exist',
     '>': 'is greater than',
     '>=': 'is greater than or equal to',
@@ -38,7 +49,7 @@ export const renderTargetingTree = (
     featureConfigs: FeatureConfig[],
     environments: Environment[],
     variations: Variation[],
-    audiences: AudienceSchema[]
+    audiences: AudienceSchema[],
 ) => {
     const targetingTree = ux.tree()
     featureConfigs.forEach((config) => {
@@ -47,8 +58,13 @@ export const renderTargetingTree = (
         insertStatusTree(environmentTree, config.status)
         insertRulesTree(environmentTree, config.targets, variations, audiences)
 
-        const environmentName = environments.find((env) => env._id === config._environment)?.name
-        targetingTree.insert(environmentName || config._environment, environmentTree)
+        const environmentName = environments.find(
+            (env) => env._id === config._environment,
+        )?.name
+        targetingTree.insert(
+            environmentName || config._environment,
+            environmentTree,
+        )
     })
     targetingTree.display()
 }
@@ -56,7 +72,7 @@ export const renderTargetingTree = (
 export const renderRulesTree = (
     targets: Rule[],
     variations: Variation[],
-    audiences: AudienceSchema[]
+    audiences: AudienceSchema[],
 ) => {
     const rulesTree = buildRulesTree(targets, variations, audiences)
     rulesTree.display()
@@ -65,7 +81,7 @@ export const renderRulesTree = (
 export const renderDefinitionTree = (
     filters: Filters,
     operator: Operator,
-    audiences: AudienceSchema[]
+    audiences: AudienceSchema[],
 ) => {
     const definitionTree = buildDefinitionTree(filters, operator, audiences)
     definitionTree.display()
@@ -80,7 +96,11 @@ const insertStatusTree = (rootTree: Tree, status: FeatureConfig['status']) => {
     rootTree.insert(statusTitle, statusTree)
 }
 
-const buildRulesTree = (targets: Rule[], variations: Variation[], audiences: AudienceSchema[]) => {
+const buildRulesTree = (
+    targets: Rule[],
+    variations: Variation[],
+    audiences: AudienceSchema[],
+) => {
     const rulesTree = ux.tree()
     targets.forEach((target, idx) => {
         const ruleTree = ux.tree()
@@ -89,16 +109,19 @@ const buildRulesTree = (targets: Rule[], variations: Variation[], audiences: Aud
         insertServeTree(ruleTree, target.distribution, variations)
         insertScheduleTree(ruleTree, target.rollout)
 
-        rulesTree.insert(`${idx + 1}. ${target.audience.name || 'Audience'}`, ruleTree)
+        rulesTree.insert(
+            `${idx + 1}. ${target.audience.name || 'Audience'}`,
+            ruleTree,
+        )
     })
     return rulesTree
 }
 
 const insertRulesTree = (
-    rootTree: Tree, 
-    targets: Rule[], 
+    rootTree: Tree,
+    targets: Rule[],
     variations: Variation[],
-    audiences: AudienceSchema[]
+    audiences: AudienceSchema[],
 ) => {
     if (!targets.length) return
 
@@ -107,11 +130,14 @@ const insertRulesTree = (
     rootTree.insert(rulesTitle, rulesTree)
 }
 
-const buildDefinitionTree = (filters: Filters, operator: Operator, audiences: AudienceSchema[]) => {
+const buildDefinitionTree = (
+    filters: Filters,
+    operator: Operator,
+    audiences: AudienceSchema[],
+) => {
     const definitionTree = ux.tree()
-    const prefixWithOperator = (value: string, index: number) => (
+    const prefixWithOperator = (value: string, index: number) =>
         index !== 0 ? `${operator.toUpperCase()} ${value}` : value
-    )
 
     filters.forEach((filter, index) => {
         if (filter.type === 'all') {
@@ -120,39 +146,66 @@ const buildDefinitionTree = (filters: Filters, operator: Operator, audiences: Au
         } else if (filter.type === 'user') {
             const userFilter = ux.tree()
             const values = ux.tree()
-            if (Array.isArray(filter.values) && !['exist', '!exist'].includes(filter.subType)) {
+            if (
+                Array.isArray(filter.values) &&
+                !['exist', '!exist'].includes(filter.subType)
+            ) {
                 filter.values.forEach((value) => values.insert(value))
             }
             userFilter.insert(comparatorMap[filter.comparator], values)
-            const userProperty = filter.subType === 'customData' ? filter.dataKey : subTypeMap[filter.subType]
+            const userProperty =
+                filter.subType === 'customData'
+                    ? filter.dataKey
+                    : subTypeMap[filter.subType]
             const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
-
         } else if (filter.type === 'audienceMatch') {
             const audienceFilter = ux.tree()
             const audienceTree = ux.tree()
             const audienceMap = buildAudienceNameMap(audiences)
-            const replacedIdFilter = (replaceAudienceIdInFilter(filter, audienceMap) || filter) as typeof filter
-            replacedIdFilter._audiences?.forEach((audience) => audienceTree.insert(audience))
-            audienceFilter.insert(comparatorMap[filter.comparator!], audienceTree)
-            definitionTree.insert(prefixWithOperator('Audience', index), audienceFilter)
+            const replacedIdFilter = (replaceAudienceIdInFilter(
+                filter,
+                audienceMap,
+            ) || filter) as typeof filter
+            replacedIdFilter._audiences?.forEach((audience) =>
+                audienceTree.insert(audience),
+            )
+            audienceFilter.insert(
+                comparatorMap[filter.comparator!],
+                audienceTree,
+            )
+            definitionTree.insert(
+                prefixWithOperator('Audience', index),
+                audienceFilter,
+            )
         }
     })
     return definitionTree
 }
 
-const insertDefinitionTree = (rootTree: Tree, audience: Audience, audiences: AudienceSchema[]) => {
+const insertDefinitionTree = (
+    rootTree: Tree,
+    audience: Audience,
+    audiences: AudienceSchema[],
+) => {
     const { filters, operator } = audience.filters
     const definitionTree = buildDefinitionTree(filters, operator, audiences)
     const definitionTitle = coloredTitle('definition')
     rootTree.insert(definitionTitle, definitionTree)
 }
 
-const insertServeTree = (rootTree: Tree, distribution: Distribution, variations: Variation[]) => {
-    const variationById = variations.reduce((acc, variation) => {
-        acc[variation._id] = variation
-        return acc
-    }, {} as Record<string, Variation>)
+const insertServeTree = (
+    rootTree: Tree,
+    distribution: Distribution,
+    variations: Variation[],
+) => {
+    const variationById = variations.reduce(
+        (acc, variation) => {
+            acc[variation._id] = variation
+            return acc
+        },
+        {} as Record<string, Variation>,
+    )
 
     const serveTree = ux.tree()
     if (distribution.length === 1) {
@@ -165,7 +218,9 @@ const insertServeTree = (rootTree: Tree, distribution: Distribution, variations:
             const variationTree = ux.tree()
             variationTree.insert(`${dist.percentage * 100}%`)
             const variationName = variationById[dist._variation]?.name
-            const coloredValue = coloredVariation(variationName || dist._variation)
+            const coloredValue = coloredVariation(
+                variationName || dist._variation,
+            )
             serveTree.insert(coloredValue, variationTree)
         })
     }
@@ -217,7 +272,9 @@ const coloredTitle = (title: string) => {
 }
 
 const coloredStatus = (status: 'enabled' | 'disabled') => {
-    return status === 'enabled' ? chalk.hex(COLORS.lightGreen)(status) : chalk.hex(COLORS.coral)(status)
+    return status === 'enabled'
+        ? chalk.hex(COLORS.lightGreen)(status)
+        : chalk.hex(COLORS.coral)(status)
 }
 
 const coloredVariation = (variationName: string) => {

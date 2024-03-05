@@ -4,7 +4,7 @@ import {
     environmentPrompt,
     EnvironmentPromptResult,
     featurePrompt,
-    FeaturePromptResult
+    FeaturePromptResult,
 } from '../../ui/prompts'
 import Base from '../base'
 import { fetchFeatureOverridesForUser } from '../../api/overrides'
@@ -16,11 +16,9 @@ import { fetchUserProfile } from '../../api/userProfile'
 export default class DetailedOverrides extends Base {
     static hidden = false
     authRequired = true
-    static description = 'View the Overrides associated with your DevCycle Identity in your current project.'
-    prompts = [
-        featurePrompt,
-        environmentPrompt
-    ]
+    static description =
+        'View the Overrides associated with your DevCycle Identity in your current project.'
+    prompts = [featurePrompt, environmentPrompt]
     static args = {}
     static flags = {
         feature: Flags.string({
@@ -29,7 +27,8 @@ export default class DetailedOverrides extends Base {
         }),
         environment: Flags.string({
             name: 'environment',
-            description: 'The key or id of the Environment to get Overrides for',
+            description:
+                'The key or id of the Environment to get Overrides for',
         }),
         ...Base.flags,
     }
@@ -43,66 +42,102 @@ export default class DetailedOverrides extends Base {
 
         const identity = await fetchUserProfile(this.authToken, this.projectKey)
         if (!identity.dvcUserId) {
-            this.writer.showError('You must set your DevCycle Identity before you can update an Override')
-            this.writer.infoMessageWithCommand('To set up your SDK Associated User ID, use', 'dvc identity update')
+            this.writer.showError(
+                'You must set your DevCycle Identity before you can update an Override',
+            )
+            this.writer.infoMessageWithCommand(
+                'To set up your SDK Associated User ID, use',
+                'dvc identity update',
+            )
             return
         }
 
         if (headless && (!featureKey || !environmentKey)) {
-            this.writer.showError('Feature and Environment arguments are required')
+            this.writer.showError(
+                'Feature and Environment arguments are required',
+            )
             return
         }
 
         if (!featureKey) {
-            const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const featurePromptResult =
+                await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
+                    token: this.authToken,
+                    projectKey: this.projectKey,
+                })
             feature = featurePromptResult.feature
             featureKey = feature.key
         }
 
         if (!environmentKey) {
-            const { environment: environmentPromptResult } = await inquirer.prompt<EnvironmentPromptResult>(
-                [environmentPrompt], {
-                    token: this.authToken,
-                    projectKey: this.projectKey
-                })
+            const { environment: environmentPromptResult } =
+                await inquirer.prompt<EnvironmentPromptResult>(
+                    [environmentPrompt],
+                    {
+                        token: this.authToken,
+                        projectKey: this.projectKey,
+                    },
+                )
             environmentKey = environmentPromptResult.key
         }
 
         const overrides = await fetchFeatureOverridesForUser(
-            this.authToken, this.projectKey, featureKey, environmentKey
+            this.authToken,
+            this.projectKey,
+            featureKey,
+            environmentKey,
         )
-        const environment = await fetchEnvironmentByKey(this.authToken, this.projectKey, environmentKey)
-        const override = overrides.overrides.find((override) => override._environment === environment._id)
+        const environment = await fetchEnvironmentByKey(
+            this.authToken,
+            this.projectKey,
+            environmentKey,
+        )
+        const override = overrides.overrides.find(
+            (override) => override._environment === environment._id,
+        )
 
         if (!override) {
             if (headless) {
-                this.writer.showResults({ environment: environment.key, variation: null })
+                this.writer.showResults({
+                    environment: environment.key,
+                    variation: null,
+                })
                 return
             }
             this.writer.showRawResults(
-                `Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`
+                `Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`,
             )
-            this.writer.infoMessageWithCommand('To set an override, use:', 'dvc overrides update')
+            this.writer.infoMessageWithCommand(
+                'To set an override, use:',
+                'dvc overrides update',
+            )
             return
         }
 
-        const variation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, override._variation)
+        const variation = await fetchVariationByKey(
+            this.authToken,
+            this.projectKey,
+            featureKey,
+            override._variation,
+        )
 
         if (headless) {
-            this.writer.showResults({ environment: environment.key, variation: variation.key })
+            this.writer.showResults({
+                environment: environment.key,
+                variation: variation.key,
+            })
             return
         }
 
-        this.tableOutput.printOverrides<UserOverride>([{
-            _environment: environment._id ?? override._environment,
-            environmentName: environment.name ?? environmentKey,
-            _feature: feature?._id ?? featureKey,
-            featureName: feature?.name ?? featureKey,
-            _variation: variation._id ?? override._variation,
-            variationName: variation.name ?? variation.key,
-        }])
+        this.tableOutput.printOverrides<UserOverride>([
+            {
+                _environment: environment._id ?? override._environment,
+                environmentName: environment.name ?? environmentKey,
+                _feature: feature?._id ?? featureKey,
+                featureName: feature?.name ?? featureKey,
+                _variation: variation._id ?? override._variation,
+                variationName: variation.name ?? variation.key,
+            },
+        ])
     }
 }

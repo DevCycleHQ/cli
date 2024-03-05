@@ -9,28 +9,24 @@ export class UpdateUserProfileParams {
     dvcUserId: string | null
 }
 
-export const fetchUserProfile = async (
-    token: string,
-    project_id: string
-) => {
+export const fetchUserProfile = async (token: string, project_id: string) => {
     return apiClient.get(`${BASE_URL}`, {
         headers: buildHeaders(token),
         params: {
             project: project_id,
-        }
+        },
     })
 }
 
 export const updateUserProfile = async (
     token: string,
     project_id: string,
-    dvcUserId: UpdateUserProfileParams
+    dvcUserId: UpdateUserProfileParams,
 ) => {
-    return apiClient.patch(`${BASE_URL}`, dvcUserId,
-        {
-            headers: buildHeaders(token),
-            params: {
-                project: project_id,
-            },
-        })
+    return apiClient.patch(`${BASE_URL}`, dvcUserId, {
+        headers: buildHeaders(token),
+        params: {
+            project: project_id,
+        },
+    })
 }

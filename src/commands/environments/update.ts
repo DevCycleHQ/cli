@@ -1,12 +1,10 @@
 import inquirer from '../../ui/autocomplete'
-import {
-    updateEnvironment,
-} from '../../api/environments'
+import { updateEnvironment } from '../../api/environments'
 import {
     descriptionPrompt,
     namePrompt,
     environmentPrompt,
-    EnvironmentPromptResult
+    EnvironmentPromptResult,
 } from '../../ui/prompts'
 import { Flags } from '@oclif/core'
 import { CreateEnvironmentDto, UpdateEnvironmentDto } from '../../api/schemas'
@@ -16,20 +14,17 @@ export default class UpdateEnvironment extends UpdateCommandWithCommonProperties
     static hidden = false
     static description = 'Update a Environment.'
 
-    prompts = [
-        namePrompt,
-        descriptionPrompt
-    ]
+    prompts = [namePrompt, descriptionPrompt]
     static flags = {
         ...UpdateCommandWithCommonProperties.flags,
-        'key': Flags.string({
-            description: 'Unique ID'
+        key: Flags.string({
+            description: 'Unique ID',
         }),
-        'type': Flags.string({
+        type: Flags.string({
             description: 'The type of environment',
-            options: CreateEnvironmentDto.shape.type.options
+            options: CreateEnvironmentDto.shape.type.options,
         }),
-        'description': Flags.string({
+        description: Flags.string({
             description: 'Description for the environment',
         }),
     }
@@ -45,10 +40,14 @@ export default class UpdateEnvironment extends UpdateCommandWithCommonProperties
             this.writer.showError('The key argument is required')
             return
         } else if (!envKey) {
-            const { environment } = await inquirer.prompt<EnvironmentPromptResult>([environmentPrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const { environment } =
+                await inquirer.prompt<EnvironmentPromptResult>(
+                    [environmentPrompt],
+                    {
+                        token: this.authToken,
+                        projectKey: this.projectKey,
+                    },
+                )
             envKey = environment._id
             this.writer.printCurrentValues(environment)
         }
@@ -56,13 +55,13 @@ export default class UpdateEnvironment extends UpdateCommandWithCommonProperties
         const params = await this.populateParametersWithZod(
             UpdateEnvironmentDto,
             this.prompts,
-            flags
+            flags,
         )
         const result = await updateEnvironment(
             this.authToken,
             this.projectKey,
             envKey,
-            params
+            params,
         )
         this.writer.showResults(result)
     }

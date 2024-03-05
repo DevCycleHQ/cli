@@ -1,7 +1,5 @@
 import inquirer from '../../ui/autocomplete'
-import {
-    updateVariable,
-} from '../../api/variables'
+import { updateVariable } from '../../api/variables'
 import {
     VariablePromptResult,
     descriptionPrompt,
@@ -16,16 +14,13 @@ export default class UpdateVariable extends UpdateCommandWithCommonProperties {
     static hidden = false
     static description = 'Update a Variable.'
 
-    prompts = [
-        namePrompt,
-        descriptionPrompt
-    ]
+    prompts = [namePrompt, descriptionPrompt]
 
     static flags = {
         ...UpdateCommandWithCommonProperties.flags,
-        'description': Flags.string({
+        description: Flags.string({
             description: 'Description for the variable',
-        })
+        }),
     }
 
     public async run(): Promise<void> {
@@ -39,10 +34,13 @@ export default class UpdateVariable extends UpdateCommandWithCommonProperties {
             this.writer.showError('The key argument is required')
             return
         } else if (!variableKey) {
-            const { variable } = await inquirer.prompt<VariablePromptResult>([variablePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const { variable } = await inquirer.prompt<VariablePromptResult>(
+                [variablePrompt],
+                {
+                    token: this.authToken,
+                    projectKey: this.projectKey,
+                },
+            )
             variableKey = variable.key
             this.writer.printCurrentValues(variable)
         }
@@ -56,7 +54,7 @@ export default class UpdateVariable extends UpdateCommandWithCommonProperties {
             this.authToken,
             this.projectKey,
             variableKey,
-            params
+            params,
         )
         this.writer.showResults(result)
     }

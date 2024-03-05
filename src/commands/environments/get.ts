@@ -1,6 +1,9 @@
 import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
-import { fetchEnvironments,fetchEnvironmentByKey } from '../../api/environments'
+import {
+    fetchEnvironments,
+    fetchEnvironmentByKey,
+} from '../../api/environments'
 import { EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
 import Base from '../base'
 import { batchRequests } from '../../utils/batchRequests'
@@ -10,12 +13,13 @@ export default class DetailedEnvironments extends Base {
     static description = 'Retrieve Environments from the management API'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
-        '<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two'
+        '<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two',
     ]
     static flags = {
         ...Base.flags,
-        'keys': Flags.string({
-            description: 'Comma-separated list of environment keys to fetch details for',
+        keys: Flags.string({
+            description:
+                'Comma-separated list of environment keys to fetch details for',
         }),
     }
     authRequired = true
@@ -27,9 +31,8 @@ export default class DetailedEnvironments extends Base {
         await this.requireProject(project, headless)
 
         if (keys) {
-            const environments = await batchRequests(
-                keys, 
-                (key) => fetchEnvironmentByKey(this.authToken, this.projectKey, key)
+            const environments = await batchRequests(keys, (key) =>
+                fetchEnvironmentByKey(this.authToken, this.projectKey, key),
             )
             this.writer.showResults(environments)
             return
@@ -37,20 +40,22 @@ export default class DetailedEnvironments extends Base {
 
         // show all environments if no keys flag provided in headless mode
         if (flags.headless) {
-            const environments = await fetchEnvironments(this.authToken, this.projectKey)
+            const environments = await fetchEnvironments(
+                this.authToken,
+                this.projectKey,
+            )
             this.writer.showResults(environments)
             return
         }
 
-        // prompt for key in interactive mode 
+        // prompt for key in interactive mode
         const responses = await inquirer.prompt<EnvironmentPromptResult>(
             [environmentPrompt],
             {
                 token: this.authToken,
-                projectKey: this.projectKey
-            }
+                projectKey: this.projectKey,
+            },
         )
         this.writer.showResults(responses.environment)
-        
     }
 }

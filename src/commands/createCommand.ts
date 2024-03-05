@@ -8,13 +8,13 @@ export default abstract class CreateCommand extends Base {
 
     static flags = {
         ...Base.flags,
-        'key': Flags.string({
+        key: Flags.string({
             description: 'Unique ID',
             parse: async (input: string) => {
                 return input.toLowerCase()
-            }
+            },
         }),
-        'name': Flags.string({
+        name: Flags.string({
             description: 'Human readable name',
         }),
     }

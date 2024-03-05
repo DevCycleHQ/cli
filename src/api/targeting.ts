@@ -3,11 +3,7 @@ import apiClient from './apiClient'
 import { buildHeaders } from './common'
 import { Filter, UpdateFeatureConfigDto } from './schemas'
 
-export const filterTypes = [
-    'all',
-    'user',
-    'audienceMatch',
-]
+export const filterTypes = ['all', 'user', 'audienceMatch']
 export type FilterType = 'all' | 'user' | 'audienceMatch'
 
 export const userSubTypes = [
@@ -18,12 +14,12 @@ export const userSubTypes = [
     'platformVersion',
     'appVersion',
     'deviceModel',
-    'customData'
+    'customData',
 ]
 export type UserSubType =
-    |'user_id'
+    | 'user_id'
     | 'email'
-    | 'country' 
+    | 'country'
     | 'platform'
     | 'platformVersion'
     | 'appVersion'
@@ -39,7 +35,7 @@ export enum DataKeyType {
 enum TargetingStatus {
     active = 'active',
     inactive = 'inactive',
-    archived = 'archived'
+    archived = 'archived',
 }
 
 export class UpdateTargetingParamsInput {
@@ -60,18 +56,18 @@ export const fetchTargetingForFeature = async (
     token: string,
     project_id: string,
     feature_key: string,
-    environment_key?: string
+    environment_key?: string,
 ) => {
     const url = '/v1/projects/:project/features/:feature/configurations'
-    const response =  await apiClient.get(url, {
+    const response = await apiClient.get(url, {
         headers: buildHeaders(token),
         params: {
             project: project_id,
-            feature: feature_key
+            feature: feature_key,
         },
         queries: {
-            environment: environment_key
-        }
+            environment: environment_key,
+        },
     })
     return response
 }
@@ -80,14 +76,14 @@ export const enableTargeting = async (
     token: string,
     project_id: string,
     feature_key: string,
-    environment_key: string
+    environment_key: string,
 ) => {
     return await updateTargetingStatusForFeatureAndEnvironment(
         token,
         project_id,
         feature_key,
         environment_key,
-        TargetingStatus.active
+        TargetingStatus.active,
     )
 }
 
@@ -95,14 +91,14 @@ export const disableTargeting = async (
     token: string,
     project_id: string,
     feature_key: string,
-    environment_key: string
-)=> {
+    environment_key: string,
+) => {
     return await updateTargetingStatusForFeatureAndEnvironment(
         token,
         project_id,
         feature_key,
         environment_key,
-        TargetingStatus.inactive
+        TargetingStatus.inactive,
     )
 }
 
@@ -111,19 +107,23 @@ const updateTargetingStatusForFeatureAndEnvironment = async (
     project_id: string,
     feature_key: string,
     environment_key: string,
-    status: TargetingStatus
+    status: TargetingStatus,
 ) => {
     const url = '/v1/projects/:project/features/:feature/configurations'
-    return apiClient.patch(url, { status }, {
-        headers: buildHeaders(token),
-        params: {
-            project: project_id,
-            feature: feature_key,
+    return apiClient.patch(
+        url,
+        { status },
+        {
+            headers: buildHeaders(token),
+            params: {
+                project: project_id,
+                feature: feature_key,
+            },
+            queries: {
+                environment: environment_key,
+            },
         },
-        queries: {
-            environment: environment_key,
-        }
-    })
+    )
 }
 
 export const updateFeatureConfigForEnvironment = async (
@@ -131,7 +131,7 @@ export const updateFeatureConfigForEnvironment = async (
     project_id: string,
     feature_key: string,
     environment_key: string,
-    params: UpdateFeatureConfigDto
+    params: UpdateFeatureConfigDto,
 ) => {
     const url = '/v1/projects/:project/features/:feature/configurations'
     const response = await apiClient.patch(url, params, {
@@ -142,7 +142,7 @@ export const updateFeatureConfigForEnvironment = async (
         },
         queries: {
             environment: environment_key,
-        }
+        },
     })
     return response
 }

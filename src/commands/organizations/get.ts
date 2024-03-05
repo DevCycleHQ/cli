@@ -9,8 +9,12 @@ export default class DetailedOrganizations extends Base {
 
     public async run(): Promise<void> {
         const orgs = await fetchOrganizations(this.personalAccessToken)
-        return this.writer.showResults(orgs.map(({ id, name, display_name }) => ({
-            id, name, display_name
-        })))
+        return this.writer.showResults(
+            orgs.map(({ id, name, display_name }) => ({
+                id,
+                name,
+                display_name,
+            })),
+        )
     }
 }

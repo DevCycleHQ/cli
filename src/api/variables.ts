@@ -4,7 +4,7 @@ import { CreateVariableParams, Variable } from './schemas'
 export const createVariable = async (
     token: string,
     project_id: string,
-    params: CreateVariableParams
+    params: CreateVariableParams,
 ) => {
     const data = {
         name: params.name,
@@ -20,7 +20,7 @@ export const createVariable = async (
         },
         params: {
             project: project_id,
-        }
+        },
     })
 }
 
@@ -28,7 +28,7 @@ export const updateVariable = async (
     token: string,
     project_id: string,
     variableKey: string,
-    params: Partial<CreateVariableParams>
+    params: Partial<CreateVariableParams>,
 ) => {
     const data = {
         name: params?.name,
@@ -37,18 +37,16 @@ export const updateVariable = async (
         _feature: params?._feature,
         type: params?.type,
     }
-    return apiClient.patch('/v1/projects/:project/variables/:key',
-        data,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-            params: {
-                project: project_id,
-                key: variableKey,
-            }
-        })
+    return apiClient.patch('/v1/projects/:project/variables/:key', data, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+        params: {
+            project: project_id,
+            key: variableKey,
+        },
+    })
 }
 
 export const fetchVariables = async (
@@ -59,7 +57,7 @@ export const fetchVariables = async (
         page?: number
         perPage?: number
         search?: string
-    } = {}
+    } = {},
 ) => {
     return await apiClient.get('/v1/projects/:project/variables', {
         headers: {
@@ -68,7 +66,7 @@ export const fetchVariables = async (
         params: {
             project: project_id,
         },
-        queries
+        queries,
     })
 }
 
@@ -90,12 +88,14 @@ export const fetchAllVariables = async (token: string, project_id: string) => {
     const promises = []
     for (let i = 2; i <= totalPages; i++) {
         const url = generatePaginatedVariableUrl(project_id, i, perPage)
-        promises.push(axiosClient.get(url, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-        }))
+        promises.push(
+            axiosClient.get(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+            }),
+        )
     }
 
     const responses = await Promise.all(promises)
@@ -106,17 +106,24 @@ export const fetchAllVariables = async (token: string, project_id: string) => {
     return variables
 }
 
-export const fetchVariableByKey = async (token: string, project_id: string, key: string) => {
+export const fetchVariableByKey = async (
+    token: string,
+    project_id: string,
+    key: string,
+) => {
     try {
-        const response = await apiClient.get('/v1/projects/:project/variables/:key', {
-            headers: {
-                Authorization: token,
+        const response = await apiClient.get(
+            '/v1/projects/:project/variables/:key',
+            {
+                headers: {
+                    Authorization: token,
+                },
+                params: {
+                    project: project_id,
+                    key,
+                },
             },
-            params: {
-                project: project_id,
-                key
-            }
-        })
+        )
 
         return response
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -128,6 +135,10 @@ export const fetchVariableByKey = async (token: string, project_id: string, key:
     }
 }
 
-const generatePaginatedVariableUrl = (project_id: string, page: number, perPage: number): string => {
+const generatePaginatedVariableUrl = (
+    project_id: string,
+    page: number,
+    perPage: number,
+): string => {
     return `/v1/projects/${project_id}/variables?perPage=${perPage}&page=${page}&status=active`
 }

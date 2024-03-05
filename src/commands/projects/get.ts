@@ -18,10 +18,26 @@ export default class DetailedProjects extends GetCommand {
         const params = plainToClass(GetProjectsParams, { sortBy, sortOrder })
 
         const projects = await fetchProjects(this.authToken, params)
-        return this.writer.showResults(projects.map((
-            { _id, _organization, key, name, description, updatedAt, createdAt }
-        ) => ({
-            _id, _organization, key, name, description, updatedAt, createdAt
-        })))
+        return this.writer.showResults(
+            projects.map(
+                ({
+                    _id,
+                    _organization,
+                    key,
+                    name,
+                    description,
+                    updatedAt,
+                    createdAt,
+                }) => ({
+                    _id,
+                    _organization,
+                    key,
+                    name,
+                    description,
+                    updatedAt,
+                    createdAt,
+                }),
+            ),
+        )
     }
 }

@@ -24,18 +24,23 @@ export class ApiAuth {
     constructor(
         private authPath: string,
         cacheDir: string,
-        private writer: Writer
+        private writer: Writer,
     ) {
         this.tokenCache = new TokenCache(cacheDir)
     }
 
-    public async getToken(flags: SupportedFlags, orgId?: string): Promise<string> {
-        const clientId = flags['client-id']
-            || process.env.DEVCYCLE_CLIENT_ID
-            || process.env.DVC_CLIENT_ID
-        const clientSecret = flags['client-secret']
-            || process.env.DEVCYCLE_CLIENT_SECRET
-            || process.env.DVC_CLIENT_SECRET
+    public async getToken(
+        flags: SupportedFlags,
+        orgId?: string,
+    ): Promise<string> {
+        const clientId =
+            flags['client-id'] ||
+            process.env.DEVCYCLE_CLIENT_ID ||
+            process.env.DVC_CLIENT_ID
+        const clientSecret =
+            flags['client-secret'] ||
+            process.env.DEVCYCLE_CLIENT_SECRET ||
+            process.env.DVC_CLIENT_SECRET
 
         if (clientId && clientSecret) {
             return this.fetchClientToken(clientId, clientSecret)
@@ -69,10 +74,10 @@ export class ApiAuth {
 
         if (config.sso) {
             let { accessToken, refreshToken } = config.sso
-            
+
             if (orgId) {
                 if (config.sso.orgs && config.sso.orgs[orgId]) {
-                    ({ accessToken, refreshToken } = config.sso.orgs[orgId])
+                    ;({ accessToken, refreshToken } = config.sso.orgs[orgId])
                 } else if (orgId !== getOrgIdFromToken(accessToken)) {
                     return ''
                 }
@@ -111,7 +116,10 @@ export class ApiAuth {
         return ''
     }
 
-    private async fetchClientToken(client_id: string, client_secret: string): Promise<string> {
+    private async fetchClientToken(
+        client_id: string,
+        client_secret: string,
+    ): Promise<string> {
         const cachedToken = this.tokenCache.get(client_id, client_secret)
         if (cachedToken) {
             return cachedToken
@@ -131,7 +139,9 @@ export class ApiAuth {
             this.tokenCache.set(client_id, client_secret, accessToken)
             return accessToken
         } catch (e) {
-            throw new Error('Failed to authenticate with the DevCycle API. Check your credentials.')
+            throw new Error(
+                'Failed to authenticate with the DevCycle API. Check your credentials.',
+            )
         }
     }
 

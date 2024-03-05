@@ -10,40 +10,45 @@ describe('features update', () => {
     chai.use(jestSnapshotPlugin())
 
     const projectKey = 'test-project'
-    const authFlags = ['--client-id', 'test-client-id', '--client-secret', 'test-client-secret']
+    const authFlags = [
+        '--client-id',
+        'test-client-id',
+        '--client-secret',
+        'test-client-secret',
+    ]
 
     const testVariables = [
         {
             key: 'string-var',
             type: 'String',
-        }
+        },
     ]
 
     const mockFeature = {
-        'name': 'Feature Name',
-        'key': 'feature-key',
-        '_id': 'id',
-        '_project': 'string',
-        'source': 'api',
-        '_createdBy': 'string',
-        'createdAt': '2019-08-24T14:15:22Z',
-        'updatedAt': '2019-08-24T14:15:22Z',
-        'variations': [],
-        'variables': [],
-        'tags': [],
-        'ldLink': 'string',
-        'readonly': true,
-        'sdkVisibility': {
-            'mobile': true,
-            'client': true,
-            'server': true
-        }
+        name: 'Feature Name',
+        key: 'feature-key',
+        _id: 'id',
+        _project: 'string',
+        source: 'api',
+        _createdBy: 'string',
+        createdAt: '2019-08-24T14:15:22Z',
+        updatedAt: '2019-08-24T14:15:22Z',
+        variations: [],
+        variables: [],
+        tags: [],
+        ldLink: 'string',
+        readonly: true,
+        sdkVisibility: {
+            mobile: true,
+            client: true,
+            server: true,
+        },
     }
 
     const testSDKVisibility = {
         mobile: true,
         client: false,
-        server: true
+        server: true,
     }
 
     const requestBody = {
@@ -60,54 +65,71 @@ describe('features update', () => {
 
     const requestBodyWithVariables = {
         ...requestBody,
-        variables: testVariables
+        variables: testVariables,
     }
 
     // headless mode:
     dvcTest()
-        .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
-            .reply(200, mockFeature)
+        .nock(BASE_URL, (api) =>
+            api
+                .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+                .reply(200, mockFeature),
         )
-        .nock(BASE_URL, (api) => api
-            .patch(`/v1/projects/${projectKey}/features/${mockFeature.key}`, requestBodyWithVariables)
-            .reply(200, mockFeature)
+        .nock(BASE_URL, (api) =>
+            api
+                .patch(
+                    `/v1/projects/${projectKey}/features/${mockFeature.key}`,
+                    requestBodyWithVariables,
+                )
+                .reply(200, mockFeature),
         )
         .stdout()
         .command([
-            'features update', mockFeature.key,
-            '--project', projectKey,
-            '--name', requestBodyWithVariables.name,
-            '--key', requestBodyWithVariables.key,
-            '--description', requestBody.description,
-            '--variables', JSON.stringify(requestBodyWithVariables.variables),
-            '--sdkVisibility', JSON.stringify(requestBodyWithVariables.sdkVisibility),
+            'features update',
+            mockFeature.key,
+            '--project',
+            projectKey,
+            '--name',
+            requestBodyWithVariables.name,
+            '--key',
+            requestBodyWithVariables.key,
+            '--description',
+            requestBody.description,
+            '--variables',
+            JSON.stringify(requestBodyWithVariables.variables),
+            '--sdkVisibility',
+            JSON.stringify(requestBodyWithVariables.sdkVisibility),
             '--headless',
-            ...authFlags
+            ...authFlags,
         ])
-        .it('updates a feature in headless mode',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            }
-        )
+        .it('updates a feature in headless mode', (ctx) => {
+            expect(ctx.stdout).toMatchSnapshot()
+        })
 
     dvcTest()
         .stderr()
         .command([
             'features update',
-            '--project', projectKey,
-            '--name', requestBodyWithVariables.name,
-            '--key', requestBodyWithVariables.key,
-            '--description', requestBodyWithVariables.description,
-            '--variables', JSON.stringify(requestBodyWithVariables.variables),
-            '--sdkVisibility', JSON.stringify(requestBodyWithVariables.sdkVisibility),
+            '--project',
+            projectKey,
+            '--name',
+            requestBodyWithVariables.name,
+            '--key',
+            requestBodyWithVariables.key,
+            '--description',
+            requestBodyWithVariables.description,
+            '--variables',
+            JSON.stringify(requestBodyWithVariables.variables),
+            '--sdkVisibility',
+            JSON.stringify(requestBodyWithVariables.sdkVisibility),
             '--headless',
-            ...authFlags
+            ...authFlags,
         ])
-        .it('returns an error if key is not provided in headless mode',
+        .it(
+            'returns an error if key is not provided in headless mode',
             (ctx) => {
                 expect(ctx.stderr).to.contain('The key argument is required')
-            }
+            },
         )
 
     // interactive mode:
@@ -118,25 +140,30 @@ describe('features update', () => {
             whichFields: Object.keys(requestBodyWithVariations),
             listPromptOption: 'continue',
         }))
-        .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
-            .reply(200, mockFeature)
+        .nock(BASE_URL, (api) =>
+            api
+                .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+                .reply(200, mockFeature),
         )
-        .nock(BASE_URL, (api) => api
-            .patch(`/v1/projects/${projectKey}/features/${mockFeature.key}`, requestBodyWithVariations)
-            .reply(200, mockFeature)
+        .nock(BASE_URL, (api) =>
+            api
+                .patch(
+                    `/v1/projects/${projectKey}/features/${mockFeature.key}`,
+                    requestBodyWithVariations,
+                )
+                .reply(200, mockFeature),
         )
         .stdout()
         .command([
-            'features update', mockFeature.key,
-            '--project', projectKey,
-            ...authFlags
+            'features update',
+            mockFeature.key,
+            '--project',
+            projectKey,
+            ...authFlags,
         ])
-        .it('updates a feature after prompting for all fields',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            }
-        )
+        .it('updates a feature after prompting for all fields', (ctx) => {
+            expect(ctx.stdout).toMatchSnapshot()
+        })
 
     dvcTest()
         .stub(inquirer, 'prompt', () => ({
@@ -146,24 +173,30 @@ describe('features update', () => {
             whichFields: ['key', 'description', 'sdkVisibility'],
             listPromptOption: 'continue',
         }))
-        .nock(BASE_URL, (api) => api
-            .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
-            .reply(200, mockFeature)
+        .nock(BASE_URL, (api) =>
+            api
+                .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+                .reply(200, mockFeature),
         )
-        .nock(BASE_URL, (api) => api
-            .patch(`/v1/projects/${projectKey}/features/${mockFeature.key}`, requestBody)
-            .reply(200, mockFeature)
+        .nock(BASE_URL, (api) =>
+            api
+                .patch(
+                    `/v1/projects/${projectKey}/features/${mockFeature.key}`,
+                    requestBody,
+                )
+                .reply(200, mockFeature),
         )
         .stdout()
         .command([
-            'features update', mockFeature.key,
-            '--name', requestBody.name,
-            '--project', projectKey,
-            ...authFlags
+            'features update',
+            mockFeature.key,
+            '--name',
+            requestBody.name,
+            '--project',
+            projectKey,
+            ...authFlags,
         ])
-        .it('accepts flags and prompts for missing fields',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            }
-        )
+        .it('accepts flags and prompts for missing fields', (ctx) => {
+            expect(ctx.stdout).toMatchSnapshot()
+        })
 })

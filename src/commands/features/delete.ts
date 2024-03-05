@@ -2,7 +2,11 @@ import { Args } from '@oclif/core'
 import { deleteFeature } from '../../api/features'
 import Base from '../base'
 import inquirer from 'inquirer'
-import { featurePrompt, FeaturePromptResult, getStringMatchConfirmationPrompt } from '../../ui/prompts'
+import {
+    featurePrompt,
+    FeaturePromptResult,
+    getStringMatchConfirmationPrompt,
+} from '../../ui/prompts'
 
 export default class DeleteFeatures extends Base {
     static hidden = false
@@ -12,8 +16,8 @@ export default class DeleteFeatures extends Base {
     static args = {
         feature: Args.string({
             name: 'feature',
-            description: 'Feature key or id to delete'
-        })
+            description: 'Feature key or id to delete',
+        }),
     }
 
     public async run(): Promise<void> {
@@ -22,18 +26,22 @@ export default class DeleteFeatures extends Base {
         await this.requireProject(project, headless)
         let featureKey
         if (!args.feature) {
-            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const { feature } = await inquirer.prompt<FeaturePromptResult>(
+                [featurePrompt],
+                {
+                    token: this.authToken,
+                    projectKey: this.projectKey,
+                },
+            )
             featureKey = feature.key
         } else {
             featureKey = args.feature
         }
 
         if (!headless) {
-            const { confirm } = 
-                await inquirer.prompt<{ confirm: string }>([getStringMatchConfirmationPrompt(featureKey)])
+            const { confirm } = await inquirer.prompt<{ confirm: string }>([
+                getStringMatchConfirmationPrompt(featureKey),
+            ])
             if (confirm === featureKey) {
                 await deleteFeature(this.authToken, this.projectKey, featureKey)
                 this.writer.successMessage('Feature successfully deleted')

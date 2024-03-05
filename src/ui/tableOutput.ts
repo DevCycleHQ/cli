@@ -6,10 +6,14 @@ export default class TableOutput {
     private overridesColumns = {
         featureName: { header: 'Feature', minWidth: 20 },
         environmentName: { header: 'Environment', minWidth: 20 },
-        variationName: { header: 'Override Variation', minWidth: 20 }
+        variationName: { header: 'Override Variation', minWidth: 20 },
     }
 
-    public print<T extends Record<string, unknown>>(data: T[], columns: table.Columns<T>, options?: table.Options) {
+    public print<T extends Record<string, unknown>>(
+        data: T[],
+        columns: table.Columns<T>,
+        options?: table.Options,
+    ) {
         if (this.headless) {
             return
         }
@@ -18,7 +22,10 @@ export default class TableOutput {
         console.log('\r')
     }
 
-    public printOverrides<T extends Record<string, unknown>>(data: T[], options?: table.Options) {
+    public printOverrides<T extends Record<string, unknown>>(
+        data: T[],
+        options?: table.Options,
+    ) {
         this.print(data, this.overridesColumns, options)
     }
 }

@@ -1,7 +1,8 @@
 import {
     environmentPrompt,
     EnvironmentPromptResult,
-    featurePrompt, FeaturePromptResult,
+    featurePrompt,
+    FeaturePromptResult,
 } from '../../ui/prompts'
 import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
@@ -22,13 +23,13 @@ export default class UpdateOverride extends Base {
     static flags = {
         ...Base.flags,
         feature: Flags.string({
-            description: 'The feature to update an Override for'
+            description: 'The feature to update an Override for',
         }),
         environment: Flags.string({
-            description: 'The environment to update an Override for'
+            description: 'The environment to update an Override for',
         }),
         variation: Flags.string({
-            description: 'The variation that will be used as the Override'
+            description: 'The variation that will be used as the Override',
         }),
     }
 
@@ -40,8 +41,13 @@ export default class UpdateOverride extends Base {
         await this.requireProject(project, headless)
         const identity = await fetchUserProfile(this.authToken, this.projectKey)
         if (!identity.dvcUserId) {
-            this.writer.showError('You must set your DevCycle Identity before you can update an Override')
-            this.writer.infoMessageWithCommand('To set up your SDK Associated User ID, use', 'dvc identity update')
+            this.writer.showError(
+                'You must set your DevCycle Identity before you can update an Override',
+            )
+            this.writer.infoMessageWithCommand(
+                'To set up your SDK Associated User ID, use',
+                'dvc identity update',
+            )
             return
         }
 
@@ -50,21 +56,37 @@ export default class UpdateOverride extends Base {
         let environmentName
         let variationName
         if (headless && (!feature || !environment || !variation)) {
-            this.writer.showError('The feature, environment, and variation flag must be set when using headless mode')
+            this.writer.showError(
+                'The feature, environment, and variation flag must be set when using headless mode',
+            )
             return
         } else if (headless && feature && environment && variation) {
-            const params = await this.populateParametersWithZod(UpdateOverrideDto, this.prompts, {
-                feature, environment, variation
-            })
-            const result = await updateOverride(this.authToken, this.projectKey, feature, params)
+            const params = await this.populateParametersWithZod(
+                UpdateOverrideDto,
+                this.prompts,
+                {
+                    feature,
+                    environment,
+                    variation,
+                },
+            )
+            const result = await updateOverride(
+                this.authToken,
+                this.projectKey,
+                feature,
+                params,
+            )
             this.writer.showResults(result)
             return
         }
         if (!feature) {
-            const response = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const response = await inquirer.prompt<FeaturePromptResult>(
+                [featurePrompt],
+                {
+                    token: this.authToken,
+                    projectKey: this.projectKey,
+                },
+            )
             feature = response.feature.key
             featureName = response.feature.name
         }
@@ -73,8 +95,8 @@ export default class UpdateOverride extends Base {
                 [environmentPrompt],
                 {
                     token: this.authToken,
-                    projectKey: this.projectKey
-                }
+                    projectKey: this.projectKey,
+                },
             )
             environment = responses.environment.key
             environmentName = responses.environment.name
@@ -89,16 +111,28 @@ export default class UpdateOverride extends Base {
             variationName = response.variation.name
         }
 
-        const params = await this.populateParametersWithZod(UpdateOverrideDto, this.prompts, {
-            feature, environment, variation
-        })
+        const params = await this.populateParametersWithZod(
+            UpdateOverrideDto,
+            this.prompts,
+            {
+                feature,
+                environment,
+                variation,
+            },
+        )
 
-        const result = await updateOverride(this.authToken, this.projectKey, feature, params)
-        const resultToPrint = { 
-            featureName: featureName ?? feature, 
+        const result = await updateOverride(
+            this.authToken,
+            this.projectKey,
+            feature,
+            params,
+        )
+        const resultToPrint = {
+            featureName: featureName ?? feature,
             variationName: variationName ?? variation,
             environmentName: environmentName ?? environment,
-            ...result }
+            ...result,
+        }
 
         this.tableOutput.printOverrides<UserOverride>([resultToPrint])
     }

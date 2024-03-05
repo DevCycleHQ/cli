@@ -7,18 +7,19 @@ export default class DetailedVariables extends Base {
     static hidden = false
     static flags = {
         ...Base.flags,
-        'keys': Flags.string({
-            description: 'Comma-separated list of variable keys to fetch details for',
+        keys: Flags.string({
+            description:
+                'Comma-separated list of variable keys to fetch details for',
         }),
-        'search': Flags.string({
-            description: 'Filter variables by search query'
+        search: Flags.string({
+            description: 'Filter variables by search query',
         }),
-        'page': Flags.integer({
-            description: 'Page number to fetch'
+        page: Flags.integer({
+            description: 'Page number to fetch',
         }),
         'per-page': Flags.integer({
-            description: 'Number of variables to fetch per page'
-        })
+            description: 'Number of variables to fetch per page',
+        }),
     }
     authRequired = true
 
@@ -30,18 +31,20 @@ export default class DetailedVariables extends Base {
 
         let variables
         if (keys) {
-            variables = await batchRequests(
-                keys, 
-                (key) => fetchVariableByKey(this.authToken, this.projectKey, key)
+            variables = await batchRequests(keys, (key) =>
+                fetchVariableByKey(this.authToken, this.projectKey, key),
             )
-
         } else {
             const query = {
                 page: flags['page'],
                 perPage: flags['per-page'],
                 search: flags['search'],
             }
-            variables = await fetchVariables(this.authToken, this.projectKey, query)
+            variables = await fetchVariables(
+                this.authToken,
+                this.projectKey,
+                query,
+            )
         }
         this.writer.showResults(variables)
     }

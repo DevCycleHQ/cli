@@ -27,10 +27,13 @@ export class GetProjectsParams {
 
 const BASE_URL = '/v1/projects'
 
-export const fetchProjects = async (token: string, queries?: GetProjectsParams) => {
+export const fetchProjects = async (
+    token: string,
+    queries?: GetProjectsParams,
+) => {
     return apiClient.get(BASE_URL, {
         headers: buildHeaders(token),
-        queries
+        queries,
     })
 }
 
@@ -39,13 +42,13 @@ export const fetchProject = async (token: string, projectKey: string) => {
         headers: buildHeaders(token),
         params: {
             key: projectKey,
-        }
+        },
     })
 }
 
 export const createProject = async (
     token: string,
-    params: CreateProjectParams
+    params: CreateProjectParams,
 ) => {
     return apiClient.post(BASE_URL, params, {
         headers: buildHeaders(token),

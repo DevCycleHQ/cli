@@ -1,12 +1,10 @@
 import { Flags } from '@oclif/core'
-import {
-    createEnvironment,
-} from '../../api/environments'
+import { createEnvironment } from '../../api/environments'
 import {
     descriptionPrompt,
     keyPrompt,
     namePrompt,
-    environmentTypePrompt
+    environmentTypePrompt,
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 import { CreateEnvironmentDto } from '../../api/schemas'
@@ -15,19 +13,14 @@ export default class CreateEnvironment extends CreateCommand {
     static hidden = false
     static description = 'Create a new Environment for an existing Feature.'
 
-    prompts = [
-        namePrompt,
-        keyPrompt,
-        descriptionPrompt,
-        environmentTypePrompt,
-    ]
+    prompts = [namePrompt, keyPrompt, descriptionPrompt, environmentTypePrompt]
     static flags = {
         ...CreateCommand.flags,
-        'type': Flags.string({
+        type: Flags.string({
             description: 'The type of environment',
             options: CreateEnvironmentDto.shape.type.options,
         }),
-        'description': Flags.string({
+        description: Flags.string({
             description: 'Description for the dashboard',
         }),
     }
@@ -46,7 +39,11 @@ export default class CreateEnvironment extends CreateCommand {
             this.prompts,
             flags,
         )
-        const result = await createEnvironment(this.authToken, this.projectKey, params)
+        const result = await createEnvironment(
+            this.authToken,
+            this.projectKey,
+            params,
+        )
         this.writer.showResults(result)
     }
 }

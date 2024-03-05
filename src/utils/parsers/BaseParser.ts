@@ -1,5 +1,10 @@
 import parse from 'parse-diff'
-import { ParseOptions, VariableDiffMatch, Range, VariableUsageMatch } from './types'
+import {
+    ParseOptions,
+    VariableDiffMatch,
+    Range,
+    VariableUsageMatch,
+} from './types'
 import * as usage from '../../commands/usages/types'
 import { LANGUAGE_MAP } from '../parsers'
 
@@ -58,9 +63,10 @@ class ParsedChangeLine extends ParsedLine {
         super(changeLine as usage.LineItem)
         this.type = changeLine.type
         this.content = changeLine.content
-        this.parsedContent = this.type === 'normal'
-            ? this.content.trim()
-            : this.content.slice(1).trim()
+        this.parsedContent =
+            this.type === 'normal'
+                ? this.content.trim()
+                : this.content.slice(1).trim()
         this.ln = changeLine.type === 'normal' ? changeLine.ln2 : changeLine.ln
     }
 
@@ -68,12 +74,11 @@ class ParsedChangeLine extends ParsedLine {
         const baseChange = {
             type,
             ln: this.ln,
-            content: this.content
+            content: this.content,
         }
         return type === 'add'
             ? { ...baseChange, type, add: true }
             : { ...baseChange, type, del: true }
-
     }
 }
 
@@ -101,38 +106,46 @@ export abstract class BaseParser {
     // comment characters to look for when matching. Varies by language.
     commentCharacters: string[] = ['//']
 
-    constructor(extension: string, protected options: ParseOptions) {
+    constructor(
+        extension: string,
+        protected options: ParseOptions,
+    ) {
         this.clientNames = [
-            ...(options.clientNames || []), 'devcycleClient', 'devCycleClient', 'dvcClient', 'client', 'devcycle'
+            ...(options.clientNames || []),
+            'devcycleClient',
+            'devCycleClient',
+            'dvcClient',
+            'client',
+            'devcycle',
         ]
     }
 
     private buildParameterPattern(
         namedParameterPatternMap: Record<string, RegExp> | null,
-        orderedParameterPatterns: RegExp[] | null
+        orderedParameterPatterns: RegExp[] | null,
     ) {
         const namedParameters = namedParameterPatternMap
             ? Object.entries(namedParameterPatternMap)
-                .map(
-                    ([key, pattern]) =>
-                        new RegExp(
-                            `(?=.*?${key}${this.namedParameterDelimiter}\\s*${pattern.source})`,
-                        ).source,
-                )
-                .join('')
-                .concat(/[^)]*\)/.source)
+                  .map(
+                      ([key, pattern]) =>
+                          new RegExp(
+                              `(?=.*?${key}${this.namedParameterDelimiter}\\s*${pattern.source})`,
+                          ).source,
+                  )
+                  .join('')
+                  .concat(/[^)]*\)/.source)
             : null
 
         const orderedParameters = orderedParameterPatterns
             ? orderedParameterPatterns
-                .map((p) => p.source)
-                .join(/\s*,\s*/.source)
-                .concat(/[,\s]*\)/.source)
+                  .map((p) => p.source)
+                  .join(/\s*,\s*/.source)
+                  .concat(/[,\s]*\)/.source)
             : null
 
         return orderedParameters && namedParameters
             ? new RegExp(`(?:(?:${orderedParameters})|(?:${namedParameters}))`)
-                .source
+                  .source
             : orderedParameters || namedParameters
     }
 
@@ -147,18 +160,20 @@ export abstract class BaseParser {
 
         const parameterPattern = this.buildParameterPattern(
             this.namedParameterPatternMap,
-            this.orderedParameterPatterns
+            this.orderedParameterPatterns,
         )
 
         return new RegExp(
-            clientNamePattern
-            + this.variableMethodPattern.source
-            + parameterPattern
+            clientNamePattern +
+                this.variableMethodPattern.source +
+                parameterPattern,
         )
     }
 
     printRegexPattern(): void {
-        console.log(`Pattern for ${this.identity} parser: \n\t${this.buildRegexPattern().source}`)
+        console.log(
+            `Pattern for ${this.identity} parser: \n\t${this.buildRegexPattern().source}`,
+        )
     }
 
     match(content: string): MatchResult | null {
@@ -172,7 +187,7 @@ export abstract class BaseParser {
                 // position or named parameter match
                 name: varName.replace(/^["']|["']$/g, ''),
                 content: matches[0],
-                index: matches.index
+                index: matches.index,
             }
         }
 
@@ -204,8 +219,8 @@ export abstract class BaseParser {
                 isUnknown,
                 range: {
                     start: startIndex,
-                    end: endIndex
-                }
+                    end: endIndex,
+                },
             })
             cursorPosition = endIndex + 1
         }
@@ -216,35 +231,66 @@ export abstract class BaseParser {
     /**
      * Filter unused lines and build an object containing lines and content
      */
-    private filterAndReduceLines(lines: ParsedChangeLine[]): { content: string, lines: ParsedChangeLine[] };
-    private filterAndReduceLines(lines: ParsedLine[]): { content: string, lines: ParsedLine[] };
-    private filterAndReduceLines(lines: ParsedLine[]): { content: string, lines: ParsedLine[] } {
+    private filterAndReduceLines(lines: ParsedChangeLine[]): {
+        content: string
+        lines: ParsedChangeLine[]
+    }
+    private filterAndReduceLines(lines: ParsedLine[]): {
+        content: string
+        lines: ParsedLine[]
+    }
+    private filterAndReduceLines(lines: ParsedLine[]): {
+        content: string
+        lines: ParsedLine[]
+    } {
         return lines
-            .filter((line) => !line.isComment(this.commentCharacters) && !line.isEmpty())
-            .reduce((acc, line) => {
-                line.range.start = acc.content.length
+            .filter(
+                (line) =>
+                    !line.isComment(this.commentCharacters) && !line.isEmpty(),
+            )
+            .reduce(
+                (acc, line) => {
+                    line.range.start = acc.content.length
 
-                acc.content += line.parsedContent
-                line.range.end = acc.content.length - 1
+                    acc.content += line.parsedContent
+                    line.range.end = acc.content.length - 1
 
-                acc.lines.push(line)
+                    acc.lines.push(line)
 
-                return acc
-            }, { content: '', lines: [] } as { content: string, lines: ParsedLine[] })
+                    return acc
+                },
+                { content: '', lines: [] } as {
+                    content: string
+                    lines: ParsedLine[]
+                },
+            )
     }
 
     /**
      * Get all lines within the range of the match
      */
-    private getMatchingLines(match: MatchWithRange, lines: ParsedChangeLine[]): ParsedChangeLine[];
-    private getMatchingLines(match: MatchWithRange, lines: ParsedLine[]): ParsedLine[];
-    private getMatchingLines(match: MatchWithRange, lines: ParsedLine[]): ParsedLine[] {
+    private getMatchingLines(
+        match: MatchWithRange,
+        lines: ParsedChangeLine[],
+    ): ParsedChangeLine[]
+    private getMatchingLines(
+        match: MatchWithRange,
+        lines: ParsedLine[],
+    ): ParsedLine[]
+    private getMatchingLines(
+        match: MatchWithRange,
+        lines: ParsedLine[],
+    ): ParsedLine[] {
         const { start: matchStartIndex, end: matchEndIndex } = match.range
 
         return lines.filter(({ range }) => {
             const { start: lineStartIndex, end: lineEndIndex } = range
-            return (matchStartIndex >= lineStartIndex && matchStartIndex <= lineEndIndex)
-                || (lineStartIndex >= matchStartIndex && lineStartIndex <= matchEndIndex)
+            return (
+                (matchStartIndex >= lineStartIndex &&
+                    matchStartIndex <= lineEndIndex) ||
+                (lineStartIndex >= matchStartIndex &&
+                    lineStartIndex <= matchEndIndex)
+            )
         })
     }
 
@@ -254,39 +300,56 @@ export abstract class BaseParser {
     parseDiffs(file: parse.File): VariableDiffMatch[] {
         const results: VariableDiffMatch[] = []
 
-        const validateAndFormatMatch = (match: MatchWithRange, lines: ParsedChangeLine[]) => {
+        const validateAndFormatMatch = (
+            match: MatchWithRange,
+            lines: ParsedChangeLine[],
+        ) => {
             const matchingLines = this.getMatchingLines(match, lines)
 
             // Remove "normal" lines
-            const validChange = matchingLines.find(({ type }) => type !== 'normal')
+            const validChange = matchingLines.find(
+                ({ type }) => type !== 'normal',
+            )
 
             // If we have an add/del change, update the starting line to have that type and push to results
             if (validChange) {
-                const line = matchingLines[0].format(validChange.type as 'add' | 'del')
+                const line = matchingLines[0].format(
+                    validChange.type as 'add' | 'del',
+                )
                 results.push({
                     name: match.name,
                     fileName: file.to ?? '',
                     line: line.ln,
                     mode: line.type === 'add' ? 'add' : 'remove',
-                    ...(match.isUnknown ? { isUnknown: true } : {})
+                    ...(match.isUnknown ? { isUnknown: true } : {}),
                 })
             }
         }
 
         for (const chunk of file.chunks) {
-            const lineChanges = chunk.changes.map((change) => new ParsedChangeLine(change))
+            const lineChanges = chunk.changes.map(
+                (change) => new ParsedChangeLine(change),
+            )
 
-            const addedLines = lineChanges.filter((line) => ['add', 'normal'].includes(line.type))
+            const addedLines = lineChanges.filter((line) =>
+                ['add', 'normal'].includes(line.type),
+            )
             const added = this.filterAndReduceLines(addedLines)
             const addedMatches = this.getAllMatches(added.content)
 
-            addedMatches.forEach((match) => validateAndFormatMatch(match, added.lines))
+            addedMatches.forEach((match) =>
+                validateAndFormatMatch(match, added.lines),
+            )
 
-            const removedLines = lineChanges.filter((line) => ['del', 'normal'].includes(line.type))
+            const removedLines = lineChanges.filter((line) =>
+                ['del', 'normal'].includes(line.type),
+            )
             const removed = this.filterAndReduceLines(removedLines)
             const removedMatches = this.getAllMatches(removed.content)
 
-            removedMatches.forEach((match) => validateAndFormatMatch(match, removed.lines))
+            removedMatches.forEach((match) =>
+                validateAndFormatMatch(match, removed.lines),
+            )
         }
         return results
     }
@@ -308,13 +371,17 @@ export abstract class BaseParser {
 
             const range = {
                 start: matchingLines[0].ln,
-                end: matchingLines[matchingLines.length - 1].ln
+                end: matchingLines[matchingLines.length - 1].ln,
             }
 
             const bufferedStart = Math.max(range.start - buffer, 1)
             const bufferedEnd = Math.min(range.end + buffer, file.lines.length)
             const bufferedContent = file.lines
-                .filter((line) => range.start - buffer <= line.ln && range.end + buffer >= line.ln)
+                .filter(
+                    (line) =>
+                        range.start - buffer <= line.ln &&
+                        range.end + buffer >= line.ln,
+                )
                 .map((line) => line.content)
                 .join('\n')
 
@@ -324,12 +391,12 @@ export abstract class BaseParser {
                 lines: range,
                 bufferedLines: {
                     start: bufferedStart,
-                    end: bufferedEnd
+                    end: bufferedEnd,
                 },
                 fileName: file.name,
                 content: bufferedContent,
                 language: LANGUAGE_MAP[fileExtension],
-                ...(match.isUnknown ? { isUnknown: true } : {})
+                ...(match.isUnknown ? { isUnknown: true } : {}),
             })
         })
 

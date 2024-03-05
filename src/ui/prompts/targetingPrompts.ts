@@ -18,7 +18,7 @@ export const targetingStatusPrompt = {
     type: 'list',
     choices: [
         { name: 'enable', value: 'active' },
-        { name: 'disable', value: 'inactive' }
+        { name: 'disable', value: 'inactive' },
     ],
 }
 
@@ -26,43 +26,43 @@ export const servePrompt = {
     name: 'serve',
     message: 'Variation to serve',
     type: 'list',
-    choices: variationChoices
+    choices: variationChoices,
 }
 
 export const filterTypePrompt = {
     name: 'type',
     message: 'Type for definition',
     type: 'list',
-    choices: filterTypes
+    choices: filterTypes,
 }
 
-export const  filterSubTypePrompt = {
+export const filterSubTypePrompt = {
     name: 'subType',
     message: 'Subtype for definition',
     type: 'list',
-    choices: userSubTypes
+    choices: userSubTypes,
 }
 
 export const filterComparatorPrompt = {
     name: 'comparator',
     message: 'Comparator for definition',
     type: 'list',
-    choices: comparatorChoices
+    choices: comparatorChoices,
 }
 
 export const filterValuesPrompt = {
     name: 'values',
     message: 'List of comma separated values for definition',
     suffix: ':',
-    validate: (input: string) => (isRequired('values', input)),
-    type: 'input'
+    validate: (input: string) => isRequired('values', input),
+    type: 'input',
 }
 
 export const filterAudiencesPrompt = {
     name: 'audiences',
     message: 'List of comma separated audience IDs for definition',
     suffix: ':',
-    type: 'input'
+    type: 'input',
 }
 
 export const reusableAudienceFilterPrompt = (audiences: Audience[]) => ({
@@ -71,20 +71,20 @@ export const reusableAudienceFilterPrompt = (audiences: Audience[]) => ({
     type: 'checkbox',
     choices: audiences.map((audience: Audience) => ({
         name: audience.name,
-        value: audience
-    }))
+        value: audience,
+    })),
 })
 
 export const filterDataKeyPrompt = {
     name: 'dataKey',
     message: 'Data key for definition',
     suffix: ':',
-    type: 'input'
+    type: 'input',
 }
 
 export const filterDataKeyTypePrompt = {
     name: 'dataKeyType',
     message: 'Data key type for definition',
     type: 'list',
-    choices: Object.values(DataKeyType)
+    choices: Object.values(DataKeyType),
 }

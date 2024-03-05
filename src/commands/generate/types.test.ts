@@ -5,72 +5,68 @@ import * as fs from 'fs'
 
 const mockVariablesResponse = [
     {
-        'name': 'enum-var',
-        'key': 'enum-var',
-        'type': 'String',
-        'description': 'Different ways to say hello',
-        'createdAt': '2021-07-04T20:00:00.000Z',
-        '_createdBy': 'user1',
-        'validationSchema': {
-            'schemaType': 'enum',
-            'enumValues': [
-                'Hello',
-                'Hey',
-                'Hi'
-            ],
-        }
+        name: 'enum-var',
+        key: 'enum-var',
+        type: 'String',
+        description: 'Different ways to say hello',
+        createdAt: '2021-07-04T20:00:00.000Z',
+        _createdBy: 'user1',
+        validationSchema: {
+            schemaType: 'enum',
+            enumValues: ['Hello', 'Hey', 'Hi'],
+        },
     },
     {
-        'name': 'regex-var',
-        'key': 'regex-var',
-        'type': 'String',
-        'createdAt': '2021-07-04T20:00:00.000Z',
-        '_createdBy': 'user2',
-        'validationSchema': {
-            'schemaType': 'regex',
-            'regexPattern': '^test.*$',
-        }
+        name: 'regex-var',
+        key: 'regex-var',
+        type: 'String',
+        createdAt: '2021-07-04T20:00:00.000Z',
+        _createdBy: 'user2',
+        validationSchema: {
+            schemaType: 'regex',
+            regexPattern: '^test.*$',
+        },
     },
     {
-        'name': 'string-var',
-        'key': 'string-var',
-        'type': 'String',
-        '_createdBy': 'user1',
-        'createdAt': '2021-07-04T20:00:00.000Z',
+        name: 'string-var',
+        key: 'string-var',
+        type: 'String',
+        _createdBy: 'user1',
+        createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
-        'name': 'boolean-var',
-        'key': 'boolean-var',
-        'type': 'Boolean',
-        '_createdBy': 'user2',
-        'createdAt': '2021-07-04T20:00:00.000Z',
+        name: 'boolean-var',
+        key: 'boolean-var',
+        type: 'Boolean',
+        _createdBy: 'user2',
+        createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
-        'name': 'number-var',
-        'key': 'number-var',
-        'type': 'Number',
-        '_createdBy': 'user1',
-        'createdAt': '2021-07-04T20:00:00.000Z',
+        name: 'number-var',
+        key: 'number-var',
+        type: 'Number',
+        _createdBy: 'user1',
+        createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
-        'name': 'json-var',
-        'key': 'json-var',
-        'type': 'JSON',
-        'createdAt': '2021-07-04T20:00:00.000Z',
-        '_createdBy': 'api',
-    }
+        name: 'json-var',
+        key: 'json-var',
+        type: 'JSON',
+        createdAt: '2021-07-04T20:00:00.000Z',
+        _createdBy: 'api',
+    },
 ]
 
 const mockOrganizationMembersResponse = [
     {
-        'user_id': 'user1',
-        'name': 'User 1',
-        'email': 'test@gmail.com',
+        user_id: 'user1',
+        name: 'User 1',
+        email: 'test@gmail.com',
     },
     {
-        'user_id': 'user2',
-        'name': 'User 2',
-        'email': 'test2@gmail.com',
+        user_id: 'user2',
+        name: 'User 2',
+        email: 'test2@gmail.com',
     },
 ]
 
@@ -192,18 +188,25 @@ describe('generate types', () => {
 
     dvcTest()
         .nock(BASE_URL, (api) =>
-            api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
+            api
+                .get(
+                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
+                )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse)
+                .reply(200, mockOrganizationMembersResponse),
         )
         .stdout()
         .command([
             'generate:types',
-            '--output-dir', jsOutputDir,
-            '--client-id', 'client',
-            '--client-secret', 'secret',
-            '--project', 'project'
+            '--output-dir',
+            jsOutputDir,
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
         ])
         .it('correctly generates JS SDK types', (ctx) => {
             const outputDir = jsOutputDir + '/dvcVariableTypes.ts'
@@ -215,19 +218,26 @@ describe('generate types', () => {
 
     dvcTest()
         .nock(BASE_URL, (api) =>
-            api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
+            api
+                .get(
+                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
+                )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse)
+                .reply(200, mockOrganizationMembersResponse),
         )
         .stdout()
         .command([
             'generate:types',
             '--react',
-            '--output-dir', reactOutputDir,
-            '--client-id', 'client',
-            '--client-secret', 'secret',
-            '--project', 'project'
+            '--output-dir',
+            reactOutputDir,
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
         ])
         .it('correctly generates React SDK types', (ctx) => {
             const outputDir = reactOutputDir + '/dvcVariableTypes.ts'
@@ -239,52 +249,73 @@ describe('generate types', () => {
 
     dvcTest()
         .nock(BASE_URL, (api) =>
-            api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
+            api
+                .get(
+                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
+                )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse)
+                .reply(200, mockOrganizationMembersResponse),
         )
         .stdout()
         .command([
             'generate:types',
             '--react',
             '--old-repos',
-            '--output-dir', reactOutputDir,
-            '--client-id', 'client',
-            '--client-secret', 'secret',
-            '--project', 'project'
+            '--output-dir',
+            reactOutputDir,
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
         ])
-        .it('correctly generates React SDK types with old-repos flag', (ctx) => {
-            const outputDir = reactOutputDir + '/dvcVariableTypes.ts'
-            expect(fs.existsSync(outputDir)).to.be.true
-            const typesString = fs.readFileSync(outputDir, 'utf-8')
-            expect(typesString).to.contain('@devcycle/devcycle-js-sdk')
-            expect(typesString).to.contain('@devcycle/devcycle-react-sdk')
-            expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
-        })
+        .it(
+            'correctly generates React SDK types with old-repos flag',
+            (ctx) => {
+                const outputDir = reactOutputDir + '/dvcVariableTypes.ts'
+                expect(fs.existsSync(outputDir)).to.be.true
+                const typesString = fs.readFileSync(outputDir, 'utf-8')
+                expect(typesString).to.contain('@devcycle/devcycle-js-sdk')
+                expect(typesString).to.contain('@devcycle/devcycle-react-sdk')
+                expect(ctx.stdout).to.contain(
+                    `Generated new types to ${outputDir}`,
+                )
+            },
+        )
 
     dvcTest()
         .nock(BASE_URL, (api) =>
-            api.get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
+            api
+                .get(
+                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
+                )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse)
+                .reply(200, mockOrganizationMembersResponse),
         )
         .stdout()
         .command([
             'generate:types',
-            '--output-dir', jsOutputDir,
-            '--client-id', 'client',
-            '--client-secret', 'secret',
-            '--project', 'project',
+            '--output-dir',
+            jsOutputDir,
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
             '--include-descriptions',
-            '--inline-comments'
+            '--inline-comments',
         ])
         .it('correctly generates JS SDK types with inlined comments', (ctx) => {
             const outputDir = jsOutputDir + '/dvcVariableTypes.ts'
             expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
             expect(fs.existsSync(outputDir)).to.be.true
             const typesString = fs.readFileSync(outputDir, 'utf-8')
-            expect(typesString).to.equal(expectedTypesStringInlinedWithDescriptions)
+            expect(typesString).to.equal(
+                expectedTypesStringInlinedWithDescriptions,
+            )
         })
 })

@@ -21,7 +21,7 @@ export default class DVCHelp extends Help {
                     if (this.config.topicSeparator !== ':') {
                         c.name = c.name.replace(
                             /:/g,
-                            this.config.topicSeparator
+                            this.config.topicSeparator,
                         )
                     }
                     return [
@@ -30,17 +30,21 @@ export default class DVCHelp extends Help {
                             this.render(c.description.split('\n')[0]),
                     ]
                 }),
-                listRenderOptions
+                listRenderOptions,
             )
 
         const [configurationTopics, featureManagementTopics] = partition(
             topics,
-            (topic) => this.ConfigurationCommands.includes(topic.name)
+            (topic) => this.ConfigurationCommands.includes(topic.name),
         )
         return this.section(
             'TOPICS',
-            this.section('Configuration', renderList(configurationTopics)) + '\n\n' +
-            this.section('Feature Management', renderList(featureManagementTopics))
+            this.section('Configuration', renderList(configurationTopics)) +
+                '\n\n' +
+                this.section(
+                    'Feature Management',
+                    renderList(featureManagementTopics),
+                ),
         )
     }
 }

@@ -8,22 +8,23 @@ export const deleteAllProjectOverrides = async (
     token: string,
     project_id: string,
 ) => {
-    return apiClient.delete(`${BASE_URL}/overrides/current`, undefined,
-        {
-            headers: buildHeaders(token),
-            params: {
-                project: project_id,
-            },
-        })
+    return apiClient.delete(`${BASE_URL}/overrides/current`, undefined, {
+        headers: buildHeaders(token),
+        params: {
+            project: project_id,
+        },
+    })
 }
 
 export const deleteFeatureOverrides = async (
     token: string,
     project_id: string,
     feature: string,
-    environment: string
+    environment: string,
 ) => {
-    return apiClient.delete(`${BASE_URL}/features/:feature/overrides/current`, undefined,
+    return apiClient.delete(
+        `${BASE_URL}/features/:feature/overrides/current`,
+        undefined,
         {
             headers: buildHeaders(token),
             params: {
@@ -33,7 +34,8 @@ export const deleteFeatureOverrides = async (
             queries: {
                 environment: environment,
             },
-        })
+        },
+    )
 }
 
 export const updateOverride = async (
@@ -42,22 +44,26 @@ export const updateOverride = async (
     feature_id: string,
     params: UpdateOverrideParams,
 ): Promise<Override> => {
-    return await apiClient.put(`${BASE_URL}/features/:feature/overrides/current`, params, {
-        headers: buildHeaders(token),
-        params: {
-            project: project_id,
-            feature: feature_id,
-            environment: params.environment,
-            variation: params.variation
-        }
-    })
+    return await apiClient.put(
+        `${BASE_URL}/features/:feature/overrides/current`,
+        params,
+        {
+            headers: buildHeaders(token),
+            params: {
+                project: project_id,
+                feature: feature_id,
+                environment: params.environment,
+                variation: params.variation,
+            },
+        },
+    )
 }
 
 export const fetchFeatureOverridesForUser = async (
     token: string,
     project_id: string,
     feature_id: string,
-    environment_id?: string
+    environment_id?: string,
 ) => {
     const endpoint = '/features/:feature/overrides/current'
     const queries = environment_id ? { environment: environment_id } : {}
@@ -67,7 +73,7 @@ export const fetchFeatureOverridesForUser = async (
             project: project_id,
             feature: feature_id,
         },
-        queries
+        queries,
     })
 }
 

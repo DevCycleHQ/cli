@@ -18,27 +18,27 @@ const EMOJI = {
     add: '🟢',
     remove: '🔴',
     notice: '⚠️',
-    cleanup: '🧹'
+    cleanup: '🧹',
 }
 
 type MatchesByType = {
-    add: Record<string, VariableDiffMatch[]>,
-    remove: Record<string, VariableDiffMatch[]>,
-    addUnknown: Record<string, VariableDiffMatch[]>,
+    add: Record<string, VariableDiffMatch[]>
+    remove: Record<string, VariableDiffMatch[]>
+    addUnknown: Record<string, VariableDiffMatch[]>
     removeUnknown: Record<string, VariableDiffMatch[]>
 }
 
 type MatchEnriched = {
-    variable: Variable | null,
+    variable: Variable | null
     matches: VariableDiffMatch[]
 }
 
 type MatchesByTypeEnriched = {
     add: Record<string, MatchEnriched>
-    remove: Record<string, MatchEnriched>,
-    notFoundAdd: Record<string, MatchEnriched>,
-    notFoundRemove: Record<string, MatchEnriched>,
-    addUnknown: Record<string, MatchEnriched>,
+    remove: Record<string, MatchEnriched>
+    notFoundAdd: Record<string, MatchEnriched>
+    notFoundRemove: Record<string, MatchEnriched>
+    addUnknown: Record<string, MatchEnriched>
     removeUnknown: Record<string, MatchEnriched>
 }
 
@@ -46,45 +46,53 @@ export default class Diff extends Base {
     static hidden = false
     authSuggested = true
 
-    static description = 'Print a diff of DevCycle variable usage between two versions of your code.'
+    static description =
+        'Print a diff of DevCycle variable usage between two versions of your code.'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
         '<%= config.bin %> <%= command.id %> ' +
-        '--match-pattern js="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
+            '--match-pattern js="dvcClient\\.variable\\(\\s*["\']([^"\']*)["\']"',
     ]
 
     static flags = {
         ...Base.flags,
-        'include': Flags.string({
-            description: 'Files to include in the diff. By default all files are included. ' +
+        include: Flags.string({
+            description:
+                'Files to include in the diff. By default all files are included. ' +
                 'Accepts multiple glob patterns.',
-            multiple: true
+            multiple: true,
         }),
-        'exclude': Flags.string({
-            description: 'Files to exclude in the diff. By default all files are included. ' +
+        exclude: Flags.string({
+            description:
+                'Files to exclude in the diff. By default all files are included. ' +
                 'Accepts multiple glob patterns.',
-            multiple: true
+            multiple: true,
         }),
-        file: Flags.string({ char: 'f', description: 'File path of existing diff file to inspect.' }),
+        file: Flags.string({
+            char: 'f',
+            description: 'File path of existing diff file to inspect.',
+        }),
         'client-name': ClientNameFlag,
         'match-pattern': MatchPatternFlag,
         'var-alias': VarAliasFlag,
         'pr-link': Flags.string({
             hidden: true,
-            description: 'Link to the PR to use for formatting the line number outputs with clickable links.'
+            description:
+                'Link to the PR to use for formatting the line number outputs with clickable links.',
         }),
-        'format': Flags.string({
+        format: Flags.string({
             default: 'console',
             options: ['console', 'markdown', 'markdown-no-html'],
-            description: 'Format to use when outputting the diff results.'
+            description: 'Format to use when outputting the diff results.',
         }),
-        'show-regex': ShowRegexFlag
+        'show-regex': ShowRegexFlag,
     }
 
     static args = {
         'diff-pattern': Args.string({
             name: 'diff-pattern',
-            description: 'A "git diff"-compatible diff pattern, eg. "branch1 branch2"'
+            description:
+                'A "git diff"-compatible diff pattern, eg. "branch1 branch2"',
         }),
     }
 
@@ -103,22 +111,27 @@ export default class Diff extends Base {
         this.useMarkdown = flags.format.includes('markdown')
         this.useHTML = flags.format === 'markdown'
 
-        const parsedDiff = flags.file ? executeFileDiff(flags.file) :
-            args['diff-pattern'] ?
-                executeDiff(args['diff-pattern'], flags, codeInsightsConfig) 
-                : []
+        const parsedDiff = flags.file
+            ? executeFileDiff(flags.file)
+            : args['diff-pattern']
+              ? executeDiff(args['diff-pattern'], flags, codeInsightsConfig)
+              : []
 
         const matchesBySdk = parseFiles(parsedDiff, {
             clientNames: getClientNames(flags, this.repoConfig),
             matchPatterns: getMatchPatterns(flags, this.repoConfig),
-            printPatterns: showRegex(flags)
+            printPatterns: showRegex(flags),
         })
 
         const variableAliases = getVariableAliases(flags, this.repoConfig)
 
-        const matchesByType = this.getMatchesByType(matchesBySdk, variableAliases)
+        const matchesByType = this.getMatchesByType(
+            matchesBySdk,
+            variableAliases,
+        )
 
-        const matchesByTypeEnriched = await this.fetchVariableData(matchesByType)
+        const matchesByTypeEnriched =
+            await this.fetchVariableData(matchesByType)
 
         this.formatOutput(matchesByTypeEnriched, flags['pr-link'])
     }
@@ -129,13 +142,13 @@ export default class Diff extends Base {
 
     private getMatchesByType(
         matchesBySdk: Record<string, VariableDiffMatch[]>,
-        aliasMap: Record<string, string>
+        aliasMap: Record<string, string>,
     ): MatchesByType {
         const matchesByType: MatchesByType = {
             add: {},
             remove: {},
             addUnknown: {},
-            removeUnknown: {}
+            removeUnknown: {},
         }
         Object.values(matchesBySdk).forEach((matches) => {
             matches.forEach((m) => {
@@ -152,26 +165,28 @@ export default class Diff extends Base {
                 matchesByType[mode][match.name].push(match)
                 matchesByType[mode][match.name] = uniqBy(
                     matchesByType[mode][match.name],
-                    (m) => `${m.fileName}:${m.line}`
+                    (m) => `${m.fileName}:${m.line}`,
                 )
             })
         })
         return matchesByType
     }
 
-    private async fetchVariableData(matchesByType: MatchesByType): Promise<MatchesByTypeEnriched> {
+    private async fetchVariableData(
+        matchesByType: MatchesByType,
+    ): Promise<MatchesByTypeEnriched> {
         const categories: MatchesByTypeEnriched = {
             add: {},
             remove: {},
             notFoundAdd: {},
             notFoundRemove: {},
             addUnknown: {},
-            removeUnknown: {}
+            removeUnknown: {},
         }
 
         const fetchAndCategorize = async (
             matches: Record<string, VariableDiffMatch[]>,
-            category: 'add' | 'remove'
+            category: 'add' | 'remove',
         ) => {
             const keys = Object.keys(matches)
             const variablesByKey: Record<string, Variable | null> = {}
@@ -179,20 +194,28 @@ export default class Diff extends Base {
             if (this.useApi()) {
                 const token = this.authToken
                 const projectKey = this.projectKey
-                await Promise.all(keys.map(async (key: string) => {
-                    variablesByKey[key] = await fetchVariableByKey(token, projectKey, key)
-                }))
+                await Promise.all(
+                    keys.map(async (key: string) => {
+                        variablesByKey[key] = await fetchVariableByKey(
+                            token,
+                            projectKey,
+                            key,
+                        )
+                    }),
+                )
             }
 
             for (const key of Object.keys(matches)) {
                 categories[category][key] = {
                     variable: variablesByKey[key],
-                    matches: matches[key]
+                    matches: matches[key],
                 }
                 if (!variablesByKey[key] && this.useApi()) {
-                    categories[category === 'add' ? 'notFoundAdd' : 'notFoundRemove'][key] = {
+                    categories[
+                        category === 'add' ? 'notFoundAdd' : 'notFoundRemove'
+                    ][key] = {
                         variable: null,
-                        matches: matches[key]
+                        matches: matches[key],
                     }
                 }
             }
@@ -200,7 +223,7 @@ export default class Diff extends Base {
 
         await Promise.all([
             fetchAndCategorize(matchesByType.add, 'add'),
-            fetchAndCategorize(matchesByType.remove, 'remove')
+            fetchAndCategorize(matchesByType.remove, 'remove'),
         ])
 
         const enrichedAddUnknown: Record<string, MatchEnriched> = {}
@@ -209,14 +232,16 @@ export default class Diff extends Base {
         for (const [key, matches] of Object.entries(matchesByType.addUnknown)) {
             enrichedAddUnknown[key] = {
                 variable: null,
-                matches
+                matches,
             }
         }
 
-        for (const [key, matches] of Object.entries(matchesByType.removeUnknown)) {
+        for (const [key, matches] of Object.entries(
+            matchesByType.removeUnknown,
+        )) {
             enrichedRemoveUnknown[key] = {
                 variable: null,
-                matches
+                matches,
             }
         }
 
@@ -226,15 +251,27 @@ export default class Diff extends Base {
         return categories
     }
 
-    private formatOutput(matchesByTypeEnriched: MatchesByTypeEnriched, prLink?: string) {
-        const additions = { ...matchesByTypeEnriched.add, ...matchesByTypeEnriched.addUnknown }
-        const deletions = { ...matchesByTypeEnriched.remove, ...matchesByTypeEnriched.removeUnknown }
+    private formatOutput(
+        matchesByTypeEnriched: MatchesByTypeEnriched,
+        prLink?: string,
+    ) {
+        const additions = {
+            ...matchesByTypeEnriched.add,
+            ...matchesByTypeEnriched.addUnknown,
+        }
+        const deletions = {
+            ...matchesByTypeEnriched.remove,
+            ...matchesByTypeEnriched.removeUnknown,
+        }
         const totalAdditions = Object.keys(additions).length
         const totalDeletions = Object.keys(deletions).length
-        const totalNotices = Object.keys(matchesByTypeEnriched.notFoundAdd).length
-            + Object.keys(matchesByTypeEnriched.addUnknown).length
-            + Object.keys(matchesByTypeEnriched.removeUnknown).length
-        const totalCleanup = Object.keys(matchesByTypeEnriched.notFoundRemove).length
+        const totalNotices =
+            Object.keys(matchesByTypeEnriched.notFoundAdd).length +
+            Object.keys(matchesByTypeEnriched.addUnknown).length +
+            Object.keys(matchesByTypeEnriched.removeUnknown).length
+        const totalCleanup = Object.keys(
+            matchesByTypeEnriched.notFoundRemove,
+        ).length
 
         const headerPrefix = this.useMarkdown ? '## ' : ''
         const headerText = 'DevCycle Variable Changes:\n'
@@ -244,26 +281,36 @@ export default class Diff extends Base {
         if (this.useHTML) {
             const lightTogglebot = 'togglebot.svg#gh-light-mode-only'
             const darkTogglebot = 'togglebot-white.svg#gh-dark-mode-only'
-            const buildIcon = (icon: string) => (
+            const buildIcon = (icon: string) =>
                 `<img src="https://github.com/DevCycleHQ/cli/raw/main/assets/${icon}" height="31px" align="center"/>`
-            )
             headerIcon = `${buildIcon(lightTogglebot)}${buildIcon(darkTogglebot)} `
         }
 
-        const totalChanges = totalAdditions + totalDeletions + totalNotices + totalCleanup
+        const totalChanges =
+            totalAdditions + totalDeletions + totalNotices + totalCleanup
         if (totalChanges === 0) {
-            this.log(`\n${subHeaderPrefix}${headerIcon}No DevCycle Variables Changed\n`)
+            this.log(
+                `\n${subHeaderPrefix}${headerIcon}No DevCycle Variables Changed\n`,
+            )
             return
         }
         this.log(`\n${headerPrefix}${headerIcon}${headerText}`)
 
         if (totalNotices) {
-            this.log(`${EMOJI.notice}   ${totalNotices} Variable${totalNotices === 1 ? '' : 's'} With Notices`)
+            this.log(
+                `${EMOJI.notice}   ${totalNotices} Variable${totalNotices === 1 ? '' : 's'} With Notices`,
+            )
         }
-        this.log(`${EMOJI.add}  ${totalAdditions} Variable${totalAdditions === 1 ? '' : 's'} Added`)
-        this.log(`${EMOJI.remove}  ${totalDeletions} Variable${totalDeletions === 1 ? '' : 's'} Removed`)
+        this.log(
+            `${EMOJI.add}  ${totalAdditions} Variable${totalAdditions === 1 ? '' : 's'} Added`,
+        )
+        this.log(
+            `${EMOJI.remove}  ${totalDeletions} Variable${totalDeletions === 1 ? '' : 's'} Removed`,
+        )
         if (totalCleanup) {
-            this.log(`${EMOJI.cleanup}  ${totalCleanup} Variable${totalCleanup === 1 ? '' : 's'} Cleaned up`)
+            this.log(
+                `${EMOJI.cleanup}  ${totalCleanup} Variable${totalCleanup === 1 ? '' : 's'} Cleaned up`,
+            )
         }
 
         if (totalNotices) {
@@ -283,61 +330,83 @@ export default class Diff extends Base {
 
         if (totalCleanup) {
             this.log(`\n${subHeaderPrefix}${EMOJI.cleanup} Cleaned Up\n`)
-            this.log('The following variables that do not exist in DevCycle were cleaned up:\n')
+            this.log(
+                'The following variables that do not exist in DevCycle were cleaned up:\n',
+            )
             this.logCleanup(matchesByTypeEnriched)
         }
     }
 
-    private logNotices(
-        matchesByTypeEnriched: MatchesByTypeEnriched
-    ) {
+    private logNotices(matchesByTypeEnriched: MatchesByTypeEnriched) {
         let offset = 0
-        Object.entries(matchesByTypeEnriched.notFoundAdd).forEach(([variableName], idx) => {
-            this.log(`  ${idx + 1}. Variable "${variableName}" does not exist on DevCycle`)
-            offset = idx + 1
-        })
+        Object.entries(matchesByTypeEnriched.notFoundAdd).forEach(
+            ([variableName], idx) => {
+                this.log(
+                    `  ${idx + 1}. Variable "${variableName}" does not exist on DevCycle`,
+                )
+                offset = idx + 1
+            },
+        )
 
-        Object.entries({ ...matchesByTypeEnriched.addUnknown, ...matchesByTypeEnriched.removeUnknown })
-            .forEach(([variableName], idx) => {
-                this.log(`  ${offset + idx + 1}. ` +
-                    `Variable "${variableName}" could not be identified. Try adding an alias.`)
-            })
+        Object.entries({
+            ...matchesByTypeEnriched.addUnknown,
+            ...matchesByTypeEnriched.removeUnknown,
+        }).forEach(([variableName], idx) => {
+            this.log(
+                `  ${offset + idx + 1}. ` +
+                    `Variable "${variableName}" could not be identified. Try adding an alias.`,
+            )
+        })
     }
 
-    private logCleanup(
-        matchesByTypeEnriched: MatchesByTypeEnriched
-    ) {
-        Object.entries(matchesByTypeEnriched.notFoundRemove).forEach(([variableName], idx) => {
-            this.log(`  ${idx + 1}. ${variableName}`)
-        })
+    private logCleanup(matchesByTypeEnriched: MatchesByTypeEnriched) {
+        Object.entries(matchesByTypeEnriched.notFoundRemove).forEach(
+            ([variableName], idx) => {
+                this.log(`  ${idx + 1}. ${variableName}`)
+            },
+        )
     }
 
     private logMatches(
         matchesByVariable: Record<string, MatchEnriched>,
         mode: 'add' | 'remove',
-        prLink?: string
+        prLink?: string,
     ) {
-        Object.entries(matchesByVariable).forEach(([variableName, enriched], idx) => {
-            const matches = enriched.matches
-            const notFound = this.useApi() && !enriched.variable
-            const isUnknown = enriched.matches.some((match) => match.isUnknown)
-            const hasNotice = (mode === 'add' && (notFound || isUnknown)) || mode === 'remove' && isUnknown
-            const hasCleanup = mode === 'remove' && notFound
+        Object.entries(matchesByVariable).forEach(
+            ([variableName, enriched], idx) => {
+                const matches = enriched.matches
+                const notFound = this.useApi() && !enriched.variable
+                const isUnknown = enriched.matches.some(
+                    (match) => match.isUnknown,
+                )
+                const hasNotice =
+                    (mode === 'add' && (notFound || isUnknown)) ||
+                    (mode === 'remove' && isUnknown)
+                const hasCleanup = mode === 'remove' && notFound
 
-            const formattedName = this.useMarkdown ? `**${variableName}**` : variableName
+                const formattedName = this.useMarkdown
+                    ? `**${variableName}**`
+                    : variableName
 
-            this.log(`  ${idx + 1}. ${formattedName}` +
-                `${hasNotice ? ` ${EMOJI.notice}` : ''}${hasCleanup ? ` ${EMOJI.cleanup}` : ''}`)
+                this.log(
+                    `  ${idx + 1}. ${formattedName}` +
+                        `${hasNotice ? ` ${EMOJI.notice}` : ''}${hasCleanup ? ` ${EMOJI.cleanup}` : ''}`,
+                )
 
-            if (enriched.variable?.type) {
-                this.log(`\t   Type: ${enriched.variable.type}`)
-            }
+                if (enriched.variable?.type) {
+                    this.log(`\t   Type: ${enriched.variable.type}`)
+                }
 
-            this.logLocations(matches, mode, prLink)
-        })
+                this.logLocations(matches, mode, prLink)
+            },
+        )
     }
 
-    private logLocations(matches: VariableDiffMatch[], mode: 'add' | 'remove', prLink?: string) {
+    private logLocations(
+        matches: VariableDiffMatch[],
+        mode: 'add' | 'remove',
+        prLink?: string,
+    ) {
         const formatPrLink = (fileName: string, line: number) => {
             const displayName = `${fileName}:L${line}`
             let link = ''
@@ -345,7 +414,9 @@ export default class Diff extends Base {
                 link = `${prLink}#L${fileName}${mode === 'add' ? 'T' : 'F'}${line}`
             } else if (prLink?.includes('gitlab')) {
                 // TODO: include line number in link if possible
-                const sha1Hash = createHash('sha1').update(fileName).digest('hex')
+                const sha1Hash = createHash('sha1')
+                    .update(fileName)
+                    .digest('hex')
                 link = `${prLink}/diffs#diff-content-${sha1Hash}`
             } else {
                 link = `${prLink}/files#diff-${sha256(fileName)}${mode === 'add' ? 'R' : 'L'}${line}`

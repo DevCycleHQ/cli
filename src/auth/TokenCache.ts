@@ -11,14 +11,20 @@ export class TokenCache {
     }
 
     private hashCredentials(clientId: string, clientSecret: string): string {
-        return crypto.createHash('md5').update(clientId + clientSecret).digest('hex')
+        return crypto
+            .createHash('md5')
+            .update(clientId + clientSecret)
+            .digest('hex')
     }
 
     public set(clientId: string, clientSecret: string, token: string): void {
         try {
             const identifier = this.hashCredentials(clientId, clientSecret)
             const expiry = getTokenExpiry(token)
-            fs.writeFileSync(this.filePath, JSON.stringify({ identifier, token, expiry }))
+            fs.writeFileSync(
+                this.filePath,
+                JSON.stringify({ identifier, token, expiry }),
+            )
         } catch (err) {
             // don't throw error
         }

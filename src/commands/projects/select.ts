@@ -18,7 +18,9 @@ export default class SelectProject extends AuthCommand {
         }
         const projects = await fetchProjects(this.authToken)
         if (flags.headless && !flags.project) {
-            return this.writer.showResults(projects.map((project) => project.key))
+            return this.writer.showResults(
+                projects.map((project) => project.key),
+            )
         }
         const selectedProject = await this.getSelectedProject(projects)
         await this.saveProject(selectedProject)

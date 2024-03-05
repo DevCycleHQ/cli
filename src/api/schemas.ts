@@ -12,10 +12,14 @@ export type Audience = z.infer<typeof schemas.Audience>
 export type Target = z.infer<typeof schemas.Target>
 export type Override = z.infer<typeof schemas.Override>
 
-export type CreateEnvironmentParams = z.infer<typeof schemas.CreateEnvironmentDto>
+export type CreateEnvironmentParams = z.infer<
+    typeof schemas.CreateEnvironmentDto
+>
 export const CreateEnvironmentDto = schemas.CreateEnvironmentDto
 
-export type UpdateEnvironmentParams = z.infer<typeof schemas.UpdateEnvironmentDto>
+export type UpdateEnvironmentParams = z.infer<
+    typeof schemas.UpdateEnvironmentDto
+>
 export const UpdateEnvironmentDto = schemas.UpdateEnvironmentDto
 
 export type CreateFeatureParams = z.infer<typeof schemas.CreateFeatureDto>
@@ -35,14 +39,20 @@ export const CreateVariationDto = schemas.FeatureVariationDto
 
 export type UpdateVariationParams = Partial<CreateVariationParams>
 
-export type UpdateFeatureConfigDto = z.infer<typeof schemas.UpdateFeatureConfigDto>
+export type UpdateFeatureConfigDto = z.infer<
+    typeof schemas.UpdateFeatureConfigDto
+>
 export const UpdateFeatureConfigDto = schemas.UpdateFeatureConfigDto
 
 export type UpdateTargetParams = z.infer<typeof schemas.UpdateTargetDto>
 export const UpdateTargetDto = schemas.UpdateTargetDto
 
-export type AudienceOperatorWithAudienceMatchFilter = z.infer<typeof schemas.AudienceOperatorWithAudienceMatchFilter>
-export type Filters = z.infer<typeof schemas.AudienceOperatorWithAudienceMatchFilter.shape.filters>
+export type AudienceOperatorWithAudienceMatchFilter = z.infer<
+    typeof schemas.AudienceOperatorWithAudienceMatchFilter
+>
+export type Filters = z.infer<
+    typeof schemas.AudienceOperatorWithAudienceMatchFilter.shape.filters
+>
 
 export type AllFilter = z.infer<typeof schemas.AllFilter>
 export const AllFilterSchema = schemas.AllFilter
@@ -56,7 +66,9 @@ export const UserCountryFilterSchema = schemas.UserCountryFilter
 export type UserAppVersionFilter = z.infer<typeof schemas.UserAppVersionFilter>
 export const UserAppVersionFilterSchema = schemas.UserAppVersionFilter
 
-export type UserPlatformVersionFilter = z.infer<typeof schemas.UserPlatformVersionFilter>
+export type UserPlatformVersionFilter = z.infer<
+    typeof schemas.UserPlatformVersionFilter
+>
 export const UserPlatformVersionFilterSchema = schemas.UserPlatformVersionFilter
 
 export type UserCustomFilter = z.infer<typeof schemas.UserCustomFilter>
@@ -69,12 +81,12 @@ export type UpdateOverrideParams = z.infer<typeof schemas.UpdateUserOverrideDto>
 export const UpdateOverrideDto = schemas.UpdateUserOverrideDto
 
 export type Filter =
-  | AllFilter
-  | UserFilter
-  | UserCountryFilter
-  | UserAppVersionFilter
-  | UserPlatformVersionFilter
-  | UserCustomFilter
-  | AudienceMatchFilter
+    | AllFilter
+    | UserFilter
+    | UserCountryFilter
+    | UserAppVersionFilter
+    | UserPlatformVersionFilter
+    | UserCustomFilter
+    | AudienceMatchFilter
 
 export type UserOverride = z.infer<typeof schemas.UserOverride>

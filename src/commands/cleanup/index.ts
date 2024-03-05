@@ -13,13 +13,14 @@ import {
     variablePromptNoApi,
     VariablePromptResult,
     variableTypePrompt,
-    variableValueStringPrompt
+    variableValueStringPrompt,
 } from '../../ui/prompts'
 
 export default class Cleanup extends Base {
     static hidden = false
 
-    static description = 'Replace a DevCycle variable with a static value in the current version of your code. ' +
+    static description =
+        'Replace a DevCycle variable with a static value in the current version of your code. ' +
         'Currently only JavaScript is supported.'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
@@ -30,38 +31,42 @@ export default class Cleanup extends Base {
     static args = {
         key: Args.string({
             name: 'key',
-            description: 'Key of variable to replace.'
-        })
+            description: 'Key of variable to replace.',
+        }),
     }
 
     static flags = {
         ...Base.flags,
-        'value': Flags.string({
-            description: 'Value to use in place of variable.'
+        value: Flags.string({
+            description: 'Value to use in place of variable.',
         }),
-        'type': Flags.string({
-            description: 'The type of the value that will be replacing the variable. ' +
+        type: Flags.string({
+            description:
+                'The type of the value that will be replacing the variable. ' +
                 'Valid values include: String, Boolean, Number, JSON',
-            options: ['String', 'Boolean', 'Number', 'JSON']
+            options: ['String', 'Boolean', 'Number', 'JSON'],
         }),
-        'include': Flags.string({
-            description: 'Files to include when scanning for variables to cleanup. ' +
+        include: Flags.string({
+            description:
+                'Files to include when scanning for variables to cleanup. ' +
                 'By default all files are included. ' +
                 'Accepts multiple glob patterns.',
-            multiple: true
+            multiple: true,
         }),
-        'exclude': Flags.string({
-            description: 'Files to exclude when scanning for variables to cleanup. ' +
+        exclude: Flags.string({
+            description:
+                'Files to exclude when scanning for variables to cleanup. ' +
                 'By default all files are included. ' +
                 'Accepts multiple glob patterns.',
-            multiple: true
+            multiple: true,
         }),
-        'output': Flags.string({
-            description: 'Where the refactored code will be output. By default it overwrites the source file.',
+        output: Flags.string({
+            description:
+                'Where the refactored code will be output. By default it overwrites the source file.',
             options: ['console', 'file'],
-            default: 'file'
+            default: 'file',
         }),
-        'var-alias': VarAliasFlag
+        'var-alias': VarAliasFlag,
     }
 
     public async run(): Promise<void> {
@@ -70,23 +75,26 @@ export default class Cleanup extends Base {
         const apiAuth =
             this.authToken && this.projectKey
                 ? {
-                    token: this.authToken,
-                    projectKey: this.projectKey,
-                }
+                      token: this.authToken,
+                      projectKey: this.projectKey,
+                  }
                 : undefined
 
         const variable = {
             key: args.key,
             value: flags.value,
-            type: flags.type
+            type: flags.type,
         } as Variable
 
         if (!variable.key) {
             if (apiAuth) {
                 try {
-                    const input = await inquirer.prompt<VariablePromptResult>([variablePrompt], apiAuth)
+                    const input = await inquirer.prompt<VariablePromptResult>(
+                        [variablePrompt],
+                        apiAuth,
+                    )
                     variable.key = input.variable.key
-                } catch { } // eslint-disable-line no-empty
+                } catch {} // eslint-disable-line no-empty
             }
             if (!variable.key) {
                 const input = await inquirer.prompt([variablePromptNoApi])
@@ -99,35 +107,48 @@ export default class Cleanup extends Base {
         }
         if (!variable.value) {
             const input = await inquirer.prompt([
-                variableValueStringPrompt({ value: variable, type: 'cleanupVariable' })
+                variableValueStringPrompt({
+                    value: variable,
+                    type: 'cleanupVariable',
+                }),
             ])
             variable.value = input[variable.key]
         }
 
         const includeFile = (filepath: string) => {
-            const includeGlobs = flags['include'] || codeInsightsConfig.includeFiles
+            const includeGlobs =
+                flags['include'] || codeInsightsConfig.includeFiles
             return includeGlobs
                 ? includeGlobs.some((glob) =>
-                    minimatch(filepath, minimatch.escape(glob), { matchBase: true }),
-                )
+                      minimatch(filepath, minimatch.escape(glob), {
+                          matchBase: true,
+                      }),
+                  )
                 : true
         }
 
         const excludeFile = (filepath: string) => {
-            const excludeGlobs = flags['exclude'] || codeInsightsConfig.excludeFiles
+            const excludeGlobs =
+                flags['exclude'] || codeInsightsConfig.excludeFiles
             return excludeGlobs
                 ? excludeGlobs.some((glob) =>
-                    minimatch(filepath, minimatch.escape(glob), { matchBase: true }),
-                )
+                      minimatch(filepath, minimatch.escape(glob), {
+                          matchBase: true,
+                      }),
+                  )
                 : false
         }
 
         const aliases = new Set()
-        Object.entries(getVariableAliases(flags, this.repoConfig)).forEach(([alias, variableKey]) => {
-            if (variableKey === variable.key) aliases.add(alias)
-        })
+        Object.entries(getVariableAliases(flags, this.repoConfig)).forEach(
+            ([alias, variableKey]) => {
+                if (variableKey === variable.key) aliases.add(alias)
+            },
+        )
 
-        const files = lsFiles().filter((filepath) => includeFile(filepath) && !excludeFile(filepath))
+        const files = lsFiles().filter(
+            (filepath) => includeFile(filepath) && !excludeFile(filepath),
+        )
 
         if (!files.length) {
             this.warn('No files found to process.')
@@ -137,14 +158,18 @@ export default class Cleanup extends Base {
         files.forEach((filepath) => {
             const options = {
                 output: flags.output || 'file',
-                aliases
+                aliases,
             } as EngineOptions
 
             const fileExtension = filepath?.split('.').pop() ?? ''
             if (!ENGINES[fileExtension]) return
             ENGINES[fileExtension].forEach((RefactorEngine) => {
                 try {
-                    const engine = new RefactorEngine(filepath, variable, options)
+                    const engine = new RefactorEngine(
+                        filepath,
+                        variable,
+                        options,
+                    )
                     engine.refactor()
                 } catch (err: any) {
                     console.warn(chalk.yellow(`Error refactoring ${filepath}`))

@@ -1,10 +1,17 @@
 import inquirer from 'inquirer'
 
 import { Flags } from '@oclif/core'
-import { deleteAllProjectOverrides, deleteFeatureOverrides, fetchProjectOverridesForUser } from '../../api/overrides'
+import {
+    deleteAllProjectOverrides,
+    deleteFeatureOverrides,
+    fetchProjectOverridesForUser,
+} from '../../api/overrides'
 import Base from '../base'
 import { EnvironmentPromptResult, FeaturePromptResult } from '../../ui/prompts'
-import { overridesEnvironmentPrompt, overridesFeaturePrompt } from '../../ui/prompts/overridePrompts'
+import {
+    overridesEnvironmentPrompt,
+    overridesFeaturePrompt,
+} from '../../ui/prompts/overridePrompts'
 import { fetchUserProfile } from '../../api/userProfile'
 
 export default class DeleteOverrides extends Base {
@@ -24,17 +31,18 @@ export default class DeleteOverrides extends Base {
         }),
         feature: Flags.string({
             name: 'feature',
-            description: 'The key or id of the Feature to clear the Override for',
+            description:
+                'The key or id of the Feature to clear the Override for',
         }),
         environment: Flags.string({
             name: 'environment',
-            description: 'The key or id of the Environment to clear the Override for',
+            description:
+                'The key or id of the Environment to clear the Override for',
         }),
         ...Base.flags,
     }
 
     public async run(): Promise<void> {
-
         const { flags } = await this.parse(DeleteOverrides)
         const { headless, project, all } = flags
 
@@ -45,62 +53,86 @@ export default class DeleteOverrides extends Base {
 
         const identity = await fetchUserProfile(this.authToken, this.projectKey)
         if (!identity.dvcUserId) {
-            this.writer.showError('You must set your DevCycle Identity before you can update an Override')
-            this.writer.infoMessageWithCommand('To set up your SDK Associated User ID, use', 'dvc identity update')
+            this.writer.showError(
+                'You must set your DevCycle Identity before you can update an Override',
+            )
+            this.writer.infoMessageWithCommand(
+                'To set up your SDK Associated User ID, use',
+                'dvc identity update',
+            )
             return
         }
 
-        const projectOverrides = await fetchProjectOverridesForUser(this.authToken, this.projectKey)
+        const projectOverrides = await fetchProjectOverridesForUser(
+            this.authToken,
+            this.projectKey,
+        )
 
         if (all) {
             if (!headless) {
-                const { confirmClear } = await inquirer.prompt([{
-                    name: 'confirmClear',
-                    message: `Are you sure you want to clear ALL Overrides for project: ${this.projectKey}?`,
-                    type: 'confirm'
-                }])
+                const { confirmClear } = await inquirer.prompt([
+                    {
+                        name: 'confirmClear',
+                        message: `Are you sure you want to clear ALL Overrides for project: ${this.projectKey}?`,
+                        type: 'confirm',
+                    },
+                ])
                 if (!confirmClear) {
-                    this.writer.warningMessage(`No Overrides cleared for project: ${this.projectKey}`)
+                    this.writer.warningMessage(
+                        `No Overrides cleared for project: ${this.projectKey}`,
+                    )
                     return
                 }
             }
 
             await deleteAllProjectOverrides(this.authToken, this.projectKey)
             this.writer.successMessage(
-                `Successfully cleared all overrides for project: ${this.projectKey}`
+                `Successfully cleared all overrides for project: ${this.projectKey}`,
             )
             return
         }
 
         if (projectOverrides.length === 0) {
-            this.writer.showError(`No Overrides found for project: ${this.projectKey}`)
-            this.writer.infoMessageWithCommand('To set up Overrides, use', 'dvc overrides update')
+            this.writer.showError(
+                `No Overrides found for project: ${this.projectKey}`,
+            )
+            this.writer.infoMessageWithCommand(
+                'To set up Overrides, use',
+                'dvc overrides update',
+            )
             return
         }
 
         if (!featureKey && !headless) {
-            const featurePromptResult = await inquirer.prompt<FeaturePromptResult>([overridesFeaturePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const featurePromptResult =
+                await inquirer.prompt<FeaturePromptResult>(
+                    [overridesFeaturePrompt],
+                    {
+                        token: this.authToken,
+                        projectKey: this.projectKey,
+                    },
+                )
             featureKey = featurePromptResult.feature.key
             feature = featurePromptResult.feature
         }
 
         if (!environmentKey && !headless) {
-            const { environment: environmentPromptResult } = await inquirer.prompt<EnvironmentPromptResult>(
-                [overridesEnvironmentPrompt], {
-                    token: this.authToken,
-                    projectKey: this.projectKey,
-                    featureKey: featureKey
-                })
+            const { environment: environmentPromptResult } =
+                await inquirer.prompt<EnvironmentPromptResult>(
+                    [overridesEnvironmentPrompt],
+                    {
+                        token: this.authToken,
+                        projectKey: this.projectKey,
+                        featureKey: featureKey,
+                    },
+                )
             environmentKey = environmentPromptResult._id
             environment = environmentPromptResult
         }
 
         if (!featureKey || !environmentKey) {
             this.writer.showError(
-                'Both the \'--feature\' and \'--environment\' flags or the \'--all\' flag must be provided to proceed.'
+                "Both the '--feature' and '--environment' flags or the '--all' flag must be provided to proceed.",
             )
             return
         }
@@ -109,11 +141,11 @@ export default class DeleteOverrides extends Base {
             this.authToken,
             this.projectKey,
             featureKey,
-            environmentKey
+            environmentKey,
         )
         this.writer.successMessage(
-            `Successfully cleared all overrides for the Feature '${feature?.name}'`
-            + ` and Environment '${environment?.name}'`
+            `Successfully cleared all overrides for the Feature '${feature?.name}'` +
+                ` and Environment '${environment?.name}'`,
         )
     }
 }

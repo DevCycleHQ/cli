@@ -13,11 +13,12 @@ export const setDVCReferrer = (
     caller = 'cli',
 ): void => {
     axiosClient.defaults.headers.common['dvc-referrer'] = 'cli'
-    axiosClient.defaults.headers.common['dvc-referrer-metadata'] = JSON.stringify({
-        command,
-        version,
-        caller,
-    })
+    axiosClient.defaults.headers.common['dvc-referrer-metadata'] =
+        JSON.stringify({
+            command,
+            version,
+            caller,
+        })
 }
 
 axiosClient.interceptors.response.use(
@@ -26,7 +27,9 @@ axiosClient.interceptors.response.use(
     },
     (error: AxiosError) => {
         if (error.response?.status === 401) {
-            console.info('Authorization Error: Please login using "dvc login again".')
+            console.info(
+                'Authorization Error: Please login using "dvc login again".',
+            )
         } else {
             const responseData = error.response?.data as Record<string, any>
             console.info('DevCycle Error:', responseData?.message)
@@ -47,27 +50,29 @@ export const errorMap = (issue: ZodIssueOptionalMessage, ctx: ErrorMapCtx) => {
         case ZodIssueCode.too_small:
             return {
                 message:
-                issue.type === 'string' ?
-                    `${issue.path.join('.')} length must be >= ${issue.minimum} but got ${ctx.data}`
-                    : `${issue.path.join('.')} must be >= ${issue.minimum} but got ${ctx.data}`,
+                    issue.type === 'string'
+                        ? `${issue.path.join('.')} length must be >= ${issue.minimum} but got ${ctx.data}`
+                        : `${issue.path.join('.')} must be >= ${issue.minimum} but got ${ctx.data}`,
             }
         case ZodIssueCode.too_big:
             return {
-                message: 
-                issue.type === 'string' ?
-                    `${issue.path.join('.')} length must be <= ${issue.maximum} but got ${ctx.data}` 
-                    : `${issue.path.join('.')} must be <= ${issue.maximum} but got ${ctx.data}`,
+                message:
+                    issue.type === 'string'
+                        ? `${issue.path.join('.')} length must be <= ${issue.maximum} but got ${ctx.data}`
+                        : `${issue.path.join('.')} must be <= ${issue.maximum} but got ${ctx.data}`,
             }
         case ZodIssueCode.invalid_string:
             const regexError = `format of ${issue.path.join('.')} is invalid.`
             const invalidTypeError = `${issue.path.join('.')} must be a valid ${issue.validation}, but got ${ctx.data}`
             const noValidationError = `Invalid value: ${issue.path.join('.')}. ${issue.message || ''}`
-            
+
             return {
-                message: issue.validation === 'regex' ? regexError 
-                    : issue.validation ? 
-                        invalidTypeError 
-                        : noValidationError,
+                message:
+                    issue.validation === 'regex'
+                        ? regexError
+                        : issue.validation
+                          ? invalidTypeError
+                          : noValidationError,
             }
         case ZodIssueCode.invalid_enum_value:
             return {
@@ -78,5 +83,8 @@ export const errorMap = (issue: ZodIssueOptionalMessage, ctx: ErrorMapCtx) => {
     }
 }
 
-export const apiClient = createApiClient(BASE_URL, { axiosInstance: axiosClient, validate: 'request' })
+export const apiClient = createApiClient(BASE_URL, {
+    axiosInstance: axiosClient,
+    validate: 'request',
+})
 export default apiClient

@@ -3,7 +3,8 @@ import Base from '../base'
 
 export default class ListOrganizations extends Base {
     static aliases: string[] = ['organizations:ls']
-    static description = 'List the keys of all organizations available to the current user'
+    static description =
+        'List the keys of all organizations available to the current user'
     static hidden = false
 
     userAuthRequired = true

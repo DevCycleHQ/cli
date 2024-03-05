@@ -7,15 +7,15 @@ export default class ListVariables extends Base {
     static hidden = false
     static flags = {
         ...Base.flags,
-        'search': Flags.string({
-            description: 'Filter variables by search query'
+        search: Flags.string({
+            description: 'Filter variables by search query',
         }),
-        'page': Flags.integer({
-            description: 'Page number to fetch'
+        page: Flags.integer({
+            description: 'Page number to fetch',
         }),
         'per-page': Flags.integer({
-            description: 'Number of variables to fetch per page'
-        })
+            description: 'Number of variables to fetch per page',
+        }),
     }
     authRequired = true
 
@@ -29,7 +29,11 @@ export default class ListVariables extends Base {
             perPage: flags['per-page'],
             search: flags['search'],
         }
-        const variables = await fetchVariables(this.authToken, this.projectKey, query)
+        const variables = await fetchVariables(
+            this.authToken,
+            this.projectKey,
+            query,
+        )
         const variableKeys = variables.map((variable) => variable.key)
         this.writer.showResults(variableKeys)
     }
