@@ -1,11 +1,11 @@
 {
-  "require": [
-    "test-utils/init.js",
-    "ts-node/register",
-    "source-map-support/register"
-  ],
-  "watch-extensions": ["ts"],
-  "recursive": true,
-  "reporter": "spec",
-  "timeout": 0
+    "require": [
+        "test-utils/init.js",
+        "ts-node/register",
+        "source-map-support/register"
+    ],
+    "watch-extensions": ["ts"],
+    "recursive": true,
+    "reporter": "spec",
+    "timeout": 0
 }

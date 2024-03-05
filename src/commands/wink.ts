@@ -1,10 +1,10 @@
-import { Command } from "@oclif/core";
-import { togglebotWink } from "../ui/togglebot";
+import { Command } from '@oclif/core'
+import { togglebotWink } from '../ui/togglebot'
 
 export default class Wink extends Command {
-  static hidden = true;
+    static hidden = true
 
-  async run(): Promise<void> {
-    console.log(togglebotWink);
-  }
+    async run(): Promise<void> {
+        console.log(togglebotWink)
+    }
 }

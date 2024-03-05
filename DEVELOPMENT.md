@@ -11,8 +11,8 @@ To run the test suite, run `yarn test`
 
 ## Publishing a new version
 
-- Run [CLI Release workflow](https://github.com/DevCycleHQ/cli/actions/workflows/cli-release.yml) with desired values (Default values: draft release, prerelease, npm version patch)
-- After running the workflow, go to the [pull requests page](https://github.com/DevCycleHQ/devcycle-docs/pulls) of `devcycle-docs` and merge the pr created by the workflow
+-   Run [CLI Release workflow](https://github.com/DevCycleHQ/cli/actions/workflows/cli-release.yml) with desired values (Default values: draft release, prerelease, npm version patch)
+-   After running the workflow, go to the [pull requests page](https://github.com/DevCycleHQ/devcycle-docs/pulls) of `devcycle-docs` and merge the pr created by the workflow
 
 #### publishing manually (not preferred)
 
