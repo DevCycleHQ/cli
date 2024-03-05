@@ -1,6 +1,6 @@
 /* eslint-disable */
 // It doesn't like the semicolons and double quotes inside the block strings
-import chalk from 'chalk'
+import chalk from "chalk";
 
 export const togglebot = chalk.blue(`
             _~_
@@ -15,7 +15,7 @@ export const togglebot = chalk.blue(`
   "-.,___\\___________,.-"
                              
          \`-.___.-\`
-`)
+`);
 
 export const togglebotWink = chalk.blue(`
             _~_
@@ -30,7 +30,7 @@ export const togglebotWink = chalk.blue(`
   "-.,_______________,.-"
                              
          \`-.___.-\`
-`)
+`);
 
 export const togglebotSleep = chalk.blue(`
             _~_   Z
@@ -45,7 +45,7 @@ export const togglebotSleep = chalk.blue(`
   "-.,_______________,.-"
                              
          \`-.___.-\`
-`)
+`);
 
 export const toggleBotSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="109" height="119" viewBox="0 0 109 119" fill="none">
@@ -57,7 +57,7 @@ export const toggleBotSvg = `
        </linearGradient>
        </defs>
 </svg>
-`
+`;
 
 export const toggleBotSadSvg = `
 <svg width="109" height="119" viewBox="0 0 109 119" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,4 +69,4 @@ export const toggleBotSadSvg = `
        </linearGradient>
        </defs>
 </svg>
-`
+`;

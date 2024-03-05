@@ -1,18 +1,17 @@
-import { BaseParser } from '../BaseParser'
+import { BaseParser } from "../BaseParser";
 
-const variableNameCapturePattern = /([^,)]*)/
-const defaultValueCapturePattern = /(?:[^,)]*)/
+const variableNameCapturePattern = /([^,)]*)/;
+const defaultValueCapturePattern = /(?:[^,)]*)/;
 
 export class IosParser extends BaseParser {
-    identity = 'ios'
-    variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(/
+  identity = "ios";
+  variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(/;
 
-    namedParameterDelimiter = ':'
-    namedParameterPatternMap = {
-        key: variableNameCapturePattern,
-        defaultValue: defaultValueCapturePattern
-    }
+  namedParameterDelimiter = ":";
+  namedParameterPatternMap = {
+    key: variableNameCapturePattern,
+    defaultValue: defaultValueCapturePattern,
+  };
 
-    commentCharacters = ['///', '/**']
-
+  commentCharacters = ["///", "/**"];
 }

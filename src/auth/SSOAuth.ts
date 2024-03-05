@@ -1,228 +1,236 @@
-import crypto, { createHash } from 'crypto'
-import http, { IncomingMessage, ServerResponse } from 'http'
-import url, { URL } from 'url'
+import crypto, { createHash } from "crypto";
+import http, { IncomingMessage, ServerResponse } from "http";
+import url, { URL } from "url";
 
-import open from 'open'
-import axios from 'axios'
-import { Organization } from '../api/organizations'
-import Writer from '../ui/writer'
-import { toggleBotSadSvg, toggleBotSvg } from '../ui/togglebot'
-import { storeAccessToken } from './config'
-import { exit } from 'process'
+import open from "open";
+import axios from "axios";
+import { Organization } from "../api/organizations";
+import Writer from "../ui/writer";
+import { toggleBotSadSvg, toggleBotSvg } from "../ui/togglebot";
+import { storeAccessToken } from "./config";
+import { exit } from "process";
 
-export const CLI_CLIENT_ID = 'Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX'
+export const CLI_CLIENT_ID = "Ev9J0DGxR3KhrKaZwY6jlccmjl7JGKEX";
 
 type OauthResponse = {
-    data: {
-        access_token: string
-        refresh_token: string
-    }
-}
-const SUPPORTED_PORTS = [
-    80,
-    8080,
-    2194,
-    2195,
-    2196
-]
-const PORT = Number.parseInt(process.env.PORT || '2194')
+  data: {
+    access_token: string;
+    refresh_token: string;
+  };
+};
+const SUPPORTED_PORTS = [80, 8080, 2194, 2195, 2196];
+const PORT = Number.parseInt(process.env.PORT || "2194");
 
 type OauthParams = {
-    grant_type: string,
-    client_id: string,
-    code_verifier: string,
-    code: string,
-    redirect_uri: string,
-    scope: string
-}
+  grant_type: string;
+  client_id: string;
+  code_verifier: string;
+  code: string;
+  redirect_uri: string;
+  scope: string;
+};
 
 type TokenResponse = {
-    accessToken: string
-    refreshToken: string
-    personalAccessToken?: string
-}
+  accessToken: string;
+  refreshToken: string;
+  personalAccessToken?: string;
+};
 
 export default class SSOAuth {
-    private organization: Organization | null
-    private server: http.Server
-    private done: boolean
-    private codeVerifier: string
-    private tokens: TokenResponse | undefined
-    private writer: Writer
-    private authPath: string
+  private organization: Organization | null;
+  private server: http.Server;
+  private done: boolean;
+  private codeVerifier: string;
+  private tokens: TokenResponse | undefined;
+  private writer: Writer;
+  private authPath: string;
 
-    constructor(writer: Writer, authPath: string) {
-        this.writer = writer
-        this.authPath = authPath
+  constructor(writer: Writer, authPath: string) {
+    this.writer = writer;
+    this.authPath = authPath;
+  }
+
+  public async getAccessToken(): Promise<Required<TokenResponse>>;
+  public async getAccessToken(
+    organization: Organization,
+  ): Promise<Omit<TokenResponse, "personalAccessToken">>;
+  public async getAccessToken(
+    organization?: Organization,
+  ): Promise<TokenResponse> {
+    if (organization) this.organization = organization;
+    this.startLocalServer();
+
+    const timeout = setTimeout(() => {
+      if (!this.done || !this.tokens) {
+        this.writer.showError(
+          "Timed out waiting for authentication. Please try again",
+        );
+        exit(1);
+      }
+    }, 120000);
+
+    await this.waitForServerClosed();
+    const tokens = await this.waitForToken();
+    clearTimeout(timeout);
+    return tokens;
+  }
+
+  private async waitForServerClosed(): Promise<void> {
+    if (this.done) {
+      return;
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      return this.waitForServerClosed();
+    }
+  }
+
+  private async waitForToken(): Promise<TokenResponse> {
+    if (this.tokens) {
+      return this.tokens;
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      return this.waitForToken();
+    }
+  }
+
+  private startLocalServer() {
+    const host = "localhost";
+
+    if (!SUPPORTED_PORTS.includes(PORT)) {
+      throw new Error(
+        `Invalid PORT. Only ${SUPPORTED_PORTS.join(", ")} are supported`,
+      );
     }
 
-    public async getAccessToken(): Promise<Required<TokenResponse>>
-    public async getAccessToken(organization: Organization): Promise<Omit<TokenResponse, 'personalAccessToken'>>
-    public async getAccessToken(organization?: Organization): Promise<TokenResponse> {
-        if (organization) this.organization = organization
-        this.startLocalServer()
+    this.codeVerifier = this.createRandomString();
+    const authorizeUrl = this.buildAuthorizeUrl();
 
-        const timeout = setTimeout(() => {
-            if (!this.done || !this.tokens) {
-                this.writer.showError('Timed out waiting for authentication. Please try again')
-                exit(1)
-            }
-        }, 120000)
+    this.server = http.createServer(this.handleAuthRedirect.bind(this));
+    this.server.on("error", (e) => {
+      console.error(`Local server error ${e}`);
+    });
+    // prevents keep-alive connections from keeping the server running after close()
+    this.server.on("connection", (socket) => {
+      socket.unref();
+    });
 
-        await this.waitForServerClosed()
-        const tokens = await this.waitForToken()
-        clearTimeout(timeout)
-        return tokens
+    this.server.on("error", (err: Error & { code: string }) => {
+      if (err.code === "EADDRINUSE") {
+        this.writer.showError(`Port ${PORT} already in use. Unable to log in.`);
+      } else {
+        this.writer.showError(`Error: ${err.message}`);
+      }
+      exit(1);
+    });
+
+    this.server.listen(PORT, host, () => {
+      this.writer.statusMessage("Opening browser for authentication...");
+      open(authorizeUrl);
+    });
+    this.server.on("close", this.handleServerClosed.bind(this));
+  }
+
+  private handleServerClosed() {
+    this.done = true;
+  }
+
+  private handleAuthRedirect(req: IncomingMessage, res: ServerResponse) {
+    const requestUrl = req.url || "";
+    const parsed = url.parse(requestUrl, true);
+    if (parsed.pathname === "/callback") {
+      if (parsed.query.error) {
+        res.write(this.resultHtml("Authorization Error", false));
+        res.end();
+      } else if (parsed.query.code) {
+        const code = parsed.query.code.toString();
+        this.retrieveAccessToken(code);
+        res.write(this.resultHtml("Authorization Successful!", true));
+        res.end();
+      } else {
+        res.write(this.resultHtml("Unrecognized Response", false));
+        res.end();
+      }
+    } else {
+      res.writeHead(404);
+      res.end();
+    }
+  }
+
+  private async retrieveAccessToken(code: string) {
+    const authHost = "auth.devcycle.com";
+    const host = "localhost";
+    const data: OauthParams = {
+      grant_type: "authorization_code",
+      client_id: CLI_CLIENT_ID,
+      code_verifier: this.codeVerifier,
+      code,
+      redirect_uri: `http://${host}:${PORT}/callback`,
+      scope: "offline_access",
+    };
+
+    const authUrl = `https://${authHost}/oauth/token`;
+    const response = await axios
+      .post<OauthParams, OauthResponse>(authUrl, data)
+      .catch((error) => {
+        console.error(error);
+      });
+
+    this.server.close();
+
+    if (response?.data) {
+      const { access_token, refresh_token } = response.data;
+      this.tokens = {
+        accessToken: access_token,
+        refreshToken: refresh_token,
+        personalAccessToken: this.organization ? undefined : access_token,
+      };
+      storeAccessToken(this.tokens, this.authPath);
+    }
+    if (this.organization) {
+      this.writer.successMessage(
+        `Access token retrieved for "${this.organization.display_name}" organization`,
+      );
+    } else {
+      this.writer.successMessage("Personal access token retrieved");
+    }
+  }
+
+  public buildAuthorizeUrl(): string {
+    const authHost = "auth.devcycle.com";
+    const host = "localhost";
+
+    const state = this.createRandomString();
+    const code_challenge = createHash("sha256")
+      .update(this.codeVerifier)
+      .digest("base64url");
+
+    const url = new URL(`https://${authHost}/authorize`);
+    url.searchParams.append("response_type", "code");
+    url.searchParams.append("client_id", CLI_CLIENT_ID);
+    url.searchParams.append("redirect_uri", `http://${host}:${PORT}/callback`);
+    url.searchParams.append("state", state);
+    url.searchParams.append("code_challenge", code_challenge);
+    url.searchParams.append("code_challenge_method", "S256");
+    url.searchParams.append("audience", "https://api.devcycle.com/");
+    url.searchParams.append("scope", "offline_access");
+    if (this.organization) {
+      url.searchParams.append("organization", this.organization.id);
     }
 
-    private async waitForServerClosed(): Promise<void> {
-        if (this.done) {
-            return
-        } else {
-            await new Promise((resolve) => setTimeout(resolve, 100))
-            return this.waitForServerClosed()
-        }
-    }
+    return url.toString();
+  }
 
-    private async waitForToken(): Promise<TokenResponse> {
-        if (this.tokens) {
-            return this.tokens
-        } else {
-            await new Promise((resolve) => setTimeout(resolve, 100))
-            return this.waitForToken()
-        }
-    }
+  private createRandomString() {
+    const buffer = crypto.randomBytes(43);
+    return buffer.toString("base64url");
+  }
 
-    private startLocalServer() {
-        const host = 'localhost'
-
-        if (!SUPPORTED_PORTS.includes(PORT)) {
-            throw new Error(`Invalid PORT. Only ${SUPPORTED_PORTS.join(', ')} are supported`)
-        }
-
-        this.codeVerifier = this.createRandomString()
-        const authorizeUrl = this.buildAuthorizeUrl()
-
-        this.server = http.createServer(this.handleAuthRedirect.bind(this))
-        this.server.on('error', (e) => {
-            console.error(`Local server error ${e}`)
-        })
-        // prevents keep-alive connections from keeping the server running after close()
-        this.server.on('connection', (socket) => { socket.unref() })
-
-        this.server.on('error', (err: Error & { code: string }) => {
-            if (err.code === 'EADDRINUSE') {
-                this.writer.showError(`Port ${PORT} already in use. Unable to log in.`)
-            } else {
-                this.writer.showError(`Error: ${err.message}`)
-            }
-            exit(1)
-        })
-
-        this.server.listen(PORT, host, () => {
-            this.writer.statusMessage('Opening browser for authentication...')
-            open(authorizeUrl)
-        })
-        this.server.on('close', this.handleServerClosed.bind(this))
-    }
-
-    private handleServerClosed() {
-        this.done = true
-    }
-
-    private handleAuthRedirect(req: IncomingMessage, res: ServerResponse) {
-        const requestUrl = req.url || ''
-        const parsed = url.parse(requestUrl, true)
-        if (parsed.pathname === '/callback') {
-            if (parsed.query.error) {
-                res.write(this.resultHtml('Authorization Error', false))
-                res.end()
-            } else if (parsed.query.code) {
-                const code = parsed.query.code.toString()
-                this.retrieveAccessToken(code)
-                res.write(this.resultHtml('Authorization Successful!', true))
-                res.end()
-            } else {
-                res.write(this.resultHtml('Unrecognized Response', false))
-                res.end()
-            }
-        } else {
-            res.writeHead(404)
-            res.end()
-        }
-    }
-
-    private async retrieveAccessToken(code: string) {
-        const authHost = 'auth.devcycle.com'
-        const host = 'localhost'
-        const data: OauthParams = {
-            grant_type: 'authorization_code',
-            client_id: CLI_CLIENT_ID,
-            code_verifier: this.codeVerifier,
-            code,
-            redirect_uri: `http://${host}:${PORT}/callback`,
-            scope: 'offline_access'
-        }
-
-        const authUrl = `https://${authHost}/oauth/token`
-        const response = await axios.post<OauthParams, OauthResponse>(authUrl, data)
-            .catch((error) => {
-                console.error(error)
-            })
-
-        this.server.close()
-
-        if (response?.data) {
-            const { access_token, refresh_token } = response.data
-            this.tokens = {
-                accessToken: access_token,
-                refreshToken: refresh_token,
-                personalAccessToken: this.organization ? undefined : access_token
-            }
-            storeAccessToken(this.tokens, this.authPath)
-        }
-        if (this.organization) {
-            this.writer.successMessage(`Access token retrieved for "${this.organization.display_name}" organization`)
-        } else {
-            this.writer.successMessage('Personal access token retrieved')
-        }
-    }
-
-    public buildAuthorizeUrl(): string {
-        const authHost = 'auth.devcycle.com'
-        const host = 'localhost'
-
-        const state = this.createRandomString()
-        const code_challenge = createHash('sha256')
-            .update(this.codeVerifier)
-            .digest('base64url')
-
-        const url = new URL(`https://${authHost}/authorize`)
-        url.searchParams.append('response_type', 'code')
-        url.searchParams.append('client_id', CLI_CLIENT_ID)
-        url.searchParams.append('redirect_uri', `http://${host}:${PORT}/callback`)
-        url.searchParams.append('state', state)
-        url.searchParams.append('code_challenge', code_challenge)
-        url.searchParams.append('code_challenge_method', 'S256')
-        url.searchParams.append('audience', 'https://api.devcycle.com/')
-        url.searchParams.append('scope', 'offline_access')
-        if (this.organization) {
-            url.searchParams.append('organization', this.organization.id)
-        }
-
-        return url.toString()
-    }
-
-    private createRandomString() {
-        const buffer = crypto.randomBytes(43)
-        return buffer.toString('base64url')
-    }
-
-    private resultHtml(resultMessage: string, success: boolean) {
-        const fontUrl = 'https://fonts.google.com/share?selection.family=Inter:wght@400;800'
-        const backgroundUrl = 
-            'https://uploads-ssl.webflow.com/614e240a0e0b0fa195b146ed/64b815f3a776eee98d5375a7_backgroundCLI.png'
-        return `
+  private resultHtml(resultMessage: string, success: boolean) {
+    const fontUrl =
+      "https://fonts.google.com/share?selection.family=Inter:wght@400;800";
+    const backgroundUrl =
+      "https://uploads-ssl.webflow.com/614e240a0e0b0fa195b146ed/64b815f3a776eee98d5375a7_backgroundCLI.png";
+    return `
 <html>
     <head>
         <link href='${fontUrl}' rel='stylesheet' type='text/css'>
@@ -278,6 +286,6 @@ export default class SSOAuth {
         </div>
     </body>
 </html>
-`
-    }
+`;
+  }
 }

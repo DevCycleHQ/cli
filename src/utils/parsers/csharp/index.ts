@@ -1,24 +1,24 @@
-import { BaseParser } from '../BaseParser'
+import { BaseParser } from "../BaseParser";
 
-const userCapturePattern = /(?:\w*|{[^})]*}|new[^)]*\))/
-const variableNameCapturePattern = /([^,)]*)/
-const defaultValueCapturePattern = /(?:[^,)]*)/
+const userCapturePattern = /(?:\w*|{[^})]*}|new[^)]*\))/;
+const variableNameCapturePattern = /([^,)]*)/;
+const defaultValueCapturePattern = /(?:[^,)]*)/;
 
 export class CsharpParser extends BaseParser {
-    identity = 'csharp'
-    variableMethodPattern = /\??\.(?:(?:VariableAsync)|(?:VariableValueAsync))\(/
+  identity = "csharp";
+  variableMethodPattern = /\??\.(?:(?:VariableAsync)|(?:VariableValueAsync))\(/;
 
-    orderedParameterPatterns = [
-        userCapturePattern,
-        variableNameCapturePattern,
-        defaultValueCapturePattern
-    ]
+  orderedParameterPatterns = [
+    userCapturePattern,
+    variableNameCapturePattern,
+    defaultValueCapturePattern,
+  ];
 
-    namedParameterPatternMap = {
-        user: userCapturePattern,
-        key: variableNameCapturePattern,
-        default: defaultValueCapturePattern
-    }
+  namedParameterPatternMap = {
+    user: userCapturePattern,
+    key: variableNameCapturePattern,
+    default: defaultValueCapturePattern,
+  };
 
-    commentCharacters = ['//', '/*']
+  commentCharacters = ["//", "/*"];
 }

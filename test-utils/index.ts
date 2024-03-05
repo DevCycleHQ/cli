@@ -1,2 +1,2 @@
-export * from './dvcTest'
-export * from './setCurrentTestFile'
+export * from "./dvcTest";
+export * from "./setCurrentTestFile";

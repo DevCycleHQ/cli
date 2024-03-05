@@ -2,3 +2,5 @@ dist
 bin
 .yarn
 .github
+docs
+oclif.manifest.json

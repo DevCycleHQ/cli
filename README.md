@@ -1,5 +1,4 @@
-DevCycle CLI
-=================
+# DevCycle CLI
 
 DevCycle CLI for interacting with DevCycle features from the command line.
 
@@ -10,31 +9,39 @@ The CLI can be customized in several ways using command-line args or by creating
 [![License](https://img.shields.io/npm/l/@devcycle/cli.svg)](https://github.com/DevCycleHQ/cli/blob/main/package.json)
 
 <!-- toc -->
+* [DevCycle CLI](#devcycle-cli)
 * [Setup](#setup)
 * [Authentication](#authentication)
 * [Usage](#usage)
 * [Command Topics](#command-topics)
 * [Repo Configuration](#repo-configuration)
 <!-- tocstop -->
+
 # Setup
 
 ## Install the CLI
+
 Using NPM
+
 ```sh-session
 $ npm install -g @devcycle/cli
 ```
+
 Or alternatively, using homebrew
 
 ```sh-session
 $ brew tap devcyclehq/cli
 $ brew install devcycle
 ```
+
 # Authentication
+
 Many of the CLI commands require DevCycle API authorization. There are several ways to provide these credentials.
 
 ## Using Access Tokens (preferred)
 
 ### Login Command
+
 By using the [`login sso` command](docs/login.md#dvc-login-sso), the CLI will retrieve and store an access token, which is valid for 24 hours.
 
 The [`login again` command](docs/login.md#dvc-login-again) can be used to retrieve a new access token using the saved project and organization without prompting for them.
@@ -44,11 +51,13 @@ This process will open browser windows to interact with the DevCycle universal l
 To switch organizations once logged in, the [`organizations select` command](docs/organizations.md) can be used.
 
 ### Repo Init Command
+
 The [`repo init` command](docs/repo.md#dvc-repo-init) behaves in the same way as `login sso`, but creates a [repo configuration file](#repo-configuration) and stores the project and organization choices there instead.
 
 ## Using Client Credentials
 
 ### Client Credentials in Auth File
+
 Use the [`dvc status` command](docs/status.md#dvc-status) to find the configuration file location for your platform. The credentials can be stored in the file pointed to by the Auth config path. Create the file if it does not exist, with the following contents.
 
 ```yaml
@@ -72,6 +81,7 @@ If there is a repo configuration file, the [`dvc diff`](docs/diff.md) and [`dvc 
 Otherwise, this is chosen during login or set using the [project select command](docs/projects.md#dvc-projects-select)
 
 ## Environment Variables
+
 Set the following environment variables:
 
 ```sh-session
@@ -136,6 +146,7 @@ USAGE
 <!-- commandsstop -->
 
 # Repo Configuration
+
 The following commands can only be run from the root of a configured repository
 
 - [`dvc diff`](docs/diff.md)
@@ -180,9 +191,10 @@ codeInsights:
 ```
 
 ## Match Patterns
-When identifying variable usages in the code, the CLI will identify DevCycle SDK methods by default. To capture 
-other usages you may define match patterns. Match patterns are defined by file extension, and each pattern should 
-contain exactly one capture group which matches the key of the variable. Make sure the captured value contains the 
+
+When identifying variable usages in the code, the CLI will identify DevCycle SDK methods by default. To capture
+other usages you may define match patterns. Match patterns are defined by file extension, and each pattern should
+contain exactly one capture group which matches the key of the variable. Make sure the captured value contains the
 entire key parameter (including quotes, if applicable).
 
 Match patterns can be defined in the configuration file, for example:
@@ -203,11 +215,13 @@ codeInsights:
 ```
 
 Match patterns can also be passed directly to relevant commands using the `--match-pattern` flag:
+
 ```
 dvc usages --match-pattern ts="customVariableGetter\(\s*[\"']([^\"']*)[\"']" js="customVariableGetter\(\s*[\"']([^\"']*)[\"']"
 ```
 
 When testing your regex the `--show-regex` flag can be helpful. This will print all patterns used to find matches in your codebase.
+
 ```
 dvc usages --show-regex
 ```

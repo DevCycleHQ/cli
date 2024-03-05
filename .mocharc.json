@@ -4,9 +4,7 @@
     "ts-node/register",
     "source-map-support/register"
   ],
-  "watch-extensions": [
-    "ts"
-  ],
+  "watch-extensions": ["ts"],
   "recursive": true,
   "reporter": "spec",
   "timeout": 0

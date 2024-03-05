@@ -1,22 +1,22 @@
-import { BaseParser } from '../BaseParser'
+import { BaseParser } from "../BaseParser";
 
-const variableNameCapturePattern = /([^,)=]*)/
-const defaultValueCapturePattern = /(?:[^),]*|new[^)]*\))/
+const variableNameCapturePattern = /([^,)=]*)/;
+const defaultValueCapturePattern = /(?:[^),]*|new[^)]*\))/;
 
 export class AndroidParser extends BaseParser {
-    identity = 'android'
-    variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(/
+  identity = "android";
+  variableMethodPattern = /\??\.(?:(?:variable)|(?:variableValue))\(/;
 
-    orderedParameterPatterns = [
-        variableNameCapturePattern,
-        defaultValueCapturePattern
-    ]
+  orderedParameterPatterns = [
+    variableNameCapturePattern,
+    defaultValueCapturePattern,
+  ];
 
-    namedParameterDelimiter = '='
-    namedParameterPatternMap = {
-        key: variableNameCapturePattern,
-        default: defaultValueCapturePattern
-    }
+  namedParameterDelimiter = "=";
+  namedParameterPatternMap = {
+    key: variableNameCapturePattern,
+    default: defaultValueCapturePattern,
+  };
 
-    commentCharacters = ['//', '/**', '*', '<!--']
+  commentCharacters = ["//", "/**", "*", "<!--"];
 }
