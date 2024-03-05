@@ -155,13 +155,13 @@ export default class GenerateTypes extends Base {
         react: boolean,
         oldRepos: boolean,
     ) {
-        const typePromises = variables.map((variable) =>
+        const typeLines = variables.map((variable) =>
             this.getTypeDefinitionLine(variable),
         )
-        const typeLines = await Promise.all(typePromises)
-        const definitionLines = await Promise.all(
-            variables.map((variable) => this.getVariableDefinition(variable)),
+        const definitionLines = variables.map((variable) =>
+            this.getVariableDefinition(variable),
         )
+
         let types =
             (react ? reactImports(oldRepos) : '') +
             'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
@@ -176,20 +176,18 @@ export default class GenerateTypes extends Base {
         return types
     }
 
-    private async getTypeDefinitionLine(variable: Variable) {
-        const { flags } = await this.parse(GenerateTypes)
-        const { 'inline-comments': inlineComments } = flags
+    private getTypeDefinitionLine(variable: Variable) {
         if (this.obfuscate) {
             return `    ${this.getVariableKeyAndType(variable)}`
         }
-        if (inlineComments) {
+        if (this.inlineComments) {
             return (
                 `    ${this.getVariableKeyAndType(variable)}` +
-                `${await this.getVariableInfoComment(variable, true)}`
+                `${this.getVariableInfoComment(variable, true)}`
             )
         }
         return (
-            `${await this.getVariableInfoComment(variable, true)}\n` +
+            `${this.getVariableInfoComment(variable, true)}\n` +
             `    ${this.getVariableKeyAndType(variable)}`
         )
     }
@@ -198,24 +196,18 @@ export default class GenerateTypes extends Base {
         return `'${this.obfuscate ? this.encryptKey(variable) : variable.key}': ${getVariableType(variable)}`
     }
 
-    private async getVariableInfoComment(variable: Variable, indent: boolean) {
-        const { flags } = await this.parse(GenerateTypes)
-        const {
-            'include-descriptions': includeDescriptions,
-            'inline-comments': inlineComments,
-        } = flags
-
+    private getVariableInfoComment(variable: Variable, indent: boolean) {
         return getVariableInfoComment(
             variable,
             this.orgMembers,
-            includeDescriptions,
-            inlineComments,
+            this.includeDescriptions,
+            this.inlineComments,
             this.obfuscate,
             indent,
         )
     }
 
-    private async getVariableDefinition(variable: Variable) {
+    private getVariableDefinition(variable: Variable) {
         const constantName = this.getVariableGeneratedName(variable)
 
         const hashedKey = this.obfuscate
@@ -223,7 +215,7 @@ export default class GenerateTypes extends Base {
             : variable.key
 
         return `
-${await this.getVariableInfoComment(variable, false)}
+${this.getVariableInfoComment(variable, false)}
 export const ${constantName} = '${hashedKey}' as const`
     }
 
@@ -307,7 +299,9 @@ export function blockComment(
         indentString +
         '/**\n' +
         (key ? `    key: ${key}\n` : '') +
-        (description !== '' ? `    description: ${description}\n` : '') +
+        (description !== ''
+            ? `${indentString}    description: ${description}\n`
+            : '') +
         `${indentString}    created by: ${creator}\n` +
         `${indentString}    created on: ${createdDate}\n` +
         indentString +

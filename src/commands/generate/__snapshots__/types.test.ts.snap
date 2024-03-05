@@ -1,0 +1,209 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generate types correctly generates JS SDK types 1`] = `
+"type DVCJSON = { [key: string]: string | boolean | number }
+
+export type DVCVariableTypes = {
+    /**
+        description: Different ways to say hello
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'enum-var': 'Hello' | 'Hey' | 'Hi'
+    /**
+        created by: User 2
+        created on: 2021-07-04
+    */
+    'regex-var': string
+    /**
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'string-var': string
+    /**
+        created by: User 2
+        created on: 2021-07-04
+    */
+    'boolean-var': boolean
+    /**
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'number-var': number
+    /**
+        created by: Unknown User
+        created on: 2021-07-04
+    */
+    'json-var': DVCJSON
+}
+
+/**
+    description: Different ways to say hello
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const ENUM_VAR = 'enum-var' as const
+
+/**
+    created by: User 2
+    created on: 2021-07-04
+*/
+export const REGEX_VAR = 'regex-var' as const
+
+/**
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const STRING_VAR = 'string-var' as const
+
+/**
+    created by: User 2
+    created on: 2021-07-04
+*/
+export const BOOLEAN_VAR = 'boolean-var' as const
+
+/**
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const NUMBER_VAR = 'number-var' as const
+
+/**
+    created by: Unknown User
+    created on: 2021-07-04
+*/
+export const JSON_VAR = 'json-var' as const
+"
+`;
+
+exports[`generate types correctly generates JS SDK types with inlined comments 1`] = `
+"type DVCJSON = { [key: string]: string | boolean | number }
+
+export type DVCVariableTypes = {
+    'enum-var': 'Hello' | 'Hey' | 'Hi' // (Different ways to say hello) created by User 1 on 2021-07-04
+    'regex-var': string // created by User 2 on 2021-07-04
+    'string-var': string // created by User 1 on 2021-07-04
+    'boolean-var': boolean // created by User 2 on 2021-07-04
+    'number-var': number // created by User 1 on 2021-07-04
+    'json-var': DVCJSON // created by Unknown User on 2021-07-04
+}
+
+ // (Different ways to say hello) created by User 1 on 2021-07-04
+export const ENUM_VAR = 'enum-var' as const
+
+ // created by User 2 on 2021-07-04
+export const REGEX_VAR = 'regex-var' as const
+
+ // created by User 1 on 2021-07-04
+export const STRING_VAR = 'string-var' as const
+
+ // created by User 2 on 2021-07-04
+export const BOOLEAN_VAR = 'boolean-var' as const
+
+ // created by User 1 on 2021-07-04
+export const NUMBER_VAR = 'number-var' as const
+
+ // created by Unknown User on 2021-07-04
+export const JSON_VAR = 'json-var' as const
+"
+`;
+
+exports[`generate types correctly generates React SDK types 1`] = `
+"import { DVCVariable, DVCVariableValue } from '@devcycle/js-client-sdk'
+import {
+    useVariable as originalUseVariable,
+    useVariableValue as originalUseVariableValue
+} from '@devcycle/react-client-sdk'
+
+type DVCJSON = { [key: string]: string | boolean | number }
+
+export type DVCVariableTypes = {
+    /**
+        description: Different ways to say hello
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'enum-var': 'Hello' | 'Hey' | 'Hi'
+    /**
+        created by: User 2
+        created on: 2021-07-04
+    */
+    'regex-var': string
+    /**
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'string-var': string
+    /**
+        created by: User 2
+        created on: 2021-07-04
+    */
+    'boolean-var': boolean
+    /**
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'number-var': number
+    /**
+        created by: Unknown User
+        created on: 2021-07-04
+    */
+    'json-var': DVCJSON
+}
+
+/**
+    description: Different ways to say hello
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const ENUM_VAR = 'enum-var' as const
+
+/**
+    created by: User 2
+    created on: 2021-07-04
+*/
+export const REGEX_VAR = 'regex-var' as const
+
+/**
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const STRING_VAR = 'string-var' as const
+
+/**
+    created by: User 2
+    created on: 2021-07-04
+*/
+export const BOOLEAN_VAR = 'boolean-var' as const
+
+/**
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const NUMBER_VAR = 'number-var' as const
+
+/**
+    created by: Unknown User
+    created on: 2021-07-04
+*/
+export const JSON_VAR = 'json-var' as const
+
+export type UseVariableValue = <
+    K extends string & keyof DVCVariableTypes
+>(
+    key: K,
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariableTypes[K]
+
+export const useVariableValue: UseVariableValue = originalUseVariableValue
+
+export type UseVariable = <
+    K extends string & keyof DVCVariableTypes,
+    T extends DVCVariableValue & DVCVariableTypes[K],
+>(
+    key: K,
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariable<T>
+
+export const useVariable: UseVariable = originalUseVariable"
+`;
