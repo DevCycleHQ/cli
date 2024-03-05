@@ -142,13 +142,11 @@ describe('ApiAuth', () => {
             )
             const flags = {}
             sinon.stub(fs, 'existsSync').returns(true)
-            sinon
-                .stub(fs, 'readFileSync')
-                .returns(
-                    JSON.stringify({
-                        sso: { accessToken: 'mock-config-token' },
-                    }),
-                )
+            sinon.stub(fs, 'readFileSync').returns(
+                JSON.stringify({
+                    sso: { accessToken: 'mock-config-token' },
+                }),
+            )
 
             const response = await auth.getToken(flags)
 
