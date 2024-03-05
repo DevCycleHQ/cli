@@ -4,3 +4,4 @@ bin
 .github
 docs
 oclif.manifest.json
+README.md
