@@ -9,5 +9,5 @@ export default {
     },
     existsSync(filePath: string): boolean {
         return fs.existsSync(filePath)
-    }
+    },
 }

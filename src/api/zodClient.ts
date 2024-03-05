@@ -105,7 +105,8 @@ const CreateEnvironmentDto = z.object({
     name: z.string().max(100).nonempty(),
     key: z
         .string()
-        .max(100).nonempty()
+        .max(100)
+        .nonempty()
         .regex(/^[a-z0-9-_.]+$/),
     description: z.string().max(1000).optional(),
     color: z
@@ -160,7 +161,12 @@ const UpdateEnvironmentDto = z
             .string()
             .max(9)
             .regex(/^#([0-9A-F]{3}|[0-9A-F]{4}|[0-9A-F]{6}|[0-9A-F]{8})$/),
-        type: z.enum(['development', 'staging', 'production', 'disaster_recovery']),
+        type: z.enum([
+            'development',
+            'staging',
+            'production',
+            'disaster_recovery',
+        ]),
         settings: EnvironmentSettings,
     })
     .partial()
@@ -220,7 +226,7 @@ const AudienceOperator = z.object({
             UserAppVersionFilter.passthrough(),
             UserPlatformVersionFilter.passthrough(),
             UserCustomFilter.passthrough(),
-        ])
+        ]),
     ),
     operator: z.enum(['and', 'or']),
 })
@@ -360,7 +366,7 @@ const FeatureVariationDto = z.object({
                 z.boolean(),
                 z.array(z.any()),
                 z.object({}).partial().passthrough(),
-            ])
+            ]),
         )
         .optional(),
 })
@@ -405,7 +411,7 @@ const Variation = z.object({
                 z.boolean(),
                 z.array(z.any()),
                 z.object({}).partial().passthrough(),
-            ])
+            ]),
         )
         .optional(),
     _id: z.string(),
@@ -466,7 +472,9 @@ const UpdateFeatureDto = z
             .max(100)
             .regex(/^[a-z0-9-_.]+$/),
         description: z.string().max(1000),
-        variables: z.array(z.union([CreateVariableDto, ReassociateVariableDto])),
+        variables: z.array(
+            z.union([CreateVariableDto, ReassociateVariableDto]),
+        ),
         variations: z.array(FeatureVariationDto),
         settings: FeatureSettingsDto,
         sdkVisibility: FeatureSDKVisibilityDto,
@@ -491,7 +499,7 @@ const UpdateFeatureVariationDto = z
                 z.boolean(),
                 z.array(z.any()),
                 z.object({}).partial().passthrough(),
-            ])
+            ]),
         ),
         _id: z.string(),
     })
@@ -511,7 +519,7 @@ const AudienceOperatorWithAudienceMatchFilter = z.object({
             UserPlatformVersionFilter.passthrough(),
             UserCustomFilter.passthrough(),
             AudienceMatchFilter.passthrough(),
-        ])
+        ]),
     ),
     operator: z.enum(['and', 'or']),
 })
@@ -776,7 +784,7 @@ const FeatureOverride = z.object({
     _variation: z.string(),
 })
 const FeatureOverrideResponse = z.object({
-    overrides: z.array(FeatureOverride)
+    overrides: z.array(FeatureOverride),
 })
 const UserOverride = z.object({
     _feature: z.string(),
@@ -1812,7 +1820,8 @@ const endpoints = makeApi([
         method: 'get',
         path: '/v1/projects/:project/features/:feature/configurations',
         alias: 'FeatureConfigsController_findAll',
-        description: 'List Feature configurations for all environments or by environment key or ID',
+        description:
+            'List Feature configurations for all environments or by environment key or ID',
         requestFormat: 'json',
         parameters: [
             {
@@ -1891,7 +1900,8 @@ const endpoints = makeApi([
         method: 'get',
         path: '/v1/projects/:project/features/:feature/results/evaluations',
         alias: 'ResultsController_getEvaluationsPerHourByFeature',
-        description: 'Fetch unique user variable evaluations per hour for a feature',
+        description:
+            'Fetch unique user variable evaluations per hour for a feature',
         requestFormat: 'json',
         parameters: [
             {
@@ -1927,7 +1937,9 @@ const endpoints = makeApi([
             {
                 name: 'sdkType',
                 type: 'Query',
-                schema: z.enum(['client', 'server', 'mobile', 'api']).optional(),
+                schema: z
+                    .enum(['client', 'server', 'mobile', 'api'])
+                    .optional(),
             },
             {
                 name: 'feature',
@@ -1995,7 +2007,9 @@ const endpoints = makeApi([
             {
                 name: 'sdkType',
                 type: 'Query',
-                schema: z.enum(['client', 'server', 'mobile', 'api']).optional(),
+                schema: z
+                    .enum(['client', 'server', 'mobile', 'api'])
+                    .optional(),
             },
             {
                 name: 'feature',
@@ -2064,7 +2078,9 @@ const endpoints = makeApi([
             {
                 name: 'sdkType',
                 type: 'Query',
-                schema: z.enum(['client', 'server', 'mobile', 'api']).optional(),
+                schema: z
+                    .enum(['client', 'server', 'mobile', 'api'])
+                    .optional(),
             },
             {
                 name: 'feature',
@@ -2859,7 +2875,8 @@ const endpoints = makeApi([
         method: 'get',
         path: '/v1/projects/:project/results/evaluations',
         alias: 'ResultsController_getEvaluationsPerHourByProject',
-        description: 'Fetch unique user variable evaluations per hour for a project',
+        description:
+            'Fetch unique user variable evaluations per hour for a project',
         requestFormat: 'json',
         parameters: [
             {
@@ -2885,7 +2902,9 @@ const endpoints = makeApi([
             {
                 name: 'sdkType',
                 type: 'Query',
-                schema: z.enum(['client', 'server', 'mobile', 'api']).optional(),
+                schema: z
+                    .enum(['client', 'server', 'mobile', 'api'])
+                    .optional(),
             },
             {
                 name: 'project',
@@ -2939,7 +2958,9 @@ const endpoints = makeApi([
             {
                 name: 'sdkType',
                 type: 'Query',
-                schema: z.enum(['client', 'server', 'mobile', 'api']).optional(),
+                schema: z
+                    .enum(['client', 'server', 'mobile', 'api'])
+                    .optional(),
             },
             {
                 name: 'project',
@@ -3115,7 +3136,9 @@ const endpoints = makeApi([
             {
                 name: 'type',
                 type: 'Query',
-                schema: z.enum(['String', 'Boolean', 'Number', 'JSON']).optional(),
+                schema: z
+                    .enum(['String', 'Boolean', 'Number', 'JSON'])
+                    .optional(),
             },
             {
                 name: 'status',
@@ -3292,7 +3315,7 @@ const endpoints = makeApi([
                 name: 'project',
                 type: 'Path',
                 schema: z.string(),
-            }
+            },
         ],
         response: ProjectUserProfile,
         errors: [
@@ -3325,7 +3348,7 @@ const endpoints = makeApi([
                 name: 'body',
                 type: 'Body',
                 schema: UpdateProjectUserProfileDto,
-            }
+            },
         ],
         response: ProjectUserProfile,
         errors: [
@@ -3367,7 +3390,7 @@ const endpoints = makeApi([
                 name: 'body',
                 type: 'Body',
                 schema: UpdateUserOverrideDto,
-            }
+            },
         ],
         response: Override,
         errors: [
@@ -3468,7 +3491,6 @@ const endpoints = makeApi([
                 type: 'Query',
                 schema: z.string().optional(),
             },
-
         ],
         response: FeatureOverrideResponse,
         errors: [
@@ -3496,7 +3518,7 @@ const endpoints = makeApi([
                 name: 'project',
                 type: 'Path',
                 schema: z.string(),
-            }
+            },
         ],
         response: UserOverrides,
         errors: [

@@ -7,13 +7,14 @@ import { Args } from '@oclif/core'
 export default class GetVariations extends Base {
     static hidden = false
     authRequired = true
-    static description = 'Retrieve variations for a feature from the management API'
+    static description =
+        'Retrieve variations for a feature from the management API'
 
     static args = {
         feature: Args.string({
             name: 'feature',
-            description: 'Feature key or id'
-        })
+            description: 'Feature key or id',
+        }),
     }
 
     public async run(): Promise<void> {
@@ -25,17 +26,24 @@ export default class GetVariations extends Base {
             this.writer.showError('In headless mode, feature is required')
             return
         } else if (!args.feature) {
-            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const { feature } = await inquirer.prompt<FeaturePromptResult>(
+                [featurePrompt],
+                {
+                    token: this.authToken,
+                    projectKey: this.projectKey,
+                },
+            )
 
             featureKey = feature.key
         } else {
             featureKey = args.feature
         }
 
-        const variations = await fetchVariations(this.authToken, this.projectKey, featureKey)
+        const variations = await fetchVariations(
+            this.authToken,
+            this.projectKey,
+            featureKey,
+        )
         this.writer.showResults(variations)
     }
 }

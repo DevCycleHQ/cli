@@ -1,26 +1,26 @@
 export const AddItemPrompt = (itemType: string) => ({
     name: `Add ${itemType}`,
-    value: 'add'
+    value: 'add',
 })
 
 export const EditItemPrompt = (itemType: string) => ({
     name: `Edit ${itemType}`,
-    value: 'edit'
+    value: 'edit',
 })
 
 export const RemoveItemPrompt = (itemType: string) => ({
     name: `Remove ${itemType}`,
-    value: 'remove'
+    value: 'remove',
 })
 
 export const ReorderItemPrompt = (itemType: string) => ({
     name: `Reorder ${itemType}`,
-    value: 'reorder'
+    value: 'reorder',
 })
 
 export const ContinuePrompt = {
     name: 'Continue',
-    value: 'continue'
+    value: 'continue',
 }
 
 export const ExitPrompt = {

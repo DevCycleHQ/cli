@@ -6,18 +6,19 @@ const defaultValueCapturePattern = /(?:[^,)]*)/
 
 export class CsharpParser extends BaseParser {
     identity = 'csharp'
-    variableMethodPattern = /\??\.(?:(?:VariableAsync)|(?:VariableValueAsync))\(/
+    variableMethodPattern =
+        /\??\.(?:(?:VariableAsync)|(?:VariableValueAsync))\(/
 
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     namedParameterPatternMap = {
         user: userCapturePattern,
         key: variableNameCapturePattern,
-        default: defaultValueCapturePattern
+        default: defaultValueCapturePattern,
     }
 
     commentCharacters = ['//', '/*']

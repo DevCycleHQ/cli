@@ -2,14 +2,20 @@ import inquirer from 'inquirer'
 import Writer from '../../writer'
 import { reportZodValidationErrors } from '../../../utils/reportValidationErrors'
 import { ZodError } from 'zod'
-import { AddItemPrompt, ContinuePrompt, EditItemPrompt, ExitPrompt, RemoveItemPrompt } from './promptOptions'
+import {
+    AddItemPrompt,
+    ContinuePrompt,
+    EditItemPrompt,
+    ExitPrompt,
+    RemoveItemPrompt,
+} from './promptOptions'
 
 /**
  * Map list items to a human readable name to make it easier to display to the user
  */
 export type ListOption<T> = {
     name: string
-    value: { item: T, id?: number }
+    value: { item: T; id?: number }
 }
 
 export abstract class ListOptionsPrompt<T> {
@@ -28,13 +34,13 @@ export abstract class ListOptionsPrompt<T> {
      * Returns the list of possible options for this List
      * @returns
      */
-    options(): { name: string, value: string }[] {
+    options(): { name: string; value: string }[] {
         return [
             ContinuePrompt,
             AddItemPrompt(this.itemType),
             EditItemPrompt(this.itemType),
             RemoveItemPrompt(this.itemType),
-            ExitPrompt
+            ExitPrompt,
         ]
     }
 
@@ -43,12 +49,14 @@ export abstract class ListOptionsPrompt<T> {
      * @returns One of the options from the options() method
      */
     async promptListOptions() {
-        const response = await inquirer.prompt([{
-            name: 'listPromptOption',
-            message: 'Select an action:',
-            type: 'list',
-            choices: this.options()
-        }])
+        const response = await inquirer.prompt([
+            {
+                name: 'listPromptOption',
+                message: 'Select an action:',
+                type: 'list',
+                choices: this.options(),
+            },
+        ])
         return response.listPromptOption
     }
 
@@ -65,13 +73,17 @@ export abstract class ListOptionsPrompt<T> {
      * @returns number[]
      */
     async promptDeleteItems(list: ListOption<T>[]): Promise<number[]> {
-        const responses = await inquirer.prompt([{
-            name: 'itemsToDelete',
-            message: `Select the ${this.itemType} you would like to delete:`,
-            type: 'checkbox',
-            choices: list
-        }])
-        return responses.itemsToDelete.map((option: T) => list.findIndex((item) => item.value === option))
+        const responses = await inquirer.prompt([
+            {
+                name: 'itemsToDelete',
+                message: `Select the ${this.itemType} you would like to delete:`,
+                type: 'checkbox',
+                choices: list,
+            },
+        ])
+        return responses.itemsToDelete.map((option: T) =>
+            list.findIndex((item) => item.value === option),
+        )
     }
 
     /**
@@ -80,22 +92,26 @@ export abstract class ListOptionsPrompt<T> {
      * @returns [number, number]
      */
     async promptReorderItem(list: ListOption<T>[]) {
-        const itemToMove = await inquirer.prompt([{
-            name: 'itemToReorder',
-            message: `Select the ${this.itemType} you would like to move:`,
-            type: 'list',
-            choices: list
-        }])
+        const itemToMove = await inquirer.prompt([
+            {
+                name: 'itemToReorder',
+                message: `Select the ${this.itemType} you would like to move:`,
+                type: 'list',
+                choices: list,
+            },
+        ])
 
-        const itemToMoveTo = await inquirer.prompt([{
-            name: 'itemNewIndex',
-            message: `Select the position you would like to move the ${this.itemType} to:`,
-            type: 'list',
-            choices: list
-        }])
+        const itemToMoveTo = await inquirer.prompt([
+            {
+                name: 'itemNewIndex',
+                message: `Select the position you would like to move the ${this.itemType} to:`,
+                type: 'list',
+                choices: list,
+            },
+        ])
         const positions = [
             list.findIndex((item) => item.value === itemToMove.itemToReorder),
-            list.findIndex((item) => item.value === itemToMoveTo.itemNewIndex)
+            list.findIndex((item) => item.value === itemToMoveTo.itemNewIndex),
         ]
         return positions
     }
@@ -128,15 +144,21 @@ export abstract class ListOptionsPrompt<T> {
                     await this.promptEditItem(newList)
                     break
                 case 'remove':
-                    const indicesToDelete = await this.promptDeleteItems(newList)
-                    indicesToDelete.reverse().forEach((index) => newList.splice(index, 1))
+                    const indicesToDelete =
+                        await this.promptDeleteItems(newList)
+                    indicesToDelete
+                        .reverse()
+                        .forEach((index) => newList.splice(index, 1))
                     break
                 case 'reorder':
                     if (newList.length < 2) {
-                        this.writer.showError(`You must have at least 2 ${this.itemType}s to reorder.`)
+                        this.writer.showError(
+                            `You must have at least 2 ${this.itemType}s to reorder.`,
+                        )
                         break
                     }
-                    const [oldIndex, newIndex] = await this.promptReorderItem(newList)
+                    const [oldIndex, newIndex] =
+                        await this.promptReorderItem(newList)
                     const itemToMove = newList[oldIndex]
                     newList.splice(oldIndex, 1)
                     newList.splice(newIndex, 0, itemToMove)
@@ -144,7 +166,9 @@ export abstract class ListOptionsPrompt<T> {
                 case 'continue':
                     break
                 case 'exit':
-                    return this.list.map((item) => item.value.item) as unknown as T[]
+                    return this.list.map(
+                        (item) => item.value.item,
+                    ) as unknown as T[]
             }
         } catch (e) {
             if (e instanceof ZodError) {
@@ -184,5 +208,4 @@ export abstract class ListOptionsPrompt<T> {
      * @param T[]
      */
     abstract transformToListOptions(list: T[]): ListOption<T>[]
-
 }

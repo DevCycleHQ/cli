@@ -6,8 +6,12 @@ import { Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 
 const reactImports = (oldRepos: boolean) => {
-    const jsRepo = oldRepos ? '@devcycle/devcycle-js-sdk' : '@devcycle/js-client-sdk'
-    const reactRepo = oldRepos ? '@devcycle/devcycle-react-sdk' : '@devcycle/react-client-sdk'
+    const jsRepo = oldRepos
+        ? '@devcycle/devcycle-js-sdk'
+        : '@devcycle/js-client-sdk'
+    const reactRepo = oldRepos
+        ? '@devcycle/devcycle-react-sdk'
+        : '@devcycle/react-client-sdk'
     return `import { DVCVariable, DVCVariableValue } from '${jsRepo}'
 import {
     useVariable as originalUseVariable,
@@ -16,8 +20,7 @@ import {
 
 `
 }
-const reactOverrides =
-    `
+const reactOverrides = `
 
 export type UseVariableValue = <
     K extends string & keyof DVCVariableTypes,
@@ -46,24 +49,27 @@ export default class GenerateTypes extends Base {
         ...Base.flags,
         'output-dir': Flags.string({
             description: 'Directory to output the generated types to',
-            default: '.'
+            default: '.',
         }),
-        'react': Flags.boolean({
+        react: Flags.boolean({
             description: 'Generate types for use with React',
-            default: false
+            default: false,
         }),
         'old-repos': Flags.boolean({
-            description: 'Generate types for use with old DevCycle repos ' +
+            description:
+                'Generate types for use with old DevCycle repos ' +
                 '(@devcycle/devcycle-react-sdk, @devcycle/devcycle-js-sdk)',
-            default: false
+            default: false,
         }),
         'inline-comments': Flags.boolean({
-            description: 'Inline variable informaton comment on the same line as the type definition',
-            default: false
+            description:
+                'Inline variable informaton comment on the same line as the type definition',
+            default: false,
         }),
         'include-descriptions': Flags.boolean({
-            description: 'Include variable descriptions in the variable information comment',
-            default: false
+            description:
+                'Include variable descriptions in the variable information comment',
+            default: false,
         }),
     }
     authRequired = true
@@ -73,20 +79,36 @@ export default class GenerateTypes extends Base {
         const { project, headless } = flags
         await this.requireProject(project, headless)
 
-        const variables = await fetchAllVariables(this.authToken, this.projectKey)
+        const variables = await fetchAllVariables(
+            this.authToken,
+            this.projectKey,
+        )
         const orgMembers = await fetchOrganizationMembers(this.authToken)
-        const typesString = await this.getTypesString(variables, orgMembers, flags['react'], flags['old-repos'])
+        const typesString = await this.getTypesString(
+            variables,
+            orgMembers,
+            flags['react'],
+            flags['old-repos'],
+        )
 
         try {
             if (!fs.existsSync(flags['output-dir'])) {
                 fs.mkdirSync(flags['output-dir'], { recursive: true })
             }
-            fs.writeFileSync(`${flags['output-dir']}/dvcVariableTypes.ts`, typesString)
-            this.writer.successMessage(`Generated new types to ${flags['output-dir']}/dvcVariableTypes.ts`)
+            fs.writeFileSync(
+                `${flags['output-dir']}/dvcVariableTypes.ts`,
+                typesString,
+            )
+            this.writer.successMessage(
+                `Generated new types to ${flags['output-dir']}/dvcVariableTypes.ts`,
+            )
         } catch (err) {
             let message
             if (err instanceof Error) message = err.message
-            this.writer.failureMessage(`Unable to write to ${flags['output-dir']}/dvcVariableTypes.ts` + `: ${message}`)
+            this.writer.failureMessage(
+                `Unable to write to ${flags['output-dir']}/dvcVariableTypes.ts` +
+                    `: ${message}`,
+            )
         }
     }
 
@@ -94,11 +116,14 @@ export default class GenerateTypes extends Base {
         variables: Variable[],
         orgMembers: OrganizationMember[],
         react: boolean,
-        oldRepos: boolean
+        oldRepos: boolean,
     ) {
-        const typePromises = variables.map((variable) => this.getTypeDefinitionLine(variable, orgMembers))
+        const typePromises = variables.map((variable) =>
+            this.getTypeDefinitionLine(variable, orgMembers),
+        )
         const typeLines = await Promise.all(typePromises)
-        let types = (react ? reactImports(oldRepos) : '') +
+        let types =
+            (react ? reactImports(oldRepos) : '') +
             'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
             'export type DVCVariableTypes = {\n' +
             typeLines.join('\n') +
@@ -109,7 +134,10 @@ export default class GenerateTypes extends Base {
         return types
     }
 
-    private async getTypeDefinitionLine(variable: Variable, orgMembers: OrganizationMember[]) {
+    private async getTypeDefinitionLine(
+        variable: Variable,
+        orgMembers: OrganizationMember[],
+    ) {
         const { flags } = await this.parse(GenerateTypes)
         const { 'inline-comments': inlineComments } = flags
         if (inlineComments) {
@@ -129,9 +157,14 @@ export default class GenerateTypes extends Base {
     }
 
     private getVariableType(variable: Variable) {
-        if (variable.validationSchema && variable.validationSchema.schemaType === 'enum') {
+        if (
+            variable.validationSchema &&
+            variable.validationSchema.schemaType === 'enum'
+        ) {
             // TODO fix the schema so it doesn't think enumValues is an object
-            const enumValues = variable.validationSchema.enumValues as string[] | number []
+            const enumValues = variable.validationSchema.enumValues as
+                | string[]
+                | number[]
             if (enumValues === undefined || enumValues.length === 0) {
                 return variable.type.toLocaleLowerCase()
             }
@@ -143,19 +176,28 @@ export default class GenerateTypes extends Base {
         return variable.type.toLocaleLowerCase()
     }
 
-    private async getVariableInfoComment(variable: Variable, orgMembers: OrganizationMember[]) {
+    private async getVariableInfoComment(
+        variable: Variable,
+        orgMembers: OrganizationMember[],
+    ) {
         const { flags } = await this.parse(GenerateTypes)
-        const { 'include-descriptions': includeDescriptions, 'inline-comments': inlineComments } = flags
+        const {
+            'include-descriptions': includeDescriptions,
+            'inline-comments': inlineComments,
+        } = flags
 
-        const descriptionText = includeDescriptions && variable.description
-            ? `${this.sanitizeDescription(variable.description)}`
-            : ''
+        const descriptionText =
+            includeDescriptions && variable.description
+                ? `${this.sanitizeDescription(variable.description)}`
+                : ''
 
-        const creator = variable._createdBy ? this.findCreatorName(orgMembers, variable._createdBy) : 'Unknown User'
+        const creator = variable._createdBy
+            ? this.findCreatorName(orgMembers, variable._createdBy)
+            : 'Unknown User'
         const createdDate = variable.createdAt.split('T')[0]
         const creationInfo = `created by ${creator} on ${createdDate}`
 
-        return inlineComments 
+        return inlineComments
             ? this.inlineComment(descriptionText, creationInfo)
             : this.blockComment(descriptionText, creator, createdDate)
     }
@@ -165,8 +207,14 @@ export default class GenerateTypes extends Base {
         return description.replace(/[\r\n\t]/g, ' ').trim()
     }
 
-    private findCreatorName(orgMembers: OrganizationMember[], creatorId: string) {
-        return orgMembers.find((member) => member.user_id === creatorId)?.name || 'Unknown User'
+    private findCreatorName(
+        orgMembers: OrganizationMember[],
+        creatorId: string,
+    ) {
+        return (
+            orgMembers.find((member) => member.user_id === creatorId)?.name ||
+            'Unknown User'
+        )
     }
 
     private inlineComment(description: string, creationInfo: string) {
@@ -174,7 +222,11 @@ export default class GenerateTypes extends Base {
         return ` // ${descriptionText}${creationInfo}`
     }
 
-    private blockComment(description: string, creator: string, createdDate: string) {
+    private blockComment(
+        description: string,
+        creator: string,
+        createdDate: string,
+    ) {
         return (
             '    /*\n' +
             (description !== '' ? `    description: ${description}\n` : '') +

@@ -10,9 +10,8 @@ export class GolangParser extends BaseParser {
     orderedParameterPatterns = [
         userCapturePattern,
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     commentCharacters = ['//', '/*']
-
 }

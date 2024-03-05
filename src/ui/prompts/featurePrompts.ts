@@ -4,7 +4,7 @@ import { Feature } from '../../api/schemas'
 import { autocompleteSearch } from '../autocomplete'
 
 export type FeatureChoice = {
-    name: string,
+    name: string
     value: Feature
 }
 
@@ -14,13 +14,16 @@ export type FeaturePromptResult = {
 
 let choices: FeatureChoice[]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const featureChoices = async (input: Record<string, any>, search: string): Promise<FeatureChoice[]> => {
+export const featureChoices = async (
+    input: Record<string, any>,
+    search: string,
+): Promise<FeatureChoice[]> => {
     if (!choices) {
         const features = await fetchFeatures(input.token, input.projectKey)
         choices = features.map((feature: Feature) => {
             return {
                 name: feature.name || feature.key,
-                value: feature
+                value: feature,
             }
         })
     }
@@ -31,7 +34,7 @@ export const featurePrompt = {
     name: 'feature',
     message: 'Which feature?',
     type: 'autocomplete',
-    source: featureChoices
+    source: featureChoices,
 }
 
 export const variableFeaturePrompt = {
@@ -41,27 +44,38 @@ export const variableFeaturePrompt = {
 }
 
 type SDKVisibilityChoice = {
-    name: string,
-    value: 'mobile' | 'client' | 'server',
+    name: string
+    value: 'mobile' | 'client' | 'server'
     checked: boolean
 }
 
-export const getSDKVisibilityChoices = (sdkVisibility?: Feature['sdkVisibility']): SDKVisibilityChoice[] => {
+export const getSDKVisibilityChoices = (
+    sdkVisibility?: Feature['sdkVisibility'],
+): SDKVisibilityChoice[] => {
     return [
         {
             name: 'mobile',
             value: 'mobile',
-            checked: typeof sdkVisibility?.mobile !== 'undefined' ? sdkVisibility?.mobile : false
+            checked:
+                typeof sdkVisibility?.mobile !== 'undefined'
+                    ? sdkVisibility?.mobile
+                    : false,
         },
         {
             name: 'client',
             value: 'client',
-            checked: typeof sdkVisibility?.client !== 'undefined' ? sdkVisibility?.client : false
+            checked:
+                typeof sdkVisibility?.client !== 'undefined'
+                    ? sdkVisibility?.client
+                    : false,
         },
         {
             name: 'server',
             value: 'server',
-            checked: typeof sdkVisibility?.server !== 'undefined' ? sdkVisibility?.server : true
+            checked:
+                typeof sdkVisibility?.server !== 'undefined'
+                    ? sdkVisibility?.server
+                    : true,
         },
     ]
 }
@@ -75,7 +89,7 @@ export const getSdkVisibilityPrompt = (feature?: Feature) => {
         transformResponse: (response: string[]) => ({
             mobile: response.includes('mobile'),
             client: response.includes('client'),
-            server: response.includes('server')
-        })
+            server: response.includes('server'),
+        }),
     }
 }

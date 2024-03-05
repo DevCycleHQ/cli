@@ -1,9 +1,10 @@
 import inquirer from 'inquirer'
 import { Args, Flags } from '@oclif/core'
 import {
-    featurePrompt, FeaturePromptResult,
+    featurePrompt,
+    FeaturePromptResult,
     keyPrompt,
-    namePrompt
+    namePrompt,
 } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 import { CreateVariationDto } from '../../api/schemas'
@@ -19,26 +20,25 @@ export default class CreateVariation extends CreateCommand {
     static args = {
         feature: Args.string({
             name: 'feature',
-            description: 'Feature key or id'
-        })
+            description: 'Feature key or id',
+        }),
     }
 
     static flags = {
         ...CreateCommand.flags,
-        'variables': Flags.string({
-            description: 'The variables to create for the variation'
+        variables: Flags.string({
+            description: 'The variables to create for the variation',
         }),
     }
 
     static examples = [
         '<%= config.bin %> <%= command.id %>',
-        '<%= config.bin %> <%= command.id %> --variables=\'{ "bool-var": true, "num-var": 80, "string-var": "test" }\''
+        '<%= config.bin %> <%= command.id %> --variables=\'{ "bool-var": true, "num-var": 80, "string-var": "test" }\'',
     ]
 
     prompts = [namePrompt, keyPrompt]
 
     public async run(): Promise<void> {
-
         const { args, flags } = await this.parse(CreateVariation)
         const { headless, key, name, variables, project } = flags
         await this.requireProject(project, headless)
@@ -46,10 +46,13 @@ export default class CreateVariation extends CreateCommand {
         let featureKey
         let feature_id
         if (!args.feature) {
-            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const { feature } = await inquirer.prompt<FeaturePromptResult>(
+                [featurePrompt],
+                {
+                    token: this.authToken,
+                    projectKey: this.projectKey,
+                },
+            )
             featureKey = feature.key
             feature_id = feature._id
         } else {
@@ -58,35 +61,48 @@ export default class CreateVariation extends CreateCommand {
 
         const params = await this.populateParametersWithZod(
             CreateVariationDto,
-            this.prompts, {
+            this.prompts,
+            {
                 key,
                 name,
-                headless
-            }
+                headless,
+            },
         )
 
         let variableAnswers: Record<string, unknown> = {}
         if (!variables) {
             if (!feature_id) {
-                const feature = await fetchFeatureByKey(this.authToken, this.projectKey, featureKey)
+                const feature = await fetchFeatureByKey(
+                    this.authToken,
+                    this.projectKey,
+                    featureKey,
+                )
                 if (!feature) {
                     throw new Error(`Feature not found for key ${featureKey}`)
                 }
                 feature_id = feature._id
             }
-            const variablesForFeature = await fetchVariables(this.authToken, this.projectKey, { feature: feature_id })
-            variableAnswers = await promptForVariationVariableValues(
-                variablesForFeature
+            const variablesForFeature = await fetchVariables(
+                this.authToken,
+                this.projectKey,
+                { feature: feature_id },
             )
+            variableAnswers =
+                await promptForVariationVariableValues(variablesForFeature)
         }
 
         const variation = {
             key: params.key,
             name: params.name,
-            variables: variables ? JSON.parse(variables) : variableAnswers
+            variables: variables ? JSON.parse(variables) : variableAnswers,
         }
 
-        const result = await createVariation(this.authToken, this.projectKey, featureKey, variation)
+        const result = await createVariation(
+            this.authToken,
+            this.projectKey,
+            featureKey,
+            variation,
+        )
         this.writer.showResults(result)
     }
 }

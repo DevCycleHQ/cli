@@ -8,22 +8,23 @@ export default class DetailedFeatures extends Base {
     static description = 'Retrieve Features from the Management API'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
-        '<%= config.bin %> <%= command.id %> --keys=feature-one,feature-two'
+        '<%= config.bin %> <%= command.id %> --keys=feature-one,feature-two',
     ]
     static flags = {
         ...Base.flags,
-        'keys': Flags.string({
-            description: 'Comma-separated list of feature keys to fetch details for',
+        keys: Flags.string({
+            description:
+                'Comma-separated list of feature keys to fetch details for',
         }),
-        'search': Flags.string({
-            description: 'Filter features by search query'
+        search: Flags.string({
+            description: 'Filter features by search query',
         }),
-        'page': Flags.integer({
-            description: 'Page number to fetch'
+        page: Flags.integer({
+            description: 'Page number to fetch',
         }),
         'per-page': Flags.integer({
-            description: 'Number of features to fetch per page'
-        })
+            description: 'Number of features to fetch per page',
+        }),
     }
     authRequired = true
 
@@ -34,9 +35,8 @@ export default class DetailedFeatures extends Base {
         await this.requireProject(project, headless)
         let features
         if (keys) {
-            features = await batchRequests(
-                keys,
-                (key) => fetchFeatureByKey(this.authToken, this.projectKey, key)
+            features = await batchRequests(keys, (key) =>
+                fetchFeatureByKey(this.authToken, this.projectKey, key),
             )
         } else {
             const query = {
@@ -44,7 +44,11 @@ export default class DetailedFeatures extends Base {
                 perPage: flags['per-page'],
                 search: flags['search'],
             }
-            features = await fetchFeatures(this.authToken, this.projectKey, query)
+            features = await fetchFeatures(
+                this.authToken,
+                this.projectKey,
+                query,
+            )
         }
 
         this.writer.showResults(features)

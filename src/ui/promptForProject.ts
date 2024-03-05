@@ -7,16 +7,19 @@ export async function promptForProject(projects: Project[]): Promise<Project> {
         projectIdMap[project._id] = project
         return {
             name: project.name,
-            value: project._id
+            value: project._id,
         }
     })
 
-    const responses = await inquirer.prompt([{
-        name: 'project',
-        message: 'Which project do you want to use?',
-        type: 'autocomplete',
-        source: (_input: never, search: string) => autocompleteSearch(projectOptions, search)
-    }])
+    const responses = await inquirer.prompt([
+        {
+            name: 'project',
+            message: 'Which project do you want to use?',
+            type: 'autocomplete',
+            source: (_input: never, search: string) =>
+                autocompleteSearch(projectOptions, search),
+        },
+    ])
 
     return projectIdMap[responses.project]
 }

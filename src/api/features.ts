@@ -14,27 +14,31 @@ export const fetchFeatures = async (
         page?: number
         perPage?: number
         search?: string
-    } = {}
+    } = {},
 ): Promise<Feature[]> => {
     const response = await apiClient.get(FEATURE_URL, {
         headers: buildHeaders(token),
         params: {
-            project: project_id
+            project: project_id,
         },
-        queries
+        queries,
     })
 
     return response
 }
 
-export const fetchFeatureByKey = async (token: string, project_id: string, key: string): Promise<Feature | null> => {
+export const fetchFeatureByKey = async (
+    token: string,
+    project_id: string,
+    key: string,
+): Promise<Feature | null> => {
     try {
         const response = await apiClient.get(`${FEATURE_URL}/:key`, {
             headers: buildHeaders(token),
             params: {
                 project: project_id,
-                key
-            }
+                key,
+            },
         })
 
         return response
@@ -44,24 +48,23 @@ export const fetchFeatureByKey = async (token: string, project_id: string, key: 
         }
         throw e
     }
-
 }
 
 export const createFeature = async (
-    token: string, 
+    token: string,
     project_id: string,
-    params: CreateFeatureParams
+    params: CreateFeatureParams,
 ): Promise<Feature> => {
     return await apiClient.post(FEATURE_URL, params, {
         headers: buildHeaders(token),
         params: {
-            project: project_id
-        }
+            project: project_id,
+        },
     })
 }
 
 export const updateFeature = async (
-    token: string, 
+    token: string,
     project_id: string,
     feature_id: string,
     params: UpdateFeatureParams,
@@ -70,17 +73,21 @@ export const updateFeature = async (
         headers: buildHeaders(token),
         params: {
             project: project_id,
-            key: feature_id
-        }
+            key: feature_id,
+        },
     })
 }
 
-export const deleteFeature = async (token: string, project_id: string, key: string): Promise<void> => {
+export const deleteFeature = async (
+    token: string,
+    project_id: string,
+    key: string,
+): Promise<void> => {
     return apiClient.delete(`${FEATURE_URL}/:key`, undefined, {
         headers: buildHeaders(token),
         params: {
             project: project_id,
-            key
-        }
+            key,
+        },
     })
 }

@@ -1,7 +1,11 @@
 import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
 import { APIKey, fetchEnvironmentByKey } from '../../api/environments'
-import { EnvironmentPromptResult, environmentPrompt, sdkKeyTypePrompt as sdkTypePrompt } from '../../ui/prompts'
+import {
+    EnvironmentPromptResult,
+    environmentPrompt,
+    sdkKeyTypePrompt as sdkTypePrompt,
+} from '../../ui/prompts'
 import Base from '../base'
 import chalk from 'chalk'
 
@@ -10,17 +14,17 @@ export default class GetEnvironmentKey extends Base {
     static description = 'Retrieve SDK keys from the Management API.'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
-        '<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two'
+        '<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two',
     ]
     static flags = {
         ...Base.flags,
-        'env': Flags.string({
+        env: Flags.string({
             description: 'Environment to fetch a key for',
         }),
-        'type': Flags.string({
+        type: Flags.string({
             options: ['mobile', 'client', 'server'],
             description: 'The type of SDK key to retrieve',
-        })
+        }),
     }
     authRequired = true
 
@@ -30,14 +34,14 @@ export default class GetEnvironmentKey extends Base {
         await this.requireProject(project, headless)
 
         if (flags.headless && !flags.env) {
-            throw (new Error('In headless mode, the env flag is required'))
+            throw new Error('In headless mode, the env flag is required')
         }
 
         const environmentKey = await this.getEnvironmentKey()
         const environment = await fetchEnvironmentByKey(
             this.authToken,
             this.projectKey,
-            environmentKey
+            environmentKey,
         )
         if (!environment) {
             return
@@ -47,7 +51,9 @@ export default class GetEnvironmentKey extends Base {
             const activeKeys = environment.sdkKeys[sdkType] as APIKey[]
             const currentKey = activeKeys[activeKeys.length - 1]
             if (currentKey.compromised) {
-                this.writer.warningMessage(`The most recent key for ${environmentKey} ${sdkType} has been compromised}`)
+                this.writer.warningMessage(
+                    `The most recent key for ${environmentKey} ${sdkType} has been compromised}`,
+                )
             }
             this.writer.showRawResults(currentKey.key)
         } else {
@@ -62,26 +68,29 @@ export default class GetEnvironmentKey extends Base {
         }
         this.writer.infoMessage(
             // eslint-disable-next-line max-len
-            `Fetched keys from project with key ${chalk.green(this.projectKey)} in organization ${chalk.green(this.organization?.display_name)}`
+            `Fetched keys from project with key ${chalk.green(this.projectKey)} in organization ${chalk.green(this.organization?.display_name)}`,
         )
-        const responses = await inquirer.prompt<EnvironmentPromptResult>([environmentPrompt],
+        const responses = await inquirer.prompt<EnvironmentPromptResult>(
+            [environmentPrompt],
             {
                 token: this.authToken,
-                projectKey: this.projectKey
-            })
+                projectKey: this.projectKey,
+            },
+        )
         return responses.environment._id
     }
 
-    private async getSdkType(): Promise<'mobile' | 'client' | 'server' | 'all'> {
+    private async getSdkType(): Promise<
+        'mobile' | 'client' | 'server' | 'all'
+    > {
         const { flags } = await this.parse(GetEnvironmentKey)
         let sdkType = flags.type
 
         if (!sdkType) {
-            const responses = await inquirer.prompt([sdkTypePrompt],
-                {
-                    token: this.authToken,
-                    projectKey: this.projectKey
-                })
+            const responses = await inquirer.prompt([sdkTypePrompt], {
+                token: this.authToken,
+                projectKey: this.projectKey,
+            })
             sdkType = responses.sdkType
         }
 
@@ -92,6 +101,8 @@ export default class GetEnvironmentKey extends Base {
     }
 }
 
-const isSdkType = (sdkType: string): sdkType is 'mobile' | 'client' | 'server' | 'all' => {
+const isSdkType = (
+    sdkType: string,
+): sdkType is 'mobile' | 'client' | 'server' | 'all' => {
     return ['mobile', 'client', 'server', 'all'].includes(sdkType)
 }

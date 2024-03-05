@@ -1,6 +1,15 @@
 import inquirer from 'inquirer'
-import { fetchVariationByKey, updateVariation, UpdateVariationParams } from '../../api/variations'
-import { featurePrompt, FeaturePromptResult, keyPrompt, namePrompt } from '../../ui/prompts'
+import {
+    fetchVariationByKey,
+    updateVariation,
+    UpdateVariationParams,
+} from '../../api/variations'
+import {
+    featurePrompt,
+    FeaturePromptResult,
+    keyPrompt,
+    namePrompt,
+} from '../../ui/prompts'
 import { Feature, Variable } from '../../api/schemas'
 
 import {
@@ -17,43 +26,42 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
     authRequired = true
     static description = 'Update a Variation.'
 
-    prompts = [
-        namePrompt,
-        keyPrompt
-    ]
+    prompts = [namePrompt, keyPrompt]
 
     static args = {
         feature: Args.string({
             name: 'feature',
-            description: 'Feature key or ID'
+            description: 'Feature key or ID',
         }),
-        ...UpdateCommandWithCommonProperties.args
+        ...UpdateCommandWithCommonProperties.args,
     }
 
     static flags = {
         ...UpdateCommandWithCommonProperties.flags,
-        'variables': Flags.string({
-            description: 'The variables to create for the variation'
+        variables: Flags.string({
+            description: 'The variables to create for the variation',
         }),
-        'key': Flags.string({
+        key: Flags.string({
             description: 'The variation key',
             parse: async (input: string) => {
                 return input.toLowerCase()
-            }
+            },
         }),
     }
 
     public async run(): Promise<void> {
-
         const { args, flags } = await this.parse(UpdateVariation)
         const { variables, name, key, headless, project } = flags
         await this.requireProject(project, headless)
         let featureKey
         if (!args.feature) {
-            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const { feature } = await inquirer.prompt<FeaturePromptResult>(
+                [featurePrompt],
+                {
+                    token: this.authToken,
+                    projectKey: this.projectKey,
+                },
+            )
             featureKey = feature.key
         } else {
             featureKey = args.feature
@@ -63,27 +71,43 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
             const { variation } = await inquirer.prompt([variationPrompt], {
                 token: this.authToken,
                 projectKey: this.projectKey,
-                featureKey
+                featureKey,
             })
             selectedVariation = variation
         } else {
-            selectedVariation = await fetchVariationByKey(this.authToken, this.projectKey, featureKey, args.key)
+            selectedVariation = await fetchVariationByKey(
+                this.authToken,
+                this.projectKey,
+                featureKey,
+                args.key,
+            )
         }
-        const feature = await fetchFeatureByKey(this.authToken, this.projectKey, featureKey) as Feature
-        this.prompts.push(await getVariationVariablePrompt(
+        const feature = (await fetchFeatureByKey(
             this.authToken,
             this.projectKey,
-            feature._id,
-        ))
+            featureKey,
+        )) as Feature
+        this.prompts.push(
+            await getVariationVariablePrompt(
+                this.authToken,
+                this.projectKey,
+                feature._id,
+            ),
+        )
 
         this.writer.printCurrentValues(selectedVariation)
 
-        const data = await this.populateParameters(UpdateVariationParams, this.prompts, {
-            name,
-            key,
-            ...(variables ? { variables: JSON.parse(variables) } : {}),
-            headless
-        }, true)
+        const data = await this.populateParameters(
+            UpdateVariationParams,
+            this.prompts,
+            {
+                name,
+                key,
+                ...(variables ? { variables: JSON.parse(variables) } : {}),
+                headless,
+            },
+            true,
+        )
         let variableAnswers: Record<string, unknown> = {}
         if (!variables && data.variables) {
             variableAnswers = await promptForVariationVariableValues(
@@ -91,7 +115,7 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
                 // from the input for the --variable flag. That variation variable value data comes from
                 // this prompt.
                 data.variables as unknown as Variable[],
-                selectedVariation.variables
+                selectedVariation.variables,
             )
         }
 
@@ -103,8 +127,10 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
             {
                 key: data.key,
                 name: data.name,
-                variables: variables ? JSON.parse(variables) : { ...selectedVariation.variables, ...variableAnswers }
-            }
+                variables: variables
+                    ? JSON.parse(variables)
+                    : { ...selectedVariation.variables, ...variableAnswers },
+            },
         )
         this.writer.showResults(result)
     }

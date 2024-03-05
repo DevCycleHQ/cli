@@ -13,8 +13,8 @@ export default class ListVariations extends Base {
     static args = {
         feature: Args.string({
             name: 'feature',
-            description: 'Feature key or id'
-        })
+            description: 'Feature key or id',
+        }),
     }
 
     public async run(): Promise<void> {
@@ -26,17 +26,24 @@ export default class ListVariations extends Base {
             this.writer.showError('In headless mode, feature is required')
             return
         } else if (!args.feature) {
-            const { feature } = await inquirer.prompt<FeaturePromptResult>([featurePrompt], {
-                token: this.authToken,
-                projectKey: this.projectKey
-            })
+            const { feature } = await inquirer.prompt<FeaturePromptResult>(
+                [featurePrompt],
+                {
+                    token: this.authToken,
+                    projectKey: this.projectKey,
+                },
+            )
 
             featureKey = feature.key
         } else {
             featureKey = args.feature
         }
 
-        const variations = await fetchVariations(this.authToken, this.projectKey, featureKey)
+        const variations = await fetchVariations(
+            this.authToken,
+            this.projectKey,
+            featureKey,
+        )
         const variationKeys = variations.map((variation) => variation.key)
         this.writer.showResults(variationKeys)
     }

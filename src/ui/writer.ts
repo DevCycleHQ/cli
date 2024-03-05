@@ -19,15 +19,15 @@ export default class Writer {
     }
 
     public infoMessage(message: string): void {
-        if (!this.headless) console.log((`🤖 ${message}`))
+        if (!this.headless) console.log(`🤖 ${message}`)
     }
 
     public infoMessageWithCommand(message: string, command: string): void {
-        if (!this.headless) console.log((`🤖 ${message} ${chalk.bold(command)}`))
+        if (!this.headless) console.log(`🤖 ${message} ${chalk.bold(command)}`)
     }
 
     public title(message: string): void {
-        if (!this.headless) console.log((`🤖 ${chalk.bold(message)}`))
+        if (!this.headless) console.log(`🤖 ${chalk.bold(message)}`)
     }
 
     public printCurrentValues(values: unknown): void {
@@ -40,7 +40,8 @@ export default class Writer {
     }
 
     public list(list: string[]): void {
-        if (!this.headless) console.log(list.length ? `${list.join('\n\r')}` : '(Empty)')
+        if (!this.headless)
+            console.log(list.length ? `${list.join('\n\r')}` : '(Empty)')
     }
 
     public blankLine(): void {
@@ -48,7 +49,8 @@ export default class Writer {
     }
 
     public divider(): void {
-        if (!this.headless) console.log('----------------------------------------')
+        if (!this.headless)
+            console.log('----------------------------------------')
     }
 
     public showResults(results: unknown): void {

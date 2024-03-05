@@ -14,15 +14,21 @@ export class UpdateVariationParams {
     name?: string
 
     @IsOptional()
-    variables?: { [key: string]: string | number | boolean | Record<string, unknown> }
+    variables?: {
+        [key: string]: string | number | boolean | Record<string, unknown>
+    }
 }
-export const fetchVariations = async (token: string, project_id: string, feature_key: string): Promise<Variation[]> => {
+export const fetchVariations = async (
+    token: string,
+    project_id: string,
+    feature_key: string,
+): Promise<Variation[]> => {
     const response = await apiClient.get(variationsUrl, {
         headers: buildHeaders(token),
         params: {
             project: project_id,
             feature: feature_key,
-        }
+        },
     })
 
     return response
@@ -32,15 +38,15 @@ export const fetchVariationByKey = async (
     token: string,
     project_id: string,
     feature_key: string,
-    variationKey: string
+    variationKey: string,
 ): Promise<Variation> => {
     const response = await apiClient.get(`${variationsUrl}/:key`, {
         headers: buildHeaders(token),
         params: {
             project: project_id,
             feature: feature_key,
-            key: variationKey
-        }
+            key: variationKey,
+        },
     })
 
     return response
@@ -50,15 +56,19 @@ export const createVariation = async (
     token: string,
     project_id: string,
     feature_key: string,
-    variation: CreateVariationParams
+    variation: CreateVariationParams,
 ): Promise<Feature> => {
-    const response = await apiClient.post('/v1/projects/:project/features/:feature/variations', variation, {
-        headers: buildHeaders(token),
-        params: {
-            project: project_id,
-            feature: feature_key,
-        }
-    })
+    const response = await apiClient.post(
+        '/v1/projects/:project/features/:feature/variations',
+        variation,
+        {
+            headers: buildHeaders(token),
+            params: {
+                project: project_id,
+                feature: feature_key,
+            },
+        },
+    )
 
     return response
 }
@@ -68,9 +78,10 @@ export const updateVariation = async (
     project_id: string,
     feature_key: string,
     variationKey: string,
-    variation: UpdateVariationParams
+    variation: UpdateVariationParams,
 ) => {
-    return apiClient.patch('/v1/projects/:project/features/:feature/variations/:key',
+    return apiClient.patch(
+        '/v1/projects/:project/features/:feature/variations/:key',
         variation,
         {
             headers: buildHeaders(token),
@@ -78,6 +89,7 @@ export const updateVariation = async (
                 project: project_id,
                 feature: feature_key,
                 key: variationKey,
-            }
-        })
+            },
+        },
+    )
 }

@@ -1,9 +1,5 @@
 import { Type } from 'class-transformer'
-import {
-    IsOptional,
-    IsString,
-    ValidateNested
-} from 'class-validator'
+import { IsOptional, IsString, ValidateNested } from 'class-validator'
 import fs from 'fs'
 import path from 'path'
 import jsYaml from 'js-yaml'
@@ -45,14 +41,17 @@ export class AuthConfig {
     sso?: SSOAuthConfig
 }
 
-export function storeAccessToken(tokens: SSOAuthConfig, authPath: string): void {
+export function storeAccessToken(
+    tokens: SSOAuthConfig,
+    authPath: string,
+): void {
     const configDir = path.dirname(authPath)
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true })
     }
 
     const config = fs.existsSync(authPath)
-        ? jsYaml.load(fs.readFileSync(authPath, 'utf8')) as AuthConfig
+        ? (jsYaml.load(fs.readFileSync(authPath, 'utf8')) as AuthConfig)
         : new AuthConfig()
 
     config.sso = config.sso || new SSOAuthConfig()
@@ -61,10 +60,11 @@ export function storeAccessToken(tokens: SSOAuthConfig, authPath: string): void 
     const { accessToken, refreshToken, personalAccessToken } = tokens
     if (accessToken) config.sso.accessToken = accessToken
     if (refreshToken) config.sso.refreshToken = refreshToken
-    if (personalAccessToken) config.sso.personalAccessToken = personalAccessToken
+    if (personalAccessToken)
+        config.sso.personalAccessToken = personalAccessToken
 
     const orgId = getOrgIdFromToken(accessToken)
     if (orgId) config.sso.orgs[orgId] = { accessToken, refreshToken }
-        
+
     fs.writeFileSync(authPath, jsYaml.dump(config))
 }

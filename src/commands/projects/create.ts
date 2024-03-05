@@ -11,7 +11,7 @@ export default class CreateProject extends CreateCommand {
 
     static flags = {
         ...CreateCommand.flags,
-        'description': Flags.string({
+        description: Flags.string({
             description: 'Description for the dashboard',
         }),
     }
@@ -20,17 +20,20 @@ export default class CreateProject extends CreateCommand {
         const { flags } = await this.parse(CreateProject)
         const { headless, key, name, description } = flags
         if (headless && (!key || !name)) {
-            this.writer.showError('In headless mode, the key and name flags are required')
+            this.writer.showError(
+                'In headless mode, the key and name flags are required',
+            )
             return
         }
         const params = await this.populateParameters(
             CreateProjectParams,
-            this.prompts, {
+            this.prompts,
+            {
                 key,
                 name,
                 description,
-                headless
-            }
+                headless,
+            },
         )
         const result = await createProject(this.authToken, params)
         this.writer.showResults(result)

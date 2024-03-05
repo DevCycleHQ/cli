@@ -11,18 +11,18 @@ export type LineItem = {
 }
 
 export type JSONMatch = {
-    key: string,
+    key: string
     references: VariableReference[]
 }
 
-export type VariableReference = {  
-    codeSnippet: CodeSnippet,
+export type VariableReference = {
+    codeSnippet: CodeSnippet
     lineNumbers: Range
     fileName: string
     language: string
 }
 
 export type CodeSnippet = {
-    lineNumbers: Range,
+    lineNumbers: Range
     content: string
 }

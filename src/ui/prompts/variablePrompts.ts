@@ -3,16 +3,21 @@ import { fetchVariables } from '../../api/variables'
 import { AutoCompletePrompt, Prompt, PromptResult } from '.'
 import chalk from 'chalk'
 import { autocompleteSearch } from '../autocomplete'
-import { descriptionPrompt, hintTextTransformer, keyPrompt, namePrompt } from './commonPrompts'
+import {
+    descriptionPrompt,
+    hintTextTransformer,
+    keyPrompt,
+    namePrompt,
+} from './commonPrompts'
 import { Variable as CleanupVariable } from '../../commands/cleanup/types'
 
 type VariablePromptEntity =
-    | { value: Variation, type: 'variation' }
-    | { value: Variable, type: 'variable' }
-    | { value: CleanupVariable, type: 'cleanupVariable' }
+    | { value: Variation; type: 'variation' }
+    | { value: Variable; type: 'variable' }
+    | { value: CleanupVariable; type: 'cleanupVariable' }
 
 type VariableChoice = {
-    name: string,
+    name: string
     value: Variable
 }
 
@@ -20,16 +25,23 @@ export type VariablePromptResult = {
     variable: VariableChoice['value']
 } & PromptResult
 
-let choices: { name: string, value: Variable }[]
+let choices: { name: string; value: Variable }[]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const variableChoices = async (input: Record<string, any>, search: string): Promise<VariableChoice[]> => {
+export const variableChoices = async (
+    input: Record<string, any>,
+    search: string,
+): Promise<VariableChoice[]> => {
     if (!choices) {
-        const variables = await fetchVariables(input.token, input.projectKey, { perPage: 1000 })
+        const variables = await fetchVariables(input.token, input.projectKey, {
+            perPage: 1000,
+        })
         choices = variables.map((variable) => {
-            const name = variable.name ? `${variable.name} ${chalk.dim(`(${variable.key})`)}` : variable.key
+            const name = variable.name
+                ? `${variable.name} ${chalk.dim(`(${variable.key})`)}`
+                : variable.key
             return {
                 name,
-                value: variable
+                value: variable,
             }
         })
     }
@@ -40,27 +52,28 @@ export const variablePrompt = {
     name: 'variable',
     message: 'Which variable?',
     type: 'autocomplete',
-    source: variableChoices
+    source: variableChoices,
 }
 
 export const variablePromptNoApi = {
     name: 'variable',
-    message: 'Please enter a variable key:'
+    message: 'Please enter a variable key:',
 }
 
 export const variableTypePrompt = {
     name: 'type',
     message: 'The type of variable',
     type: 'list',
-    choices: CreateVariableDto.shape.type.options
+    choices: CreateVariableDto.shape.type.options,
 }
 
 const baseVariableValuePrompt = (
     entity: VariablePromptEntity,
-    defaultValue?: string | number | boolean
+    defaultValue?: string | number | boolean,
 ): Prompt => {
     const key = entity.value.key
-    const messageIdentifier = entity.type === 'variation' ? entity.value.name : entity.value.key
+    const messageIdentifier =
+        entity.type === 'variation' ? entity.value.name : entity.value.key
     return {
         name: key,
         message: `Variable value for ${messageIdentifier}`,
@@ -70,8 +83,8 @@ const baseVariableValuePrompt = (
 }
 
 export const variableValueStringPrompt = (
-    entity: VariablePromptEntity, 
-    defaultValue?: string
+    entity: VariablePromptEntity,
+    defaultValue?: string,
 ): Prompt => {
     const basePrompt = baseVariableValuePrompt(entity, defaultValue)
     return {
@@ -82,7 +95,7 @@ export const variableValueStringPrompt = (
 
 export const variableValueNumberPrompt = (
     entity: VariablePromptEntity,
-    defaultValue?: number
+    defaultValue?: number,
 ): Prompt => {
     const basePrompt = baseVariableValuePrompt(entity, defaultValue)
     return {
@@ -100,13 +113,13 @@ export const variableValueNumberPrompt = (
                 return 'Please enter a number'
             }
             return true
-        }
+        },
     }
 }
 
-export const variableValueBooleanPrompt  = (
+export const variableValueBooleanPrompt = (
     entity: VariablePromptEntity,
-    defaultValue?: boolean
+    defaultValue?: boolean,
 ): Prompt => {
     const basePrompt = baseVariableValuePrompt(entity, defaultValue)
     return {
@@ -117,13 +130,13 @@ export const variableValueBooleanPrompt  = (
         choices: [
             {
                 name: 'true',
-                value: true
+                value: true,
             },
             {
                 name: 'false',
-                value: false
-            }
-        ]
+                value: false,
+            },
+        ],
     }
 }
 
@@ -146,35 +159,35 @@ export const variableValueJSONPrompt = (
             } catch (e) {
                 return 'Please enter a valid JSON object'
             }
-        }
+        },
     }
 }
 
 export const getVariableValuePrompt = (
-    variation: Variation, 
+    variation: Variation,
     variableType: 'String' | 'Boolean' | 'Number' | 'JSON',
-    defaultValue?: string | number | boolean
+    defaultValue?: string | number | boolean,
 ) => {
     switch (variableType) {
         case 'Boolean':
             return variableValueBooleanPrompt(
                 { value: variation, type: 'variation' },
-                defaultValue as boolean | undefined
+                defaultValue as boolean | undefined,
             )
         case 'Number':
             return variableValueNumberPrompt(
                 { value: variation, type: 'variation' },
-                defaultValue as number | undefined
+                defaultValue as number | undefined,
             )
         case 'JSON':
             return variableValueJSONPrompt(
                 { value: variation, type: 'variation' },
-                defaultValue as string | undefined
+                defaultValue as string | undefined,
             )
         default:
             return variableValueStringPrompt(
                 { value: variation, type: 'variation' },
-                defaultValue as string | undefined
+                defaultValue as string | undefined,
             )
     }
 }
@@ -183,5 +196,5 @@ export const createVariablePrompts: (Prompt | AutoCompletePrompt)[] = [
     namePrompt,
     keyPrompt,
     descriptionPrompt,
-    variableTypePrompt
+    variableTypePrompt,
 ]

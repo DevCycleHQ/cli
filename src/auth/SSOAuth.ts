@@ -18,21 +18,15 @@ type OauthResponse = {
         refresh_token: string
     }
 }
-const SUPPORTED_PORTS = [
-    80,
-    8080,
-    2194,
-    2195,
-    2196
-]
+const SUPPORTED_PORTS = [80, 8080, 2194, 2195, 2196]
 const PORT = Number.parseInt(process.env.PORT || '2194')
 
 type OauthParams = {
-    grant_type: string,
-    client_id: string,
-    code_verifier: string,
-    code: string,
-    redirect_uri: string,
+    grant_type: string
+    client_id: string
+    code_verifier: string
+    code: string
+    redirect_uri: string
     scope: string
 }
 
@@ -57,14 +51,20 @@ export default class SSOAuth {
     }
 
     public async getAccessToken(): Promise<Required<TokenResponse>>
-    public async getAccessToken(organization: Organization): Promise<Omit<TokenResponse, 'personalAccessToken'>>
-    public async getAccessToken(organization?: Organization): Promise<TokenResponse> {
+    public async getAccessToken(
+        organization: Organization,
+    ): Promise<Omit<TokenResponse, 'personalAccessToken'>>
+    public async getAccessToken(
+        organization?: Organization,
+    ): Promise<TokenResponse> {
         if (organization) this.organization = organization
         this.startLocalServer()
 
         const timeout = setTimeout(() => {
             if (!this.done || !this.tokens) {
-                this.writer.showError('Timed out waiting for authentication. Please try again')
+                this.writer.showError(
+                    'Timed out waiting for authentication. Please try again',
+                )
                 exit(1)
             }
         }, 120000)
@@ -97,7 +97,9 @@ export default class SSOAuth {
         const host = 'localhost'
 
         if (!SUPPORTED_PORTS.includes(PORT)) {
-            throw new Error(`Invalid PORT. Only ${SUPPORTED_PORTS.join(', ')} are supported`)
+            throw new Error(
+                `Invalid PORT. Only ${SUPPORTED_PORTS.join(', ')} are supported`,
+            )
         }
 
         this.codeVerifier = this.createRandomString()
@@ -108,11 +110,15 @@ export default class SSOAuth {
             console.error(`Local server error ${e}`)
         })
         // prevents keep-alive connections from keeping the server running after close()
-        this.server.on('connection', (socket) => { socket.unref() })
+        this.server.on('connection', (socket) => {
+            socket.unref()
+        })
 
         this.server.on('error', (err: Error & { code: string }) => {
             if (err.code === 'EADDRINUSE') {
-                this.writer.showError(`Port ${PORT} already in use. Unable to log in.`)
+                this.writer.showError(
+                    `Port ${PORT} already in use. Unable to log in.`,
+                )
             } else {
                 this.writer.showError(`Error: ${err.message}`)
             }
@@ -161,11 +167,12 @@ export default class SSOAuth {
             code_verifier: this.codeVerifier,
             code,
             redirect_uri: `http://${host}:${PORT}/callback`,
-            scope: 'offline_access'
+            scope: 'offline_access',
         }
 
         const authUrl = `https://${authHost}/oauth/token`
-        const response = await axios.post<OauthParams, OauthResponse>(authUrl, data)
+        const response = await axios
+            .post<OauthParams, OauthResponse>(authUrl, data)
             .catch((error) => {
                 console.error(error)
             })
@@ -177,12 +184,16 @@ export default class SSOAuth {
             this.tokens = {
                 accessToken: access_token,
                 refreshToken: refresh_token,
-                personalAccessToken: this.organization ? undefined : access_token
+                personalAccessToken: this.organization
+                    ? undefined
+                    : access_token,
             }
             storeAccessToken(this.tokens, this.authPath)
         }
         if (this.organization) {
-            this.writer.successMessage(`Access token retrieved for "${this.organization.display_name}" organization`)
+            this.writer.successMessage(
+                `Access token retrieved for "${this.organization.display_name}" organization`,
+            )
         } else {
             this.writer.successMessage('Personal access token retrieved')
         }
@@ -200,7 +211,10 @@ export default class SSOAuth {
         const url = new URL(`https://${authHost}/authorize`)
         url.searchParams.append('response_type', 'code')
         url.searchParams.append('client_id', CLI_CLIENT_ID)
-        url.searchParams.append('redirect_uri', `http://${host}:${PORT}/callback`)
+        url.searchParams.append(
+            'redirect_uri',
+            `http://${host}:${PORT}/callback`,
+        )
         url.searchParams.append('state', state)
         url.searchParams.append('code_challenge', code_challenge)
         url.searchParams.append('code_challenge_method', 'S256')
@@ -219,8 +233,9 @@ export default class SSOAuth {
     }
 
     private resultHtml(resultMessage: string, success: boolean) {
-        const fontUrl = 'https://fonts.google.com/share?selection.family=Inter:wght@400;800'
-        const backgroundUrl = 
+        const fontUrl =
+            'https://fonts.google.com/share?selection.family=Inter:wght@400;800'
+        const backgroundUrl =
             'https://uploads-ssl.webflow.com/614e240a0e0b0fa195b146ed/64b815f3a776eee98d5375a7_backgroundCLI.png'
         return `
 <html>

@@ -2,21 +2,22 @@ import chalk from 'chalk'
 import Base from '../base'
 
 type StatusInfo = {
-    version: string,
-    repoConfigPath: string,
-    repoConfigExists: boolean,
-    userConfigPath: string,
-    userConfigExists: boolean,
-    authConfigPath: string,
-    hasAccessToken: boolean,
-    organization?: string,
-    project?: string,
+    version: string
+    repoConfigPath: string
+    repoConfigExists: boolean
+    userConfigPath: string
+    userConfigExists: boolean
+    authConfigPath: string
+    hasAccessToken: boolean
+    organization?: string
+    project?: string
     a0UserId?: string
 }
 
 export default class ShowStatus extends Base {
     static hidden = false
-    static description = 'Print CLI version information, configuration file locations and auth status.'
+    static description =
+        'Print CLI version information, configuration file locations and auth status.'
 
     async run(): Promise<void> {
         const { flags } = await this.parse(ShowStatus)
@@ -50,9 +51,15 @@ export default class ShowStatus extends Base {
         if (this.hasToken()) {
             if (this.organization) {
                 this.writer.successMessage('Logged into DevCycle with:')
-                this.writer.showRawResults(chalk.green(`\tOrganization: ${this.organization.display_name}`))
+                this.writer.showRawResults(
+                    chalk.green(
+                        `\tOrganization: ${this.organization.display_name}`,
+                    ),
+                )
                 if (this.projectKey) {
-                    this.writer.showRawResults(chalk.green(`\tProject Key: ${this.projectKey}`))
+                    this.writer.showRawResults(
+                        chalk.green(`\tProject Key: ${this.projectKey}`),
+                    )
                 }
             } else {
                 this.writer.successMessage('Currently logged in to DevCycle')
@@ -72,10 +79,12 @@ export default class ShowStatus extends Base {
             authConfigPath: this.authPath,
             hasAccessToken: this.hasToken(),
             organization: this.organization?.display_name,
-            project: this.projectKey
+            project: this.projectKey,
         }
         if (this.hasToken()) {
-            const tokenJson = JSON.parse(Buffer.from(this.authToken.split('.')[1], 'base64').toString())
+            const tokenJson = JSON.parse(
+                Buffer.from(this.authToken.split('.')[1], 'base64').toString(),
+            )
             result.a0UserId = tokenJson['sub']
         }
         this.writer.showResults(result)

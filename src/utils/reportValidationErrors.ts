@@ -5,9 +5,11 @@ import { ValidatorOptions, validateSync } from 'class-validator'
 
 export function validateParams<ResourceType>(
     params: ResourceType,
-    validatorOptions?: ValidatorOptions
-){
-    const errors = validateSync(params as Record<string, unknown>, { ...validatorOptions })
+    validatorOptions?: ValidatorOptions,
+) {
+    const errors = validateSync(params as Record<string, unknown>, {
+        ...validatorOptions,
+    })
     reportValidationErrors(errors)
 }
 
@@ -18,14 +20,19 @@ export function reportValidationErrors(errors: ValidationError[]): void {
             error = error.children[0]
         }
 
-        throw new Error(`Failed validation at property "${error.property}": ` +
-            `${Object.values(error.constraints ?? {})[0]}`)
+        throw new Error(
+            `Failed validation at property "${error.property}": ` +
+                `${Object.values(error.constraints ?? {})[0]}`,
+        )
     }
 }
 
-export function reportZodValidationErrors(error: ZodError, writer: Writer): void {
+export function reportZodValidationErrors(
+    error: ZodError,
+    writer: Writer,
+): void {
     const errorsByKey = error.flatten().fieldErrors
     for (const issues of Object.values(errorsByKey)) {
-        issues?.[0] && writer.showError(issues[0])        
+        issues?.[0] && writer.showError(issues[0])
     }
 }

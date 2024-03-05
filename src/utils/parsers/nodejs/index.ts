@@ -11,7 +11,7 @@ export class NodeParser extends BaseParser {
     orderedParameterPatterns: RegExp[] | null = [
         userCapturePattern,
         variableNameCapturePattern,
-        defaultValueCapturePattern
+        defaultValueCapturePattern,
     ]
 
     commentCharacters = ['//', '/*']
