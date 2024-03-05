@@ -1,6 +1,6 @@
 import { expect } from '@oclif/test'
 import { BASE_URL } from '../../api/common'
-import { dvcTest } from '../../../test-utils'
+import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import * as fs from 'fs'
 import chai from 'chai'
@@ -83,6 +83,7 @@ const jsOutputDir = artifactsDir + 'generate/js'
 const reactOutputDir = artifactsDir + 'generate/react'
 
 describe('generate types', () => {
+    beforeEach(setCurrentTestFile(__filename))
     chai.use(jestSnapshotPlugin())
 
     after(() => {
