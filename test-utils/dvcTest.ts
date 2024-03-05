@@ -18,5 +18,8 @@ export const dvcTest = () =>
                         obfuscation: {},
                     },
                 },
+                {
+                    key: 'test-project',
+                },
             ])
         })
