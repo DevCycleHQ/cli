@@ -71,7 +71,7 @@ export default class GenerateTypes extends Base {
             default: true,
         }),
         obfuscate: Flags.boolean({
-            description: 'Obfuscate the variable keys',
+            description: 'Obfuscate the variable keys.',
             default: false,
         }),
     }

@@ -580,7 +580,6 @@ __metadata:
     "@oclif/plugin-autocomplete": ^2.3.10
     "@oclif/plugin-help": ^6.0.5
     "@oclif/test": ^2.3.22
-    "@types/aes-js": ^3.1.4
     "@types/chai": ^4
     "@types/estraverse": ^5.1.5
     "@types/inquirer": ^8.2.0
@@ -592,7 +591,6 @@ __metadata:
     "@types/validator": ^13.7.1
     "@zodios/core": ^10.9.1
     "@zodios/openapi": ^10.4.7
-    aes-js: ^3.1.2
     axios: ^1.4.0
     chai: ^4
     chalk: ^4.1.0
@@ -1602,13 +1600,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aes-js@npm:^3.1.4":
-  version: 3.1.4
-  resolution: "@types/aes-js@npm:3.1.4"
-  checksum: 49a322dd8ae49fed4175b345e2198b6b72636d1dce06c13ac846aff6959a7bc109fc6bee5b7f2fb22d9faac7c15c534bb4ac12d9383401020ababa55e0fc47f5
-  languageName: node
-  linkType: hard
-
 "@types/babel__traverse@npm:^7.0.6":
   version: 7.20.1
   resolution: "@types/babel__traverse@npm:7.20.1"
@@ -2075,13 +2066,6 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 25dfb94952386ecfb847e61934de04a4e7c2dc21c2e700fc4e2ef27ce78cb717700c4c4f279cd630bb4774948633c3859fc16063ec8573bda4568e0a312e6744
-  languageName: node
-  linkType: hard
-
-"aes-js@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "aes-js@npm:3.1.2"
-  checksum: 062154d50b1e433cc8c3b8ca7879f3a6375d5e79c2a507b2b6c4ec920b4cd851bf2afa7f65c98761a9da89c0ab618cbe6529e8e9a1c71f93290b53128fb8f712
   languageName: node
   linkType: hard
 

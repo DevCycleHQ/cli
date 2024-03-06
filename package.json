@@ -28,7 +28,6 @@
         "@types/validator": "^13.7.1",
         "@zodios/core": "^10.9.1",
         "@zodios/openapi": "^10.4.7",
-        "aes-js": "^3.1.2",
         "axios": "^1.4.0",
         "chalk": "^4.1.0",
         "class-transformer": "^0.5.1",
@@ -51,7 +50,6 @@
     },
     "devDependencies": {
         "@oclif/test": "^2.3.22",
-        "@types/aes-js": "^3.1.4",
         "@types/chai": "^4",
         "@types/minimatch": "^5.1.2",
         "@types/mocha": "^9.0.0",
