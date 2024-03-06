@@ -101,6 +101,11 @@ export default class GenerateTypes extends Base {
             this.project.settings.obfuscation.enabled &&
             this.project.settings.obfuscation.required
         ) {
+            if (!this.obfuscate) {
+                this.writer.infoMessage(
+                    'Obfuscation is required for this project, setting --obfuscate flag to true',
+                )
+            }
             this.obfuscate = true
         }
 

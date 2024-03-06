@@ -26,7 +26,6 @@ const SDKTypeVisibilitySettings = z.object({
 const ObfuscationSettings = z.object({
     enabled: z.boolean(),
     required: z.boolean(),
-    key: z.array(z.number()),
 })
 const ProjectSettings = z.object({
     edgeDB: EdgeDBSettings,
