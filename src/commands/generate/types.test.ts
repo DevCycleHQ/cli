@@ -1,10 +1,13 @@
 import { expect } from '@oclif/test'
 import { BASE_URL } from '../../api/common'
-import { dvcTest } from '../../../test-utils'
+import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import * as fs from 'fs'
+import chai from 'chai'
 
 const mockVariablesResponse = [
     {
+        _id: '644aae12eb9d66fdd57fbd04',
         name: 'enum-var',
         key: 'enum-var',
         type: 'String',
@@ -17,6 +20,7 @@ const mockVariablesResponse = [
         },
     },
     {
+        _id: '644aae12eb9d66fdd57fbd05',
         name: 'regex-var',
         key: 'regex-var',
         type: 'String',
@@ -28,6 +32,7 @@ const mockVariablesResponse = [
         },
     },
     {
+        _id: '644aae12eb9d66fdd57fcd04',
         name: 'string-var',
         key: 'string-var',
         type: 'String',
@@ -35,6 +40,7 @@ const mockVariablesResponse = [
         createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
+        _id: '644aae12eb9e66fdd57fbd04',
         name: 'boolean-var',
         key: 'boolean-var',
         type: 'Boolean',
@@ -42,6 +48,7 @@ const mockVariablesResponse = [
         createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
+        _id: '644aaf12eb9d66fdd57fbd04',
         name: 'number-var',
         key: 'number-var',
         type: 'Number',
@@ -49,6 +56,7 @@ const mockVariablesResponse = [
         createdAt: '2021-07-04T20:00:00.000Z',
     },
     {
+        _id: '644bae12eb9d66fdd57fbd04',
         name: 'json-var',
         key: 'json-var',
         type: 'JSON',
@@ -74,114 +82,10 @@ const artifactsDir = './test/artifacts/'
 const jsOutputDir = artifactsDir + 'generate/js'
 const reactOutputDir = artifactsDir + 'generate/react'
 
-const expectedTypesString = `type DVCJSON = { [key: string]: string | boolean | number }
-
-export type DVCVariableTypes = {
-    /*
-    created by: User 1
-    created on: 2021-07-04
-    */
-    'enum-var': 'Hello' | 'Hey' | 'Hi'
-    /*
-    created by: User 2
-    created on: 2021-07-04
-    */
-    'regex-var': string
-    /*
-    created by: User 1
-    created on: 2021-07-04
-    */
-    'string-var': string
-    /*
-    created by: User 2
-    created on: 2021-07-04
-    */
-    'boolean-var': boolean
-    /*
-    created by: User 1
-    created on: 2021-07-04
-    */
-    'number-var': number
-    /*
-    created by: Unknown User
-    created on: 2021-07-04
-    */
-    'json-var': DVCJSON
-}`
-
-const expectedReactTypesString = `import { DVCVariable, DVCVariableValue } from '@devcycle/js-client-sdk'
-import {
-    useVariable as originalUseVariable,
-    useVariableValue as originalUseVariableValue
-} from '@devcycle/react-client-sdk'
-
-type DVCJSON = { [key: string]: string | boolean | number }
-
-export type DVCVariableTypes = {
-    /*
-    created by: User 1
-    created on: 2021-07-04
-    */
-    'enum-var': 'Hello' | 'Hey' | 'Hi'
-    /*
-    created by: User 2
-    created on: 2021-07-04
-    */
-    'regex-var': string
-    /*
-    created by: User 1
-    created on: 2021-07-04
-    */
-    'string-var': string
-    /*
-    created by: User 2
-    created on: 2021-07-04
-    */
-    'boolean-var': boolean
-    /*
-    created by: User 1
-    created on: 2021-07-04
-    */
-    'number-var': number
-    /*
-    created by: Unknown User
-    created on: 2021-07-04
-    */
-    'json-var': DVCJSON
-}
-
-export type UseVariableValue = <
-    K extends string & keyof DVCVariableTypes,
-    T extends DVCVariableValue & DVCVariableTypes[K],
->(
-    key: K,
-    defaultValue: T
-) => DVCVariable<T>['value']
-
-export const useVariableValue: UseVariableValue = originalUseVariableValue
-
-export type UseVariable = <
-    K extends string & keyof DVCVariableTypes,
-    T extends DVCVariableValue & DVCVariableTypes[K],
->(
-    key: K,
-    defaultValue: T
-) => DVCVariable<T>
-
-export const useVariable: UseVariable = originalUseVariable`
-
-const expectedTypesStringInlinedWithDescriptions = `type DVCJSON = { [key: string]: string | boolean | number }
-
-export type DVCVariableTypes = {
-    'enum-var': 'Hello' | 'Hey' | 'Hi' // (Different ways to say hello) created by User 1 on 2021-07-04
-    'regex-var': string // created by User 2 on 2021-07-04
-    'string-var': string // created by User 1 on 2021-07-04
-    'boolean-var': boolean // created by User 2 on 2021-07-04
-    'number-var': number // created by User 1 on 2021-07-04
-    'json-var': DVCJSON // created by Unknown User on 2021-07-04
-}`
-
 describe('generate types', () => {
+    beforeEach(setCurrentTestFile(__filename))
+    chai.use(jestSnapshotPlugin())
+
     after(() => {
         fs.rmSync(artifactsDir, { recursive: true })
     })
@@ -213,7 +117,7 @@ describe('generate types', () => {
             expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
             expect(fs.existsSync(outputDir)).to.be.true
             const typesString = fs.readFileSync(outputDir, 'utf-8')
-            expect(typesString).to.equal(expectedTypesString)
+            expect(typesString).toMatchSnapshot()
         })
 
     dvcTest()
@@ -243,7 +147,7 @@ describe('generate types', () => {
             const outputDir = reactOutputDir + '/dvcVariableTypes.ts'
             expect(fs.existsSync(outputDir)).to.be.true
             const typesString = fs.readFileSync(outputDir, 'utf-8')
-            expect(typesString).to.equal(expectedReactTypesString)
+            expect(typesString).toMatchSnapshot()
             expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
         })
 
@@ -314,8 +218,37 @@ describe('generate types', () => {
             expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
             expect(fs.existsSync(outputDir)).to.be.true
             const typesString = fs.readFileSync(outputDir, 'utf-8')
-            expect(typesString).to.equal(
-                expectedTypesStringInlinedWithDescriptions,
-            )
+            expect(typesString).toMatchSnapshot()
+        })
+
+    dvcTest()
+        .nock(BASE_URL, (api) =>
+            api
+                .get(
+                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
+                )
+                .reply(200, mockVariablesResponse)
+                .get('/v1/organizations/current/members')
+                .reply(200, mockOrganizationMembersResponse),
+        )
+        .stdout()
+        .command([
+            'generate:types',
+            '--output-dir',
+            jsOutputDir,
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
+            '--obfuscate',
+        ])
+        .it('correctly generates JS SDK types with obfuscated keys', (ctx) => {
+            const outputDir = jsOutputDir + '/dvcVariableTypes.ts'
+            expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
+            expect(fs.existsSync(outputDir)).to.be.true
+            const typesString = fs.readFileSync(outputDir, 'utf-8')
+            expect(typesString).toMatchSnapshot()
         })
 })

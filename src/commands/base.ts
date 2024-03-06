@@ -28,6 +28,7 @@ import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
 import { getTokenExpiry } from '../auth/utils'
 import SSOAuth from '../auth/SSOAuth'
 import TableOutput from '../ui/tableOutput'
+import { Project } from '../api/schemas'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -276,19 +277,28 @@ export default abstract class Base extends Command {
     async requireProject(
         projectFlag?: string,
         headless?: boolean,
-    ): Promise<void> {
-        if (this.projectKey !== '') {
-            return
-        }
+    ): Promise<Project> {
         const projects = await fetchProjects(this.authToken)
+
+        const findProjectByKey = (key: string) => {
+            const project = projects.find((proj) => proj.key === key)
+            if (!project) {
+                throw new Error(
+                    `Project details could not be retrieved for configured project: ${key}`,
+                )
+            }
+            this.projectKey = key
+            return project
+        }
+
+        if (this.projectKey !== '') {
+            return findProjectByKey(this.projectKey)
+        }
+
         if (headless && !projectFlag) {
             throw new Error('In headless mode, project flag is required.')
         } else if (projectFlag) {
-            const project = projects.find((proj) => proj.key === projectFlag)
-            if (!project) {
-                throw new Error(`Project not found for key ${projectFlag}`)
-            }
-            this.projectKey = projectFlag
+            return findProjectByKey(projectFlag)
         } else {
             const project = await promptForProject(projects)
             this.projectKey = project.key
@@ -304,6 +314,8 @@ export default abstract class Base extends Command {
                 await this.updateUserConfig({ project: this.projectKey })
             }
         }
+
+        return findProjectByKey(this.projectKey)
     }
 
     hasToken(): boolean {
