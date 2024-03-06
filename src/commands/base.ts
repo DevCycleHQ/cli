@@ -280,26 +280,25 @@ export default abstract class Base extends Command {
     ): Promise<Project> {
         const projects = await fetchProjects(this.authToken)
 
-        if (this.projectKey !== '') {
-            const project = projects.find(
-                (proj) => proj.key === this.projectKey,
-            )
+        const findProjectByKey = (key: string) => {
+            const project = projects.find((proj) => proj.key === key)
             if (!project) {
                 throw new Error(
-                    `Project details could not be retrieved for configured project: ${this.projectKey}`,
+                    `Project details could not be retrieved for configured project: ${key}`,
                 )
             }
+            this.projectKey = key
             return project
+        }
+
+        if (this.projectKey !== '') {
+            return findProjectByKey(this.projectKey)
         }
 
         if (headless && !projectFlag) {
             throw new Error('In headless mode, project flag is required.')
         } else if (projectFlag) {
-            const project = projects.find((proj) => proj.key === projectFlag)
-            if (!project) {
-                throw new Error(`Project not found for key ${projectFlag}`)
-            }
-            this.projectKey = projectFlag
+            return findProjectByKey(projectFlag)
         } else {
             const project = await promptForProject(projects)
             this.projectKey = project.key
@@ -316,13 +315,7 @@ export default abstract class Base extends Command {
             }
         }
 
-        const project = projects.find((proj) => proj.key === this.projectKey)
-        if (!project) {
-            throw new Error(
-                `Project details could not be retrieved for configured project: ${this.projectKey}`,
-            )
-        }
-        return project
+        return findProjectByKey(this.projectKey)
     }
 
     hasToken(): boolean {
