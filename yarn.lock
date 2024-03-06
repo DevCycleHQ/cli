@@ -605,7 +605,7 @@ __metadata:
     globby: ^11
     inquirer: ^8.2.0
     inquirer-autocomplete-prompt: ^2.0.0
-    js-sha256: ^0.9.0
+    js-sha256: ^0.11.0
     js-yaml: ^4.1.0
     lodash: ^4.17.21
     minimatch: ^9.0.0
@@ -5430,10 +5430,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-sha256@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "js-sha256@npm:0.9.0"
-  checksum: ffad54b3373f81581e245866abfda50a62c483803a28176dd5c28fd2d313e0bdf830e77dac7ff8afd193c53031618920f3d98daf21cbbe80082753ab639c0365
+"js-sha256@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "js-sha256@npm:0.11.0"
+  checksum: 742d34a0c6eb15247309f1c74889b5a51df01a96e4307375b420fbe973f2f25585012b4d3c8fa52a1b18546153d12587e6463bb725dc1bc58686da03e892c334
   languageName: node
   linkType: hard
 

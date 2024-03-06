@@ -23,10 +23,15 @@ const OptInSettings = z.object({
 const SDKTypeVisibilitySettings = z.object({
     enabledInFeatureSettings: z.boolean(),
 })
+const ObfuscationSettings = z.object({
+    enabled: z.boolean(),
+    required: z.boolean(),
+})
 const ProjectSettings = z.object({
     edgeDB: EdgeDBSettings,
     optIn: OptInSettings,
     sdkTypeVisibility: SDKTypeVisibilitySettings,
+    obfuscation: ObfuscationSettings,
 })
 const CreateProjectDto = z.object({
     name: z.string().max(100),

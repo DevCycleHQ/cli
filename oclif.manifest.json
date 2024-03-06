@@ -2085,6 +2085,12 @@
           "type": "boolean",
           "description": "Include variable descriptions in the variable information comment",
           "allowNo": false
+        },
+        "obfuscate": {
+          "name": "obfuscate",
+          "type": "boolean",
+          "description": "Obfuscate the variable keys",
+          "allowNo": false
         }
       },
       "args": {}
