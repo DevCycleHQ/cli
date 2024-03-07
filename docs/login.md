@@ -36,6 +36,8 @@ EXAMPLES
   $ dvc login again
 ```
 
+_See code: [src/commands/login/again.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/login/again.ts)_
+
 ## `dvc login sso`
 
 Log in through the DevCycle Universal Login. This will open a browser window.
@@ -62,3 +64,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Log in through the DevCycle Universal Login. This will open a browser window.
 ```
+
+_See code: [src/commands/login/sso.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/login/sso.ts)_

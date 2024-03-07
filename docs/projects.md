@@ -40,6 +40,8 @@ DESCRIPTION
   Create a new Project
 ```
 
+_See code: [src/commands/projects/create.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/projects/create.ts)_
+
 ## `dvc projects current`
 
 View currently selected project
@@ -63,6 +65,8 @@ GLOBAL FLAGS
 DESCRIPTION
   View currently selected project
 ```
+
+_See code: [src/commands/projects/current.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/projects/current.ts)_
 
 ## `dvc projects get`
 
@@ -95,6 +99,8 @@ DESCRIPTION
   Retrieve all projects in the current Organization
 ```
 
+_See code: [src/commands/projects/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/projects/get.ts)_
+
 ## `dvc projects list`
 
 List the keys of all projects in the current Organization
@@ -121,6 +127,8 @@ DESCRIPTION
 ALIASES
   $ dvc projects ls
 ```
+
+_See code: [src/commands/projects/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/projects/list.ts)_
 
 ## `dvc projects ls`
 
@@ -175,3 +183,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Select which project to access through the API
 ```
+
+_See code: [src/commands/projects/select.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/projects/select.ts)_

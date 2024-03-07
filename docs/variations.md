@@ -47,6 +47,8 @@ EXAMPLES
   $ dvc variations create --variables='{ "bool-var": true, "num-var": 80, "string-var": "test" }'
 ```
 
+_See code: [src/commands/variations/create.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/variations/create.ts)_
+
 ## `dvc variations get [FEATURE]`
 
 Retrieve variations for a feature from the management API
@@ -73,6 +75,8 @@ GLOBAL FLAGS
 DESCRIPTION
   Retrieve variations for a feature from the management API
 ```
+
+_See code: [src/commands/variations/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/variations/get.ts)_
 
 ## `dvc variations list [FEATURE]`
 
@@ -103,6 +107,8 @@ DESCRIPTION
 ALIASES
   $ dvc variations ls
 ```
+
+_See code: [src/commands/variations/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/variations/list.ts)_
 
 ## `dvc variations ls [FEATURE]`
 
@@ -167,3 +173,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Update a Variation.
 ```
+
+_See code: [src/commands/variations/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/variations/update.ts)_

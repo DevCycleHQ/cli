@@ -2089,7 +2089,7 @@
         "obfuscate": {
           "name": "obfuscate",
           "type": "boolean",
-          "description": "Obfuscate the variable keys",
+          "description": "Obfuscate the variable keys.",
           "allowNo": false
         }
       },

@@ -43,6 +43,8 @@ DESCRIPTION
   Create a new Feature.
 ```
 
+_See code: [src/commands/features/create.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/features/create.ts)_
+
 ## `dvc features delete [FEATURE]`
 
 Delete a feature
@@ -69,6 +71,8 @@ GLOBAL FLAGS
 DESCRIPTION
   Delete a feature
 ```
+
+_See code: [src/commands/features/delete.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/features/delete.ts)_
 
 ## `dvc features get`
 
@@ -106,6 +110,8 @@ EXAMPLES
   $ dvc features get --keys=feature-one,feature-two
 ```
 
+_See code: [src/commands/features/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/features/get.ts)_
+
 ## `dvc features list`
 
 View all features in a project
@@ -138,6 +144,8 @@ DESCRIPTION
 ALIASES
   $ dvc features ls
 ```
+
+_See code: [src/commands/features/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/features/list.ts)_
 
 ## `dvc features ls`
 
@@ -204,3 +212,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Update a Feature.
 ```
+
+_See code: [src/commands/features/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/features/update.ts)_

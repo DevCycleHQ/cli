@@ -32,6 +32,8 @@ DESCRIPTION
   Retrieve Organizations available to the current user
 ```
 
+_See code: [src/commands/organizations/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/organizations/get.ts)_
+
 ## `dvc organizations list`
 
 List the keys of all organizations available to the current user
@@ -58,6 +60,8 @@ DESCRIPTION
 ALIASES
   $ dvc organizations ls
 ```
+
+_See code: [src/commands/organizations/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/organizations/list.ts)_
 
 ## `dvc organizations ls`
 
@@ -112,3 +116,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Select which organization to access through the API
 ```
+
+_See code: [src/commands/organizations/select.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/organizations/select.ts)_
