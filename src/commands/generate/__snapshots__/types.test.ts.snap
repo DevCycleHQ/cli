@@ -112,12 +112,12 @@ exports[`generate types correctly generates JS SDK types with obfuscated keys 1`
 "type DVCJSON = { [key: string]: string | boolean | number }
 
 export type DVCVariableTypes = {
-    'dvc_obfs_644aae12eb9d66fdd57fbd04': 'Hello' | 'Hey' | 'Hi'
-    'dvc_obfs_644aae12eb9d66fdd57fbd05': string
-    'dvc_obfs_644aae12eb9d66fdd57fcd04': string
-    'dvc_obfs_644aae12eb9e66fdd57fbd04': boolean
-    'dvc_obfs_644aaf12eb9d66fdd57fbd04': number
-    'dvc_obfs_644bae12eb9d66fdd57fbd04': DVCJSON
+    'dvc_obfs_8397a7cc0bd9847dab4cfcffc90d01385e21fec6f1d3999e3aaac2a137d69964': 'Hello' | 'Hey' | 'Hi'
+    'dvc_obfs_cabd691e35fffe317483d72108898be69e03c7611dfb035660e4f71b9ed8cc44': string
+    'dvc_obfs_ceb6db49d7e9c00eb307304a7a23f2c404777030a4324bf34ce50ed7148a4e79': string
+    'dvc_obfs_9d44428272a4f0f8fefd891d93f0268ca3e52464ca95147d077437ba82318700': boolean
+    'dvc_obfs_f66155be75be4dc7e53cc13a7837db8b389be45c8bd65653e384f7afaddba1d7': number
+    'dvc_obfs_a991871dbce45b30da1e125ae28b59eb74c1da1f48ad6a2112ac5395093f37f0': DVCJSON
 }
 
 /**
@@ -126,42 +126,42 @@ export type DVCVariableTypes = {
     created by: User 1
     created on: 2021-07-04
 */
-export const ENUM_VAR = 'dvc_obfs_644aae12eb9d66fdd57fbd04' as const
+export const ENUM_VAR = 'dvc_obfs_8397a7cc0bd9847dab4cfcffc90d01385e21fec6f1d3999e3aaac2a137d69964' as const
 
 /**
     key: regex-var
     created by: User 2
     created on: 2021-07-04
 */
-export const REGEX_VAR = 'dvc_obfs_644aae12eb9d66fdd57fbd05' as const
+export const REGEX_VAR = 'dvc_obfs_cabd691e35fffe317483d72108898be69e03c7611dfb035660e4f71b9ed8cc44' as const
 
 /**
     key: string-var
     created by: User 1
     created on: 2021-07-04
 */
-export const STRING_VAR = 'dvc_obfs_644aae12eb9d66fdd57fcd04' as const
+export const STRING_VAR = 'dvc_obfs_ceb6db49d7e9c00eb307304a7a23f2c404777030a4324bf34ce50ed7148a4e79' as const
 
 /**
     key: boolean-var
     created by: User 2
     created on: 2021-07-04
 */
-export const BOOLEAN_VAR = 'dvc_obfs_644aae12eb9e66fdd57fbd04' as const
+export const BOOLEAN_VAR = 'dvc_obfs_9d44428272a4f0f8fefd891d93f0268ca3e52464ca95147d077437ba82318700' as const
 
 /**
     key: number-var
     created by: User 1
     created on: 2021-07-04
 */
-export const NUMBER_VAR = 'dvc_obfs_644aaf12eb9d66fdd57fbd04' as const
+export const NUMBER_VAR = 'dvc_obfs_f66155be75be4dc7e53cc13a7837db8b389be45c8bd65653e384f7afaddba1d7' as const
 
 /**
     key: json-var
     created by: Unknown User
     created on: 2021-07-04
 */
-export const JSON_VAR = 'dvc_obfs_644bae12eb9d66fdd57fbd04' as const
+export const JSON_VAR = 'dvc_obfs_a991871dbce45b30da1e125ae28b59eb74c1da1f48ad6a2112ac5395093f37f0' as const
 "
 `;
 
