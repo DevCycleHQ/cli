@@ -5,6 +5,7 @@ import { Flags } from '@oclif/core'
 import { Project, Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 import { upperCase } from 'lodash'
+import { sha256 } from 'js-sha256'
 
 const reactImports = (oldRepos: boolean) => {
     const jsRepo = oldRepos
@@ -227,7 +228,7 @@ export const ${constantName} = '${hashedKey}' as const`
     }
 
     private encryptKey(variable: Variable) {
-        return `dvc_obfs_${variable._id}`
+        return `dvc_obfs_${sha256(variable._id)}`
     }
 }
 
