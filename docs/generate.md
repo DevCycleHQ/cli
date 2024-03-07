@@ -18,7 +18,7 @@ USAGE
 FLAGS
   --include-descriptions  Include variable descriptions in the variable information comment
   --inline-comments       Inline variable informaton comment on the same line as the type definition
-  --obfuscate             Obfuscate the variable keys
+  --obfuscate             Obfuscate the variable keys.
   --old-repos             Generate types for use with old DevCycle repos (@devcycle/devcycle-react-sdk,
                           @devcycle/devcycle-js-sdk)
   --output-dir=<value>    [default: .] Directory to output the generated types to
@@ -38,3 +38,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Generate Variable Types from the management API
 ```
+
+_See code: [src/commands/generate/types.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/generate/types.ts)_

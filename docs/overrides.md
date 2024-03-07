@@ -39,6 +39,8 @@ DESCRIPTION
   Clear Overrides for a given Feature or Project.
 ```
 
+_See code: [src/commands/overrides/clear.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/overrides/clear.ts)_
+
 ## `dvc overrides get`
 
 View the Overrides associated with your DevCycle Identity in your current project.
@@ -67,6 +69,8 @@ GLOBAL FLAGS
 DESCRIPTION
   View the Overrides associated with your DevCycle Identity in your current project.
 ```
+
+_See code: [src/commands/overrides/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/overrides/get.ts)_
 
 ## `dvc overrides list`
 
@@ -106,6 +110,8 @@ DESCRIPTION
 ALIASES
   $ dvc overrides ls
 ```
+
+_See code: [src/commands/overrides/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/overrides/list.ts)_
 
 ## `dvc overrides ls`
 
@@ -178,3 +184,5 @@ DESCRIPTION
 EXAMPLES
   $ dvc overrides update --feature feature-key --environment env-key --variation variation-key
 ```
+
+_See code: [src/commands/overrides/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/overrides/update.ts)_

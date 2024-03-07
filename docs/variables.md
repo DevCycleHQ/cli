@@ -44,6 +44,8 @@ DESCRIPTION
   Create a new Variable for an existing Feature.
 ```
 
+_See code: [src/commands/variables/create.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/variables/create.ts)_
+
 ## `dvc variables get`
 
 ```
@@ -69,6 +71,8 @@ GLOBAL FLAGS
   --project=<value>           Project key to use for the DevCycle API requests
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 ```
+
+_See code: [src/commands/variables/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/variables/get.ts)_
 
 ## `dvc variables list`
 
@@ -97,6 +101,8 @@ GLOBAL FLAGS
 ALIASES
   $ dvc variables ls
 ```
+
+_See code: [src/commands/variables/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/variables/list.ts)_
 
 ## `dvc variables ls`
 
@@ -154,3 +160,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Update a Variable.
 ```
+
+_See code: [src/commands/variables/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/variables/update.ts)_

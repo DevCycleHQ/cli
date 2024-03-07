@@ -30,6 +30,8 @@ DESCRIPTION
   Print your DevCycle Identity.
 ```
 
+_See code: [src/commands/identity/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/identity/get.ts)_
+
 ## `dvc identity update`
 
 Update your DevCycle Identity.
@@ -56,3 +58,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Update your DevCycle Identity.
 ```
+
+_See code: [src/commands/identity/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/identity/update.ts)_

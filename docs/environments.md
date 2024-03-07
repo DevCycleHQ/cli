@@ -41,6 +41,8 @@ DESCRIPTION
   Create a new Environment for an existing Feature.
 ```
 
+_See code: [src/commands/environments/create.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/environments/create.ts)_
+
 ## `dvc environments get`
 
 Retrieve Environments from the management API
@@ -73,6 +75,8 @@ EXAMPLES
   $ dvc environments get --keys=environment-one,environment-two
 ```
 
+_See code: [src/commands/environments/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/environments/get.ts)_
+
 ## `dvc environments list`
 
 ```
@@ -94,6 +98,8 @@ GLOBAL FLAGS
 ALIASES
   $ dvc environments ls
 ```
+
+_See code: [src/commands/environments/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/environments/list.ts)_
 
 ## `dvc environments ls`
 
@@ -148,3 +154,5 @@ GLOBAL FLAGS
 DESCRIPTION
   Update a Environment.
 ```
+
+_See code: [src/commands/environments/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/environments/update.ts)_

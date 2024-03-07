@@ -39,6 +39,8 @@ EXAMPLES
   $ dvc targeting disable feature-one environment-one
 ```
 
+_See code: [src/commands/targeting/disable.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/targeting/disable.ts)_
+
 ## `dvc targeting enable [FEATURE] [ENVIRONMENT]`
 
 Enable the Targeting for the specified Environment on a Feature
@@ -69,6 +71,8 @@ DESCRIPTION
 EXAMPLES
   $ dvc targeting enable feature-one environment-one
 ```
+
+_See code: [src/commands/targeting/enable.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/targeting/enable.ts)_
 
 ## `dvc targeting get [FEATURE] [ENVIRONMENT]`
 
@@ -102,6 +106,8 @@ EXAMPLES
 
   $ dvc targeting get feature-one environment-one
 ```
+
+_See code: [src/commands/targeting/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/targeting/get.ts)_
 
 ## `dvc targeting update [FEATURE] [ENVIRONMENT]`
 
@@ -137,3 +143,5 @@ DESCRIPTION
   Update Targeting rules for a Feature. The definition is the audience for the feature, while serve is the key of the
   variation to serve to the audience.
 ```
+
+_See code: [src/commands/targeting/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.13.0/src/commands/targeting/update.ts)_
