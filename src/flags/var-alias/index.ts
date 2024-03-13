@@ -14,7 +14,8 @@ export function getVariableAliases(
     flags: Record<string, any>,
     config: RepoConfigFromFile | null,
 ) {
-    const variableAliases: Record<string, string> = {}
+    const variableAliases: Record<string, string> =
+        config?.codeInsights?.variableAliases ?? {}
     const typesFileLocation = config?.typeGenerator?.fileLocation
 
     if (typesFileLocation) {
@@ -57,8 +58,6 @@ export function getVariableAliases(
                 }
             }
         })
-
-        console.log('ALIASES', variableAliases)
     }
 
     return (flags['var-alias'] || []).reduce(
