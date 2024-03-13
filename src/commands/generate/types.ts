@@ -247,11 +247,9 @@ export const ${constantName} = '${hashedKey}' as const`
 
     private updateAliasesInRepo() {
         if (!this.repoConfig) {
-            if (this.updateAliases) {
-                this.writer.failureMessage(
-                    'Repo configuration not found, aliases will not be updated',
-                )
-            }
+            this.writer.failureMessage(
+                'Repo configuration not found, aliases will not be updated',
+            )
             return
         }
         const configChanges = {
