@@ -75,14 +75,22 @@ export default class GenerateTypes extends Base {
             description: 'Obfuscate the variable keys.',
             default: false,
         }),
+        'update-aliases': Flags.boolean({
+            description:
+                'Also update aliases in your repo configuration file so that code detection can find the ' +
+                'usages of generated constants',
+            default: false,
+        }),
     }
     authRequired = true
     methodNames: Record<string, string[]> = {}
+    constantAliases: Record<string, string> = {}
     orgMembers: OrganizationMember[]
     includeDescriptions = false
     inlineComments = false
     obfuscate = false
     project: Project
+    updateAliases = false
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(GenerateTypes)
@@ -92,10 +100,12 @@ export default class GenerateTypes extends Base {
             'include-descriptions': includeDescriptions,
             'inline-comments': inlineComments,
             obfuscate,
+            'update-aliases': updateAliases,
         } = flags
         this.includeDescriptions = includeDescriptions
         this.inlineComments = inlineComments
         this.obfuscate = obfuscate
+        this.updateAliases = updateAliases
         this.project = await this.requireProject(project, headless)
 
         if (this.project.settings.obfuscation.required) {
@@ -132,6 +142,7 @@ export default class GenerateTypes extends Base {
                 `${flags['output-dir']}/dvcVariableTypes.ts`,
                 typesString,
             )
+            this.updateAliasesInRepo()
             this.writer.successMessage(
                 `Generated new types to ${flags['output-dir']}/dvcVariableTypes.ts`,
             )
@@ -204,6 +215,7 @@ export default class GenerateTypes extends Base {
 
     private getVariableDefinition(variable: Variable) {
         const constantName = this.getVariableGeneratedName(variable)
+        this.constantAliases[constantName] = variable.key
 
         const hashedKey = this.obfuscate
             ? this.encryptKey(variable)
@@ -229,6 +241,24 @@ export const ${constantName} = '${hashedKey}' as const`
 
     private encryptKey(variable: Variable) {
         return `dvc_obfs_${createHash('sha256').update(variable._id).digest('hex')}`
+    }
+
+    private updateAliasesInRepo() {
+        if (!this.repoConfig) {
+            if (this.updateAliases) {
+                this.writer.failureMessage(
+                    'Repo configuration not found, aliases will not be updated',
+                )
+            }
+            return
+        }
+        const configChanges = {
+            codeInsights: {
+                ...this.repoConfig.codeInsights,
+                variableAliases: this.constantAliases,
+            },
+        }
+        this.updateRepoConfig(configChanges)
     }
 }
 
