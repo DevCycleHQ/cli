@@ -40,7 +40,7 @@ export function getVariableAliases(
                         if (commentLine.trim().startsWith('/**')) {
                             break
                         }
-                        if (commentLine.trim().startsWith('* key:')) {
+                        if (commentLine.trim().startsWith('key:')) {
                             key = commentLine.split(': ')[1]
                             foundKey = true
                             break
