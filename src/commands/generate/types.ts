@@ -142,7 +142,9 @@ export default class GenerateTypes extends Base {
                 `${flags['output-dir']}/dvcVariableTypes.ts`,
                 typesString,
             )
-            this.updateAliasesInRepo()
+            if (this.updateAliases) {
+                this.updateAliasesInRepo()
+            }
             this.writer.successMessage(
                 `Generated new types to ${flags['output-dir']}/dvcVariableTypes.ts`,
             )
