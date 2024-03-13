@@ -73,6 +73,12 @@ export class SavedOrganization {
     display_name: string
 }
 
+export class TypeGenerator {
+    @IsString()
+    @IsOptional()
+    fileLocation?: string
+}
+
 export class CodeInsights {
     @IsString({ each: true })
     @IsOptional()
@@ -122,6 +128,11 @@ export class RepoConfigFromFile {
     @IsOptional()
     @ValidateNested()
     codeInsights?: CodeInsights
+
+    @Type(() => TypeGenerator)
+    @IsOptional()
+    @ValidateNested()
+    typeGenerator?: TypeGenerator
 }
 
 export class AuthFromFile {

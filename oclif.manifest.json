@@ -2091,12 +2091,6 @@
           "type": "boolean",
           "description": "Obfuscate the variable keys.",
           "allowNo": false
-        },
-        "update-aliases": {
-          "name": "update-aliases",
-          "type": "boolean",
-          "description": "Also update aliases in your repo configuration file so that code detection can find the usages of generated constants",
-          "allowNo": false
         }
       },
       "args": {}

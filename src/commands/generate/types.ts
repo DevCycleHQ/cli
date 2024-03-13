@@ -6,6 +6,7 @@ import { Project, Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 import { upperCase } from 'lodash'
 import { createHash } from 'crypto'
+import path from 'path'
 
 const reactImports = (oldRepos: boolean) => {
     const jsRepo = oldRepos
@@ -75,22 +76,15 @@ export default class GenerateTypes extends Base {
             description: 'Obfuscate the variable keys.',
             default: false,
         }),
-        'update-aliases': Flags.boolean({
-            description:
-                'Also update aliases in your repo configuration file so that code detection can find the ' +
-                'usages of generated constants',
-            default: false,
-        }),
     }
     authRequired = true
     methodNames: Record<string, string[]> = {}
-    constantAliases: Record<string, string> = {}
     orgMembers: OrganizationMember[]
     includeDescriptions = false
     inlineComments = false
     obfuscate = false
     project: Project
-    updateAliases = false
+    outputDir: string
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(GenerateTypes)
@@ -100,12 +94,12 @@ export default class GenerateTypes extends Base {
             'include-descriptions': includeDescriptions,
             'inline-comments': inlineComments,
             obfuscate,
-            'update-aliases': updateAliases,
+            'output-dir': outputDir,
         } = flags
         this.includeDescriptions = includeDescriptions
         this.inlineComments = inlineComments
         this.obfuscate = obfuscate
-        this.updateAliases = updateAliases
+        this.outputDir = outputDir
         this.project = await this.requireProject(project, headless)
 
         if (this.project.settings.obfuscation.required) {
@@ -142,9 +136,7 @@ export default class GenerateTypes extends Base {
                 `${flags['output-dir']}/dvcVariableTypes.ts`,
                 typesString,
             )
-            if (this.updateAliases) {
-                this.updateAliasesInRepo()
-            }
+            this.updateFileLocation()
             this.writer.successMessage(
                 `Generated new types to ${flags['output-dir']}/dvcVariableTypes.ts`,
             )
@@ -204,12 +196,16 @@ export default class GenerateTypes extends Base {
         return `'${this.obfuscate ? this.encryptKey(variable) : variable.key}': ${getVariableType(variable)}`
     }
 
-    private getVariableInfoComment(variable: Variable, indent: boolean) {
+    private getVariableInfoComment(
+        variable: Variable,
+        indent: boolean,
+        inline?: boolean,
+    ) {
         return getVariableInfoComment(
             variable,
             this.orgMembers,
             this.includeDescriptions,
-            this.inlineComments,
+            inline ?? this.inlineComments,
             this.obfuscate,
             indent,
         )
@@ -217,14 +213,13 @@ export default class GenerateTypes extends Base {
 
     private getVariableDefinition(variable: Variable) {
         const constantName = this.getVariableGeneratedName(variable)
-        this.constantAliases[constantName] = variable.key
 
         const hashedKey = this.obfuscate
             ? this.encryptKey(variable)
             : variable.key
 
         return `
-${this.getVariableInfoComment(variable, false)}
+${this.getVariableInfoComment(variable, false, false)}
 export const ${constantName} = '${hashedKey}' as const`
     }
 
@@ -245,20 +240,32 @@ export const ${constantName} = '${hashedKey}' as const`
         return `dvc_obfs_${createHash('sha256').update(variable._id).digest('hex')}`
     }
 
-    private updateAliasesInRepo() {
+    private updateFileLocation() {
         if (!this.repoConfig) {
-            this.writer.failureMessage(
-                'Repo configuration not found, aliases will not be updated',
-            )
             return
         }
-        const configChanges = {
-            codeInsights: {
-                ...this.repoConfig.codeInsights,
-                variableAliases: this.constantAliases,
-            },
+        const fileLocation = this.repoConfig.typeGenerator?.fileLocation
+        const newFileLocation = path.join(
+            this.outputDir,
+            '/dvcVariableTypes.ts',
+        )
+        if (fileLocation !== newFileLocation) {
+            this.updateRepoConfig({
+                typeGenerator: {
+                    ...this.repoConfig.typeGenerator,
+                    fileLocation: newFileLocation,
+                },
+            })
+            if (fileLocation) {
+                this.writer.successMessage(
+                    `Updated configured types file location to ${newFileLocation}`,
+                )
+            } else {
+                this.writer.successMessage(
+                    `Stored configured types file location as ${newFileLocation}`,
+                )
+            }
         }
-        this.updateRepoConfig(configChanges)
     }
 }
 
