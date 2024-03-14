@@ -88,22 +88,41 @@ export type DVCVariableTypes = {
     'json-var': DVCJSON // created by Unknown User on 2021-07-04
 }
 
- // (Different ways to say hello) created by User 1 on 2021-07-04
+/**
+    description: Different ways to say hello
+    created by: User 1
+    created on: 2021-07-04
+*/
 export const ENUM_VAR = 'enum-var' as const
 
- // created by User 2 on 2021-07-04
+/**
+    created by: User 2
+    created on: 2021-07-04
+*/
 export const REGEX_VAR = 'regex-var' as const
 
- // created by User 1 on 2021-07-04
+/**
+    created by: User 1
+    created on: 2021-07-04
+*/
 export const STRING_VAR = 'string-var' as const
 
- // created by User 2 on 2021-07-04
+/**
+    created by: User 2
+    created on: 2021-07-04
+*/
 export const BOOLEAN_VAR = 'boolean-var' as const
 
- // created by User 1 on 2021-07-04
+/**
+    created by: User 1
+    created on: 2021-07-04
+*/
 export const NUMBER_VAR = 'number-var' as const
 
- // created by Unknown User on 2021-07-04
+/**
+    created by: Unknown User
+    created on: 2021-07-04
+*/
 export const JSON_VAR = 'json-var' as const
 "
 `;
