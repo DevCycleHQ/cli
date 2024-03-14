@@ -6,6 +6,7 @@ import { Project, Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 import { upperCase } from 'lodash'
 import { createHash } from 'crypto'
+import path from 'path'
 
 const reactImports = (oldRepos: boolean) => {
     const jsRepo = oldRepos
@@ -83,6 +84,7 @@ export default class GenerateTypes extends Base {
     inlineComments = false
     obfuscate = false
     project: Project
+    outputDir: string
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(GenerateTypes)
@@ -92,10 +94,12 @@ export default class GenerateTypes extends Base {
             'include-descriptions': includeDescriptions,
             'inline-comments': inlineComments,
             obfuscate,
+            'output-dir': outputDir,
         } = flags
         this.includeDescriptions = includeDescriptions
         this.inlineComments = inlineComments
         this.obfuscate = obfuscate
+        this.outputDir = outputDir
         this.project = await this.requireProject(project, headless)
 
         if (this.project.settings.obfuscation.required) {
@@ -132,6 +136,7 @@ export default class GenerateTypes extends Base {
                 `${flags['output-dir']}/dvcVariableTypes.ts`,
                 typesString,
             )
+            this.updateFileLocation()
             this.writer.successMessage(
                 `Generated new types to ${flags['output-dir']}/dvcVariableTypes.ts`,
             )
@@ -191,12 +196,16 @@ export default class GenerateTypes extends Base {
         return `'${this.obfuscate ? this.encryptKey(variable) : variable.key}': ${getVariableType(variable)}`
     }
 
-    private getVariableInfoComment(variable: Variable, indent: boolean) {
+    private getVariableInfoComment(
+        variable: Variable,
+        indent: boolean,
+        inline?: boolean,
+    ) {
         return getVariableInfoComment(
             variable,
             this.orgMembers,
             this.includeDescriptions,
-            this.inlineComments,
+            inline ?? this.inlineComments,
             this.obfuscate,
             indent,
         )
@@ -210,7 +219,7 @@ export default class GenerateTypes extends Base {
             : variable.key
 
         return `
-${this.getVariableInfoComment(variable, false)}
+${this.getVariableInfoComment(variable, false, false)}
 export const ${constantName} = '${hashedKey}' as const`
     }
 
@@ -229,6 +238,27 @@ export const ${constantName} = '${hashedKey}' as const`
 
     private encryptKey(variable: Variable) {
         return `dvc_obfs_${createHash('sha256').update(variable._id).digest('hex')}`
+    }
+
+    private updateFileLocation() {
+        if (!this.repoConfig) {
+            return
+        }
+        const outputPath = this.repoConfig.typeGenerator?.outputPath
+        const newOutputPath = path.join(this.outputDir, '/dvcVariableTypes.ts')
+        if (outputPath !== newOutputPath) {
+            this.updateRepoConfig({
+                typeGenerator: {
+                    ...this.repoConfig.typeGenerator,
+                    outputPath: newOutputPath,
+                },
+            })
+            this.writer.successMessage(
+                outputPath
+                    ? `Updated configured types output path to ${newOutputPath}`
+                    : `Stored configured types output path as ${newOutputPath}`,
+            )
+        }
     }
 }
 
