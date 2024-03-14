@@ -16,48 +16,10 @@ export function getVariableAliases(
 ) {
     const variableAliases: Record<string, string> =
         config?.codeInsights?.variableAliases ?? {}
-    const typesFileLocation = config?.typeGenerator?.fileLocation
+    const typesFileLocation = config?.typeGenerator?.outputPath
 
     if (typesFileLocation) {
-        // load types file and iterate each line
-        // if line matches a variable alias, add to variableAliasesFromConfig
-        const lines = fs.readFileSync(typesFileLocation, 'utf8').split('\n')
-        lines.forEach((line, index) => {
-            if (
-                line.startsWith('export const') &&
-                !line.includes('useVariable')
-            ) {
-                const [_, assignment] = line.split('export const')
-                const [constant, keyAndExtras] = assignment.split('=')
-                let key = keyAndExtras.match(/'([^']+)'/)?.[1]
-
-                if (key?.startsWith('dvc_obfs')) {
-                    const commentLines = lines
-                        .slice(index - 20, index)
-                        .reverse()
-                    let foundKey = false
-                    for (const commentLine of commentLines) {
-                        if (commentLine.trim().startsWith('/**')) {
-                            break
-                        }
-                        if (commentLine.trim().startsWith('key:')) {
-                            key = commentLine.split(': ')[1]
-                            foundKey = true
-                            break
-                        }
-                    }
-                    if (!foundKey) {
-                        throw new Error(
-                            `Could not find key for obfuscated variable ${constant}`,
-                        )
-                    }
-                }
-
-                if (key) {
-                    variableAliases[constant.trim()] = key.trim()
-                }
-            }
-        })
+        addAliasesFromTypeGenerator(typesFileLocation, variableAliases)
     }
 
     return (flags['var-alias'] || []).reduce(
@@ -72,4 +34,44 @@ export function getVariableAliases(
         },
         variableAliases,
     )
+}
+
+const addAliasesFromTypeGenerator = (
+    typesFileLocation: string,
+    variableAliases: Record<string, string>,
+) => {
+    // load types file and iterate each line
+    // if line matches a variable alias, add to variableAliasesFromConfig
+    const lines = fs.readFileSync(typesFileLocation, 'utf8').split('\n')
+    lines.forEach((line, index) => {
+        if (line.startsWith('export const') && !line.includes('useVariable')) {
+            const [_, assignment] = line.split('export const')
+            const [constant, keyAndExtras] = assignment.split('=')
+            let key = keyAndExtras.match(/'([^']+)'/)?.[1]
+
+            if (key?.startsWith('dvc_obfs')) {
+                const commentLines = lines.slice(index - 20, index).reverse()
+                let foundKey = false
+                for (const commentLine of commentLines) {
+                    if (commentLine.trim().startsWith('/**')) {
+                        break
+                    }
+                    if (commentLine.trim().startsWith('key:')) {
+                        key = commentLine.split(': ')[1]
+                        foundKey = true
+                        break
+                    }
+                }
+                if (!foundKey) {
+                    throw new Error(
+                        `Could not find key for obfuscated variable ${constant}`,
+                    )
+                }
+            }
+
+            if (key) {
+                variableAliases[constant.trim()] = key.trim()
+            }
+        }
+    })
 }

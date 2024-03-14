@@ -76,7 +76,7 @@ export class SavedOrganization {
 export class TypeGenerator {
     @IsString()
     @IsOptional()
-    fileLocation?: string
+    outputPath?: string
 }
 
 export class CodeInsights {

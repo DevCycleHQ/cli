@@ -244,27 +244,20 @@ export const ${constantName} = '${hashedKey}' as const`
         if (!this.repoConfig) {
             return
         }
-        const fileLocation = this.repoConfig.typeGenerator?.fileLocation
-        const newFileLocation = path.join(
-            this.outputDir,
-            '/dvcVariableTypes.ts',
-        )
-        if (fileLocation !== newFileLocation) {
+        const outputPath = this.repoConfig.typeGenerator?.outputPath
+        const newOutputPath = path.join(this.outputDir, '/dvcVariableTypes.ts')
+        if (outputPath !== newOutputPath) {
             this.updateRepoConfig({
                 typeGenerator: {
                     ...this.repoConfig.typeGenerator,
-                    fileLocation: newFileLocation,
+                    outputPath: newOutputPath,
                 },
             })
-            if (fileLocation) {
-                this.writer.successMessage(
-                    `Updated configured types file location to ${newFileLocation}`,
-                )
-            } else {
-                this.writer.successMessage(
-                    `Stored configured types file location as ${newFileLocation}`,
-                )
-            }
+            this.writer.successMessage(
+                outputPath
+                    ? `Updated configured types output path to ${newOutputPath}`
+                    : `Stored configured types output path as ${newOutputPath}`,
+            )
         }
     }
 }
