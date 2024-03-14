@@ -31,7 +31,7 @@ export type UseVariableValue = <
     defaultValue: DVCVariableTypes[K]
 ) => DVCVariableTypes[K]
 
-export const useVariableValue: UseVariableValue = originalUseVariableValue
+export const useVariableValue = originalUseVariableValue as UseVariableValue
 
 export type UseVariable = <
     K extends string & keyof DVCVariableTypes,
@@ -41,7 +41,9 @@ export type UseVariable = <
     defaultValue: DVCVariableTypes[K]
 ) => DVCVariable<T>
 
-export const useVariable: UseVariable = originalUseVariable`
+export const useVariable = originalUseVariable as UseVariable
+
+`
 
 export default class GenerateTypes extends Base {
     static hidden = false
@@ -164,15 +166,13 @@ export default class GenerateTypes extends Base {
 
         let types =
             (react ? reactImports(oldRepos) : '') +
+            (react ? reactOverrides : '') +
             'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
             'export type DVCVariableTypes = {\n' +
             typeLines.join('\n') +
             '\n}'
         types += '\n' + definitionLines.join('\n')
         types += '\n' + ''
-        if (react) {
-            types += reactOverrides
-        }
         return types
     }
 
