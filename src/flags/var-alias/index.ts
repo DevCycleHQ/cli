@@ -36,13 +36,21 @@ export function getVariableAliases(
     )
 }
 
-const addAliasesFromTypeGenerator = (
+export const addAliasesFromTypeGenerator = (
     typesFileLocation: string,
+    variableAliases: Record<string, string>,
+) => {
+    const file = fs.readFileSync(typesFileLocation, 'utf8')
+    getVariableAliasesFromTypeGeneratorFile(file, variableAliases)
+}
+
+export const getVariableAliasesFromTypeGeneratorFile = (
+    file: string,
     variableAliases: Record<string, string>,
 ) => {
     // load types file and iterate each line
     // if line matches a variable alias, add to variableAliasesFromConfig
-    const lines = fs.readFileSync(typesFileLocation, 'utf8').split('\n')
+    const lines = file.split('\n')
     lines.forEach((line, index) => {
         if (line.startsWith('export const') && !line.includes('useVariable')) {
             const [_, assignment] = line.split('export const')
@@ -64,7 +72,7 @@ const addAliasesFromTypeGenerator = (
                 }
                 if (!foundKey) {
                     throw new Error(
-                        `Could not find key for obfuscated variable ${constant}`,
+                        `Could not find key for obfuscated variable ${constant.trim()}`,
                     )
                 }
             }
