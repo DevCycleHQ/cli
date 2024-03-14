@@ -191,6 +191,26 @@ import {
     useVariableValue as originalUseVariableValue
 } from '@devcycle/react-client-sdk'
 
+
+export type UseVariableValue = <
+    K extends string & keyof DVCVariableTypes
+>(
+    key: K,
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariableTypes[K]
+
+export const useVariableValue = originalUseVariableValue as UseVariableValue
+
+export type UseVariable = <
+    K extends string & keyof DVCVariableTypes,
+    T extends DVCVariableValue & DVCVariableTypes[K],
+>(
+    key: K,
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariable<T>
+
+export const useVariable = originalUseVariable as UseVariable
+
 type DVCJSON = { [key: string]: string | boolean | number }
 
 export type DVCVariableTypes = {
@@ -263,23 +283,5 @@ export const NUMBER_VAR = 'number-var' as const
     created on: 2021-07-04
 */
 export const JSON_VAR = 'json-var' as const
-
-export type UseVariableValue = <
-    K extends string & keyof DVCVariableTypes
->(
-    key: K,
-    defaultValue: DVCVariableTypes[K]
-) => DVCVariableTypes[K]
-
-export const useVariableValue: UseVariableValue = originalUseVariableValue
-
-export type UseVariable = <
-    K extends string & keyof DVCVariableTypes,
-    T extends DVCVariableValue & DVCVariableTypes[K],
->(
-    key: K,
-    defaultValue: DVCVariableTypes[K]
-) => DVCVariable<T>
-
-export const useVariable: UseVariable = originalUseVariable"
+"
 `;
