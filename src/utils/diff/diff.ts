@@ -20,7 +20,7 @@ export const executeDiff = (
             files = ' ' + getFilteredFiles(flags, codeInsightsConfig).join(' ')
         }
 
-        execSync(`git diff ${diffCommand}${files} > diff.txt`, {
+        execSync(`git diff ${diffCommand}"${files}" > diff.txt`, {
             stdio: 'ignore',
         })
         return parse(readFileSync('diff.txt', 'utf8'))
