@@ -10,24 +10,31 @@ export const executeDiff = (
     codeInsightsConfig?: CodeInsights,
 ): parse.File[] => {
     try {
-        let files = ''
+        let files: string[] = []
         if (
             codeInsightsConfig?.includeFiles ||
             codeInsightsConfig?.excludeFiles ||
             flags.include ||
             flags.exclude
         ) {
-            files =
-                ' "' +
-                getFilteredFiles(flags, codeInsightsConfig).join('" "') +
-                '"'
+            files = getFilteredFiles(flags, codeInsightsConfig)
         }
 
-        execSync(`git diff ${diffCommand} -- ${files} > diff.txt`, {
+        const fullCommand = constructFullDiffCommand(diffCommand, files)
+
+        execSync(fullCommand, {
             stdio: 'ignore',
         })
         return parse(readFileSync('diff.txt', 'utf8'))
     } finally {
         execSync('rm diff.txt', { stdio: 'ignore' })
     }
+}
+
+export const constructFullDiffCommand = (
+    diffCommand: string,
+    files: string[],
+) => {
+    let joinedFiles = files.length ? ' -- "' + files.join('" "') + '"' : ''
+    return `git diff ${diffCommand}${joinedFiles} > diff.txt`
 }
