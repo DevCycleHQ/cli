@@ -35,6 +35,6 @@ export const constructFullDiffCommand = (
     diffCommand: string,
     files: string[],
 ) => {
-    let joinedFiles = files.length ? ' -- "' + files.join('" "') + '"' : ''
+    const joinedFiles = files.length ? ' -- "' + files.join('" "') + '"' : ''
     return `git diff ${diffCommand}${joinedFiles} > diff.txt`
 }
