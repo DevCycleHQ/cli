@@ -10,7 +10,7 @@ import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 import { VariableMatch, VariableUsageMatch } from '../../utils/parsers/types'
 import { fetchAllVariables } from '../../api/variables'
 import { Variable } from '../../api/schemas'
-import { getFilteredFiles } from '../../utils/getFilteredFiles'
+import { FileFilters } from '../../utils/FileFilters'
 
 export default class Usages extends Base {
     static hidden = false
@@ -77,9 +77,8 @@ export default class Usages extends Base {
             }
         }
 
-        const files = getFilteredFiles(flags, codeInsightsConfig).map(
-            processFile,
-        )
+        const fileFilters = new FileFilters(flags, codeInsightsConfig)
+        const files = fileFilters.getFiles().map(processFile)
 
         if (!files.length) {
             this.warn('No files found to process.')

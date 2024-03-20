@@ -13,6 +13,7 @@ import MatchPatternFlag, { getMatchPatterns } from '../../flags/match-pattern'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 import { Variable } from '../../api/schemas'
+import { FileFilters } from '../../utils/FileFilters'
 
 const EMOJI = {
     add: '🟢',
@@ -111,11 +112,16 @@ export default class Diff extends Base {
         this.useMarkdown = flags.format.includes('markdown')
         this.useHTML = flags.format === 'markdown'
 
-        const parsedDiff = flags.file
+        let parsedDiff = flags.file
             ? executeFileDiff(flags.file)
             : args['diff-pattern']
-              ? executeDiff(args['diff-pattern'], flags, codeInsightsConfig)
+              ? executeDiff(args['diff-pattern'])
               : []
+
+        const fileFilter = new FileFilters(flags, codeInsightsConfig)
+        parsedDiff = parsedDiff.filter(({ from = '', to = ''}) => {
+            return fileFilter.shouldIncludeFile(from) || fileFilter.shouldIncludeFile(to)
+        })
 
         const matchesBySdk = parseFiles(parsedDiff, {
             clientNames: getClientNames(flags, this.repoConfig),
