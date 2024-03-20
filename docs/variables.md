@@ -44,7 +44,7 @@ DESCRIPTION
   Create a new Variable for an existing Feature.
 ```
 
-_See code: [src/commands/variables/create.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.3/src/commands/variables/create.ts)_
+_See code: [src/commands/variables/create.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.4/src/commands/variables/create.ts)_
 
 ## `dvc variables get`
 
@@ -72,7 +72,7 @@ GLOBAL FLAGS
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
 ```
 
-_See code: [src/commands/variables/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.3/src/commands/variables/get.ts)_
+_See code: [src/commands/variables/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.4/src/commands/variables/get.ts)_
 
 ## `dvc variables list`
 
@@ -102,7 +102,7 @@ ALIASES
   $ dvc variables ls
 ```
 
-_See code: [src/commands/variables/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.3/src/commands/variables/list.ts)_
+_See code: [src/commands/variables/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.4/src/commands/variables/list.ts)_
 
 ## `dvc variables ls`
 
@@ -161,4 +161,4 @@ DESCRIPTION
   Update a Variable.
 ```
 
-_See code: [src/commands/variables/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.3/src/commands/variables/update.ts)_
+_See code: [src/commands/variables/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.4/src/commands/variables/update.ts)_
