@@ -55,4 +55,4 @@ EXAMPLES
   $ dvc diff --match-pattern js="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [src/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.3/src/commands/diff/index.ts)_
+_See code: [src/commands/diff/index.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.4/src/commands/diff/index.ts)_

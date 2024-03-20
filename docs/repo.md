@@ -32,4 +32,4 @@ DESCRIPTION
   Create the repo configuration file. This will open a browser window.
 ```
 
-_See code: [src/commands/repo/init.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.3/src/commands/repo/init.ts)_
+_See code: [src/commands/repo/init.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.4/src/commands/repo/init.ts)_
