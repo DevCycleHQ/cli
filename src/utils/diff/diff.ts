@@ -1,40 +1,20 @@
 import { execSync } from 'node:child_process'
 import parse from 'parse-diff'
-import { readFileSync } from 'fs'
-import { getFilteredFiles } from '../getFilteredFiles'
-import { CodeInsights } from '../../types'
+import { readFileSync, rmSync, existsSync } from 'fs'
+
+const TEMP_FILE = 'diff.txt'
 
 export const executeDiff = (
     diffCommand: string,
-    flags: { include?: string[]; exclude?: string[] },
-    codeInsightsConfig?: CodeInsights,
 ): parse.File[] => {
     try {
-        let files: string[] = []
-        if (
-            codeInsightsConfig?.includeFiles ||
-            codeInsightsConfig?.excludeFiles ||
-            flags.include ||
-            flags.exclude
-        ) {
-            files = getFilteredFiles(flags, codeInsightsConfig)
-        }
-
-        const fullCommand = constructFullDiffCommand(diffCommand, files)
-
-        execSync(fullCommand, {
+        execSync(`git diff ${diffCommand} > diff.txt`, {
             stdio: 'ignore',
         })
-        return parse(readFileSync('diff.txt', 'utf8'))
+        return parse(readFileSync(TEMP_FILE, 'utf8'))
     } finally {
-        execSync('rm diff.txt', { stdio: 'ignore' })
+        if (existsSync(TEMP_FILE)) {
+            rmSync(TEMP_FILE)
+        }
     }
-}
-
-export const constructFullDiffCommand = (
-    diffCommand: string,
-    files: string[],
-) => {
-    const joinedFiles = files.length ? ' -- "' + files.join('" "') + '"' : ''
-    return `git diff ${diffCommand}${joinedFiles} > diff.txt`
 }
