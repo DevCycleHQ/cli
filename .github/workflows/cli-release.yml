@@ -91,7 +91,7 @@ jobs:
       
       # Move this to release action yml once it works the first time
       - name: Update Homebrew Formula
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           repository: DevCycleHQ/homebrew-cli
