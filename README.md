@@ -4,10 +4,10 @@ DevCycle CLI
 DevCycle CLI for interacting with DevCycle features from the command line.
 
 Major features include:
-- fully manage your Features, Variables, Variations and Targeting Rules from the command line
-- detect and list DevCycle Variable usages in your codebase
-- manage your Self-Targeting Overrides to quickly switch between Variable values
-- generate type definitions for type-safe usage of DevCycle (Typescript only)
+- Fully manage your Features, Variables, Variations and Targeting Rules from the command line
+- Detect and list DevCycle Variable usages in your codebase
+- Manage your Self-Targeting Overrides to quickly switch between Variable values
+- Generate type definitions for type-safe usage of DevCycle (Typescript only)
 
 The CLI can be customized in several ways using command-line args or by creating a [configuration file](#repo-configuration).
 
@@ -106,7 +106,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/5.14.4 linux-x64 node-v20.10.0
+@devcycle/cli/5.14.4 darwin-arm64 node-v20.10.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
