@@ -3,6 +3,12 @@ DevCycle CLI
 
 DevCycle CLI for interacting with DevCycle features from the command line.
 
+Major features include:
+- fully manage your Features, Variables, Variations and Targeting Rules from the command line
+- detect and list DevCycle Variable usages in your codebase
+- manage your Self-Targeting Overrides to quickly switch between Variable values
+- generate type definitions for type-safe usage of DevCycle (Typescript only)
+
 The CLI can be customized in several ways using command-line args or by creating a [configuration file](#repo-configuration).
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
