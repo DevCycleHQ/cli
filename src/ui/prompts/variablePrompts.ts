@@ -192,6 +192,34 @@ export const getVariableValuePrompt = (
     }
 }
 
+export const getVariableCleanupValuePrompt = (
+    variable: CleanupVariable,
+    variableType: 'String' | 'Boolean' | 'Number' | 'JSON',
+) => {
+    switch (variableType) {
+        case 'Boolean':
+            return variableValueBooleanPrompt({
+                value: variable,
+                type: 'cleanupVariable',
+            })
+        case 'Number':
+            return variableValueNumberPrompt({
+                value: variable,
+                type: 'cleanupVariable',
+            })
+        case 'JSON':
+            return variableValueJSONPrompt({
+                value: variable,
+                type: 'cleanupVariable',
+            })
+        default:
+            return variableValueStringPrompt({
+                value: variable,
+                type: 'cleanupVariable',
+            })
+    }
+}
+
 export const createVariablePrompts: (Prompt | AutoCompletePrompt)[] = [
     namePrompt,
     keyPrompt,

@@ -9,6 +9,7 @@ import { EngineOptions } from '../../utils/refactor/RefactorEngine'
 import { Variable } from './types'
 import { ENGINES } from '../../utils/refactor'
 import {
+    getVariableCleanupValuePrompt,
     variablePrompt,
     variablePromptNoApi,
     VariablePromptResult,
@@ -107,10 +108,7 @@ export default class Cleanup extends Base {
         }
         if (!variable.value) {
             const input = await inquirer.prompt([
-                variableValueStringPrompt({
-                    value: variable,
-                    type: 'cleanupVariable',
-                }),
+                getVariableCleanupValuePrompt(variable, variable.type),
             ])
             variable.value = input[variable.key]
         }
