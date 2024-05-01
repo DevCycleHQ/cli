@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { minimatch } from 'minimatch'
 import { Flags, Args } from '@oclif/core'
 import chalk from 'chalk'
@@ -16,6 +17,9 @@ import {
     variableTypePrompt,
     variableValueStringPrompt,
 } from '../../ui/prompts'
+import { FileFilters } from '../../utils/FileFilters'
+import { LineItem } from '../usages/types'
+import { File } from '../usages/types'
 
 export default class Cleanup extends Base {
     static hidden = false
@@ -113,29 +117,25 @@ export default class Cleanup extends Base {
             variable.value = input[variable.key]
         }
 
-        const includeFile = (filepath: string) => {
-            const includeGlobs =
-                flags['include'] || codeInsightsConfig.includeFiles
-            return includeGlobs
-                ? includeGlobs.some((glob) =>
-                      minimatch(filepath, minimatch.escape(glob), {
-                          matchBase: true,
-                      }),
-                  )
-                : true
+        const processFile = (filepath: string): File => {
+            let lines: LineItem[] = []
+            try {
+                lines = fs
+                    .readFileSync(filepath, 'utf8')
+                    .split('\n')
+                    .map((content, idx) => ({ content, ln: idx + 1 }))
+            } catch (err) {
+                this.warn(`Error parsing file ${filepath}`)
+                this.debug(err)
+            }
+            return {
+                name: filepath,
+                lines,
+            }
         }
 
-        const excludeFile = (filepath: string) => {
-            const excludeGlobs =
-                flags['exclude'] || codeInsightsConfig.excludeFiles
-            return excludeGlobs
-                ? excludeGlobs.some((glob) =>
-                      minimatch(filepath, minimatch.escape(glob), {
-                          matchBase: true,
-                      }),
-                  )
-                : false
-        }
+        const fileFilters = new FileFilters(flags, codeInsightsConfig)
+        const files = fileFilters.getFiles().map(processFile)
 
         const aliases = new Set()
         Object.entries(getVariableAliases(flags, this.repoConfig)).forEach(
@@ -144,33 +144,29 @@ export default class Cleanup extends Base {
             },
         )
 
-        const files = lsFiles().filter(
-            (filepath) => includeFile(filepath) && !excludeFile(filepath),
-        )
-
         if (!files.length) {
             this.warn('No files found to process.')
             return
         }
 
-        files.forEach((filepath) => {
+        files.forEach((file) => {
             const options = {
                 output: flags.output || 'file',
                 aliases,
             } as EngineOptions
 
-            const fileExtension = filepath?.split('.').pop() ?? ''
+            const fileExtension = file?.name.split('.').pop() ?? ''
             if (!ENGINES[fileExtension]) return
             ENGINES[fileExtension].forEach((RefactorEngine) => {
                 try {
                     const engine = new RefactorEngine(
-                        filepath,
+                        file.name,
                         variable,
                         options,
                     )
                     engine.refactor()
                 } catch (err: any) {
-                    console.warn(chalk.yellow(`Error refactoring ${filepath}`))
+                    console.warn(chalk.yellow(`Error refactoring ${file.name}`))
                     console.warn(`\t${err.message}`)
                 }
             })
