@@ -19,7 +19,7 @@
     "dependencies": {
         "@babel/parser": "^7.23.0",
         "@oclif/core": "^2.8.5",
-        "@oclif/plugin-autocomplete": "^2.3.10",
+        "@oclif/plugin-autocomplete": "^3.0.16",
         "@oclif/plugin-help": "^6.0.5",
         "@types/estraverse": "^5.1.5",
         "@types/inquirer": "^8.2.0",
