@@ -40,8 +40,10 @@ export const addAliasesFromTypeGenerator = (
     typesFileLocation: string,
     variableAliases: Record<string, string>,
 ) => {
-    const file = fs.readFileSync(typesFileLocation, 'utf8')
-    getVariableAliasesFromTypeGeneratorFile(file, variableAliases)
+    if(fs.existsSync(typesFileLocation)) {
+        const file = fs.readFileSync(typesFileLocation, 'utf8')
+        getVariableAliasesFromTypeGeneratorFile(file, variableAliases)
+    }
 }
 
 export const getVariableAliasesFromTypeGeneratorFile = (
