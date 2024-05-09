@@ -4,6 +4,7 @@ import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import * as fs from 'fs'
 import chai from 'chai'
+import { Body, ReplyHeaders } from 'nock'
 
 const mockVariablesResponse = [
     {
@@ -76,7 +77,11 @@ const mockOrganizationMembersResponse = [
         name: 'User 2',
         email: 'test2@gmail.com',
     },
-]
+] as Body
+
+const mockOrganizationMembersResponseHeaders = {
+    count: 2,
+} as unknown as  ReplyHeaders
 
 const artifactsDir = './test/artifacts/'
 const jsOutputDir = artifactsDir + 'generate/js'
@@ -97,8 +102,8 @@ describe('generate types', () => {
                     '/v1/projects/project/variables?perPage=1000&page=1&status=active',
                 )
                 .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse),
+                .get('/v1/organizations/current/members?perPage=100')
+                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
         )
         .stdout()
         .command([
@@ -127,8 +132,8 @@ describe('generate types', () => {
                     '/v1/projects/project/variables?perPage=1000&page=1&status=active',
                 )
                 .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse),
+                .get('/v1/organizations/current/members?perPage=100')
+                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
         )
         .stdout()
         .command([
@@ -158,8 +163,8 @@ describe('generate types', () => {
                     '/v1/projects/project/variables?perPage=1000&page=1&status=active',
                 )
                 .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse),
+                .get('/v1/organizations/current/members?perPage=100')
+                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
         )
         .stdout()
         .command([
@@ -196,8 +201,8 @@ describe('generate types', () => {
                     '/v1/projects/project/variables?perPage=1000&page=1&status=active',
                 )
                 .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse),
+                .get('/v1/organizations/current/members?perPage=100')
+                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
         )
         .stdout()
         .command([
@@ -228,8 +233,8 @@ describe('generate types', () => {
                     '/v1/projects/project/variables?perPage=1000&page=1&status=active',
                 )
                 .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members')
-                .reply(200, mockOrganizationMembersResponse),
+                .get('/v1/organizations/current/members?perPage=100')
+                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
         )
         .stdout()
         .command([
