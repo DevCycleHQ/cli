@@ -7,32 +7,35 @@ export type OrganizationMember = {
     email?: string | undefined
 }
 
-export const fetchOrganizationMembers = async (token: string): Promise<OrganizationMember[]> => {
+export const fetchOrganizationMembers = async (
+    token: string,
+): Promise<OrganizationMember[]> => {
     const members: OrganizationMember[] = []
     const perPage = 100
-    const url = '/v1/organizations/current/members?perPage=' + perPage
-    const response = await axiosClient.get(url, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
-    })
 
+    const fetchMembers = (page = 1) => {
+        const url = `/v1/organizations/current/members?perPage=${perPage}&page=${page}`
+        return axiosClient.get(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+        })
+    }
+
+    const response = await fetchMembers()
     members.push(...response.data)
+    const total = response.headers.count
 
-    if (response.headers.count > response.data.length) {
-        const pages = Math.ceil(response.headers.count / perPage)
-        const promises = Array.from({ length: pages - 1 }, (_, i) =>
-            axiosClient.get(`/v1/organizations/current/members?perPage=${perPage}&page=${i + 2}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: token,
-                },
-            })
-        )
-        const results = await Promise.all(promises)
-        members.push(...results.map((result) => result.data))
-    } 
+    const promises = []
+    const totalPages = Math.ceil(total / perPage)
+    for (let i = 2; i <= totalPages; i++) {
+        promises.push(fetchMembers(i))
+    }
 
+    const responses = await Promise.all(promises)
+    for (const response of responses) {
+        members.push(...response.data)
+    }
     return members
 }
