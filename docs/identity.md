@@ -30,7 +30,7 @@ DESCRIPTION
   Print your DevCycle Identity.
 ```
 
-_See code: [src/commands/identity/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.7/src/commands/identity/get.ts)_
+_See code: [src/commands/identity/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.8/src/commands/identity/get.ts)_
 
 ## `dvc identity update`
 
@@ -59,4 +59,4 @@ DESCRIPTION
   Update your DevCycle Identity.
 ```
 
-_See code: [src/commands/identity/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.7/src/commands/identity/update.ts)_
+_See code: [src/commands/identity/update.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.8/src/commands/identity/update.ts)_
