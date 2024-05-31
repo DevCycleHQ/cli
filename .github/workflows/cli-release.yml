@@ -88,6 +88,13 @@ jobs:
         with:
           latest_tag: $LATEST_TAG
           access_token: ${{ secrets.AUTOMATION_USER_TOKEN }}
+
+      - name: Update VSCode Extension
+        if: inputs.npm-version == 'minor' || inputs.npm-version == 'patch'
+        uses: ./.github/actions/update-vscode-extension
+        with:
+          latest_tag: $LATEST_TAG
+          access_token: ${{ secrets.AUTOMATION_USER_TOKEN }}
       
       # Move this to release action yml once it works the first time
       - name: Update Homebrew Formula
