@@ -1,0 +1,58 @@
+name: Update VSCode Extension
+
+description: 'Update the CLI version in vscode-extension'
+
+inputs:
+  latest_tag:
+    required: true
+    description: 'The latest tag from the workflow that uses this action'
+  access_token:
+    required: true
+    description: 'The access token to use for authentication'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+      with:
+        repository: DevCycleHQ/vscode-extension
+        path: vscode-extension
+        token: ${{ inputs.access_token }}
+        fetch-depth: 0
+
+    - name: Set Git author
+      shell: bash
+      working-directory: vscode-extension
+      run: |
+        git config --global user.email "github-tracker-bot@taplytics.com"
+        git config --global user.name "DevCycle Automation"
+
+    - name: Set branch name
+      shell: bash
+      working-directory: vscode-extension
+      run: echo "BRANCH_NAME=update-cli-version-to-${{ inputs.latest_tag }}" >> $GITHUB_ENV
+
+    - name: Update CLI version in vscode extension
+      shell: bash
+      working-directory: vscode-extension
+      run: |
+        # Remove 'v' prefix from latest_tag
+        LATEST_TAG="${{ inputs.latest_tag }}"
+        CLI_VERSION="${LATEST_TAG#v}"
+        git checkout -b "$BRANCH_NAME"
+        sed -i "s/export const CLI_VERSION = .*/export const CLI_VERSION = '${CLI_VERSION}' \/\/ auto updated by dvc cli release workflow/" src/constants.ts
+        git add src/constants.ts
+        git commit -m "Update CLI version to ${{ inputs.latest_tag }}"
+
+    - name: Push code to extension repo
+      shell: bash
+      working-directory: vscode-extension
+      run: git push --set-upstream origin "$BRANCH_NAME"
+
+    - name: Create PR
+      shell: bash
+      working-directory: vscode-extension
+      env:
+        GH_TOKEN: ${{ inputs.access_token }}
+      run: gh pr create --repo DevCycleHQ/vscode-extension --base main --head "$BRANCH_NAME" --title "Update CLI version to $LATEST_TAG" --body "This PR was automatically created by the DevCycle CLI release workflow."
