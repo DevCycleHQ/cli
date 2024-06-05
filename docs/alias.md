@@ -39,4 +39,4 @@ EXAMPLES
   $ dvc alias add --alias=VARIABLE_ALIAS --variable=variable-key
 ```
 
-_See code: [src/commands/alias/add.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.9/src/commands/alias/add.ts)_
+_See code: [src/commands/alias/add.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.10/src/commands/alias/add.ts)_
