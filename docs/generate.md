@@ -39,4 +39,4 @@ DESCRIPTION
   Generate Variable Types from the management API
 ```
 
-_See code: [src/commands/generate/types.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.9/src/commands/generate/types.ts)_
+_See code: [src/commands/generate/types.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.10/src/commands/generate/types.ts)_
