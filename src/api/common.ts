@@ -1,5 +1,5 @@
 export const BASE_URL =
-    process.env.LOCAL === '1'
+    process.env.DVC_API_LOCAL === '1'
         ? 'http://localhost:4001'
         : 'https://api.devcycle.com'
 export const AUTH_URL = 'https://auth.devcycle.com/'
