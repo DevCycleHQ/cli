@@ -18,8 +18,8 @@ type OauthResponse = {
         refresh_token: string
     }
 }
-const SUPPORTED_PORTS = [80, 8080, 2194, 2195, 2196]
-const PORT = Number.parseInt(process.env.PORT || '2194')
+let SUPPORTED_PORTS = [8080, 2194, 2195, 2196]
+let PORT = Number.parseInt(process.env.PORT || '2194')
 
 type OauthParams = {
     grant_type: string
@@ -119,10 +119,27 @@ export default class SSOAuth {
                 this.writer.showError(
                     `Port ${PORT} already in use. Unable to log in.`,
                 )
+                SUPPORTED_PORTS = SUPPORTED_PORTS.filter((p) => p !== PORT)
+                if (!SUPPORTED_PORTS.length) {
+                    this.writer.showError(
+                        'No available ports to start local server',
+                    )
+                    exit(1)
+                }
+                PORT = SUPPORTED_PORTS[0]
+                setTimeout(() => {
+                    this.server.close()
+                    this.server.listen(PORT, host, () => {
+                        this.writer.statusMessage(
+                            'Opening browser for authentication...',
+                        )
+                        open(this.buildAuthorizeUrl())
+                    })
+                }, 1000)
             } else {
                 this.writer.showError(`Error: ${err.message}`)
+                exit(1)
             }
-            exit(1)
         })
 
         this.server.listen(PORT, host, () => {
