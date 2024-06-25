@@ -200,6 +200,53 @@ describe('diff', () => {
             expect(ctx.stdout).toMatchSnapshot()
         })
 
+    test.nock(AUTH_URL, (api) => {
+        api.post('/oauth/token', {
+            grant_type: 'client_credentials',
+            client_id: 'client',
+            client_secret: 'secret',
+            audience: 'https://api.devcycle.com/',
+        }).reply(200, {
+            access_token: 'token',
+        })
+    })
+        .nock(BASE_URL, { reqheaders: { authorization: 'token' } }, (api) => {
+            api.get(/v1\/projects\/project\/variables\/.*/)
+                .times(4)
+                .reply(200, (uri) => {
+                    const parts = uri.split('/')
+                    const key = parts[parts.length - 1]
+                    if (key.includes('no-exists')) {
+                        return null
+                    }
+
+                    return {
+                        key,
+                        type: 'String',
+                    }
+                })
+        })
+        .stdout()
+        .command([
+            'diff',
+            '--file',
+            'test-utils/fixtures/diff/apiEnrichment/enrichment',
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
+            '--caller',
+            'github.pr_insights',
+        ])
+        .it(
+            'enriches output with API data when caller is github.pr_insights without outputting API Errors',
+            (ctx) => {
+                expect(ctx.stdout).toMatchSnapshot()
+            },
+        )
+
     test.stdout()
         .command([
             'diff',
