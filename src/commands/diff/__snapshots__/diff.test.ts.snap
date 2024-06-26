@@ -37,6 +37,43 @@ The following variables that do not exist in DevCycle were cleaned up:
 "
 `;
 
+exports[`diff enriches output with API data when caller is github.pr_insights without outputting API Errors 1`] = `
+"
+DevCycle Variable Changes:
+
+⚠️   1 Variable With Notices
+🟢  2 Variables Added
+🔴  2 Variables Removed
+🧹  1 Variable Cleaned up
+
+⚠️  Notices
+
+  1. Variable \\"no-exists\\" does not exist on DevCycle
+
+🟢 Added
+
+  1. exists
+	   Type: String
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. no-exists ⚠️
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L2
+
+🔴 Removed
+
+  1. exists2
+	   Type: String
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. no-exists2 🧹
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L2
+
+🧹 Cleaned Up
+
+The following variables that do not exist in DevCycle were cleaned up:
+
+  1. no-exists2
+"
+`;
+
 exports[`diff formats the output as markdown 1`] = `
 "
 ## <img src=\\"https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg#gh-light-mode-only\\" height=\\"31px\\" align=\\"center\\"/><img src=\\"https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot-white.svg#gh-dark-mode-only\\" height=\\"31px\\" align=\\"center\\"/> DevCycle Variable Changes:

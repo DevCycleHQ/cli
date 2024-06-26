@@ -26,14 +26,22 @@ axiosClient.interceptors.response.use(
         return response
     },
     (error: AxiosError) => {
+        let isCallerCli = false
+        if (error.config) {
+            const parsedDvcReferrerMetadata = JSON.parse(
+                error.config.headers['dvc-referrer-metadata'],
+            )
+            isCallerCli = parsedDvcReferrerMetadata.caller === 'cli'
+        }
+
         if (error.response?.status === 401) {
             console.info(
                 'Authorization Error: Please login using "dvc login again".',
             )
-        } else if (error.response?.data) {
+        } else if (isCallerCli && error.response?.data) {
             const responseData = error.response?.data as Record<string, any>
             console.info('DevCycle Error:', responseData?.message)
-        } else if (error) {
+        } else if (isCallerCli && error.code) {
             console.info('DevCycle Error:', error.code)
         }
         // TODO: Handle this error properly, DVC-7758
