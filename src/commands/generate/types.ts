@@ -9,20 +9,26 @@ import { createHash } from 'crypto'
 import path from 'path'
 
 const reactImports = (oldRepos: boolean) => {
-    const jsRepo = oldRepos
-        ? '@devcycle/devcycle-js-sdk'
-        : '@devcycle/js-client-sdk'
-    const reactRepo = oldRepos
-        ? '@devcycle/devcycle-react-sdk'
-        : '@devcycle/react-client-sdk'
-    return `import { DVCVariable, DVCVariableValue } from '${jsRepo}'
+    if (oldRepos) {
+        return `import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
 import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue
-} from '${reactRepo}'
+} from '@devcycle/devcycle-react-sdk'
 
 `
+    } else {
+        return `import {
+    useVariable as originalUseVariable,
+    useVariableValue as originalUseVariableValue,
+    DVCVariable,
+    DVCVariableValue
+} from '@devcycle/react-client-sdk'
+
+`
+    }
 }
+
 const reactOverrides = `
 export type UseVariableValue = <
     K extends string & keyof DVCVariableTypes
@@ -193,7 +199,9 @@ export default class GenerateTypes extends Base {
     }
 
     private getVariableKeyAndType(variable: Variable) {
-        return `'${this.obfuscate ? this.encryptKey(variable) : variable.key}': ${getVariableType(variable)}`
+        return `'${
+            this.obfuscate ? this.encryptKey(variable) : variable.key
+        }': ${getVariableType(variable)}`
     }
 
     private getVariableInfoComment(
@@ -237,7 +245,9 @@ export const ${constantName} = '${hashedKey}' as const`
     }
 
     private encryptKey(variable: Variable) {
-        return `dvc_obfs_${createHash('sha256').update(variable._id).digest('hex')}`
+        return `dvc_obfs_${createHash('sha256')
+            .update(variable._id)
+            .digest('hex')}`
     }
 
     private updateFileLocation() {
