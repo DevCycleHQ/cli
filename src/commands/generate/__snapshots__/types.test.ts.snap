@@ -185,10 +185,11 @@ export const JSON_VAR = 'dvc_obfs_a991871dbce45b30da1e125ae28b59eb74c1da1f48ad6a
 `;
 
 exports[`generate types correctly generates React SDK types 1`] = `
-"import { DVCVariable, DVCVariableValue } from '@devcycle/js-client-sdk'
-import {
+"import {
     useVariable as originalUseVariable,
-    useVariableValue as originalUseVariableValue
+    useVariableValue as originalUseVariableValue,
+    DVCVariable,
+    DVCVariableValue
 } from '@devcycle/react-client-sdk'
 
 
