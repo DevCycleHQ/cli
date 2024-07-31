@@ -86,6 +86,12 @@ export default abstract class Base extends Command {
             ],
             hidden: true,
         }),
+        'no-browser-auth': Flags.boolean({
+            description: 'Disable automatic opening of a browser window',
+            default: false,
+            helpGroup: 'Global',
+            hidden: true,
+        }),
     }
 
     authToken = ''
@@ -124,6 +130,7 @@ export default abstract class Base extends Command {
     }
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
+        const noBrowser = flags['no-browser-auth']
         const auth = new ApiAuth(
             this.authPath,
             this.config.cacheDir,
@@ -134,7 +141,7 @@ export default abstract class Base extends Command {
 
         if (!this.personalAccessToken && this.userAuthRequired) {
             const ssoAuth = new SSOAuth(this.writer, this.authPath)
-            const tokens = await ssoAuth.getAccessToken()
+            const tokens = await ssoAuth.getAccessToken(noBrowser)
             this.personalAccessToken = tokens.personalAccessToken
         }
 

@@ -123,6 +123,7 @@ export default abstract class AuthCommand extends Base {
 
     async selectOrganization(organization: Organization): Promise<string> {
         const { flags } = await this.parse(AuthCommand)
+        const noBrowser = flags['no-browser-auth']
         const { id, name, display_name } = organization
 
         const auth = new ApiAuth(
@@ -133,7 +134,7 @@ export default abstract class AuthCommand extends Base {
         let accessToken = await auth.getToken(flags, id)
         if (!accessToken) {
             const ssoAuth = new SSOAuth(this.writer, this.authPath)
-            const tokens = await ssoAuth.getAccessToken(organization)
+            const tokens = await ssoAuth.getAccessToken(noBrowser, organization)
             accessToken = tokens.accessToken
         }
 
