@@ -44,20 +44,26 @@ export default class SSOAuth {
     private tokens: TokenResponse | undefined
     private writer: Writer
     private authPath: string
+    private noBrowser: boolean
 
     constructor(writer: Writer, authPath: string) {
         this.writer = writer
         this.authPath = authPath
     }
 
-    public async getAccessToken(): Promise<Required<TokenResponse>>
     public async getAccessToken(
+        noBrowser: boolean,
+    ): Promise<Required<TokenResponse>>
+    public async getAccessToken(
+        noBrowser: boolean,
         organization: Organization,
     ): Promise<Omit<TokenResponse, 'personalAccessToken'>>
     public async getAccessToken(
+        noBrowser: boolean,
         organization?: Organization,
     ): Promise<TokenResponse> {
         if (organization) this.organization = organization
+        if (noBrowser) this.noBrowser = noBrowser
         this.startLocalServer()
 
         const timeout = setTimeout(() => {
@@ -103,8 +109,6 @@ export default class SSOAuth {
         }
 
         this.codeVerifier = this.createRandomString()
-        const authorizeUrl = this.buildAuthorizeUrl()
-
         this.server = http.createServer(this.handleAuthRedirect.bind(this))
         this.server.on('error', (e) => {
             console.error(`Local server error ${e}`)
@@ -130,10 +134,7 @@ export default class SSOAuth {
                 setTimeout(() => {
                     this.server.close()
                     this.server.listen(PORT, host, () => {
-                        this.writer.statusMessage(
-                            'Opening browser for authentication...',
-                        )
-                        open(this.buildAuthorizeUrl())
+                        this.onServerStart(PORT)
                     })
                 }, 1000)
             } else {
@@ -143,8 +144,7 @@ export default class SSOAuth {
         })
 
         this.server.listen(PORT, host, () => {
-            this.writer.statusMessage('Opening browser for authentication...')
-            open(authorizeUrl)
+            this.onServerStart(PORT)
         })
         this.server.on('close', this.handleServerClosed.bind(this))
     }
@@ -153,9 +153,27 @@ export default class SSOAuth {
         this.done = true
     }
 
+    private onServerStart(PORT: number) {
+        const authorizeUrl = this.buildAuthorizeUrl()
+
+        if (this.noBrowser) {
+            this.writer.infoMessage(
+                `Started local server for authentication on PORT ${PORT}.`,
+            )
+            this.writer.infoMessageWithCommand(
+                `Please open the Login URL in a browser to complete the authentication process.`,
+                authorizeUrl,
+            )
+        } else {
+            this.writer.statusMessage('Opening browser for authentication...')
+            open(authorizeUrl)
+        }
+    }
+
     private handleAuthRedirect(req: IncomingMessage, res: ServerResponse) {
         const requestUrl = req.url || ''
         const parsed = url.parse(requestUrl, true)
+
         if (parsed.pathname === '/callback') {
             if (parsed.query.error) {
                 res.write(this.resultHtml('Authorization Error', false))
@@ -177,13 +195,12 @@ export default class SSOAuth {
 
     private async retrieveAccessToken(code: string) {
         const authHost = 'auth.devcycle.com'
-        const host = 'localhost'
         const data: OauthParams = {
             grant_type: 'authorization_code',
             client_id: CLI_CLIENT_ID,
             code_verifier: this.codeVerifier,
             code,
-            redirect_uri: `http://${host}:${PORT}/callback`,
+            redirect_uri: this.buildCallbackUrl(PORT),
             scope: 'offline_access',
         }
 
@@ -218,7 +235,6 @@ export default class SSOAuth {
 
     public buildAuthorizeUrl(): string {
         const authHost = 'auth.devcycle.com'
-        const host = 'localhost'
 
         const state = this.createRandomString()
         const code_challenge = createHash('sha256')
@@ -228,10 +244,7 @@ export default class SSOAuth {
         const url = new URL(`https://${authHost}/authorize`)
         url.searchParams.append('response_type', 'code')
         url.searchParams.append('client_id', CLI_CLIENT_ID)
-        url.searchParams.append(
-            'redirect_uri',
-            `http://${host}:${PORT}/callback`,
-        )
+        url.searchParams.append('redirect_uri', this.buildCallbackUrl(PORT))
         url.searchParams.append('state', state)
         url.searchParams.append('code_challenge', code_challenge)
         url.searchParams.append('code_challenge_method', 'S256')
@@ -242,6 +255,14 @@ export default class SSOAuth {
         }
 
         return url.toString()
+    }
+
+    private buildCallbackUrl(
+        port: number,
+        path = '/callback',
+        host = 'localhost',
+    ): string {
+        return `http://${host}:${port}${path}`
     }
 
     private createRandomString() {

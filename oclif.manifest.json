@@ -1,5 +1,5 @@
 {
-  "version": "5.14.13",
+  "version": "5.14.14",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -83,6 +83,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "org": {
           "name": "org",
@@ -175,6 +183,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -261,6 +277,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "key": {
           "name": "key",
@@ -359,6 +383,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "sortBy": {
           "name": "sortBy",
@@ -467,6 +499,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -553,6 +593,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "name": {
           "name": "name",
@@ -666,6 +714,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "alias": {
           "name": "alias",
           "type": "option",
@@ -769,6 +825,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "value": {
           "name": "value",
@@ -912,6 +976,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "include": {
           "name": "include",
@@ -1067,6 +1139,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "key": {
           "name": "key",
           "type": "option",
@@ -1188,6 +1268,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "keys": {
           "name": "keys",
           "type": "option",
@@ -1281,6 +1369,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -1368,6 +1464,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "name": {
           "name": "name",
@@ -1489,6 +1593,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "key": {
           "name": "key",
@@ -1613,6 +1725,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {
@@ -1709,6 +1829,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "keys": {
           "name": "keys",
@@ -1823,6 +1951,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "search": {
           "name": "search",
           "type": "option",
@@ -1927,6 +2063,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "name": {
           "name": "name",
@@ -2055,6 +2199,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "output-dir": {
           "name": "output-dir",
           "type": "option",
@@ -2178,6 +2330,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -2265,6 +2425,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "userId": {
           "name": "userId",
@@ -2362,6 +2530,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "env": {
           "name": "env",
@@ -2470,6 +2646,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "org": {
           "name": "org",
           "type": "option",
@@ -2564,6 +2748,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "org": {
           "name": "org",
           "type": "option",
@@ -2657,6 +2849,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -2744,6 +2944,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -2833,6 +3041,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -2920,6 +3136,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "org": {
           "name": "org",
@@ -3013,6 +3237,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "all": {
           "name": "all",
@@ -3119,6 +3351,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "feature": {
           "name": "feature",
           "type": "option",
@@ -3219,6 +3459,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "columns": {
           "name": "columns",
@@ -3383,6 +3631,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "feature": {
           "name": "feature",
           "type": "option",
@@ -3488,6 +3744,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "key": {
           "name": "key",
           "type": "option",
@@ -3592,6 +3856,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -3679,6 +3951,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "sortBy": {
           "name": "sortBy",
@@ -3790,6 +4070,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -3877,6 +4165,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "org": {
           "name": "org",
@@ -3972,6 +4268,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "org": {
           "name": "org",
           "type": "option",
@@ -4064,6 +4368,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}
@@ -4154,6 +4466,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {
@@ -4253,6 +4573,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {
@@ -4353,6 +4681,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {
@@ -4450,6 +4786,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "targets": {
           "name": "targets",
@@ -4566,6 +4910,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "include": {
           "name": "include",
@@ -4707,6 +5059,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "key": {
           "name": "key",
           "type": "option",
@@ -4835,6 +5195,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "keys": {
           "name": "keys",
           "type": "option",
@@ -4947,6 +5315,14 @@
             "vscode_extension"
           ]
         },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
+        },
         "search": {
           "name": "search",
           "type": "option",
@@ -5051,6 +5427,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "name": {
           "name": "name",
@@ -5158,6 +5542,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "key": {
           "name": "key",
@@ -5268,6 +5660,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {
@@ -5362,6 +5762,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {
@@ -5454,6 +5862,14 @@
             "cli",
             "vscode_extension"
           ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         },
         "name": {
           "name": "name",

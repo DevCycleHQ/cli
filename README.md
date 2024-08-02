@@ -49,6 +49,8 @@ This process will open browser windows to interact with the DevCycle universal l
 
 To switch organizations once logged in, the [`organizations select` command](docs/organizations.md) can be used.
 
+If executing the CLI in a containerized environment, please ensure one of the following PORTs can be accessed via Port Forwarding: 2194 (default), 2195, 2196 or 8080. This will allow the authentication process to complete and set the access token appropriately.
+
 ### Repo Init Command
 The [`repo init` command](docs/repo.md#dvc-repo-init) behaves in the same way as `login sso`, but creates a [repo configuration file](#repo-configuration) and stores the project and organization choices there instead.
 
