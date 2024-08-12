@@ -52,4 +52,4 @@ EXAMPLES
   $ dvc usages --match-pattern js="dvcClient\.variable\(\s*["']([^"']*)["']"
 ```
 
-_See code: [src/commands/usages/index.ts](https://github.com/DevCycleHQ/cli/blob/v5.14.14/src/commands/usages/index.ts)_
+_See code: [src/commands/usages/index.ts](https://github.com/DevCycleHQ/cli/blob/v5.15.0/src/commands/usages/index.ts)_
