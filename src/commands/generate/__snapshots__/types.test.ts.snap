@@ -192,6 +192,26 @@ exports[`generate types correctly generates Next.js SDK types 1`] = `
     DVCVariableValue
 } from '@devcycle/nextjs-sdk'
 
+
+export type UseVariableValue = <
+    K extends string & keyof DVCVariableTypes
+>(
+    key: K,
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariableTypes[K]
+
+export const useVariableValue = originalUseVariableValue as UseVariableValue
+
+export type UseVariable = <
+    K extends string & keyof DVCVariableTypes,
+    T extends DVCVariableValue & DVCVariableTypes[K],
+>(
+    key: K,
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariable<T>
+
+export const useVariable = originalUseVariable as UseVariable
+
 type DVCJSON = { [key: string]: string | boolean | number }
 
 export type DVCVariableTypes = {
