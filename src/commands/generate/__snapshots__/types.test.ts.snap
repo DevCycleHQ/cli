@@ -184,6 +184,89 @@ export const JSON_VAR = 'dvc_obfs_a991871dbce45b30da1e125ae28b59eb74c1da1f48ad6a
 "
 `;
 
+exports[`generate types correctly generates Next.js SDK types 1`] = `
+"import {
+    useVariable as originalUseVariable,
+    useVariableValue as originalUseVariableValue,
+    DVCVariable,
+    DVCVariableValue
+} from '@devcycle/nextjs-sdk'
+
+type DVCJSON = { [key: string]: string | boolean | number }
+
+export type DVCVariableTypes = {
+    /**
+        description: Different ways to say hello
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'enum-var': 'Hello' | 'Hey' | 'Hi'
+    /**
+        created by: User 2
+        created on: 2021-07-04
+    */
+    'regex-var': string
+    /**
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'string-var': string
+    /**
+        created by: User 2
+        created on: 2021-07-04
+    */
+    'boolean-var': boolean
+    /**
+        created by: User 1
+        created on: 2021-07-04
+    */
+    'number-var': number
+    /**
+        created by: Unknown User
+        created on: 2021-07-04
+    */
+    'json-var': DVCJSON
+}
+
+/**
+    description: Different ways to say hello
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const ENUM_VAR = 'enum-var' as const
+
+/**
+    created by: User 2
+    created on: 2021-07-04
+*/
+export const REGEX_VAR = 'regex-var' as const
+
+/**
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const STRING_VAR = 'string-var' as const
+
+/**
+    created by: User 2
+    created on: 2021-07-04
+*/
+export const BOOLEAN_VAR = 'boolean-var' as const
+
+/**
+    created by: User 1
+    created on: 2021-07-04
+*/
+export const NUMBER_VAR = 'number-var' as const
+
+/**
+    created by: Unknown User
+    created on: 2021-07-04
+*/
+export const JSON_VAR = 'json-var' as const
+"
+`;
+
 exports[`generate types correctly generates React SDK types 1`] = `
 "import {
     useVariable as originalUseVariable,
