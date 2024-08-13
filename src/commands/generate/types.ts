@@ -196,7 +196,7 @@ export default class GenerateTypes extends Base {
 
         let types =
             imports +
-            (react ? reactOverrides : '') +
+            (react || next ? reactOverrides : '') +
             'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
             'export type DVCVariableTypes = {\n' +
             typeLines.join('\n') +
