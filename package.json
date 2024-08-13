@@ -137,5 +137,6 @@
     "keywords": [
         "oclif"
     ],
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "packageManager": "yarn@4.4.0"
 }

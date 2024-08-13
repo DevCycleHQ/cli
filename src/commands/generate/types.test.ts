@@ -81,7 +81,7 @@ const mockOrganizationMembersResponse = [
 
 const mockOrganizationMembersResponseHeaders = {
     count: 2,
-} as unknown as  ReplyHeaders
+} as unknown as ReplyHeaders
 
 const artifactsDir = './test/artifacts/'
 const jsOutputDir = artifactsDir + 'generate/js'
@@ -103,7 +103,11 @@ describe('generate types', () => {
                 )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
+                .reply(
+                    200,
+                    mockOrganizationMembersResponse,
+                    mockOrganizationMembersResponseHeaders,
+                ),
         )
         .stdout()
         .command([
@@ -133,7 +137,11 @@ describe('generate types', () => {
                 )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
+                .reply(
+                    200,
+                    mockOrganizationMembersResponse,
+                    mockOrganizationMembersResponseHeaders,
+                ),
         )
         .stdout()
         .command([
@@ -164,7 +172,46 @@ describe('generate types', () => {
                 )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
+                .reply(
+                    200,
+                    mockOrganizationMembersResponse,
+                    mockOrganizationMembersResponseHeaders,
+                ),
+        )
+        .stdout()
+        .command([
+            'generate:types',
+            '--nextjs',
+            '--output-dir',
+            reactOutputDir,
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
+        ])
+        .it('correctly generates Next.js SDK types', (ctx) => {
+            const outputDir = reactOutputDir + '/dvcVariableTypes.ts'
+            expect(fs.existsSync(outputDir)).to.be.true
+            const typesString = fs.readFileSync(outputDir, 'utf-8')
+            expect(typesString).toMatchSnapshot()
+            expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
+        })
+
+    dvcTest()
+        .nock(BASE_URL, (api) =>
+            api
+                .get(
+                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
+                )
+                .reply(200, mockVariablesResponse)
+                .get('/v1/organizations/current/members?perPage=100&page=1')
+                .reply(
+                    200,
+                    mockOrganizationMembersResponse,
+                    mockOrganizationMembersResponseHeaders,
+                ),
         )
         .stdout()
         .command([
@@ -202,7 +249,11 @@ describe('generate types', () => {
                 )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
+                .reply(
+                    200,
+                    mockOrganizationMembersResponse,
+                    mockOrganizationMembersResponseHeaders,
+                ),
         )
         .stdout()
         .command([
@@ -234,7 +285,11 @@ describe('generate types', () => {
                 )
                 .reply(200, mockVariablesResponse)
                 .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(200, mockOrganizationMembersResponse, mockOrganizationMembersResponseHeaders),
+                .reply(
+                    200,
+                    mockOrganizationMembersResponse,
+                    mockOrganizationMembersResponseHeaders,
+                ),
         )
         .stdout()
         .command([
