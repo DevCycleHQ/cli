@@ -1,5 +1,5 @@
 {
-  "version": "5.14.14",
+  "version": "5.15.0",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -2218,6 +2218,12 @@
           "name": "react",
           "type": "boolean",
           "description": "Generate types for use with React",
+          "allowNo": false
+        },
+        "nextjs": {
+          "name": "nextjs",
+          "type": "boolean",
+          "description": "Generate types for use with Next.js",
           "allowNo": false
         },
         "old-repos": {
