@@ -17,7 +17,7 @@ on:
         description: 'NPM version bump?'
         required: false
         type: choice
-        options: 
+        options:
           - major
           - minor
           - patch
@@ -31,7 +31,7 @@ permissions:
 jobs:
   cli-release:
     runs-on: ubuntu-latest
-    steps:      
+    steps:
       - name: Check out code
         uses: actions/checkout@v4
         with:
@@ -48,15 +48,18 @@ jobs:
         run: |
           echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
 
+      - run: corepack enable
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "${{ steps.get_node_version.outputs.NVMRC }}"
           registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn install
-        
+
       - name: Build
         run: yarn build
 
@@ -65,7 +68,7 @@ jobs:
 
       - name: Get latest tag
         run: echo "LATEST_TAG=$(git describe --abbrev=0 --tags)" >> $GITHUB_ENV
-          
+
       - name: Commit and push tag to main branch
         run: |
           git add .
@@ -95,7 +98,7 @@ jobs:
         with:
           latest_tag: $LATEST_TAG
           access_token: ${{ secrets.AUTOMATION_USER_TOKEN }}
-      
+
       # Move this to release action yml once it works the first time
       - name: Update Homebrew Formula
         uses: peter-evans/repository-dispatch@v2
@@ -103,4 +106,3 @@ jobs:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           repository: DevCycleHQ/homebrew-cli
           event-type: start-deploy
-        

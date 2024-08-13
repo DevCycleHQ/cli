@@ -29,6 +29,17 @@ import {
     }
 }
 
+const nextImports = () => {
+    return `import {
+    useVariable as originalUseVariable,
+    useVariableValue as originalUseVariableValue,
+    DVCVariable,
+    DVCVariableValue
+} from '@devcycle/nextjs-sdk'
+
+`
+}
+
 const reactOverrides = `
 export type UseVariableValue = <
     K extends string & keyof DVCVariableTypes
@@ -62,6 +73,10 @@ export default class GenerateTypes extends Base {
         }),
         react: Flags.boolean({
             description: 'Generate types for use with React',
+            default: false,
+        }),
+        nextjs: Flags.boolean({
+            description: 'Generate types for use with Next.js',
             default: false,
         }),
         'old-repos': Flags.boolean({
@@ -133,6 +148,7 @@ export default class GenerateTypes extends Base {
         const typesString = await this.getTypesString(
             variables,
             flags['react'],
+            flags['nextjs'],
             flags['old-repos'],
         )
 
@@ -161,6 +177,7 @@ export default class GenerateTypes extends Base {
     private async getTypesString(
         variables: Variable[],
         react: boolean,
+        next: boolean,
         oldRepos: boolean,
     ) {
         const typeLines = variables.map((variable) =>
@@ -170,8 +187,15 @@ export default class GenerateTypes extends Base {
             this.getVariableDefinition(variable),
         )
 
+        let imports = ''
+        if (react) {
+            imports = reactImports(oldRepos)
+        } else if (next) {
+            imports = nextImports()
+        }
+
         let types =
-            (react ? reactImports(oldRepos) : '') +
+            imports +
             (react ? reactOverrides : '') +
             'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
             'export type DVCVariableTypes = {\n' +
