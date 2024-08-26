@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`generate types correctly generates JS SDK types 1`] = `
-"type DVCJSON = { [key: string]: string | boolean | number }
+"import { DevCycleJSON } from '@devcycle/js-client-sdk'
 
 export type DVCVariableTypes = {
     /**
@@ -34,7 +34,7 @@ export type DVCVariableTypes = {
         created by: Unknown User
         created on: 2021-07-04
     */
-    'json-var': DVCJSON
+    'json-var': DevCycleJSON
 }
 
 /**
@@ -77,7 +77,7 @@ export const JSON_VAR = 'json-var' as const
 `;
 
 exports[`generate types correctly generates JS SDK types with inlined comments 1`] = `
-"type DVCJSON = { [key: string]: string | boolean | number }
+"import { DevCycleJSON } from '@devcycle/js-client-sdk'
 
 export type DVCVariableTypes = {
     'enum-var': 'Hello' | 'Hey' | 'Hi' // (Different ways to say hello) created by User 1 on 2021-07-04
@@ -85,7 +85,7 @@ export type DVCVariableTypes = {
     'string-var': string // created by User 1 on 2021-07-04
     'boolean-var': boolean // created by User 2 on 2021-07-04
     'number-var': number // created by User 1 on 2021-07-04
-    'json-var': DVCJSON // created by Unknown User on 2021-07-04
+    'json-var': DevCycleJSON // created by Unknown User on 2021-07-04
 }
 
 /**
@@ -128,7 +128,7 @@ export const JSON_VAR = 'json-var' as const
 `;
 
 exports[`generate types correctly generates JS SDK types with obfuscated keys 1`] = `
-"type DVCJSON = { [key: string]: string | boolean | number }
+"import { DevCycleJSON } from '@devcycle/js-client-sdk'
 
 export type DVCVariableTypes = {
     'dvc_obfs_8397a7cc0bd9847dab4cfcffc90d01385e21fec6f1d3999e3aaac2a137d69964': 'Hello' | 'Hey' | 'Hi'
@@ -136,7 +136,7 @@ export type DVCVariableTypes = {
     'dvc_obfs_ceb6db49d7e9c00eb307304a7a23f2c404777030a4324bf34ce50ed7148a4e79': string
     'dvc_obfs_9d44428272a4f0f8fefd891d93f0268ca3e52464ca95147d077437ba82318700': boolean
     'dvc_obfs_f66155be75be4dc7e53cc13a7837db8b389be45c8bd65653e384f7afaddba1d7': number
-    'dvc_obfs_a991871dbce45b30da1e125ae28b59eb74c1da1f48ad6a2112ac5395093f37f0': DVCJSON
+    'dvc_obfs_a991871dbce45b30da1e125ae28b59eb74c1da1f48ad6a2112ac5395093f37f0': DevCycleJSON
 }
 
 /**
@@ -189,7 +189,8 @@ exports[`generate types correctly generates Next.js SDK types 1`] = `
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
     DVCVariable,
-    DVCVariableValue
+    DVCVariableValue,
+    DevCycleJSON
 } from '@devcycle/nextjs-sdk'
 
 
@@ -211,8 +212,6 @@ export type UseVariable = <
 ) => DVCVariable<T>
 
 export const useVariable = originalUseVariable as UseVariable
-
-type DVCJSON = { [key: string]: string | boolean | number }
 
 export type DVCVariableTypes = {
     /**
@@ -245,7 +244,7 @@ export type DVCVariableTypes = {
         created by: Unknown User
         created on: 2021-07-04
     */
-    'json-var': DVCJSON
+    'json-var': DevCycleJSON
 }
 
 /**
@@ -292,7 +291,8 @@ exports[`generate types correctly generates React SDK types 1`] = `
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
     DVCVariable,
-    DVCVariableValue
+    DVCVariableValue,
+    DevCycleJSON
 } from '@devcycle/react-client-sdk'
 
 
@@ -314,8 +314,6 @@ export type UseVariable = <
 ) => DVCVariable<T>
 
 export const useVariable = originalUseVariable as UseVariable
-
-type DVCJSON = { [key: string]: string | boolean | number }
 
 export type DVCVariableTypes = {
     /**
@@ -348,7 +346,7 @@ export type DVCVariableTypes = {
         created by: Unknown User
         created on: 2021-07-04
     */
-    'json-var': DVCJSON
+    'json-var': DevCycleJSON
 }
 
 /**
