@@ -4977,6 +4977,13 @@
           "type": "boolean",
           "description": "Show usages of variables that are not defined in your DevCycle config.",
           "allowNo": false
+        },
+        "output": {
+          "name": "output",
+          "type": "option",
+          "char": "o",
+          "description": "Output file path for JSON format. If not specified, output will be written to stdout.",
+          "multiple": false
         }
       },
       "args": {}
