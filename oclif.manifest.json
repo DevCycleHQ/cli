@@ -1,5 +1,9 @@
 {
+<<<<<<< Updated upstream
   "version": "5.15.2",
+=======
+  "version": "5.12.1",
+>>>>>>> Stashed changes
   "commands": {
     "authCommand": {
       "id": "authCommand",

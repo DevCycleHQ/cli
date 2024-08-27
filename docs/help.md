@@ -23,4 +23,8 @@ DESCRIPTION
   Display help for dvc.
 ```
 
+<<<<<<< Updated upstream
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.0.20/src/commands/help.ts)_
+=======
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.10/src/commands/help.ts)_
+>>>>>>> Stashed changes

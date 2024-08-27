@@ -10,7 +10,13 @@ import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 import { VariableMatch, VariableUsageMatch } from '../../utils/parsers/types'
 import { fetchAllVariables } from '../../api/variables'
 import { Variable } from '../../api/schemas'
+<<<<<<< Updated upstream
 import { FileFilters } from '../../utils/FileFilters'
+=======
+import { getFilteredFiles } from '../../utils/getFilteredFiles'
+import { createWriteStream } from 'fs'
+import { Writable } from 'stream'
+>>>>>>> Stashed changes
 
 export default class Usages extends Base {
     static hidden = false
@@ -47,8 +53,16 @@ export default class Usages extends Base {
         }),
         'show-regex': ShowRegexFlag,
         'only-unused': Flags.boolean({
+<<<<<<< Updated upstream
             description:
                 'Show usages of variables that are not defined in your DevCycle config.',
+=======
+            description: 'Show usages of variables that are not defined in your DevCycle config.'
+        }),
+        'output': Flags.string({
+            char: 'o',
+            description: 'Output file path for JSON format. If not specified, output will be written to stdout.'
+>>>>>>> Stashed changes
         }),
     }
 
@@ -110,10 +124,43 @@ export default class Usages extends Base {
 
         if (flags['format'] === 'json') {
             const matchesByVariableJSON = this.formatMatchesToJSON(usages)
-            this.log(JSON.stringify(matchesByVariableJSON, null, 2))
+            await this.writeJSONOutput(matchesByVariableJSON)
         } else {
             this.formatConsoleOutput(usages)
         }
+    }
+
+    private async writeJSONOutput(data: JSONMatch[]): Promise<void> {
+        const outputStream: Writable = flags.output
+            ? createWriteStream(flags.output)
+            : process.stdout
+
+        return new Promise((resolve, reject) => {
+            const jsonStream = JSON.stringify(data, null, 2)
+            const writeStream = new Writable({
+                write(chunk, encoding, callback) {
+                    if (!outputStream.write(chunk, encoding)) {
+                        outputStream.once('drain', callback)
+                    } else {
+                        process.nextTick(callback)
+                    }
+                }
+            })
+
+            writeStream.on('finish', () => {
+                if (flags.output) {
+                    outputStream.end(() => resolve())
+                } else {
+                    resolve()
+                }
+            })
+
+            writeStream.on('error', reject)
+            outputStream.on('error', reject)
+
+            writeStream.write(jsonStream)
+            writeStream.end()
+        })
     }
 
     private getMatchesByVariable(

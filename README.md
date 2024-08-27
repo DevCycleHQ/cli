@@ -108,7 +108,11 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
+<<<<<<< Updated upstream
 @devcycle/cli/5.16.0 linux-x64 node-v20.10.0
+=======
+@devcycle/cli/5.12.1 darwin-x64 node-v16.20.0
+>>>>>>> Stashed changes
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
