@@ -11,7 +11,8 @@ import { VariableMatch, VariableUsageMatch } from '../../utils/parsers/types'
 import { fetchAllVariables } from '../../api/variables'
 import { Variable } from '../../api/schemas'
 import { FileFilters } from '../../utils/FileFilters'
-
+import { Writable } from 'stream'
+import { createWriteStream } from 'fs'
 export default class Usages extends Base {
     static hidden = false
 
@@ -50,6 +51,11 @@ export default class Usages extends Base {
             description:
                 'Show usages of variables that are not defined in your DevCycle config.',
         }),
+        output: Flags.string({
+            char: 'o',
+            description:
+                'Output file path for JSON format. If not specified, output will be written to stdout.',
+        }),
     }
 
     useMarkdown = false
@@ -61,16 +67,39 @@ export default class Usages extends Base {
         this.useMarkdown = flags.format === 'markdown'
 
         const processFile = (filepath: string): File => {
-            let lines: LineItem[] = []
+            const chunkSize = 1024 * 1024 // 1MB chunks
+            const fd = fs.openSync(filepath, 'r')
+            const buffer = Buffer.alloc(chunkSize)
+            const lines: LineItem[] = []
+            let lineNumber = 1
+            let remainingData = ''
+
             try {
-                lines = fs
-                    .readFileSync(filepath, 'utf8')
-                    .split('\n')
-                    .map((content, idx) => ({ content, ln: idx + 1 }))
+                let bytesRead
+                while (
+                    (bytesRead = fs.readSync(fd, buffer, 0, chunkSize, null)) >
+                    0
+                ) {
+                    const chunk =
+                        remainingData + buffer.toString('utf8', 0, bytesRead)
+                    const chunkLines = chunk.split('\n')
+                    remainingData = chunkLines.pop() || ''
+
+                    chunkLines.forEach((content) => {
+                        lines.push({ content, ln: lineNumber++ })
+                    })
+                }
+
+                if (remainingData) {
+                    lines.push({ content: remainingData, ln: lineNumber })
+                }
             } catch (err) {
                 this.warn(`Error parsing file ${filepath}`)
                 this.debug(err)
+            } finally {
+                fs.closeSync(fd)
             }
+
             return {
                 name: filepath,
                 lines,
@@ -78,8 +107,15 @@ export default class Usages extends Base {
         }
 
         const fileFilters = new FileFilters(flags, codeInsightsConfig)
-        const files = fileFilters.getFiles().map(processFile)
+        const filePaths = fileFilters.getFiles()
+        const batchSize = 100 // Process 100 files at a time
+        const files: File[] = []
 
+        for (let i = 0; i < filePaths.length; i += batchSize) {
+            const batch = filePaths.slice(i, i + batchSize)
+            const batchFiles = batch.map(processFile)
+            files.push(...batchFiles)
+        }
         if (!files.length) {
             this.warn('No files found to process.')
             return
@@ -110,10 +146,45 @@ export default class Usages extends Base {
 
         if (flags['format'] === 'json') {
             const matchesByVariableJSON = this.formatMatchesToJSON(usages)
-            this.log(JSON.stringify(matchesByVariableJSON, null, 2))
+            await this.writeJSONOutput(matchesByVariableJSON, flags.output)
         } else {
             this.formatConsoleOutput(usages)
         }
+    }
+    private async writeJSONOutput(
+        data: JSONMatch[],
+        outputPath: string | undefined,
+    ): Promise<void> {
+        const outputStream: Writable = outputPath
+            ? createWriteStream(outputPath)
+            : process.stdout
+
+        return new Promise((resolve, reject) => {
+            const jsonStream = JSON.stringify(data, null, 2)
+            const writeStream = new Writable({
+                write(chunk, encoding, callback) {
+                    if (!outputStream.write(chunk, encoding)) {
+                        outputStream.once('drain', callback)
+                    } else {
+                        process.nextTick(callback)
+                    }
+                },
+            })
+
+            writeStream.on('finish', () => {
+                if (outputPath) {
+                    outputStream.end(() => resolve())
+                } else {
+                    resolve()
+                }
+            })
+
+            writeStream.on('error', reject)
+            outputStream.on('error', reject)
+
+            writeStream.write(jsonStream)
+            writeStream.end()
+        })
     }
 
     private getMatchesByVariable(

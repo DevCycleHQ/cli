@@ -275,7 +275,6 @@ export default abstract class Base extends Command {
         await this.authorizeApi()
         setDVCReferrer(this.id, this.config.version, this.caller)
     }
-
     isAuthExpired() {
         const tokenExpiry = getTokenExpiry(this.authToken)
         return !tokenExpiry || tokenExpiry < Date.now()
@@ -324,7 +323,6 @@ export default abstract class Base extends Command {
 
         return findProjectByKey(this.projectKey)
     }
-
     hasToken(): boolean {
         return this.authToken !== ''
     }
@@ -373,7 +371,6 @@ export default abstract class Base extends Command {
         const parse = schema.parse(input, { errorMap })
         return parse
     }
-
     public async populateParametersWithFlags(
         prompts: Prompt[],
         flags: Record<string, unknown>,
