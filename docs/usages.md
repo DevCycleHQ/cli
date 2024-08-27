@@ -14,9 +14,10 @@ USAGE
   $ dvc usages [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--include <value>] [--exclude
     <value>] [--client-name <value>] [--match-pattern <value>] [--var-alias <value>] [--format console|json]
-    [--show-regex] [--only-unused]
+    [--show-regex] [--only-unused] [-o <value>]
 
 FLAGS
+  -o, --output=<value>        Output file path for JSON format. If not specified, output will be written to stdout.
   --client-name=<value>...    Name(s) of the DevCycle client variable to match on. Accepts multiple values.
   --exclude=<value>...        Files to exclude when scanning for usages. By default all files are included. Accepts
                               multiple glob patterns.
