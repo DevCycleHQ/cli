@@ -16,13 +16,16 @@ import {
     useVariableValue as originalUseVariableValue
 } from '@devcycle/devcycle-react-sdk'
 
+export type DevCycleJSON = { [key: string]: string | boolean | number }
+
 `
     } else {
         return `import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
     DVCVariable,
-    DVCVariableValue
+    DVCVariableValue,
+    DevCycleJSON
 } from '@devcycle/react-client-sdk'
 
 `
@@ -34,7 +37,8 @@ const nextImports = () => {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
     DVCVariable,
-    DVCVariableValue
+    DVCVariableValue,
+    DevCycleJSON
 } from '@devcycle/nextjs-sdk'
 
 `
@@ -192,12 +196,16 @@ export default class GenerateTypes extends Base {
             imports = reactImports(oldRepos)
         } else if (next) {
             imports = nextImports()
+        } else {
+            // Add a default import for non-React, non-Next.js cases
+            imports = oldRepos
+                ? `export type DevCycleJSON = { [key: string]: string | boolean | number }\n\n`
+                : `import { DevCycleJSON } from '@devcycle/js-client-sdk'\n\n`
         }
 
         let types =
             imports +
             (react || next ? reactOverrides : '') +
-            'type DVCJSON = { [key: string]: string | boolean | number }\n\n' +
             'export type DVCVariableTypes = {\n' +
             typeLines.join('\n') +
             '\n}'
@@ -383,7 +391,7 @@ export function getVariableType(variable: Variable) {
         return enumValues.map((value) => `'${value}'`).join(' | ')
     }
     if (variable.type === 'JSON') {
-        return 'DVCJSON'
+        return 'DevCycleJSON'
     }
     return variable.type.toLocaleLowerCase()
 }
