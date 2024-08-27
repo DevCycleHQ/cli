@@ -15,6 +15,7 @@ import Writer from '../ui/writer'
 type SupportedFlags = {
     'client-id'?: string
     'client-secret'?: string
+    'no-api'?: boolean
 }
 
 export class ApiAuth {
@@ -41,6 +42,10 @@ export class ApiAuth {
             flags['client-secret'] ||
             process.env.DEVCYCLE_CLIENT_SECRET ||
             process.env.DVC_CLIENT_SECRET
+
+        if (flags['no-api']) {
+            return ''
+        }
 
         if (clientId && clientSecret) {
             return this.fetchClientToken(clientId, clientSecret)
