@@ -1,10 +1,10 @@
 import { AxiosError } from 'axios'
-import apiClient, { axiosClient } from './apiClient'
+import { v2ApiClient as apiClient, apiClient as apiV1Client } from './apiClient'
 import { CreateFeatureParams, Feature, UpdateFeatureParams } from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
 
-const FEATURE_URL = '/v1/projects/:project/features'
+const FEATURE_URL = '/v2/projects/:project/features'
 
 export const fetchFeatures = async (
     token: string,
@@ -69,11 +69,11 @@ export const updateFeature = async (
     feature_id: string,
     params: UpdateFeatureParams,
 ): Promise<Feature> => {
-    return await apiClient.patch(`${FEATURE_URL}/:key`, params, {
+    return await apiClient.patch(`${FEATURE_URL}/:feature`, params, {
         headers: buildHeaders(token),
         params: {
             project: project_id,
-            key: feature_id,
+            feature: feature_id,
         },
     })
 }
@@ -83,22 +83,36 @@ export const deleteFeature = async (
     project_id: string,
     key: string,
 ): Promise<void> => {
-    return apiClient.delete(`${FEATURE_URL}/:key`, undefined, {
-        headers: buildHeaders(token),
-        params: {
-            project: project_id,
-            key,
+    return apiV1Client.delete(
+        '/v1/projects/:project/features/:key',
+        undefined,
+        {
+            headers: buildHeaders(token),
+            params: {
+                project: project_id,
+                key,
+            },
         },
-    })
+    )
 }
 
-export const fetchAllCompletedOrArchivedFeatures = async (token: string, project_id: string): Promise<Feature[]> => {
+export const fetchAllCompletedOrArchivedFeatures = async (
+    token: string,
+    project_id: string,
+): Promise<Feature[]> => {
     const statuses = ['complete', 'archived']
     const perPage = 1000
     const firstPage = 1
 
-    const fetchFeaturesForStatus = async (status: string): Promise<Feature[]> => {
-        const url = generatePaginatedFeatureUrl(project_id, firstPage, perPage, status)
+    const fetchFeaturesForStatus = async (
+        status: string,
+    ): Promise<Feature[]> => {
+        const url = generatePaginatedFeatureUrl(
+            project_id,
+            firstPage,
+            perPage,
+            status,
+        )
         const response = await axiosClient.get(url, {
             headers: buildHeaders(token),
         })
@@ -108,7 +122,12 @@ export const fetchAllCompletedOrArchivedFeatures = async (token: string, project
         const totalPages = Math.ceil(total / perPage)
 
         const promises = Array.from({ length: totalPages - 1 }, (_, i) => {
-            const url = generatePaginatedFeatureUrl(project_id, i + 2, perPage, status)
+            const url = generatePaginatedFeatureUrl(
+                project_id,
+                i + 2,
+                perPage,
+                status,
+            )
             return axiosClient.get(url, {
                 headers: buildHeaders(token),
             })
@@ -128,7 +147,7 @@ const generatePaginatedFeatureUrl = (
     project_id: string,
     page: number,
     perPage: number,
-    status: string
+    status: string,
 ): string => {
     return `/v1/projects/${project_id}/features?perPage=${perPage}&page=${page}&status=${status}`
 }

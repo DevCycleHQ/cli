@@ -3545,8 +3545,230 @@ const endpoints = makeApi([
     },
 ])
 
+const v2Endpoints = makeApi([
+    {
+        method: 'post',
+        path: '/v2/projects/:project/features',
+        alias: 'FeaturesController_create',
+        description: `Create a new Feature`,
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: CreateFeatureDto,
+            },
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: Feature,
+        errors: [
+            {
+                status: 400,
+                schema: BadRequestErrorResponse,
+            },
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: z.void(),
+            },
+            {
+                status: 409,
+                schema: ConflictErrorResponse,
+            },
+            {
+                status: 412,
+                schema: PreconditionFailedErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v2/projects/:project/features',
+        alias: 'FeaturesController_findAll',
+        description: `List Features`,
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'page',
+                type: 'Query',
+                schema: z.number().gte(1).optional().default(1),
+            },
+            {
+                name: 'perPage',
+                type: 'Query',
+                schema: z.number().gte(1).lte(1000).optional().default(100),
+            },
+            {
+                name: 'sortBy',
+                type: 'Query',
+                schema: z
+                    .enum([
+                        'createdAt',
+                        'updatedAt',
+                        'name',
+                        'key',
+                        'createdBy',
+                        'propertyKey',
+                    ])
+                    .optional()
+                    .default('createdAt'),
+            },
+            {
+                name: 'sortOrder',
+                type: 'Query',
+                schema: z.enum(['asc', 'desc']).optional().default('desc'),
+            },
+            {
+                name: 'search',
+                type: 'Query',
+                schema: z.string().optional(),
+            },
+            {
+                name: 'createdBy',
+                type: 'Query',
+                schema: z.string().optional(),
+            },
+            {
+                name: 'type',
+                type: 'Query',
+                schema: z
+                    .enum(['release', 'experiment', 'permission', 'ops'])
+                    .optional(),
+            },
+            {
+                name: 'status',
+                type: 'Query',
+                schema: z.enum(['active', 'complete', 'archived']).optional(),
+            },
+            {
+                name: 'keys',
+                type: 'Query',
+                schema: z.array(z.string()).optional(),
+            },
+            {
+                name: 'includeLatestUpdate',
+                type: 'Query',
+                schema: z.boolean().optional(),
+            },
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.array(Feature),
+        errors: [
+            {
+                status: 400,
+                schema: BadRequestErrorResponse,
+            },
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: z.void(),
+            },
+        ],
+    },
+    {
+        method: 'patch',
+        path: '/v2/projects/:project/features/:feature',
+        alias: 'FeaturesController_update',
+        description: `Update a Feature by ID or key`,
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: UpdateFeatureDto,
+            },
+            {
+                name: 'feature',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: Feature,
+        errors: [
+            {
+                status: 400,
+                schema: BadRequestErrorResponse,
+            },
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+            {
+                status: 409,
+                schema: ConflictErrorResponse,
+            },
+            {
+                status: 412,
+                schema: PreconditionFailedErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v2/projects/:project/features/:key',
+        alias: 'FeaturesController_findOne',
+        description: `Get a Feature by ID or key`,
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'key',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: Feature,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+])
+
 export const api = new Zodios(endpoints)
+export const v2Api = new Zodios(v2Endpoints)
 
 export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
     return new Zodios(baseUrl, endpoints, options)
+}
+
+export function createV2ApiClient(baseUrl: string, options?: ZodiosOptions) {
+    return new Zodios(baseUrl, v2Endpoints, options)
 }
