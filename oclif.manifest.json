@@ -1,5 +1,5 @@
 {
-  "version": "5.16.1",
+  "version": "5.16.2",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -2236,6 +2236,7 @@
           "name": "inline-comments",
           "type": "boolean",
           "description": "Inline variable informaton comment on the same line as the type definition",
+          "hidden": true,
           "allowNo": false
         },
         "include-descriptions": {
@@ -2248,6 +2249,12 @@
           "name": "obfuscate",
           "type": "boolean",
           "description": "Obfuscate the variable keys.",
+          "allowNo": false
+        },
+        "include-deprecation-warnings": {
+          "name": "include-deprecation-warnings",
+          "type": "boolean",
+          "description": "Include @deprecated tags for variables of completed features",
           "allowNo": false
         }
       },

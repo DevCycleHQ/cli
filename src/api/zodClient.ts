@@ -335,6 +335,7 @@ const Variable = z.object({
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     validationSchema: VariableValidationEntity.optional(),
+    persistent: z.boolean().optional(),
 })
 const UpdateVariableDto = z
     .object({
@@ -452,6 +453,7 @@ const Feature = z.object({
         'cli',
     ]),
     type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
+    status: z.enum(['active', 'complete', 'archived']).optional(),
     _createdBy: z.string().optional(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),

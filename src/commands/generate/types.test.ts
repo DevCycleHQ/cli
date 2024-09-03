@@ -4,7 +4,7 @@ import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import * as fs from 'fs'
 import chai from 'chai'
-import { Body, ReplyHeaders } from 'nock'
+import Nock, { Body, ReplyHeaders } from 'nock'
 
 const mockVariablesResponse = [
     {
@@ -64,6 +64,15 @@ const mockVariablesResponse = [
         createdAt: '2021-07-04T20:00:00.000Z',
         _createdBy: 'api',
     },
+    {
+        _id: '644bae12eb9d66fdd57fbd04',
+        name: 'deprecated-var',
+        key: 'deprecated-var',
+        type: 'String',
+        createdAt: '2021-07-04T20:00:00.000Z',
+        _createdBy: 'api',
+        _feature: 'feature1',
+    },
 ]
 
 const mockOrganizationMembersResponse = [
@@ -87,6 +96,40 @@ const artifactsDir = './test/artifacts/'
 const jsOutputDir = artifactsDir + 'generate/js'
 const reactOutputDir = artifactsDir + 'generate/react'
 
+const mockCompletedArchivedFeaturesResponse = [
+    {
+        _id: 'feature1',
+        name: 'Completed Feature',
+        key: 'completed-feature',
+        status: 'complete',
+        variables: ['644aae12eb9d66fdd57fbd04'],
+    },
+    {
+        _id: 'feature2',
+        name: 'Archived Feature',
+        key: 'archived-feature',
+        status: 'archived',
+        variables: ['644aae12eb9d66fdd57fbd05'],
+    },
+] as Body
+
+// Add this function at the top of the file, after the imports
+const setupNockMock = (api: Nock.Scope) => {
+    return api
+        .get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
+        .reply(200, mockVariablesResponse)
+        .get('/v1/organizations/current/members?perPage=100&page=1')
+        .reply(
+            200,
+            mockOrganizationMembersResponse,
+            mockOrganizationMembersResponseHeaders
+        )
+        .get('/v1/projects/project/features?perPage=1000&page=1&status=complete')
+        .reply(200, mockCompletedArchivedFeaturesResponse)
+        .get('/v1/projects/project/features?perPage=1000&page=1&status=archived')
+        .reply(200, mockCompletedArchivedFeaturesResponse);
+};
+
 describe('generate types', () => {
     beforeEach(setCurrentTestFile(__filename))
     chai.use(jestSnapshotPlugin())
@@ -96,19 +139,7 @@ describe('generate types', () => {
     })
 
     dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(
-                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
-                )
-                .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(
-                    200,
-                    mockOrganizationMembersResponse,
-                    mockOrganizationMembersResponseHeaders,
-                ),
-        )
+        .nock(BASE_URL, setupNockMock)
         .stdout()
         .command([
             'generate:types',
@@ -130,19 +161,7 @@ describe('generate types', () => {
         })
 
     dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(
-                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
-                )
-                .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(
-                    200,
-                    mockOrganizationMembersResponse,
-                    mockOrganizationMembersResponseHeaders,
-                ),
-        )
+        .nock(BASE_URL, setupNockMock)
         .stdout()
         .command([
             'generate:types',
@@ -165,19 +184,7 @@ describe('generate types', () => {
         })
 
     dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(
-                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
-                )
-                .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(
-                    200,
-                    mockOrganizationMembersResponse,
-                    mockOrganizationMembersResponseHeaders,
-                ),
-        )
+        .nock(BASE_URL, setupNockMock)
         .stdout()
         .command([
             'generate:types',
@@ -200,19 +207,7 @@ describe('generate types', () => {
         })
 
     dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(
-                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
-                )
-                .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(
-                    200,
-                    mockOrganizationMembersResponse,
-                    mockOrganizationMembersResponseHeaders,
-                ),
-        )
+        .nock(BASE_URL, setupNockMock)
         .stdout()
         .command([
             'generate:types',
@@ -242,55 +237,7 @@ describe('generate types', () => {
         )
 
     dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(
-                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
-                )
-                .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(
-                    200,
-                    mockOrganizationMembersResponse,
-                    mockOrganizationMembersResponseHeaders,
-                ),
-        )
-        .stdout()
-        .command([
-            'generate:types',
-            '--output-dir',
-            jsOutputDir,
-            '--client-id',
-            'client',
-            '--client-secret',
-            'secret',
-            '--project',
-            'project',
-            '--include-descriptions',
-            '--inline-comments',
-        ])
-        .it('correctly generates JS SDK types with inlined comments', (ctx) => {
-            const outputDir = jsOutputDir + '/dvcVariableTypes.ts'
-            expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
-            expect(fs.existsSync(outputDir)).to.be.true
-            const typesString = fs.readFileSync(outputDir, 'utf-8')
-            expect(typesString).toMatchSnapshot()
-        })
-
-    dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(
-                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
-                )
-                .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(
-                    200,
-                    mockOrganizationMembersResponse,
-                    mockOrganizationMembersResponseHeaders,
-                ),
-        )
+        .nock(BASE_URL, setupNockMock)
         .stdout()
         .command([
             'generate:types',

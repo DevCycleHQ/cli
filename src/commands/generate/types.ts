@@ -2,11 +2,12 @@ import Base from '../base'
 import fs from 'fs'
 import { fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
-import { Project, Variable } from '../../api/schemas'
+import { Feature, Project, Variable } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 import { upperCase } from 'lodash'
 import { createHash } from 'crypto'
 import path from 'path'
+import { fetchAllCompletedOrArchivedFeatures } from '../../api/features'
 
 const reactImports = (oldRepos: boolean) => {
     if (oldRepos) {
@@ -93,6 +94,7 @@ export default class GenerateTypes extends Base {
             description:
                 'Inline variable informaton comment on the same line as the type definition',
             default: false,
+            hidden: true, // Hide this flag as it's being removed
         }),
         'include-descriptions': Flags.boolean({
             description:
@@ -103,15 +105,21 @@ export default class GenerateTypes extends Base {
             description: 'Obfuscate the variable keys.',
             default: false,
         }),
+        'include-deprecation-warnings': Flags.boolean({
+            description: 'Include @deprecated tags for variables of completed features',
+            default: true,
+        }),
     }
     authRequired = true
     methodNames: Record<string, string[]> = {}
     orgMembers: OrganizationMember[]
     includeDescriptions = false
-    inlineComments = false
+    inlineComments = false // This will always be false now
     obfuscate = false
     project: Project
     outputDir: string
+    includeDeprecationWarnings = true
+    features: Feature[] = []
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(GenerateTypes)
@@ -119,14 +127,14 @@ export default class GenerateTypes extends Base {
             project,
             headless,
             'include-descriptions': includeDescriptions,
-            'inline-comments': inlineComments,
             obfuscate,
             'output-dir': outputDir,
+            'include-deprecation-warnings': includeDeprecationWarnings,
         } = flags
         this.includeDescriptions = includeDescriptions
-        this.inlineComments = inlineComments
         this.obfuscate = obfuscate
         this.outputDir = outputDir
+        this.includeDeprecationWarnings = includeDeprecationWarnings
         this.project = await this.requireProject(project, headless)
 
         if (this.project.settings.obfuscation.required) {
@@ -143,6 +151,8 @@ export default class GenerateTypes extends Base {
                 'Writing types with obfuscated variable keys',
             )
         }
+
+        this.features = await fetchAllCompletedOrArchivedFeatures(this.authToken, this.projectKey)
 
         const variables = await fetchAllVariables(
             this.authToken,
@@ -218,12 +228,6 @@ export default class GenerateTypes extends Base {
         if (this.obfuscate) {
             return `    ${this.getVariableKeyAndType(variable)}`
         }
-        if (this.inlineComments) {
-            return (
-                `    ${this.getVariableKeyAndType(variable)}` +
-                `${this.getVariableInfoComment(variable, true)}`
-            )
-        }
         return (
             `${this.getVariableInfoComment(variable, true)}\n` +
             `    ${this.getVariableKeyAndType(variable)}`
@@ -236,18 +240,29 @@ export default class GenerateTypes extends Base {
         }': ${getVariableType(variable)}`
     }
 
-    private getVariableInfoComment(
-        variable: Variable,
-        indent: boolean,
-        inline?: boolean,
-    ) {
-        return getVariableInfoComment(
-            variable,
-            this.orgMembers,
-            this.includeDescriptions,
-            inline ?? this.inlineComments,
-            this.obfuscate,
+    private getVariableInfoComment(variable: Variable, indent: boolean) {
+        const descriptionText = this.includeDescriptions && variable.description
+            ? `${sanitizeDescription(variable.description)}`
+            : ''
+
+        const creator = variable._createdBy
+            ? findCreatorName(this.orgMembers, variable._createdBy)
+            : 'Unknown User'
+        const createdDate = variable.createdAt.split('T')[0]
+
+        const deprecationInfo = isVariableDeprecated(variable, this.features)
+        const isDeprecated = this.includeDeprecationWarnings && deprecationInfo.deprecated
+        const deprecationWarning = isDeprecated 
+            ? `@deprecated This variable is part of ${deprecationInfo.feature?.status} feature "${deprecationInfo.feature?.name}" and should be cleaned up.\n`
+            : ''
+
+        return blockComment(
+            descriptionText,
+            creator,
+            createdDate,
             indent,
+            !this.obfuscate ? variable.key : undefined,
+            deprecationWarning
         )
     }
 
@@ -259,7 +274,7 @@ export default class GenerateTypes extends Base {
             : variable.key
 
         return `
-${this.getVariableInfoComment(variable, false, false)}
+${this.getVariableInfoComment(variable, false)}\n
 export const ${constantName} = '${hashedKey}' as const`
     }
 
@@ -304,36 +319,6 @@ export const ${constantName} = '${hashedKey}' as const`
     }
 }
 
-export function getVariableInfoComment(
-    variable: Variable,
-    orgMembers: OrganizationMember[],
-    includeDescriptions: boolean,
-    inlineComments: boolean,
-    includeKey: boolean,
-    indent: boolean,
-) {
-    const descriptionText =
-        includeDescriptions && variable.description
-            ? `${sanitizeDescription(variable.description)}`
-            : ''
-
-    const creator = variable._createdBy
-        ? findCreatorName(orgMembers, variable._createdBy)
-        : 'Unknown User'
-    const createdDate = variable.createdAt.split('T')[0]
-    const creationInfo = `created by ${creator} on ${createdDate}`
-
-    return inlineComments
-        ? inlineComment(descriptionText, creationInfo)
-        : blockComment(
-              descriptionText,
-              creator,
-              createdDate,
-              indent,
-              includeKey ? variable.key : undefined,
-          )
-}
-
 export function sanitizeDescription(description: string) {
     // Remove newlines, tabs, and carriage returns for proper display
     return description.replace(/[\r\n\t]/g, ' ').trim()
@@ -349,28 +334,25 @@ export function findCreatorName(
     )
 }
 
-export function inlineComment(description: string, creationInfo: string) {
-    const descriptionText = description ? `(${description}) ` : ''
-    return ` // ${descriptionText}${creationInfo}`
-}
-
-export function blockComment(
+export const blockComment = (
     description: string,
     creator: string,
     createdDate: string,
     indent: boolean,
     key?: string,
-) {
+    deprecationWarning?: string
+) => {
     const indentString = indent ? '    ' : ''
     return (
         indentString +
         '/**\n' +
-        (key ? `    key: ${key}\n` : '') +
+        (key ? `${indentString} * key: ${key}\n` : '') +
         (description !== ''
-            ? `${indentString}    description: ${description}\n`
+            ? `${indentString} * description: ${description}\n`
             : '') +
-        `${indentString}    created by: ${creator}\n` +
-        `${indentString}    created on: ${createdDate}\n` +
+        `${indentString} * created by: ${creator}\n` +
+        `${indentString} * created on: ${createdDate}\n` +
+        (deprecationWarning ? `${indentString} * ${deprecationWarning}\n` : '') +
         indentString +
         '*/'
     )
@@ -394,4 +376,10 @@ export function getVariableType(variable: Variable) {
         return 'DevCycleJSON'
     }
     return variable.type.toLocaleLowerCase()
+}
+
+function isVariableDeprecated(variable: Variable, features: Feature[]) {
+    if (!variable._feature || variable.persistent) return { deprecated: false}
+    const feature = features.find(f => f._id === variable._feature)
+    return {deprecated: feature && feature.status !== 'active', feature}
 }
