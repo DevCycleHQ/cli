@@ -114,7 +114,6 @@ export default class GenerateTypes extends Base {
     methodNames: Record<string, string[]> = {}
     orgMembers: OrganizationMember[]
     includeDescriptions = false
-    inlineComments = false // This will always be false now
     obfuscate = false
     project: Project
     outputDir: string
