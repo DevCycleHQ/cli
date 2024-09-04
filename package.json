@@ -128,6 +128,7 @@
         "prepack": "yarn build && oclif manifest && oclif readme --multi",
         "test": "mocha test/*.ts \"src/**/*.test.ts\"",
         "test:ci": "yarn test --forbid-only",
+        "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
         "version": "oclif readme --multi && git add README.md"
     },
     "engines": {
