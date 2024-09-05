@@ -396,6 +396,15 @@ const CreateFeatureDto = z.object({
     variables: z
         .array(z.union([CreateVariableDto, ReassociateVariableDto]))
         .optional(),
+    configurations: z
+        .record(
+            z.string(),
+            z.object({
+                targets: z.array(z.any()).optional(),
+                status: z.string().optional(),
+            }),
+        )
+        .optional(),
     variations: z.array(FeatureVariationDto).optional(),
     controlVariation: z.string().optional(),
     settings: FeatureSettingsDto.optional(),
@@ -454,6 +463,14 @@ const Feature = z.object({
     ]),
     type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
     status: z.enum(['active', 'complete', 'archived']).optional(),
+    configurations: z
+        .record(
+            z.string(),
+            z
+                .object({ targets: z.array(z.any()), status: z.string() })
+                .partial(),
+        )
+        .optional(),
     _createdBy: z.string().optional(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),

@@ -17,6 +17,7 @@ export const mergeQuickFeatureParamsWithAnswers = (
                 type: 'Boolean',
             },
         ],
+        configurations: getQuickConfigurations(),
         variations: [
             {
                 key: 'variation-on',
@@ -31,6 +32,84 @@ export const mergeQuickFeatureParamsWithAnswers = (
         ],
     }
 }
+
+export const getQuickConfigurations =
+    (): CreateFeatureParams['configurations'] => {
+        return {
+            development: {
+                targets: [
+                    {
+                        distribution: [
+                            {
+                                percentage: 1,
+                                _variation: 'variation-on',
+                            },
+                        ],
+                        audience: {
+                            name: 'All Users',
+                            filters: {
+                                filters: [
+                                    {
+                                        type: 'all',
+                                    },
+                                ],
+                                operator: 'and',
+                            },
+                        },
+                    },
+                ],
+                status: 'active',
+            },
+            staging: {
+                targets: [
+                    {
+                        distribution: [
+                            {
+                                percentage: 1,
+                                _variation: 'variation-on',
+                            },
+                        ],
+                        audience: {
+                            name: 'All Users',
+                            filters: {
+                                filters: [
+                                    {
+                                        type: 'all',
+                                    },
+                                ],
+                                operator: 'and',
+                            },
+                        },
+                    },
+                ],
+                status: 'active',
+            },
+            production: {
+                targets: [
+                    {
+                        distribution: [
+                            {
+                                percentage: 1,
+                                _variation: 'variation-on',
+                            },
+                        ],
+                        audience: {
+                            name: 'All Users',
+                            filters: {
+                                filters: [
+                                    {
+                                        type: 'all',
+                                    },
+                                ],
+                                operator: 'and',
+                            },
+                        },
+                    },
+                ],
+                status: 'active',
+            },
+        }
+    }
 
 // Setup targeting for all environments and turn on development only
 export const setupTargetingForEnvironments = async (

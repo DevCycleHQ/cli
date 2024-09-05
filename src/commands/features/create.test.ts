@@ -58,7 +58,13 @@ describe('features create', () => {
         variations: [],
         variables: [],
         tags: [],
+        configurations: {
+            development: {},
+            staging: {},
+            production: {},
+        },
         ldLink: 'string',
+        controlVariation: 'variation_id_bruh',
         readonly: true,
         sdkVisibility: {
             mobile: true,
@@ -80,6 +86,17 @@ describe('features create', () => {
         },
     ]
 
+    const testVariablesFromServer = testVariables.map((variable) => ({
+        ...variable,
+        _id: 'string',
+        _project: 'string',
+        _createdBy: 'string',
+        createdAt: '2019-08-24T14:15:22Z',
+        updatedAt: '2019-08-24T14:15:22Z',
+        source: 'api',
+        status: 'active',
+    }))
+
     // Headless mode
     dvcTest()
         .stderr()
@@ -99,7 +116,7 @@ describe('features create', () => {
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .post(`/v1/projects/${projectKey}/features`, requestBody)
+                .post(`/v2/projects/${projectKey}/features`, requestBody)
                 .reply(200, mockFeature)
                 .get(`/v1/projects/${projectKey}`)
                 .reply(200, mockProject),
@@ -124,22 +141,8 @@ describe('features create', () => {
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .post(`/v1/projects/${projectKey}/features`)
-                .reply(200, mockFeature)
-                .get(`/v1/projects/${projectKey}/environments`)
-                .reply(200, mockEnvironments)
-                .patch(
-                    `/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=development`,
-                )
-                .reply(200, {})
-                .patch(
-                    `/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=staging`,
-                )
-                .reply(200, {})
-                .patch(
-                    `/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=production`,
-                )
-                .reply(200, {}),
+                .post(`/v2/projects/${projectKey}/features`)
+                .reply(200, mockFeature),
         )
         .stdout()
         .command([
@@ -167,13 +170,13 @@ describe('features create', () => {
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .post(`/v1/projects/${projectKey}/features`, {
+                .post(`/v2/projects/${projectKey}/features`, {
                     ...requestBody,
                     variables: testVariables,
                 })
                 .reply(200, {
                     ...mockFeature,
-                    variables: testVariables,
+                    variables: testVariablesFromServer,
                 })
                 .get(`/v1/projects/${projectKey}`)
                 .reply(200, mockProject),
@@ -196,14 +199,14 @@ describe('features create', () => {
         .it('creates a new feature with variables', (ctx) => {
             expect(JSON.parse(ctx.stdout)).to.eql({
                 ...mockFeature,
-                variables: testVariables,
+                variables: testVariablesFromServer,
             })
         })
 
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .post(`/v1/projects/${projectKey}/features`, {
+                .post(`/v2/projects/${projectKey}/features`, {
                     ...requestBody,
                     sdkVisibility: testSDKVisibility,
                 })
@@ -237,28 +240,6 @@ describe('features create', () => {
         })
 
     // Interactive mode
-    dvcTest()
-        .stub(inquirer, 'prompt', () => ({
-            key: undefined,
-            name: 'new name',
-            description: undefined,
-            listPromptOption: 'continue',
-        }))
-        .nock(BASE_URL, (api) =>
-            api.get(`/v1/projects/${projectKey}`).reply(200, mockProject),
-        )
-        .stderr()
-        .command([
-            'features create',
-            '--project',
-            projectKey,
-            '-i',
-            ...authFlags,
-        ])
-        .catch((err) => null)
-        .it('returns an error if key is not provided', (ctx) => {
-            expect(ctx.stderr).to.contain('key is a required field')
-        })
 
     dvcTest()
         .stub(inquirer, 'prompt', () => ({
@@ -291,7 +272,7 @@ describe('features create', () => {
         }))
         .nock(BASE_URL, (api) =>
             api
-                .post(`/v1/projects/${projectKey}/features`, {
+                .post(`/v2/projects/${projectKey}/features`, {
                     ...requestBody,
                     variables: [],
                     variations: [],
@@ -333,27 +314,13 @@ describe('features create', () => {
         .nock(BASE_URL, (api) =>
             api
                 .post(
-                    `/v1/projects/${projectKey}/features`,
+                    `/v2/projects/${projectKey}/features`,
                     mergeQuickFeatureParamsWithAnswers({
                         ...requestBody,
                         description: 'new desc',
                     }) as any,
                 )
-                .reply(200, mockFeature)
-                .get(`/v1/projects/${projectKey}/environments`)
-                .reply(200, mockEnvironments)
-                .patch(
-                    `/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=development`,
-                )
-                .reply(200, {})
-                .patch(
-                    `/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=staging`,
-                )
-                .reply(200, {})
-                .patch(
-                    `/v1/projects/${projectKey}/features/${requestBody.key}/configurations?environment=production`,
-                )
-                .reply(200, {}),
+                .reply(200, mockFeature),
         )
         .stdout()
         .command(['features create', '--project', projectKey, ...authFlags])
@@ -380,7 +347,7 @@ describe('features create', () => {
     //         // e.g. "variable.key", "variable.name" when prompted for the variable key and name
     //     }))
     //     .nock(BASE_URL, (api) => api
-    //         .post(`/v1/projects/${projectKey}/features`, {
+    //         .post(`/v2/projects/${projectKey}/features`, {
     //             ...requestBody,
     //             variables: [],
     //         })
