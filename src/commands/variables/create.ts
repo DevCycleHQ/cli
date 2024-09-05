@@ -119,8 +119,10 @@ export default class CreateVariable extends CreateCommand {
                     return
                 }
                 const parsedVariations = JSON.parse(variations as string)
-                feature.variables.push(params as Variable)
-                for (const vari of feature.variations) {
+                const featureVariables = feature.variables
+                const featureVariations = feature.variations
+                featureVariables.push(params as Variable)
+                for (const vari of featureVariations) {
                     vari.variables = vari.variables || {}
                     vari.variables[params.key] = parsedVariations[vari.key]
                 }
@@ -128,7 +130,10 @@ export default class CreateVariable extends CreateCommand {
                     this.authToken,
                     this.projectKey,
                     feature.key,
-                    feature,
+                    {
+                        variations: featureVariations,
+                        variables: featureVariables,
+                    },
                 )
                 const message =
                     `The variable was associated to the existing feature ${feature.key}. ` +

@@ -359,6 +359,7 @@ const ReassociateVariableDto = z.object({
         .regex(/^[a-z0-9-_.]+$/),
 })
 const FeatureVariationDto = z.object({
+    _id: z.string(),
     key: z
         .string()
         .max(100)
@@ -405,7 +406,7 @@ const CreateFeatureDto = z.object({
             }),
         )
         .optional(),
-    variations: z.array(FeatureVariationDto).optional(),
+    variations: z.array(FeatureVariationDto.partial()).optional(),
     controlVariation: z.string().optional(),
     settings: FeatureSettingsDto.optional(),
     sdkVisibility: FeatureSDKVisibilityDto.optional(),
@@ -480,7 +481,7 @@ const Feature = z.object({
     tags: z.array(z.string()).optional(),
     ldLink: z.string().optional(),
     readonly: z.boolean(),
-    settings: FeatureSettings.partial(),
+    settings: FeatureSettings.partial().optional(),
     sdkVisibility: FeatureSDKVisibility.optional(),
 })
 const PreconditionFailedErrorResponse = z.object({
