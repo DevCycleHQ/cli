@@ -43,6 +43,8 @@ describe('features update', () => {
             client: true,
             server: true,
         },
+        settings: {},
+        controlVariation: 'variation_id',
     }
 
     const testSDKVisibility = {
@@ -72,13 +74,13 @@ describe('features update', () => {
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+                .get(`/v2/projects/${projectKey}/features/${mockFeature.key}`)
                 .reply(200, mockFeature),
         )
         .nock(BASE_URL, (api) =>
             api
                 .patch(
-                    `/v1/projects/${projectKey}/features/${mockFeature.key}`,
+                    `/v2/projects/${projectKey}/features/${mockFeature.key}`,
                     requestBodyWithVariables,
                 )
                 .reply(200, mockFeature),
@@ -142,13 +144,13 @@ describe('features update', () => {
         }))
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+                .get(`/v2/projects/${projectKey}/features/${mockFeature.key}`)
                 .reply(200, mockFeature),
         )
         .nock(BASE_URL, (api) =>
             api
                 .patch(
-                    `/v1/projects/${projectKey}/features/${mockFeature.key}`,
+                    `/v2/projects/${projectKey}/features/${mockFeature.key}`,
                     requestBodyWithVariations,
                 )
                 .reply(200, mockFeature),
@@ -175,13 +177,13 @@ describe('features update', () => {
         }))
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features/${mockFeature.key}`)
+                .get(`/v2/projects/${projectKey}/features/${mockFeature.key}`)
                 .reply(200, mockFeature),
         )
         .nock(BASE_URL, (api) =>
             api
                 .patch(
-                    `/v1/projects/${projectKey}/features/${mockFeature.key}`,
+                    `/v2/projects/${projectKey}/features/${mockFeature.key}`,
                     requestBody,
                 )
                 .reply(200, mockFeature),
