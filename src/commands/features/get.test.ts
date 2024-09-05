@@ -1,5 +1,5 @@
 import { expect } from '@oclif/test'
-import { dvcTest } from '../../../test-utils'
+import { dvcTest, mockFeatures } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 
 describe('features get', () => {
@@ -9,53 +9,6 @@ describe('features get', () => {
         'test-client-id',
         '--client-secret',
         'test-client-secret',
-    ]
-
-    const mockFeatures = [
-        {
-            key: 'feature-1',
-            name: 'Feature 1',
-            _id: '61450f3daec96f5cf4a49946',
-            _project: 'test-project',
-            source: 'api',
-            _createdBy: 'test-user',
-            createdAt: '2021-09-15T12:00:00Z',
-            updatedAt: '2021-09-15T12:00:00Z',
-            variations: [],
-            variables: [],
-            tags: [],
-            configurations: {},
-            sdkVisibility: {
-                mobile: true,
-                client: true,
-                server: true,
-            },
-            settings: {},
-            readonly: false,
-            controlVariation: 'control',
-        },
-        {
-            key: 'feature-2',
-            name: 'Feature 2',
-            _id: '61450f3daec96f5cf4a49947',
-            _project: 'test-project',
-            source: 'api',
-            _createdBy: 'test-user',
-            createdAt: '2021-09-15T12:00:00Z',
-            updatedAt: '2021-09-15T12:00:00Z',
-            variations: [],
-            variables: [],
-            tags: [],
-            configurations: {},
-            sdkVisibility: {
-                mobile: true,
-                client: true,
-                server: true,
-            },
-            settings: {},
-            readonly: false,
-            controlVariation: 'control',
-        },
     ]
 
     const verifyOutput = (output: any[]) => {
