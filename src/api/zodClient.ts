@@ -480,7 +480,7 @@ const Feature = z.object({
     tags: z.array(z.string()).optional(),
     ldLink: z.string().optional(),
     readonly: z.boolean(),
-    settings: FeatureSettings.optional(),
+    settings: FeatureSettings.partial(),
     sdkVisibility: FeatureSDKVisibility.optional(),
 })
 const PreconditionFailedErrorResponse = z.object({

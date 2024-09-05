@@ -64,13 +64,14 @@ describe('features create', () => {
             production: {},
         },
         ldLink: 'string',
-        controlVariation: 'variation_id_bruh',
+        controlVariation: 'variation_id',
         readonly: true,
         sdkVisibility: {
             mobile: true,
             client: true,
             server: true,
         },
+        settings: {},
     }
 
     const testSDKVisibility = {
