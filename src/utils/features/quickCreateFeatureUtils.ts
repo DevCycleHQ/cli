@@ -1,6 +1,4 @@
-import { fetchEnvironments } from '../../api/environments'
 import { CreateFeatureParams } from '../../api/schemas'
-import { updateFeatureConfigForEnvironment } from '../../api/targeting'
 
 // Default variations and variables depending on the key and name provided for quick create
 export const mergeQuickFeatureParamsWithAnswers = (
@@ -110,52 +108,3 @@ export const getQuickConfigurations =
             },
         }
     }
-
-// Setup targeting for all environments and turn on development only
-export const setupTargetingForEnvironments = async (
-    authToken: string,
-    projectKey: string,
-    featureKey: string,
-) => {
-    const environments = await fetchEnvironments(authToken, projectKey)
-    await Promise.all(
-        environments.map((environment) =>
-            updateFeatureConfigForEnvironment(
-                authToken,
-                projectKey,
-                featureKey,
-                environment.key,
-                {
-                    targets:
-                        environment.type !== 'development'
-                            ? []
-                            : [
-                                  {
-                                      distribution: [
-                                          {
-                                              percentage: 1,
-                                              _variation: 'variation-on',
-                                          },
-                                      ],
-                                      audience: {
-                                          name: 'All Users',
-                                          filters: {
-                                              filters: [
-                                                  {
-                                                      type: 'all',
-                                                  },
-                                              ],
-                                              operator: 'and',
-                                          },
-                                      },
-                                  },
-                              ],
-                    status:
-                        environment.type === 'development'
-                            ? 'active'
-                            : 'inactive',
-                },
-            ),
-        ),
-    )
-}

@@ -72,13 +72,6 @@ export default class CreateVariable extends CreateCommand {
                     token: this.authToken,
                     projectKey: this.projectKey,
                 })
-                console.error('feature', feature)
-                if (!feature) {
-                    this.writer.showError(
-                        `Feature with key ${feature.key} could not be found`,
-                    )
-                    return
-                }
                 const variableListOptions = new VariableListOptions(
                     [params as Variable],
                     this.writer,

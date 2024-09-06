@@ -106,7 +106,7 @@ describe('diff', () => {
             '--project',
             'project',
         ])
-        .catch((err) => null)
+        .catch((error) => null)
         .it('runs with failed api authorization', (ctx) => {
             expect(ctx.stderr).to.contain(
                 'Failed to authenticate with the DevCycle API. Check your credentials.',
