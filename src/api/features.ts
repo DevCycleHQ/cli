@@ -1,5 +1,9 @@
 import { AxiosError } from 'axios'
-import { v2ApiClient as apiClient, apiClient as apiV1Client } from './apiClient'
+import {
+    v2ApiClient as apiClient,
+    apiClient as apiV1Client,
+    axiosClient,
+} from './apiClient'
 import { CreateFeatureParams, Feature, UpdateFeatureParams } from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'

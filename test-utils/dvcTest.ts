@@ -37,7 +37,7 @@ export const mockFeatures = [
         variations: [],
         variables: [],
         tags: [],
-        configurations: {},
+        configurations: [],
         sdkVisibility: {
             mobile: true,
             client: true,
@@ -59,7 +59,7 @@ export const mockFeatures = [
         variations: [],
         variables: [],
         tags: [],
-        configurations: {},
+        configurations: [],
         sdkVisibility: {
             mobile: true,
             client: true,

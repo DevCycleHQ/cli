@@ -28,24 +28,6 @@ describe('features create', () => {
         },
     }
 
-    const mockEnvironments = [
-        {
-            key: 'development',
-            name: 'Development',
-            _id: '647f62ae749bbe90fb222070',
-        },
-        {
-            key: 'staging',
-            name: 'Staging',
-            _id: '637cfe8195279288bc08cb62',
-        },
-        {
-            key: 'production',
-            name: 'Production',
-            _id: '637cfe8195279288bc08cb61',
-        },
-    ]
-
     const mockFeature = {
         name: 'Feature Name',
         key: 'feature-key',
@@ -58,11 +40,7 @@ describe('features create', () => {
         variations: [],
         variables: [],
         tags: [],
-        configurations: {
-            development: {},
-            staging: {},
-            production: {},
-        },
+        configurations: [],
         ldLink: 'string',
         controlVariation: 'variation_id',
         readonly: true,

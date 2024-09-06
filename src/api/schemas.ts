@@ -34,8 +34,8 @@ export const CreateVariableDto = schemas.CreateVariableDto
 export type UpdateVariableParams = z.infer<typeof schemas.UpdateVariableDto>
 export const UpdateVariableDto = schemas.UpdateVariableDto
 
-export type CreateVariationParams = z.infer<typeof schemas.FeatureVariationDto>
-export const CreateVariationDto = schemas.FeatureVariationDto
+export type CreateVariationParams = z.infer<typeof schemas.CreateVariationDto>
+export const CreateVariationDto = schemas.CreateVariationDto
 
 export type UpdateVariationParams = Partial<CreateVariationParams>
 

@@ -432,6 +432,14 @@ const Variation = z.object({
         .optional(),
     _id: z.string(),
 })
+const CreateVariationDto = z.object({
+    key: z
+        .string()
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().max(100),
+    variables: z.record(z.any()).optional(),
+})
 const FeatureSettings = z.object({
     publicName: z.string().max(100),
     publicDescription: z.string().max(1000),
@@ -441,48 +449,6 @@ const FeatureSDKVisibility = z.object({
     mobile: z.boolean(),
     client: z.boolean(),
     server: z.boolean(),
-})
-const Feature = z.object({
-    name: z.string().max(100),
-    key: z
-        .string()
-        .max(100)
-        .regex(/^[a-z0-9-_.]+$/),
-    description: z.string().max(1000).optional(),
-    _id: z.string(),
-    _project: z.string(),
-    source: z.enum([
-        'api',
-        'dashboard',
-        'importer',
-        'github.code_usages',
-        'github.pr_insights',
-        'bitbucket.code_usages',
-        'bitbucket.pr_insights',
-        'terraform',
-        'cli',
-    ]),
-    type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
-    status: z.enum(['active', 'complete', 'archived']).optional(),
-    configurations: z
-        .record(
-            z.string(),
-            z
-                .object({ targets: z.array(z.any()), status: z.string() })
-                .partial(),
-        )
-        .optional(),
-    _createdBy: z.string().optional(),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    variations: z.array(Variation),
-    controlVariation: z.string(),
-    variables: z.array(Variable),
-    tags: z.array(z.string()).optional(),
-    ldLink: z.string().optional(),
-    readonly: z.boolean(),
-    settings: FeatureSettings.partial().optional(),
-    sdkVisibility: FeatureSDKVisibility.optional(),
 })
 const PreconditionFailedErrorResponse = z.object({
     statusCode: z.number(),
@@ -611,6 +577,41 @@ const ResultSummaryDto = z.object({
         .partial(),
     cached: z.boolean(),
     updatedAt: z.string().datetime(),
+})
+const Feature = z.object({
+    name: z.string().max(100),
+    key: z
+        .string()
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    description: z.string().max(1000).optional(),
+    _id: z.string(),
+    _project: z.string(),
+    source: z.enum([
+        'api',
+        'dashboard',
+        'importer',
+        'github.code_usages',
+        'github.pr_insights',
+        'bitbucket.code_usages',
+        'bitbucket.pr_insights',
+        'terraform',
+        'cli',
+    ]),
+    type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
+    status: z.enum(['active', 'complete', 'archived']).optional(),
+    configurations: z.array(FeatureConfig.partial()).optional(),
+    _createdBy: z.string().optional(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    variations: z.array(Variation),
+    controlVariation: z.string(),
+    variables: z.array(Variable),
+    tags: z.array(z.string()).optional(),
+    ldLink: z.string().optional(),
+    readonly: z.boolean(),
+    settings: FeatureSettings.partial().optional(),
+    sdkVisibility: FeatureSDKVisibility.optional(),
 })
 const FeatureDataPoint = z.object({
     values: z.object({}).partial(),
@@ -862,6 +863,7 @@ export const schemas = {
     FeatureSDKVisibilityDto,
     CreateFeatureDto,
     Variation,
+    CreateVariationDto,
     FeatureSettings,
     FeatureSDKVisibility,
     Feature,
@@ -2144,7 +2146,7 @@ const endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: FeatureVariationDto,
+                schema: CreateVariationDto,
             },
             {
                 name: 'project',

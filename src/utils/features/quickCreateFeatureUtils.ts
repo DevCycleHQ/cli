@@ -82,7 +82,7 @@ export const getQuickConfigurations =
                         },
                     },
                 ],
-                status: 'active',
+                status: 'inactive',
             },
             production: {
                 targets: [
@@ -106,7 +106,7 @@ export const getQuickConfigurations =
                         },
                     },
                 ],
-                status: 'active',
+                status: 'inactive',
             },
         }
     }
