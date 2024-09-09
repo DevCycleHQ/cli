@@ -30,18 +30,18 @@ describe('variables create', () => {
         createdAt: '2023-06-14T18:56:21.270Z',
         updatedAt: '2023-06-14T18:56:21.270Z',
     }
+    const variableRequestBody = {
+        _feature: featureId,
+        key: mockVariable.key,
+        type: mockVariable.type,
+        name: mockVariable.name,
+    }
     const mockFeature = {
         key: 'spam',
-        variables: [
-            {
-                _feature: featureId,
-                key: mockVariable.key,
-                type: mockVariable.type,
-                name: mockVariable.name,
-            },
-        ],
+        variables: [mockVariable],
         variations: [
             {
+                _id: 'variation-1-id',
                 key: 'variation-on',
                 name: 'Variation On',
                 variables: {
@@ -49,6 +49,7 @@ describe('variables create', () => {
                 },
             },
             {
+                _id: 'variation-1-id',
                 key: 'variation-off',
                 name: 'Variation Off',
                 variables: {
@@ -56,6 +57,23 @@ describe('variables create', () => {
                 },
             },
         ],
+        name: 'Test Feature',
+        description: 'A test feature for variable creation',
+        _id: featureId,
+        _project: projectKey,
+        source: 'api',
+        type: 'release',
+        _createdBy: 'test-user',
+        createdAt: '2023-06-14T18:56:21.270Z',
+        updatedAt: '2023-06-14T18:56:21.270Z',
+        controlVariation: 'variation-off',
+        readonly: false,
+        sdkVisibility: {
+            mobile: true,
+            client: true,
+            server: true,
+        },
+        settings: {},
     }
     // Headless mode
     dvcTest()
@@ -134,28 +152,21 @@ describe('variables create', () => {
 
     dvcTest()
         .nock(BASE_URL, (api) =>
+            // Get a feature that has no variables that will be patched with a variable afterwards
             api
-                .get(`/v1/projects/${projectKey}/features/${featureId}`)
+                .get(`/v2/projects/${projectKey}/features/${featureId}`)
                 .reply(200, {
-                    key: mockVariable.key,
-                    _id: featureId,
-                    variations: [
-                        {
-                            _id: '64b05702053947be0d079ef3',
-                            key: 'variation-on',
-                            name: 'Variation On',
-                            variables: {},
-                        },
-                        {
-                            _id: '64b05702053947be0d079ef4',
-                            key: 'variation-off',
-                            name: 'Variation Off',
-                            variables: {},
-                        },
-                    ],
+                    ...mockFeature,
+                    variations: mockFeature.variations.map((variation) => ({
+                        ...variation,
+                        variables: {},
+                    })),
                     variables: [],
                 })
-                .patch(`/v1/projects/${projectKey}/features/spam`, mockFeature)
+                .patch(`/v2/projects/${projectKey}/features/spam`, {
+                    variables: [variableRequestBody],
+                    variations: mockFeature.variations,
+                })
                 .reply(200, mockFeature),
         )
         .stdout()

@@ -70,6 +70,7 @@ describe('variations update', () => {
         source: 'dashboard',
         type: 'experiment',
         name: 'First Feature',
+        key: 'first-feature',
         description: '',
         _createdBy: 'google-oauth2|111559006563333334214',
         createdAt: '2023-01-04T21:24:51.870Z',
@@ -137,7 +138,7 @@ describe('variations update', () => {
         )
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features/${featureKey}`)
+                .get(`/v2/projects/${projectKey}/features/${featureKey}`)
                 .reply(200, mockFeature),
         )
         .nock(BASE_URL, (api) =>
@@ -188,7 +189,7 @@ describe('variations update', () => {
         )
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features/${featureKey}`)
+                .get(`/v2/projects/${projectKey}/features/${featureKey}`)
                 .reply(200, mockFeature),
         )
         .nock(BASE_URL, (api) =>
@@ -238,7 +239,7 @@ describe('variations update', () => {
         )
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features/${featureKey}`)
+                .get(`/v2/projects/${projectKey}/features/${featureKey}`)
                 .reply(200, mockFeature),
         )
         .nock(BASE_URL, (api) =>
