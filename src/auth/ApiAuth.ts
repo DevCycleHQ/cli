@@ -1,6 +1,5 @@
 import 'reflect-metadata'
 import jsYaml from 'js-yaml'
-import axios from 'axios'
 import fs from '../utils/fileSystem'
 import { plainToClass } from 'class-transformer'
 import { validateSync } from 'class-validator'
@@ -11,6 +10,7 @@ import { TokenCache } from './TokenCache'
 import { getOrgIdFromToken, getTokenExpiry, shouldRefreshToken } from './utils'
 import { CLI_CLIENT_ID } from './SSOAuth'
 import Writer from '../ui/writer'
+import axios from 'axios'
 
 type SupportedFlags = {
     'client-id'?: string

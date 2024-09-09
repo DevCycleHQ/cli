@@ -3,6 +3,7 @@ import apiClient from './apiClient'
 import { CreateVariationParams, Feature, Variation } from './schemas'
 import { buildHeaders } from './common'
 
+// TODO: Update these functions to use the new v2 API client once the v2 variations endpoint is implemented
 const variationsUrl = '/v1/projects/:project/features/:feature/variations'
 export class UpdateVariationParams {
     @IsString()

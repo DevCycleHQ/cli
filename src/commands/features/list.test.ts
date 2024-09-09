@@ -1,5 +1,5 @@
 import { expect } from '@oclif/test'
-import { dvcTest } from '../../../test-utils'
+import { dvcTest, mockFeatures } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 
 describe('features list', () => {
@@ -11,23 +11,10 @@ describe('features list', () => {
         'test-client-secret',
     ]
 
-    const mockFeatures = [
-        {
-            key: 'feature-1',
-            name: 'Feature 1',
-            _id: '61450f3daec96f5cf4a49946',
-        },
-        {
-            key: 'feature-2',
-            name: 'Feature 2',
-            _id: '61450f3daec96f5cf4a49947',
-        },
-    ]
-
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features`)
+                .get(`/v2/projects/${projectKey}/features`)
                 .reply(200, mockFeatures),
         )
         .stdout()
@@ -41,7 +28,7 @@ describe('features list', () => {
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features`)
+                .get(`/v2/projects/${projectKey}/features`)
                 .query({ page: 2, perPage: 10 })
                 .reply(200, mockFeatures),
         )
@@ -65,7 +52,7 @@ describe('features list', () => {
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features`)
+                .get(`/v2/projects/${projectKey}/features`)
                 .query({ search: 'hello world' })
                 .reply(200, mockFeatures),
         )

@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { BASE_URL } from './common'
-import { createApiClient } from './zodClient'
+import { createApiClient, createV2ApiClient } from './zodClient'
 import { ZodIssueCode, ZodIssueOptionalMessage, ErrorMapCtx } from 'zod'
 
 export const axiosClient = axios.create({
@@ -98,3 +98,5 @@ export const apiClient = createApiClient(BASE_URL, {
     validate: 'request',
 })
 export default apiClient
+
+export const v2ApiClient = createV2ApiClient(BASE_URL)

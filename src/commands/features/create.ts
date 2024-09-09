@@ -10,10 +10,7 @@ import { VariableListOptions } from '../../ui/prompts/listPrompts/variablesListP
 import { Flags } from '@oclif/core'
 import { CreateFeatureDto, Feature } from '../../api/schemas'
 import { VariationListOptions } from '../../ui/prompts/listPrompts/variationsListPrompt'
-import {
-    mergeQuickFeatureParamsWithAnswers,
-    setupTargetingForEnvironments,
-} from '../../utils/features/quickCreateFeatureUtils'
+import { mergeQuickFeatureParamsWithAnswers } from '../../utils/features/quickCreateFeatureUtils'
 import { fetchProject } from '../../api/projects'
 
 export default class CreateFeature extends CreateCommand {
@@ -71,11 +68,6 @@ export default class CreateFeature extends CreateCommand {
                 this.authToken,
                 this.projectKey,
                 featureParams,
-            )
-            await setupTargetingForEnvironments(
-                this.authToken,
-                this.projectKey,
-                feature.key,
             )
             this.writer.showResults(feature)
             this.showSuggestedCommand(feature)

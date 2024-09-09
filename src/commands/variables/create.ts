@@ -72,13 +72,6 @@ export default class CreateVariable extends CreateCommand {
                     token: this.authToken,
                     projectKey: this.projectKey,
                 })
-                if (!feature) {
-                    this.writer.showError(
-                        `Feature with key ${feature.key} could not be found`,
-                    )
-                    return
-                }
-                feature.variables.push(params)
                 const variableListOptions = new VariableListOptions(
                     [params as Variable],
                     this.writer,
@@ -87,11 +80,19 @@ export default class CreateVariable extends CreateCommand {
                 await variableListOptions.promptVariationValues(
                     params as Variable,
                 )
+
+                const updatedVariables = feature.variables
+                updatedVariables.push(params as Variable)
+                const updatedVariations = variableListOptions.featureVariations
+
                 await updateFeature(
                     this.authToken,
                     this.projectKey,
                     feature.key,
-                    feature,
+                    {
+                        variables: updatedVariables,
+                        variations: updatedVariations,
+                    },
                 )
                 const message =
                     `The variable was associated to the existing feature ${feature.key}. ` +
@@ -119,16 +120,22 @@ export default class CreateVariable extends CreateCommand {
                     return
                 }
                 const parsedVariations = JSON.parse(variations as string)
-                feature.variables.push(params as Variable)
-                for (const vari of feature.variations) {
-                    vari.variables = vari.variables || {}
-                    vari.variables[params.key] = parsedVariations[vari.key]
+                const featureVariables = feature.variables
+                const featureVariations = feature.variations
+                featureVariables.push(params as Variable)
+                for (const featVar of featureVariations) {
+                    featVar.variables = featVar.variables || {}
+                    featVar.variables[params.key] =
+                        parsedVariations[featVar.key]
                 }
                 await updateFeature(
                     this.authToken,
                     this.projectKey,
                     feature.key,
-                    feature,
+                    {
+                        variations: featureVariations,
+                        variables: featureVariables,
+                    },
                 )
                 const message =
                     `The variable was associated to the existing feature ${feature.key}. ` +
