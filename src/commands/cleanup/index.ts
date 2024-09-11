@@ -3,7 +3,6 @@ import { minimatch } from 'minimatch'
 import { Flags, Args } from '@oclif/core'
 import chalk from 'chalk'
 import inquirer from '../../ui/autocomplete'
-import { lsFiles } from '../../utils/git/ls-files'
 import Base from '../base'
 import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import { EngineOptions } from '../../utils/refactor/RefactorEngine'
@@ -15,7 +14,6 @@ import {
     variablePromptNoApi,
     VariablePromptResult,
     variableTypePrompt,
-    variableValueStringPrompt,
 } from '../../ui/prompts'
 import { FileFilters } from '../../utils/FileFilters'
 import { LineItem } from '../usages/types'

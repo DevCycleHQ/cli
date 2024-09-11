@@ -54,6 +54,9 @@ export type Filters = z.infer<
     typeof schemas.AudienceOperatorWithAudienceMatchFilter.shape.filters
 >
 
+export type StaticConfiguration = z.infer<typeof schemas.StaticConfiguration>
+export const StaticConfigurationSchema = schemas.StaticConfiguration
+
 export type AllFilter = z.infer<typeof schemas.AllFilter>
 export const AllFilterSchema = schemas.AllFilter
 

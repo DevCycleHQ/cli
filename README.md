@@ -134,6 +134,7 @@ USAGE
 * [`dvc organizations`](docs/organizations.md) - List or switch organizations.
 * [`dvc overrides`](docs/overrides.md) - Create, view, or modify Overrides for a Project with the Management API.
 * [`dvc projects`](docs/projects.md) - Create, or view Projects with the Management API.
+* [`dvc prompt`](docs/prompt.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 * [`dvc repo`](docs/repo.md) - Manage repository configuration.
 * [`dvc status`](docs/status.md) - Check CLI status.
 * [`dvc targeting`](docs/targeting.md) - Create, view, or modify Targeting Rules for a Feature with the Management API.

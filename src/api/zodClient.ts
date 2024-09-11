@@ -288,8 +288,8 @@ const UpdateAudienceDto = z
     })
     .partial()
 const VariableValidationEntity = z.object({
-    schemaType: z.object({}).partial(),
-    enumValues: z.object({}).partial().optional(),
+    schemaType: z.any(),
+    enumValues: z.any(),
     regexPattern: z.string().optional(),
     jsonSchema: z.string().optional(),
     description: z.string(),
@@ -613,6 +613,11 @@ const Feature = z.object({
     settings: FeatureSettings.partial().optional(),
     sdkVisibility: FeatureSDKVisibility.optional(),
 })
+const StaticConfiguration = z.object({
+    variables: z.record(z.any()),
+    environments: z.record(z.any()),
+    readonly: z.boolean(),
+})
 const FeatureDataPoint = z.object({
     values: z.object({}).partial(),
     date: z.string().datetime(),
@@ -892,6 +897,7 @@ export const schemas = {
     UpdateCustomPropertyDto,
     CreateMetricDto,
     Metric,
+    StaticConfiguration,
     UpdateMetricDto,
     VariationValues,
     DataPoint,
@@ -3769,6 +3775,36 @@ const v2Endpoints = makeApi([
             },
         ],
         response: Feature,
+        errors: [
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v2/projects/:project/features/:key/static-configuration',
+        alias: 'FeaturesController_findStaticConfiguration',
+        description: `Get a Feature by ID or key`,
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'key',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: StaticConfiguration,
         errors: [
             {
                 status: 401,

@@ -4,7 +4,12 @@ import {
     apiClient as apiV1Client,
     axiosClient,
 } from './apiClient'
-import { CreateFeatureParams, Feature, UpdateFeatureParams } from './schemas'
+import {
+    CreateFeatureParams,
+    Feature,
+    UpdateFeatureParams,
+    StaticConfiguration,
+} from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
 
@@ -18,6 +23,7 @@ export const fetchFeatures = async (
         page?: number
         perPage?: number
         search?: string
+        status?: 'active' | 'archived' | 'complete'
     } = {},
 ): Promise<Feature[]> => {
     const response = await apiClient.get(FEATURE_URL, {
@@ -44,6 +50,32 @@ export const fetchFeatureByKey = async (
                 key,
             },
         })
+
+        return response
+    } catch (e: unknown) {
+        if (e instanceof AxiosError && e.response?.status === 404) {
+            return null
+        }
+        throw e
+    }
+}
+
+export const fetchStaticConfigurationByKey = async (
+    token: string,
+    project_id: string,
+    key: string,
+): Promise<StaticConfiguration | null> => {
+    try {
+        const response = await apiClient.get(
+            `${FEATURE_URL}/:key/static-configuration`,
+            {
+                headers: buildHeaders(token),
+                params: {
+                    project: project_id,
+                    key,
+                },
+            },
+        )
 
         return response
     } catch (e: unknown) {
