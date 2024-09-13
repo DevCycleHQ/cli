@@ -114,6 +114,26 @@ const mockCustomPropertiesResponse = [
             },
         },
     },
+    {
+        _id: '987654321',
+        propertyKey: 'numberEnum',
+        type: 'Number',
+        schema: {
+            required: false,
+            enumSchema: {
+                allowedValues: [
+                    { label: 'Option 1', value: 1 },
+                    { label: 'Option 2', value: 2 },
+                ],
+                allowAdditionalValues: true,
+            },
+        },
+    },
+    {
+        _id: '987654321',
+        propertyKey: 'regularNumber',
+        type: 'Number',
+    },
 ]
 
 const artifactsDir = './test/artifacts/'
@@ -191,7 +211,49 @@ describe('generate types', () => {
         })
 
     dvcTest()
-        .nock(BASE_URL, setupNockMock([]))
+        .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
+        .stdout()
+        .command([
+            'generate:types',
+            '--output-dir',
+            jsOutputDir,
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
+            '--strict-custom-data',
+        ])
+        .it(
+            'correctly generates JS SDK types with custom data type in strict mode',
+            (ctx) => {
+                const outputDir = jsOutputDir + '/dvcVariableTypes.ts'
+                expect(ctx.stdout).to.contain(
+                    `Generated new types to ${outputDir}`,
+                )
+                expect(fs.existsSync(outputDir)).to.be.true
+                const typesString = fs.readFileSync(outputDir, 'utf-8')
+                expect(typesString).toMatchSnapshot()
+            },
+        )
+
+    dvcTest()
+        .nock(BASE_URL, (api) =>
+            api
+                .get(
+                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
+                )
+                .reply(200, mockVariablesResponse)
+                .get('/v1/organizations/current/members?perPage=100&page=1')
+                .reply(
+                    200,
+                    mockOrganizationMembersResponse,
+                    mockOrganizationMembersResponseHeaders,
+                )
+                .get('/v1/projects/project/customProperties')
+                .reply(200, []),
+        )
         .stdout()
         .command([
             'generate:types',

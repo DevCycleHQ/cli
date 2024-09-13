@@ -26,7 +26,7 @@ export type DevCycleJSON = { [key: string]: string | boolean | number }
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
     DVCVariable,
-    DVCVariableValue,${strictCustomData ? '\n    DVCCustomDataJSON,' : ''}
+    DVCVariableValue,${!strictCustomData ? '\n    DVCCustomDataJSON,' : ''}
     DevCycleJSON
 } from '@devcycle/react-client-sdk'
 
@@ -39,7 +39,7 @@ const nextImports = (strictCustomData: boolean) => {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
     DVCVariable,
-    DVCVariableValue,${strictCustomData ? '\n    DVCCustomDataJSON,' : ''}
+    DVCVariableValue,${!strictCustomData ? '\n    DVCCustomDataJSON,' : ''}
     DevCycleJSON
 } from '@devcycle/nextjs-sdk'
 
@@ -225,7 +225,7 @@ export default class GenerateTypes extends Base {
             // Add a default import for non-React, non-Next.js cases
             imports = oldRepos
                 ? `export type DevCycleJSON = { [key: string]: string | boolean | number }\n\n`
-                : `import { DevCycleJSON${strictCustomData ? ', DVCCustomDataJSON' : ''} } from '@devcycle/js-client-sdk'\n\n`
+                : `import { DevCycleJSON${!strictCustomData ? ', DVCCustomDataJSON' : ''} } from '@devcycle/js-client-sdk'\n\n`
         }
 
         let types =
@@ -430,5 +430,5 @@ const generateCustomDataType = (
 
     return `export type CustomData = {
 ${properties}
-}${strict ? ' & DVCCustomDataJSON' : ''}\n`
+}${!strict ? ' & DVCCustomDataJSON' : ''}\n`
 }
