@@ -1,8 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`generate types correctly generates JS SDK types 1`] = `
-"import { DevCycleJSON } from '@devcycle/js-client-sdk'
+exports[`generate types correctly generates JS SDK types with custom data type 1`] = `
+"import { DevCycleJSON, DVCCustomDataJSON } from '@devcycle/js-client-sdk'
 
+export type CustomData = {
+    'customString': string
+    'customEnum'?: | 
+        // Option 1
+        'option1' | 
+        // Option 2
+        'option2'
+} & DVCCustomDataJSON
 export type DVCVariableTypes = {
     /**
      * key: enum-var
@@ -113,8 +121,11 @@ export const DEPRECATED_VAR = 'deprecated-var' as const
 `;
 
 exports[`generate types correctly generates JS SDK types with obfuscated keys 1`] = `
-"import { DevCycleJSON } from '@devcycle/js-client-sdk'
+"import { DevCycleJSON, DVCCustomDataJSON } from '@devcycle/js-client-sdk'
 
+export type CustomData = {
+
+} & DVCCustomDataJSON
 export type DVCVariableTypes = {
     'dvc_obfs_8397a7cc0bd9847dab4cfcffc90d01385e21fec6f1d3999e3aaac2a137d69964': 'Hello' | 'Hey' | 'Hi'
     'dvc_obfs_cabd691e35fffe317483d72108898be69e03c7611dfb035660e4f71b9ed8cc44': string
@@ -185,9 +196,13 @@ exports[`generate types correctly generates Next.js SDK types 1`] = `
     useVariableValue as originalUseVariableValue,
     DVCVariable,
     DVCVariableValue,
+    DVCCustomDataJSON,
     DevCycleJSON
 } from '@devcycle/nextjs-sdk'
 
+export type CustomData = {
+
+} & DVCCustomDataJSON
 
 export type UseVariableValue = <
     K extends string & keyof DVCVariableTypes
@@ -323,9 +338,13 @@ exports[`generate types correctly generates React SDK types 1`] = `
     useVariableValue as originalUseVariableValue,
     DVCVariable,
     DVCVariableValue,
+    DVCCustomDataJSON,
     DevCycleJSON
 } from '@devcycle/react-client-sdk'
 
+export type CustomData = {
+
+} & DVCCustomDataJSON
 
 export type UseVariableValue = <
     K extends string & keyof DVCVariableTypes

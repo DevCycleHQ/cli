@@ -2,14 +2,15 @@ import Base from '../base'
 import fs from 'fs'
 import { fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
-import { Feature, Project, Variable } from '../../api/schemas'
+import { Feature, Project, Variable, CustomProperty } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 import { upperCase } from 'lodash'
 import { createHash } from 'crypto'
 import path from 'path'
 import { fetchAllCompletedOrArchivedFeatures } from '../../api/features'
+import { fetchCustomProperties } from '../../api/customProperties'
 
-const reactImports = (oldRepos: boolean) => {
+const reactImports = (oldRepos: boolean, strictCustomData: boolean) => {
     if (oldRepos) {
         return `import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
 import {
@@ -25,7 +26,7 @@ export type DevCycleJSON = { [key: string]: string | boolean | number }
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
     DVCVariable,
-    DVCVariableValue,
+    DVCVariableValue,${strictCustomData ? '\n    DVCCustomDataJSON,' : ''}
     DevCycleJSON
 } from '@devcycle/react-client-sdk'
 
@@ -33,12 +34,12 @@ export type DevCycleJSON = { [key: string]: string | boolean | number }
     }
 }
 
-const nextImports = () => {
+const nextImports = (strictCustomData: boolean) => {
     return `import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
     DVCVariable,
-    DVCVariableValue,
+    DVCVariableValue,${strictCustomData ? '\n    DVCCustomDataJSON,' : ''}
     DevCycleJSON
 } from '@devcycle/nextjs-sdk'
 
@@ -101,12 +102,17 @@ export default class GenerateTypes extends Base {
                 'Include variable descriptions in the variable information comment',
             default: true,
         }),
+        'strict-custom-data': Flags.boolean({
+            description: 'Generate stricter custom data types',
+            default: true,
+        }),
         obfuscate: Flags.boolean({
             description: 'Obfuscate the variable keys.',
             default: false,
         }),
         'include-deprecation-warnings': Flags.boolean({
-            description: 'Include @deprecated tags for variables of completed features',
+            description:
+                'Include @deprecated tags for variables of completed features',
             default: true,
         }),
     }
@@ -119,6 +125,7 @@ export default class GenerateTypes extends Base {
     outputDir: string
     includeDeprecationWarnings = true
     features: Feature[] = []
+    customProperties: CustomProperty[]
 
     public async run(): Promise<void> {
         const { flags } = await this.parse(GenerateTypes)
@@ -135,6 +142,10 @@ export default class GenerateTypes extends Base {
         this.outputDir = outputDir
         this.includeDeprecationWarnings = includeDeprecationWarnings
         this.project = await this.requireProject(project, headless)
+        this.customProperties = await fetchCustomProperties(
+            this.authToken,
+            this.projectKey,
+        )
 
         if (this.project.settings.obfuscation.required) {
             if (!this.obfuscate) {
@@ -151,7 +162,10 @@ export default class GenerateTypes extends Base {
             )
         }
 
-        this.features = await fetchAllCompletedOrArchivedFeatures(this.authToken, this.projectKey)
+        this.features = await fetchAllCompletedOrArchivedFeatures(
+            this.authToken,
+            this.projectKey,
+        )
 
         const variables = await fetchAllVariables(
             this.authToken,
@@ -163,6 +177,7 @@ export default class GenerateTypes extends Base {
             flags['react'],
             flags['nextjs'],
             flags['old-repos'],
+            flags['strict-custom-data'],
         )
 
         try {
@@ -192,6 +207,7 @@ export default class GenerateTypes extends Base {
         react: boolean,
         next: boolean,
         oldRepos: boolean,
+        strictCustomData: boolean,
     ) {
         const typeLines = variables.map((variable) =>
             this.getTypeDefinitionLine(variable),
@@ -202,18 +218,19 @@ export default class GenerateTypes extends Base {
 
         let imports = ''
         if (react) {
-            imports = reactImports(oldRepos)
+            imports = reactImports(oldRepos, strictCustomData)
         } else if (next) {
-            imports = nextImports()
+            imports = nextImports(strictCustomData)
         } else {
             // Add a default import for non-React, non-Next.js cases
             imports = oldRepos
                 ? `export type DevCycleJSON = { [key: string]: string | boolean | number }\n\n`
-                : `import { DevCycleJSON } from '@devcycle/js-client-sdk'\n\n`
+                : `import { DevCycleJSON${strictCustomData ? ', DVCCustomDataJSON' : ''} } from '@devcycle/js-client-sdk'\n\n`
         }
 
         let types =
             imports +
+            generateCustomDataType(this.customProperties, strictCustomData) +
             (react || next ? reactOverrides : '') +
             'export type DVCVariableTypes = {\n' +
             typeLines.join('\n') +
@@ -240,9 +257,10 @@ export default class GenerateTypes extends Base {
     }
 
     private getVariableInfoComment(variable: Variable, indent: boolean) {
-        const descriptionText = this.includeDescriptions && variable.description
-            ? `${sanitizeDescription(variable.description)}`
-            : ''
+        const descriptionText =
+            this.includeDescriptions && variable.description
+                ? `${sanitizeDescription(variable.description)}`
+                : ''
 
         const creator = variable._createdBy
             ? findCreatorName(this.orgMembers, variable._createdBy)
@@ -250,8 +268,9 @@ export default class GenerateTypes extends Base {
         const createdDate = variable.createdAt.split('T')[0]
 
         const deprecationInfo = isVariableDeprecated(variable, this.features)
-        const isDeprecated = this.includeDeprecationWarnings && deprecationInfo.deprecated
-        const deprecationWarning = isDeprecated 
+        const isDeprecated =
+            this.includeDeprecationWarnings && deprecationInfo.deprecated
+        const deprecationWarning = isDeprecated
             ? `@deprecated This variable is part of ${deprecationInfo.feature?.status} feature "${deprecationInfo.feature?.name}" and should be cleaned up.\n`
             : ''
 
@@ -261,7 +280,7 @@ export default class GenerateTypes extends Base {
             createdDate,
             indent,
             !this.obfuscate ? variable.key : undefined,
-            deprecationWarning
+            deprecationWarning,
         )
     }
 
@@ -339,7 +358,7 @@ export const blockComment = (
     createdDate: string,
     indent: boolean,
     key?: string,
-    deprecationWarning?: string
+    deprecationWarning?: string,
 ) => {
     const indentString = indent ? '    ' : ''
     return (
@@ -351,7 +370,9 @@ export const blockComment = (
             : '') +
         `${indentString} * created by: ${creator}\n` +
         `${indentString} * created on: ${createdDate}\n` +
-        (deprecationWarning ? `${indentString} * ${deprecationWarning}\n` : '') +
+        (deprecationWarning
+            ? `${indentString} * ${deprecationWarning}\n`
+            : '') +
         indentString +
         '*/'
     )
@@ -378,7 +399,36 @@ export function getVariableType(variable: Variable) {
 }
 
 function isVariableDeprecated(variable: Variable, features: Feature[]) {
-    if (!variable._feature || variable.persistent) return { deprecated: false}
-    const feature = features.find(f => f._id === variable._feature)
-    return {deprecated: feature && feature.status !== 'active', feature}
+    if (!variable._feature || variable.persistent) return { deprecated: false }
+    const feature = features.find((f) => f._id === variable._feature)
+    return { deprecated: feature && feature.status !== 'active', feature }
+}
+
+const generateCustomDataType = (
+    customProperties: CustomProperty[],
+    strict: boolean,
+) => {
+    const properties = customProperties
+        .map((prop) => {
+            const propType = prop.type.toLowerCase()
+            const schema = prop.schema?.enumSchema
+            const isRequired = prop.schema?.required ?? false
+            const optionalMarker = isRequired ? '' : '?'
+            if (schema) {
+                const enumValues = schema.allowedValues
+                    .map(({ label, value }) => {
+                        const valueStr =
+                            typeof value === 'number' ? value : `'${value}'`
+                        return `        // ${label}\n        ${valueStr}`
+                    })
+                    .join(' | \n')
+                return `    '${prop.propertyKey}'${optionalMarker}: | \n${enumValues}${schema.allowAdditionalValues ? ` |\n        ${propType}` : ''}`
+            }
+            return `    '${prop.propertyKey}'${optionalMarker}: ${propType}`
+        })
+        .join('\n')
+
+    return `export type CustomData = {
+${properties}
+}${strict ? ' & DVCCustomDataJSON' : ''}\n`
 }

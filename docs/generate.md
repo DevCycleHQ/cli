@@ -13,7 +13,8 @@ Generate Variable Types from the management API
 USAGE
   $ dvc generate types [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--output-dir <value>] [--react]
-    [--nextjs] [--old-repos] [--include-descriptions] [--obfuscate] [--include-deprecation-warnings]
+    [--nextjs] [--old-repos] [--include-descriptions] [--strict-custom-data] [--obfuscate]
+    [--include-deprecation-warnings]
 
 FLAGS
   --include-deprecation-warnings  Include @deprecated tags for variables of completed features
@@ -24,6 +25,7 @@ FLAGS
                                   @devcycle/devcycle-js-sdk)
   --output-dir=<value>            [default: .] Directory to output the generated types to
   --react                         Generate types for use with React
+  --strict-custom-data            Generate stricter custom data types
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

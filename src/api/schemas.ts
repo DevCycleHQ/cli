@@ -11,7 +11,7 @@ export type FeatureConfig = z.infer<typeof schemas.FeatureConfig>
 export type Audience = z.infer<typeof schemas.Audience>
 export type Target = z.infer<typeof schemas.Target>
 export type Override = z.infer<typeof schemas.Override>
-
+export type CustomProperty = z.infer<typeof schemas.CustomProperty>
 export type CreateEnvironmentParams = z.infer<
     typeof schemas.CreateEnvironmentDto
 >
