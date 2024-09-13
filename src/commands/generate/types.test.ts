@@ -239,21 +239,7 @@ describe('generate types', () => {
         )
 
     dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(
-                    '/v1/projects/project/variables?perPage=1000&page=1&status=active',
-                )
-                .reply(200, mockVariablesResponse)
-                .get('/v1/organizations/current/members?perPage=100&page=1')
-                .reply(
-                    200,
-                    mockOrganizationMembersResponse,
-                    mockOrganizationMembersResponseHeaders,
-                )
-                .get('/v1/projects/project/customProperties')
-                .reply(200, []),
-        )
+        .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
             'generate:types',
@@ -276,7 +262,7 @@ describe('generate types', () => {
         })
 
     dvcTest()
-        .nock(BASE_URL, setupNockMock([]))
+        .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
             'generate:types',

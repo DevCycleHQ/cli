@@ -334,7 +334,172 @@ exports[`generate types correctly generates Next.js SDK types 1`] = `
 } from '@devcycle/nextjs-sdk'
 
 export type CustomData = {
+    'customString': string
+    'customEnum'?: | 
+        // Option 1
+        'option1' | 
+        // Option 2
+        'option2'
+    'numberEnum'?: | 
+        // Option 1
+        1 | 
+        // Option 2
+        2 |
+        number
+    'regularNumber'?: number
+}
 
+export type UseVariableValue = <
+    K extends string & keyof DVCVariableTypes
+>(
+    key: K,
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariableTypes[K]
+
+export const useVariableValue = originalUseVariableValue as UseVariableValue
+
+export type UseVariable = <
+    K extends string & keyof DVCVariableTypes,
+    T extends DVCVariableValue & DVCVariableTypes[K],
+>(
+    key: K,
+    defaultValue: DVCVariableTypes[K]
+) => DVCVariable<T>
+
+export const useVariable = originalUseVariable as UseVariable
+
+export type DVCVariableTypes = {
+    /**
+     * key: enum-var
+     * description: Different ways to say hello
+     * created by: User 1
+     * created on: 2021-07-04
+    */
+    'enum-var': 'Hello' | 'Hey' | 'Hi'
+    /**
+     * key: regex-var
+     * created by: User 2
+     * created on: 2021-07-04
+    */
+    'regex-var': string
+    /**
+     * key: string-var
+     * created by: User 1
+     * created on: 2021-07-04
+    */
+    'string-var': string
+    /**
+     * key: boolean-var
+     * created by: User 2
+     * created on: 2021-07-04
+    */
+    'boolean-var': boolean
+    /**
+     * key: number-var
+     * created by: User 1
+     * created on: 2021-07-04
+    */
+    'number-var': number
+    /**
+     * key: json-var
+     * created by: Unknown User
+     * created on: 2021-07-04
+    */
+    'json-var': DevCycleJSON
+    /**
+     * key: deprecated-var
+     * created by: Unknown User
+     * created on: 2021-07-04
+     * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+
+    */
+    'deprecated-var': string
+}
+
+/**
+ * key: enum-var
+ * description: Different ways to say hello
+ * created by: User 1
+ * created on: 2021-07-04
+*/
+
+export const ENUM_VAR = 'enum-var' as const
+
+/**
+ * key: regex-var
+ * created by: User 2
+ * created on: 2021-07-04
+*/
+
+export const REGEX_VAR = 'regex-var' as const
+
+/**
+ * key: string-var
+ * created by: User 1
+ * created on: 2021-07-04
+*/
+
+export const STRING_VAR = 'string-var' as const
+
+/**
+ * key: boolean-var
+ * created by: User 2
+ * created on: 2021-07-04
+*/
+
+export const BOOLEAN_VAR = 'boolean-var' as const
+
+/**
+ * key: number-var
+ * created by: User 1
+ * created on: 2021-07-04
+*/
+
+export const NUMBER_VAR = 'number-var' as const
+
+/**
+ * key: json-var
+ * created by: Unknown User
+ * created on: 2021-07-04
+*/
+
+export const JSON_VAR = 'json-var' as const
+
+/**
+ * key: deprecated-var
+ * created by: Unknown User
+ * created on: 2021-07-04
+ * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+
+*/
+
+export const DEPRECATED_VAR = 'deprecated-var' as const
+"
+`;
+
+exports[`generate types correctly generates React SDK types 1`] = `
+"import {
+    useVariable as originalUseVariable,
+    useVariableValue as originalUseVariableValue,
+    DVCVariable,
+    DVCVariableValue,
+    DevCycleJSON
+} from '@devcycle/react-client-sdk'
+
+export type CustomData = {
+    'customString': string
+    'customEnum'?: | 
+        // Option 1
+        'option1' | 
+        // Option 2
+        'option2'
+    'numberEnum'?: | 
+        // Option 1
+        1 | 
+        // Option 2
+        2 |
+        number
+    'regularNumber'?: number
 }
 
 export type UseVariableValue = <
