@@ -92,6 +92,50 @@ const mockOrganizationMembersResponseHeaders = {
     count: 2,
 } as unknown as ReplyHeaders
 
+const mockCustomPropertiesResponse = [
+    {
+        _id: '123456789',
+        propertyKey: 'customString',
+        type: 'String',
+        schema: { required: true },
+    },
+    {
+        _id: '987654321',
+        propertyKey: 'customEnum',
+        type: 'String',
+        schema: {
+            required: false,
+            enumSchema: {
+                allowedValues: [
+                    { label: 'Option 1', value: 'option1' },
+                    { label: 'Option 2', value: 'option2' },
+                ],
+                allowAdditionalValues: false,
+            },
+        },
+    },
+    {
+        _id: '987654321',
+        propertyKey: 'numberEnum',
+        type: 'Number',
+        schema: {
+            required: false,
+            enumSchema: {
+                allowedValues: [
+                    { label: 'Option 1', value: 1 },
+                    { label: 'Option 2', value: 2 },
+                ],
+                allowAdditionalValues: true,
+            },
+        },
+    },
+    {
+        _id: '987654321',
+        propertyKey: 'regularNumber',
+        type: 'Number',
+    },
+]
+
 const artifactsDir = './test/artifacts/'
 const jsOutputDir = artifactsDir + 'generate/js'
 const reactOutputDir = artifactsDir + 'generate/react'
@@ -114,7 +158,7 @@ const mockCompletedArchivedFeaturesResponse = [
 ] as Body
 
 // Add this function at the top of the file, after the imports
-const setupNockMock = (api: Nock.Scope) => {
+const setupNockMock = (customProperties: unknown[]) => (api: Nock.Scope) => {
     return api
         .get('/v1/projects/project/variables?perPage=1000&page=1&status=active')
         .reply(200, mockVariablesResponse)
@@ -122,13 +166,19 @@ const setupNockMock = (api: Nock.Scope) => {
         .reply(
             200,
             mockOrganizationMembersResponse,
-            mockOrganizationMembersResponseHeaders
+            mockOrganizationMembersResponseHeaders,
         )
-        .get('/v1/projects/project/features?perPage=1000&page=1&status=complete')
+        .get(
+            '/v1/projects/project/features?perPage=1000&page=1&status=complete',
+        )
         .reply(200, mockCompletedArchivedFeaturesResponse)
-        .get('/v1/projects/project/features?perPage=1000&page=1&status=archived')
-        .reply(200, mockCompletedArchivedFeaturesResponse);
-};
+        .get(
+            '/v1/projects/project/features?perPage=1000&page=1&status=archived',
+        )
+        .reply(200, mockCompletedArchivedFeaturesResponse)
+        .get('/v1/projects/project/customProperties')
+        .reply(200, customProperties)
+}
 
 describe('generate types', () => {
     beforeEach(setCurrentTestFile(__filename))
@@ -139,7 +189,7 @@ describe('generate types', () => {
     })
 
     dvcTest()
-        .nock(BASE_URL, setupNockMock)
+        .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
             'generate:types',
@@ -152,7 +202,7 @@ describe('generate types', () => {
             '--project',
             'project',
         ])
-        .it('correctly generates JS SDK types', (ctx) => {
+        .it('correctly generates JS SDK types with custom data type', (ctx) => {
             const outputDir = jsOutputDir + '/dvcVariableTypes.ts'
             expect(ctx.stdout).to.contain(`Generated new types to ${outputDir}`)
             expect(fs.existsSync(outputDir)).to.be.true
@@ -161,7 +211,35 @@ describe('generate types', () => {
         })
 
     dvcTest()
-        .nock(BASE_URL, setupNockMock)
+        .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
+        .stdout()
+        .command([
+            'generate:types',
+            '--output-dir',
+            jsOutputDir,
+            '--client-id',
+            'client',
+            '--client-secret',
+            'secret',
+            '--project',
+            'project',
+            '--strict-custom-data',
+        ])
+        .it(
+            'correctly generates JS SDK types with custom data type in strict mode',
+            (ctx) => {
+                const outputDir = jsOutputDir + '/dvcVariableTypes.ts'
+                expect(ctx.stdout).to.contain(
+                    `Generated new types to ${outputDir}`,
+                )
+                expect(fs.existsSync(outputDir)).to.be.true
+                const typesString = fs.readFileSync(outputDir, 'utf-8')
+                expect(typesString).toMatchSnapshot()
+            },
+        )
+
+    dvcTest()
+        .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
             'generate:types',
@@ -184,7 +262,7 @@ describe('generate types', () => {
         })
 
     dvcTest()
-        .nock(BASE_URL, setupNockMock)
+        .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
             'generate:types',
@@ -207,7 +285,7 @@ describe('generate types', () => {
         })
 
     dvcTest()
-        .nock(BASE_URL, setupNockMock)
+        .nock(BASE_URL, setupNockMock([]))
         .stdout()
         .command([
             'generate:types',
@@ -237,7 +315,7 @@ describe('generate types', () => {
         )
 
     dvcTest()
-        .nock(BASE_URL, setupNockMock)
+        .nock(BASE_URL, setupNockMock([]))
         .stdout()
         .command([
             'generate:types',

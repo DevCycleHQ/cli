@@ -650,6 +650,23 @@ const CustomProperty = z.object({
     _project: z.string(),
     _createdBy: z.string(),
     propertyKey: z.string(),
+    schema: z
+        .object({
+            schemaType: z.enum(['enum']),
+            required: z.boolean().optional(),
+            enumSchema: z
+                .object({
+                    allowedValues: z.array(
+                        z.object({
+                            label: z.string(),
+                            value: z.union([z.string(), z.number()]),
+                        }),
+                    ),
+                    allowAdditionalValues: z.boolean().optional(),
+                })
+                .optional(),
+        })
+        .optional(),
     type: z.enum(['String', 'Boolean', 'Number']),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
