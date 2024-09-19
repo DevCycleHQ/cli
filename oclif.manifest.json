@@ -1,5 +1,5 @@
 {
-  "version": "5.17.0",
+  "version": "5.18.0",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -2243,6 +2243,12 @@
           "name": "include-descriptions",
           "type": "boolean",
           "description": "Include variable descriptions in the variable information comment",
+          "allowNo": false
+        },
+        "strict-custom-data": {
+          "name": "strict-custom-data",
+          "type": "boolean",
+          "description": "Generate stricter custom data types",
           "allowNo": false
         },
         "obfuscate": {
