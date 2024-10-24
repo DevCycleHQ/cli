@@ -25,7 +25,7 @@ runs:
       shell: bash
       working-directory: vscode-extension
       run: |
-        git config --global user.email "github-tracker-bot@taplytics.com"
+        git config --global user.email "foundation-admin@taplytics.com"
         git config --global user.name "DevCycle Automation"
 
     - name: Set branch name
