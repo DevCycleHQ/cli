@@ -3,6 +3,10 @@
 exports[`generate types correctly generates JS SDK types with custom data type 1`] = `
 "import { DevCycleJSON } from '@devcycle/js-client-sdk'
 
+declare module '@devcycle/types' {
+   interface CustomVariableDefinitions extends DVCVariableTypes {}
+}
+
 export type CustomData = {
     'customString': string
     'customEnum'?: | 
@@ -129,6 +133,10 @@ export const DEPRECATED_VAR = 'deprecated-var' as const
 
 exports[`generate types correctly generates JS SDK types with custom data type in strict mode 1`] = `
 "import { DevCycleJSON } from '@devcycle/js-client-sdk'
+
+declare module '@devcycle/types' {
+   interface CustomVariableDefinitions extends DVCVariableTypes {}
+}
 
 export type CustomData = {
     'customString': string
@@ -257,6 +265,10 @@ export const DEPRECATED_VAR = 'deprecated-var' as const
 exports[`generate types correctly generates JS SDK types with obfuscated keys 1`] = `
 "import { DevCycleJSON } from '@devcycle/js-client-sdk'
 
+declare module '@devcycle/types' {
+   interface CustomVariableDefinitions extends DVCVariableTypes {}
+}
+
 export type CustomData = {
 
 }
@@ -332,6 +344,10 @@ exports[`generate types correctly generates Next.js SDK types 1`] = `
     DVCVariableValue,
     DevCycleJSON
 } from '@devcycle/nextjs-sdk'
+
+declare module '@devcycle/types' {
+   interface CustomVariableDefinitions extends DVCVariableTypes {}
+}
 
 export type CustomData = {
     'customString': string
@@ -485,6 +501,10 @@ exports[`generate types correctly generates React SDK types 1`] = `
     DVCVariableValue,
     DevCycleJSON
 } from '@devcycle/react-client-sdk'
+
+declare module '@devcycle/types' {
+   interface CustomVariableDefinitions extends DVCVariableTypes {}
+}
 
 export type CustomData = {
     'customString': string

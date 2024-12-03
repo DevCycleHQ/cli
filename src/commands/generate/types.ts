@@ -80,9 +80,22 @@ export default class GenerateTypes extends Base {
         react: Flags.boolean({
             description: 'Generate types for use with React',
             default: false,
+            deprecated: {
+                message:
+                    'The React SDK since v1.30.0 does not require this flag. Its types can be augmented automatically',
+            },
         }),
         nextjs: Flags.boolean({
             description: 'Generate types for use with Next.js',
+            default: false,
+            deprecated: {
+                message:
+                    'The Next.js SDK since v2.7.0 does not require this flag. Its types can be augmented automatically',
+            },
+        }),
+        'no-declaration': Flags.boolean({
+            description:
+                'Do not generate a "declare module" statement that automatically overrides SDK types.',
             default: false,
         }),
         'old-repos': Flags.boolean({
@@ -124,6 +137,7 @@ export default class GenerateTypes extends Base {
     project: Project
     outputDir: string
     includeDeprecationWarnings = true
+    noDeclaration = false
     features: Feature[] = []
     customProperties: CustomProperty[]
 
@@ -135,6 +149,7 @@ export default class GenerateTypes extends Base {
             'include-descriptions': includeDescriptions,
             obfuscate,
             'output-dir': outputDir,
+            'no-declaration': noDeclaration,
             'include-deprecation-warnings': includeDeprecationWarnings,
         } = flags
         this.includeDescriptions = includeDescriptions
@@ -146,6 +161,7 @@ export default class GenerateTypes extends Base {
             this.authToken,
             this.projectKey,
         )
+        this.noDeclaration = noDeclaration
 
         if (this.project.settings.obfuscation.required) {
             if (!this.obfuscate) {
@@ -230,6 +246,7 @@ export default class GenerateTypes extends Base {
 
         let types =
             imports +
+            this.generateDeclareModuleStatement() +
             generateCustomDataType(this.customProperties, strictCustomData) +
             (react || next ? reactOverrides : '') +
             'export type DVCVariableTypes = {\n' +
@@ -238,6 +255,17 @@ export default class GenerateTypes extends Base {
         types += '\n' + definitionLines.join('\n')
         types += '\n' + ''
         return types
+    }
+
+    private generateDeclareModuleStatement() {
+        if (this.noDeclaration) {
+            return ''
+        }
+        return (
+            `declare module '@devcycle/types' {\n` +
+            `   interface CustomVariableDefinitions extends DVCVariableTypes {}\n` +
+            `}\n\n`
+        )
     }
 
     private getTypeDefinitionLine(variable: Variable) {
