@@ -1,5 +1,5 @@
 {
-  "version": "5.18.0",
+  "version": "5.19.0",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -2218,12 +2218,24 @@
           "name": "react",
           "type": "boolean",
           "description": "Generate types for use with React",
-          "allowNo": false
+          "allowNo": false,
+          "deprecated": {
+            "message": "The React SDK since v1.30.0 does not require this flag. Its types can be augmented automatically"
+          }
         },
         "nextjs": {
           "name": "nextjs",
           "type": "boolean",
           "description": "Generate types for use with Next.js",
+          "allowNo": false,
+          "deprecated": {
+            "message": "The Next.js SDK since v2.7.0 does not require this flag. Its types can be augmented automatically"
+          }
+        },
+        "no-declaration": {
+          "name": "no-declaration",
+          "type": "boolean",
+          "description": "Do not generate a \"declare module\" statement that automatically overrides SDK types.",
           "allowNo": false
         },
         "old-repos": {
