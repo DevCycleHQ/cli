@@ -26,6 +26,7 @@ on:
   # schedule:
   #   - cron: '0 12 * * 2'  # Runs every Tuesday at 12:00 PM (noon) ET
 permissions:
+  id-token: write
   contents: write
 
 jobs:
