@@ -32,7 +32,7 @@ DESCRIPTION
   Retrieve Organizations available to the current user
 ```
 
-_See code: [src/commands/organizations/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.19.0/src/commands/organizations/get.ts)_
+_See code: [src/commands/organizations/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.0/src/commands/organizations/get.ts)_
 
 ## `dvc organizations list`
 
@@ -61,7 +61,7 @@ ALIASES
   $ dvc organizations ls
 ```
 
-_See code: [src/commands/organizations/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.19.0/src/commands/organizations/list.ts)_
+_See code: [src/commands/organizations/list.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.0/src/commands/organizations/list.ts)_
 
 ## `dvc organizations ls`
 
@@ -117,4 +117,4 @@ DESCRIPTION
   Select which organization to access through the API
 ```
 
-_See code: [src/commands/organizations/select.ts](https://github.com/DevCycleHQ/cli/blob/v5.19.0/src/commands/organizations/select.ts)_
+_See code: [src/commands/organizations/select.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.0/src/commands/organizations/select.ts)_

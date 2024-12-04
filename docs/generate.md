@@ -13,13 +13,14 @@ Generate Variable Types from the management API
 USAGE
   $ dvc generate types [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--output-dir <value>] [--react]
-    [--nextjs] [--old-repos] [--include-descriptions] [--strict-custom-data] [--obfuscate]
+    [--nextjs] [--no-declaration] [--old-repos] [--include-descriptions] [--strict-custom-data] [--obfuscate]
     [--include-deprecation-warnings]
 
 FLAGS
   --include-deprecation-warnings  Include @deprecated tags for variables of completed features
   --include-descriptions          Include variable descriptions in the variable information comment
   --nextjs                        Generate types for use with Next.js
+  --no-declaration                Do not generate a "declare module" statement that automatically overrides SDK types.
   --obfuscate                     Obfuscate the variable keys.
   --old-repos                     Generate types for use with old DevCycle repos (@devcycle/devcycle-react-sdk,
                                   @devcycle/devcycle-js-sdk)
@@ -42,4 +43,4 @@ DESCRIPTION
   Generate Variable Types from the management API
 ```
 
-_See code: [src/commands/generate/types.ts](https://github.com/DevCycleHQ/cli/blob/v5.19.0/src/commands/generate/types.ts)_
+_See code: [src/commands/generate/types.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.0/src/commands/generate/types.ts)_
