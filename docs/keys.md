@@ -40,4 +40,4 @@ EXAMPLES
   $ dvc keys get --keys=environment-one,environment-two
 ```
 
-_See code: [src/commands/keys/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.0/src/commands/keys/get.ts)_
+_See code: [src/commands/keys/get.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.1/src/commands/keys/get.ts)_
