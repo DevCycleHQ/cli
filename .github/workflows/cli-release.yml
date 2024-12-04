@@ -43,6 +43,7 @@ jobs:
         uses: DevCycleHQ/aws-secrets-action@main
         with:
           secrets_map: '{"CLI_NPMJS_TOKEN": "DEVCYCLE_GITHUB_CLI_NPM_TOKEN"}'
+          aws_account_id: '134377926370'
       - name: Set Git author
         run: |
           git config --global user.email "foundation-admin@devcycle.com"
