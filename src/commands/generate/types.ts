@@ -79,7 +79,6 @@ export default class GenerateTypes extends Base {
         }),
         react: Flags.boolean({
             description: 'Generate types for use with React',
-            default: false,
             deprecated: {
                 message:
                     'The React SDK since v1.30.0 does not require this flag. Its types can be augmented automatically',
@@ -87,7 +86,6 @@ export default class GenerateTypes extends Base {
         }),
         nextjs: Flags.boolean({
             description: 'Generate types for use with Next.js',
-            default: false,
             deprecated: {
                 message:
                     'The Next.js SDK since v2.7.0 does not require this flag. Its types can be augmented automatically',
