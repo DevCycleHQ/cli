@@ -222,9 +222,9 @@ describe('targeting update', () => {
         ...mockResponseInteractive,
         targets: [
             {
-                ...mockResponseInteractive.targets[0],
+                ...customDataRequestBody.targets[0],
                 audience: {
-                    ...mockResponseInteractive.targets[0].audience,
+                    ...customDataRequestBody.targets[0].audience,
                 },
             },
         ],
@@ -387,14 +387,6 @@ describe('targeting update', () => {
                 .reply(200, mockVariations),
         )
         .nock(BASE_URL, (api) =>
-            api
-                .get(
-                    `/v1/projects/${projectKey}/features/${featureKey}/configurations`,
-                )
-                .query({ environment: envKey })
-                .reply(200, mockTargetingRules),
-        )
-        .nock(BASE_URL, (api) =>
             api.get(`/v1/projects/${projectKey}/audiences`).reply(200, []),
         )
         .nock(BASE_URL, (api) =>
@@ -406,7 +398,7 @@ describe('targeting update', () => {
                 .query({ environment: envKey })
                 .reply(200, mockResponseCustomData),
         )
-        .stderr()
+        .stdout()
         .command([
             'targeting update',
             featureKey,
@@ -419,9 +411,9 @@ describe('targeting update', () => {
             '[{ "name": "Shrek Fans", "serve": "variation-on", "definition": [{ "type": "user", "subType": "customData", "comparator": "=", "values": [true], "dataKey": "isShrek", "dataKeyType": "Boolean" }] }]',
         ])
         .it(
-            'fails to update a target in headless mode with a custom data key',
+            'update a target in headless mode with a custom data key',
             (ctx) => {
-                expect(ctx.stderr).contains('Expected string, received boolean')
+                expect(ctx.stdout).toMatchSnapshot()
             },
         )
 })

@@ -218,7 +218,7 @@ const UserCustomFilter = z.object({
     ]),
     dataKey: z.string().min(1),
     dataKeyType: z.enum(['String', 'Boolean', 'Number']),
-    values: z.object({}).partial().optional(),
+    values: z.array(z.union([z.boolean(), z.string(), z.number()])).optional(),
     type: z.literal('user').default('user'),
     subType: z.literal('customData').default('customData'),
 })

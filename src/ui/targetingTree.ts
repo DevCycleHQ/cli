@@ -150,7 +150,9 @@ const buildDefinitionTree = (
                 Array.isArray(filter.values) &&
                 !['exist', '!exist'].includes(filter.subType)
             ) {
-                filter.values.forEach((value) => values.insert(value))
+                filter.values.forEach((value) =>
+                    values.insert(value.toString()),
+                )
             }
             userFilter.insert(comparatorMap[filter.comparator], values)
             const userProperty =
