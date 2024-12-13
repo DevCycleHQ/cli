@@ -189,6 +189,47 @@ describe('targeting update', () => {
         ],
     }
 
+    const customDataRequestBody = {
+        targets: [
+            {
+                distribution: [
+                    {
+                        _variation: 'variation-on',
+                        percentage: 1,
+                    },
+                ],
+                audience: {
+                    name: 'Shrek Fans',
+                    filters: {
+                        filters: [
+                            {
+                                type: 'user',
+                                subType: 'customData',
+                                comparator: '=',
+                                values: [true],
+                                dataKey: 'isShrek',
+                                dataKeyType: 'Boolean',
+                            },
+                        ],
+                        operator: 'and',
+                    },
+                },
+            },
+        ],
+    }
+
+    const mockResponseCustomData = {
+        ...mockResponseInteractive,
+        targets: [
+            {
+                ...customDataRequestBody.targets[0],
+                audience: {
+                    ...customDataRequestBody.targets[0].audience,
+                },
+            },
+        ],
+    }
+
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
@@ -327,6 +368,50 @@ describe('targeting update', () => {
         ])
         .it(
             'updates a target by adding a filter in interactive mode',
+            (ctx) => {
+                expect(ctx.stdout).toMatchSnapshot()
+            },
+        )
+
+    dvcTest()
+        .nock(BASE_URL, (api) =>
+            api
+                .get(`/v1/projects/${projectKey}/environments/${envKey}`)
+                .reply(200, mockEnvironment),
+        )
+        .nock(BASE_URL, (api) =>
+            api
+                .get(
+                    `/v1/projects/${projectKey}/features/${featureKey}/variations`,
+                )
+                .reply(200, mockVariations),
+        )
+        .nock(BASE_URL, (api) =>
+            api.get(`/v1/projects/${projectKey}/audiences`).reply(200, []),
+        )
+        .nock(BASE_URL, (api) =>
+            api
+                .patch(
+                    `/v1/projects/${projectKey}/features/${featureKey}/configurations`,
+                    customDataRequestBody,
+                )
+                .query({ environment: envKey })
+                .reply(200, mockResponseCustomData),
+        )
+        .stdout()
+        .command([
+            'targeting update',
+            featureKey,
+            envKey,
+            '--project',
+            projectKey,
+            ...authFlags,
+            '--headless',
+            '--targets',
+            '[{ "name": "Shrek Fans", "serve": "variation-on", "definition": [{ "type": "user", "subType": "customData", "comparator": "=", "values": [true], "dataKey": "isShrek", "dataKeyType": "Boolean" }] }]',
+        ])
+        .it(
+            'update a target in headless mode with a custom data key',
             (ctx) => {
                 expect(ctx.stdout).toMatchSnapshot()
             },
