@@ -9,6 +9,7 @@
       "pluginType": "core",
       "hidden": true,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -109,6 +110,7 @@
       "pluginType": "core",
       "hidden": true,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -203,6 +205,7 @@
       "pluginType": "core",
       "hidden": true,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -309,6 +312,7 @@
       "pluginType": "core",
       "hidden": true,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -425,6 +429,7 @@
       "pluginType": "core",
       "hidden": true,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -519,6 +524,7 @@
       "pluginType": "core",
       "hidden": true,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -623,6 +629,7 @@
       "pluginType": "core",
       "hidden": true,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {},
       "args": {}
     },
@@ -635,6 +642,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
         "<%= config.bin %> <%= command.id %> --alias=VARIABLE_ALIAS --variable=variable-key"
@@ -746,6 +754,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
         "<%= config.bin %> <%= command.id %> my-variable-key --value true --type Boolean",
@@ -898,6 +907,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
         "<%= config.bin %> <%= command.id %> --match-pattern js=\"dvcClient\\.variable\\(\\s*[\"']([^\"']*)[\"']\""
@@ -1064,6 +1074,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -1189,6 +1200,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
         "<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two"
@@ -1295,6 +1307,7 @@
       "aliases": [
         "environments:ls"
       ],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -1390,6 +1403,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -1519,6 +1533,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -1651,6 +1666,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -1751,6 +1767,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
         "<%= config.bin %> <%= command.id %> --keys=feature-one,feature-two"
@@ -1876,6 +1893,7 @@
       "aliases": [
         "features:ls"
       ],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -1989,6 +2007,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -2124,6 +2143,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -2287,6 +2307,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -2382,6 +2403,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -2483,6 +2505,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
         "<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two"
@@ -2599,6 +2622,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>"
       ],
@@ -2703,6 +2727,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [],
       "flags": {
         "config-path": {
@@ -2805,6 +2830,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [],
       "flags": {
         "config-path": {
@@ -2901,6 +2927,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -2998,6 +3025,7 @@
       "aliases": [
         "organizations:ls"
       ],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3093,6 +3121,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3194,6 +3223,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3307,6 +3337,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3416,6 +3447,7 @@
       "aliases": [
         "overrides:ls"
       ],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3584,6 +3616,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %> --feature feature-key --environment env-key --variation variation-key"
       ],
@@ -3700,6 +3733,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3813,6 +3847,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -3908,6 +3943,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -4027,6 +4063,7 @@
       "aliases": [
         "projects:ls"
       ],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -4122,6 +4159,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -4223,6 +4261,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [],
       "flags": {
         "config-path": {
@@ -4325,6 +4364,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -4420,6 +4460,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %> feature-one environment-one"
       ],
@@ -4527,6 +4568,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %> feature-one environment-one"
       ],
@@ -4634,6 +4676,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %> feature-one",
         "<%= config.bin %> <%= command.id %> feature-one environment-one"
@@ -4743,6 +4786,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -4863,6 +4907,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
         "<%= config.bin %> <%= command.id %> --match-pattern js=\"dvcClient\\.variable\\(\\s*[\"']([^\"']*)[\"']\""
@@ -5022,6 +5067,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -5158,6 +5204,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -5278,6 +5325,7 @@
       "aliases": [
         "variables:ls"
       ],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -5391,6 +5439,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -5502,6 +5551,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
         "<%= config.bin %> <%= command.id %> --variables='{ \"bool-var\": true, \"num-var\": 80, \"string-var\": \"test\" }'"
@@ -5624,6 +5674,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -5726,6 +5777,7 @@
       "aliases": [
         "variations:ls"
       ],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -5826,6 +5878,7 @@
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
+      "hiddenAliases": [],
       "flags": {
         "config-path": {
           "name": "config-path",
