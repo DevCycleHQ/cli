@@ -36,7 +36,7 @@ EXAMPLES
   $ dvc login again
 ```
 
-_See code: [src/commands/login/again.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.2/src/commands/login/again.ts)_
+_See code: [src/commands/login/again.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.3/src/commands/login/again.ts)_
 
 ## `dvc login sso`
 
@@ -65,4 +65,4 @@ DESCRIPTION
   Log in through the DevCycle Universal Login. This will open a browser window.
 ```
 
-_See code: [src/commands/login/sso.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.2/src/commands/login/sso.ts)_
+_See code: [src/commands/login/sso.ts](https://github.com/DevCycleHQ/cli/blob/v5.20.3/src/commands/login/sso.ts)_
