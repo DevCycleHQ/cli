@@ -21,7 +21,11 @@ describe('features list', () => {
         .command(['features list', '--project', projectKey, ...authFlags])
         .it('returns a list of feature keys', (ctx) => {
             expect(ctx.stdout).to.contain(
-                JSON.stringify(['feature-1', 'feature-2'], null, 2),
+                JSON.stringify(
+                    ['feature-1', 'feature-2', 'feature-with-optin'],
+                    null,
+                    2,
+                ),
             )
         })
 
@@ -45,7 +49,11 @@ describe('features list', () => {
         ])
         .it('passes pagination params to api', (ctx) => {
             expect(ctx.stdout).to.contain(
-                JSON.stringify(['feature-1', 'feature-2'], null, 2),
+                JSON.stringify(
+                    ['feature-1', 'feature-2', 'feature-with-optin'],
+                    null,
+                    2,
+                ),
             )
         })
 
@@ -67,7 +75,11 @@ describe('features list', () => {
         ])
         .it('passes search param to api', (ctx) => {
             expect(ctx.stdout).to.contain(
-                JSON.stringify(['feature-1', 'feature-2'], null, 2),
+                JSON.stringify(
+                    ['feature-1', 'feature-2', 'feature-with-optin'],
+                    null,
+                    2,
+                ),
             )
         })
 })
