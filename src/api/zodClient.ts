@@ -179,6 +179,7 @@ const GenerateSdkTokensDto = z
     .object({ client: z.boolean(), server: z.boolean(), mobile: z.boolean() })
     .partial()
 const AllFilter = z.object({ type: z.literal('all').default('all') })
+const OptInFilter = z.object({ type: z.literal('optIn').default('optIn') })
 const UserFilter = z.object({
     subType: z.enum(['user_id', 'email', 'platform', 'deviceModel']),
     comparator: z.enum(['=', '!=', 'exist', '!exist', 'contain', '!contain']),
@@ -226,6 +227,7 @@ const AudienceOperator = z.object({
     filters: z.array(
         z.union([
             AllFilter.passthrough(),
+            OptInFilter.passthrough(),
             UserFilter.passthrough(),
             UserCountryFilter.passthrough(),
             UserAppVersionFilter.passthrough(),
@@ -504,6 +506,7 @@ const AudienceOperatorWithAudienceMatchFilter = z.object({
     filters: z.array(
         z.union([
             AllFilter.passthrough(),
+            OptInFilter.passthrough(),
             UserFilter.passthrough(),
             UserCountryFilter.passthrough(),
             UserAppVersionFilter.passthrough(),
@@ -860,6 +863,7 @@ export const schemas = {
     UpdateEnvironmentDto,
     GenerateSdkTokensDto,
     AllFilter,
+    OptInFilter,
     UserFilter,
     UserCountryFilter,
     UserAppVersionFilter,
