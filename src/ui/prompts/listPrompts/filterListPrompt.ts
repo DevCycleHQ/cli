@@ -15,10 +15,6 @@ import { Prompt } from '../types'
 import { chooseFields } from '../../../utils/prompts'
 import { UserSubType } from '../../../api/targeting'
 import { renderDefinitionTree } from '../../targetingTree'
-import {
-    buildAudienceNameMap,
-    replaceAudienceIdInFilter,
-} from '../../../utils/audiences'
 import Writer from '../../writer'
 
 export class FilterListOptions extends ListOptionsPrompt<Filter> {
@@ -111,6 +107,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         let prompts = this.getPromptsByType(filterToEdit.type)
         if (
             filterToEdit.type !== 'all' &&
+            filterToEdit.type !== 'optIn' &&
             filterToEdit.type !== 'audienceMatch'
         ) {
             prompts = [
@@ -139,6 +136,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
 
         if (
             filterToEdit.type === 'all' ||
+            filterToEdit.type === 'optIn' ||
             filterToEdit.type === 'audienceMatch'
         ) {
             prompts = prompts.filter(
@@ -216,7 +214,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
     }
 
     getPromptsByType(type: string): Prompt[] {
-        if (type === 'all') {
+        if (type === 'all' || type === 'optIn') {
             return [filterTypePrompt]
         } else if (type === 'audienceMatch') {
             return [
