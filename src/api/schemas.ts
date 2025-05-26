@@ -57,6 +57,9 @@ export type Filters = z.infer<
 export type AllFilter = z.infer<typeof schemas.AllFilter>
 export const AllFilterSchema = schemas.AllFilter
 
+export type OptInFilter = z.infer<typeof schemas.OptInFilter>
+export const OptInFilterSchema = schemas.OptInFilter
+
 export type UserFilter = z.infer<typeof schemas.UserFilter>
 export const UserFilterSchema = schemas.UserFilter
 
@@ -82,6 +85,7 @@ export const UpdateOverrideDto = schemas.UpdateUserOverrideDto
 
 export type Filter =
     | AllFilter
+    | OptInFilter
     | UserFilter
     | UserCountryFilter
     | UserAppVersionFilter
