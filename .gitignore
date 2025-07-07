@@ -8,3 +8,7 @@ dist
 tmp
 .yarn/cache
 .yarn/install-state.gz
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+*.tsbuildinfo
