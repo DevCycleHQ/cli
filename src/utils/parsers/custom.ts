@@ -18,7 +18,7 @@ export class CustomParser extends BaseParser {
 
     printRegexPattern(): void {
         const patterns = this.customPatterns.join('\n\t')
-        console.error(`Pattern for ${this.identity} parser: \n\t${patterns}`)
+        console.log(`Pattern for ${this.identity} parser: \n\t${patterns}`)
     }
 
     override match(content: string): MatchResult | null {
