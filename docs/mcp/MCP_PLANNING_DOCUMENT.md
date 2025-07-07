@@ -171,6 +171,169 @@ AI Coding Assistant (Cursor/Claude Code)
 - Parameters: `project_key`
 - Returns: Project selection confirmation
 
+### 3.7 Enhanced MCP Tools (Based on Codebase Analysis)
+
+Based on my comprehensive review of the DevCycle CLI codebase, I recommend the following enhanced and additional MCP tools:
+
+#### 3.7.1 Advanced Code Analysis Tools
+
+**`analyze_variable_usage`**
+- Description: Comprehensive variable usage analysis with language-specific parsing
+- Parameters: 
+  - `include_patterns`: File glob patterns to include
+  - `exclude_patterns`: File glob patterns to exclude
+  - `client_names`: Additional SDK client names to detect
+  - `match_patterns`: Custom regex patterns by file extension
+  - `show_only_unknown`: Filter to show only unknown variables
+- Returns: Detailed usage report with file locations, line numbers, and code context
+- Note: Supports JavaScript, TypeScript, React, Python, Ruby, Go, Java, C#, PHP, Dart, iOS, and Android
+
+**`generate_usage_report`**
+- Description: Generate a formatted usage report for documentation or review
+- Parameters:
+  - `format`: Output format ('json', 'markdown', 'console')
+  - `output_file`: Optional file path for output
+- Returns: Formatted usage report
+
+**`cleanup_variable`**
+- Description: Replace DevCycle variable with static value in code
+- Parameters:
+  - `variable_key`: Variable to replace
+  - `replacement_value`: Value to use as replacement
+  - `value_type`: Type of replacement value ('String', 'Boolean', 'Number', 'JSON')
+  - `include_patterns`: Files to include
+  - `exclude_patterns`: Files to exclude
+- Returns: List of files modified with before/after preview
+
+#### 3.7.2 Identity and User Profile Tools
+
+**`get_identity`**
+- Description: Get current DevCycle identity information
+- Returns: User profile with identity settings
+
+**`update_identity`**
+- Description: Update DevCycle identity for testing
+- Parameters:
+  - `user_id`: SDK-associated user ID
+  - `email`: User email
+  - `name`: User name
+  - `country`: User country
+  - `custom_data`: Additional custom properties
+- Returns: Updated identity information
+
+#### 3.7.3 Variation Management Tools
+
+**`list_variations`**
+- Description: List all variations for a feature
+- Parameters: `feature_key`
+- Returns: Array of variation objects with keys and values
+
+**`create_variation`**
+- Description: Create a new variation for a feature
+- Parameters:
+  - `feature_key`: Feature to add variation to
+  - `key`: Unique variation key
+  - `name`: Human-readable name
+  - `variables`: Variable values for this variation
+- Returns: Created variation object
+
+**`update_variation`**
+- Description: Update an existing variation
+- Parameters:
+  - `feature_key`: Feature containing the variation
+  - `variation_key`: Variation to update
+  - `name`: New name
+  - `variables`: Updated variable values
+- Returns: Updated variation object
+
+#### 3.7.4 Advanced Targeting Tools
+
+**`create_targeting_rule`**
+- Description: Create a new targeting rule with audience definition
+- Parameters:
+  - `feature_key`: Feature for the rule
+  - `environment_key`: Environment to apply rule
+  - `name`: Rule name
+  - `audience_filters`: Audience definition filters
+  - `serve_variation`: Variation to serve
+  - `rollout_percentage`: Optional percentage rollout
+- Returns: Created targeting rule
+
+**`get_audiences`**
+- Description: List reusable audience definitions
+- Returns: Array of audience objects with filters
+
+**`validate_targeting_rule`**
+- Description: Validate a targeting rule before applying
+- Parameters:
+  - `audience_filters`: Proposed audience definition
+  - `test_users`: Sample users to test against
+- Returns: Validation results with matched users
+
+#### 3.7.5 Git Integration Tools
+
+**`analyze_pr_changes`**
+- Description: Analyze feature flag changes in a pull request
+- Parameters:
+  - `base_ref`: Base branch reference
+  - `head_ref`: Head branch reference
+  - `pr_link`: Optional PR link for enhanced formatting
+- Returns: Summary of added/removed/modified feature flags
+
+**`get_feature_history`**
+- Description: Get git history of feature flag usage
+- Parameters:
+  - `feature_key`: Feature to analyze
+  - `days_back`: Number of days to look back
+- Returns: Timeline of feature flag changes
+
+#### 3.7.6 Type Generation Tools
+
+**`generate_typescript_types`**
+- Description: Generate TypeScript type definitions for features
+- Parameters:
+  - `output_path`: Where to write the generated types
+  - `include_descriptions`: Include JSDoc comments
+- Returns: Generated type definition content
+
+#### 3.7.7 Environment Management Tools
+
+**`clone_environment`**
+- Description: Clone an environment with all settings
+- Parameters:
+  - `source_environment`: Environment to clone from
+  - `new_key`: Key for new environment
+  - `new_name`: Name for new environment
+  - `include_targeting`: Whether to copy targeting rules
+- Returns: Created environment object
+
+**`get_sdk_keys`**
+- Description: Retrieve SDK keys for an environment
+- Parameters:
+  - `environment_key`: Environment to get keys for
+  - `key_type`: Type of key ('mobile', 'server', 'client')
+- Returns: SDK key information
+
+#### 3.7.8 Analytics and Metrics Tools
+
+**`get_feature_usage_metrics`**
+- Description: Get usage metrics for a feature
+- Parameters:
+  - `feature_key`: Feature to analyze
+  - `environment_key`: Optional environment filter
+  - `start_date`: Start of date range
+  - `end_date`: End of date range
+  - `period`: Aggregation period ('hour', 'day', 'month')
+- Returns: Usage statistics and evaluation counts
+
+**`get_variation_distribution`**
+- Description: Get distribution of variation serves
+- Parameters:
+  - `feature_key`: Feature to analyze
+  - `environment_key`: Environment to analyze
+  - `time_range`: Time range for analysis
+- Returns: Percentage distribution by variation
+
 ### 4. MCP Resources Design
 
 #### 4.1 Configuration Resources
@@ -209,6 +372,75 @@ AI Coding Assistant (Cursor/Claude Code)
 - Description: Generated TypeScript type definitions
 - Content: TypeScript definition file
 
+### 4.4 Enhanced Resources (Based on Codebase Analysis)
+
+Based on the codebase review, I recommend adding these resources:
+
+#### 4.4.1 Advanced Analysis Resources
+
+**`analysis://unknown-variables`**
+- URI: `devcycle://analysis/unknown-variables`
+- Description: Variables found in code but not defined in DevCycle
+- Content: List of potentially orphaned or mistyped variables
+
+**`analysis://parser-patterns`**
+- URI: `devcycle://analysis/parser-patterns`
+- Description: Active regex patterns used for variable detection
+- Content: Patterns organized by file extension with examples
+
+**`analysis://variable-aliases`**
+- URI: `devcycle://analysis/variable-aliases`
+- Description: Configured variable aliases from repo config
+- Content: Mapping of code aliases to DevCycle variable keys
+
+#### 4.4.2 Targeting Resources
+
+**`targeting://rules/:feature`**
+- URI: `devcycle://targeting/rules/{feature_key}`
+- Description: All targeting rules for a specific feature
+- Content: Targeting configuration across all environments
+
+**`targeting://active-rules`**
+- URI: `devcycle://targeting/active-rules`
+- Description: All active targeting rules in the project
+- Content: Filtered list of enabled targeting rules
+
+#### 4.4.3 Override Resources
+
+**`overrides://current`**
+- URI: `devcycle://overrides/current`
+- Description: Current user's self-targeting overrides
+- Content: Active overrides by feature and environment
+
+**`overrides://available`**
+- URI: `devcycle://overrides/available`
+- Description: Features available for override testing
+- Content: List of features with their variations
+
+#### 4.4.4 Environment Resources
+
+**`environments://sdk-keys`**
+- URI: `devcycle://environments/sdk-keys`
+- Description: SDK keys for all environments
+- Content: Keys organized by environment and SDK type
+
+**`environments://comparison`**
+- URI: `devcycle://environments/comparison`
+- Description: Side-by-side environment configuration comparison
+- Content: Differences in features, variables, and targeting
+
+#### 4.4.5 Git Integration Resources
+
+**`git://feature-changes`**
+- URI: `devcycle://git/feature-changes`
+- Description: Recent git changes affecting feature flags
+- Content: Commits and diffs with feature flag modifications
+
+**`git://pr-analysis`**
+- URI: `devcycle://git/pr-analysis`
+- Description: Feature flag analysis for current PR
+- Content: Added/removed/modified flags with risk assessment
+
 ### 5. MCP Prompts Design
 
 #### 5.1 Feature Management Prompts
@@ -234,6 +466,161 @@ AI Coding Assistant (Cursor/Claude Code)
 - Description: "Clean up removed feature flags from code"
 - Template: Guides through safe flag removal process
 - Parameters: `variable_keys`, `replacement_values`
+
+### 5.3 Enhanced Prompts (Based on Codebase Analysis)
+
+#### 5.3.1 Analysis and Review Prompts
+
+**`analyze_feature_usage`**
+- Description: "Analyze how a feature flag is used in the codebase"
+- Template: Comprehensive usage analysis with recommendations
+- Parameters: `feature_key`, `include_git_history`, `check_dependencies`
+
+**`review_pr_flags`**
+- Description: "Review feature flag changes in a pull request"
+- Template: Systematic review checklist for flag changes
+- Parameters: `pr_url`, `check_targeting`, `check_rollback_plan`
+
+**`find_stale_flags`**
+- Description: "Identify feature flags that may be ready for removal"
+- Template: Analysis of flag age, usage, and rollout status
+- Parameters: `days_old`, `check_full_rollout`, `check_code_usage`
+
+#### 5.3.2 Testing and Override Prompts
+
+**`setup_testing_overrides`**
+- Description: "Configure overrides for testing feature variations"
+- Template: Step-by-step override setup for QA testing
+- Parameters: `feature_key`, `test_scenarios`, `environments`
+
+**`create_test_matrix`**
+- Description: "Generate test cases for feature flag variations"
+- Template: Comprehensive test matrix generation
+- Parameters: `feature_key`, `user_segments`, `include_edge_cases`
+
+#### 5.3.3 Migration and Refactoring Prompts
+
+**`migrate_feature_flags`**
+- Description: "Migrate feature flags between projects or environments"
+- Template: Safe migration process with validation steps
+- Parameters: `source_project`, `target_project`, `features_to_migrate`
+
+**`refactor_flag_usage`**
+- Description: "Refactor feature flag usage to follow best practices"
+- Template: Code refactoring guide with patterns
+- Parameters: `scan_directory`, `fix_patterns`, `update_aliases`
+
+#### 5.3.4 Rollout Strategy Prompts
+
+**`plan_progressive_rollout`**
+- Description: "Plan a progressive feature rollout strategy"
+- Template: Phased rollout planning with targeting rules
+- Parameters: `feature_key`, `rollout_phases`, `success_metrics`
+
+**`create_killswitch`**
+- Description: "Set up an emergency kill switch for a feature"
+- Template: Rapid rollback configuration
+- Parameters: `feature_key`, `alert_conditions`, `rollback_variation`
+
+#### 5.3.5 Documentation Prompts
+
+**`document_feature_flags`**
+- Description: "Generate documentation for feature flags"
+- Template: Auto-generated flag documentation
+- Parameters: `output_format`, `include_examples`, `include_metrics`
+
+**`create_flag_runbook`**
+- Description: "Create an operational runbook for a feature"
+- Template: Operational procedures and troubleshooting
+- Parameters: `feature_key`, `include_monitoring`, `include_rollback`
+
+## Implementation Considerations
+
+Based on my analysis of the DevCycle CLI codebase, here are key implementation considerations for the MCP server:
+
+### 1. Architecture Patterns
+
+**Leverage Existing Infrastructure**
+- Reuse the existing command structure from `src/commands/`
+- Utilize the Zod-based API client (`src/api/zodClient.ts`) for type safety
+- Maintain compatibility with existing authentication mechanisms
+
+**Parser Reusability**
+- The language-specific parsers in `src/utils/parsers/` are highly sophisticated
+- Support for 12+ languages with custom regex patterns
+- Can be directly integrated into MCP tools for code analysis
+
+**Configuration Management**
+- Respect existing `.devcycle/config.yml` structure
+- Support both repository and user-level configurations
+- Handle variable aliases and custom match patterns
+
+### 2. Tool Implementation Strategy
+
+**Tool Categories by Priority**
+1. **Core CRUD Operations** (Week 1-2)
+   - Direct mapping from existing commands
+   - Minimal transformation required
+   
+2. **Code Analysis Tools** (Week 3-4)
+   - Leverage existing parser infrastructure
+   - Add MCP-specific formatting for results
+   
+3. **Interactive Features** (Week 5-6)
+   - Transform prompt-based flows to parameter-based tools
+   - Maintain validation logic from interactive commands
+
+4. **Advanced Features** (Week 7-8)
+   - Git integration using existing diff utilities
+   - Analytics tools requiring new API integrations
+
+### 3. Authentication Architecture
+
+**Token Management**
+- Reuse `TokenCache` and `ApiAuth` classes
+- Support both SSO and client credentials
+- Implement refresh logic for long-running sessions
+
+**Multi-Project Support**
+- Allow project switching within MCP session
+- Cache project-specific data appropriately
+- Handle organization context switches
+
+### 4. Error Handling Patterns
+
+**Consistent Error Responses**
+- Map CLI error types to MCP error codes
+- Preserve detailed error messages from API
+- Include actionable suggestions in error responses
+
+**Validation Layers**
+- Client-side validation using Zod schemas
+- API validation feedback
+- File system and git operation errors
+
+### 5. Performance Optimizations
+
+**Caching Strategy**
+- Cache feature and variable lists
+- Implement smart cache invalidation
+- Reuse parser results for repeated operations
+
+**Batch Operations**
+- Use existing `batchRequests` utility
+- Implement parallel processing for bulk operations
+- Optimize file system scanning for large codebases
+
+### 6. Data Transformation
+
+**Response Formatting**
+- Transform CLI table output to structured JSON
+- Preserve tree structures for targeting rules
+- Flatten nested objects for easier consumption
+
+**Input Normalization**
+- Accept both keys and IDs for resources
+- Implement fuzzy matching for user convenience
+- Validate inputs against cached resource lists
 
 ## Implementation Plan
 
@@ -460,6 +847,50 @@ AI: Uses cleanup_removed_flags prompt → Guides through removal
 - Increased DevCycle API usage
 - Improved developer onboarding time
 - Positive feedback from AI coding assistant communities
+
+## Key Recommendations
+
+Based on the comprehensive codebase analysis, here are the critical recommendations for the DevCycle MCP server implementation:
+
+### 1. Maximize Code Reuse
+
+The existing CLI codebase is well-architected and can be heavily reused:
+- **Direct Command Mapping**: Most CLI commands can be transformed into MCP tools with minimal changes
+- **Parser Infrastructure**: The sophisticated language parsers are a competitive advantage - use them as-is
+- **API Client**: The Zod-based client provides excellent type safety and validation
+
+### 2. Focus on Developer Workflows
+
+Prioritize tools that support common developer tasks:
+1. **Quick Flag Creation**: Simple tool to create feature with sensible defaults
+2. **Code Analysis**: Immediate feedback on flag usage in current code
+3. **PR Review**: Automated analysis of feature flag changes in pull requests
+4. **Test Override**: Easy variation testing without code changes
+5. **Safe Cleanup**: Guided removal of obsolete flags
+
+### 3. Leverage AI Capabilities
+
+Design tools that benefit from AI context:
+- **Smart Suggestions**: Let AI suggest flag names based on code context
+- **Automated Documentation**: Generate flag documentation from usage patterns
+- **Risk Assessment**: AI can evaluate the risk of flag changes
+- **Test Scenarios**: Generate comprehensive test cases for variations
+
+### 4. Maintain Compatibility
+
+Ensure the MCP server works seamlessly with existing DevCycle ecosystem:
+- Support existing `.devcycle/config.yml` format
+- Use the same authentication mechanisms
+- Maintain consistent naming conventions
+- Preserve CLI command structure where logical
+
+### 5. Performance Considerations
+
+Optimize for responsive AI interactions:
+- Implement aggressive caching for read operations
+- Use batch APIs for bulk operations
+- Pre-parse common file types on startup
+- Stream large results for better UX
 
 ## Conclusion
 
