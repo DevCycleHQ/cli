@@ -5,6 +5,6 @@ export default class Wink extends Command {
     static hidden = true
 
     async run(): Promise<void> {
-        console.error(togglebotWink)
+        console.log(togglebotWink)
     }
 }
