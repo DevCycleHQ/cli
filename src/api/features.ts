@@ -21,64 +21,15 @@ export const fetchFeatures = async (
         staleness?: string
     } = {},
 ): Promise<Feature[]> => {
-    console.error('=== fetchFeatures API START ===')
-    console.error('Project ID:', project_id)
-    console.error('Token length:', token?.length || 0)
-    console.error('Token prefix:', token?.substring(0, 20) + '...')
-    console.error('Queries:', JSON.stringify(queries, null, 2))
+    const response = await apiClient.get(FEATURE_URL, {
+        headers: buildHeaders(token),
+        params: {
+            project: project_id,
+        },
+        queries,
+    })
 
-    const url = FEATURE_URL
-    console.error('API URL template:', url)
-    console.error('Full URL will be:', url.replace(':project', project_id))
-
-    try {
-        console.error('Making API request...')
-        const response = await apiClient.get(FEATURE_URL, {
-            headers: buildHeaders(token),
-            params: {
-                project: project_id,
-            },
-            queries,
-        })
-
-        console.error('API request successful')
-        console.error('Response type:', typeof response)
-        console.error('Response is array:', Array.isArray(response))
-        console.error(
-            'Response length:',
-            Array.isArray(response) ? response.length : 'N/A',
-        )
-        if (Array.isArray(response) && response.length > 0) {
-            console.error(
-                'First feature sample:',
-                JSON.stringify(response[0], null, 2),
-            )
-        }
-        console.error('=== fetchFeatures API END (SUCCESS) ===')
-
-        return response
-    } catch (error) {
-        console.error('=== fetchFeatures API ERROR ===')
-        console.error('Error type:', error?.constructor?.name)
-        console.error(
-            'Error message:',
-            error instanceof Error ? error.message : 'Unknown',
-        )
-        if (error instanceof AxiosError) {
-            console.error('Axios error status:', error.response?.status)
-            console.error('Axios error data:', error.response?.data)
-            console.error('Axios error headers:', error.response?.headers)
-            console.error('Request config:', {
-                url: error.config?.url,
-                method: error.config?.method,
-                headers: error.config?.headers,
-                params: error.config?.params,
-            })
-        }
-        console.error('Full error:', error)
-        console.error('=== fetchFeatures API END (ERROR) ===')
-        throw error
-    }
+    return response
 }
 
 export const fetchFeatureByKey = async (
