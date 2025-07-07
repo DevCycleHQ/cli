@@ -19,7 +19,7 @@ export default class TableOutput {
         }
 
         ux.table(data, columns, options)
-        console.log('\r')
+        console.error('\r')
     }
 
     public printOverrides<T extends Record<string, unknown>>(

@@ -506,7 +506,7 @@ export abstract class RefactorEngine {
         try {
             const { code } = recast.print(this.ast)
             if (this.output === 'console') {
-                console.log(code)
+                console.error(code)
             } else if (this.fileRefactored) {
                 fs.writeFileSync(this.filepath, code)
             }

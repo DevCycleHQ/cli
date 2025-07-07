@@ -10,7 +10,8 @@
         "strict": true,
         "strictPropertyInitialization": false,
         "experimentalDecorators": true,
-        "target": "es2019"
+        "target": "es2019",
+        "skipLibCheck": true
     },
     "include": ["src/**/*"],
     "exclude": ["src/**/*.test.ts"]
