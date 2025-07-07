@@ -126,7 +126,6 @@ USAGE
 * [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
 * [`dvc features`](docs/features.md) - Create, view, or modify Features with the Management API.
 * [`dvc generate`](docs/generate.md) - Generate Devcycle related files.
-* [`dvc help`](docs/help.md) - Display help for dvc.
 * [`dvc identity`](docs/identity.md) - View or manage your DevCycle Identity.
 * [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the Management API.
 * [`dvc login`](docs/login.md) - Log in to DevCycle.
