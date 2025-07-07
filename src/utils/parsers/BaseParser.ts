@@ -171,7 +171,7 @@ export abstract class BaseParser {
     }
 
     printRegexPattern(): void {
-        console.log(
+        console.error(
             `Pattern for ${this.identity} parser: \n\t${this.buildRegexPattern().source}`,
         )
     }
