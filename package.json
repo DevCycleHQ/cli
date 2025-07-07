@@ -4,7 +4,8 @@
     "description": "DevCycle CLI Tool",
     "author": "support@devcycle.com",
     "bin": {
-        "dvc": "./bin/run"
+        "dvc": "./bin/run",
+        "dvc-mcp": "./dist/mcp/index.js"
     },
     "homepage": "https://github.com/DevCycleHQ/cli",
     "license": "MIT",
@@ -17,7 +18,8 @@
         "/oclif.manifest.json"
     ],
     "dependencies": {
-        "@babel/parser": "^7.27.0",
+        "@babel/parser": "^7.28.0",
+        "@modelcontextprotocol/sdk": "^1.15.0",
         "@oclif/core": "^2.16.0",
         "@oclif/plugin-autocomplete": "^2.3.10",
         "@oclif/plugin-help": "^6.2.27",
