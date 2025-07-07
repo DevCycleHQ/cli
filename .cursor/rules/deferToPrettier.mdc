@@ -1,0 +1,7 @@
+---
+alwaysApply: true
+---
+# Formatting
+
+- All formatting is deferred to Prettier for supported file types (JavaScript, TypeScript, JSON, Markdown, etc.).
+- No additional formatting rules are enforced by Cursor.
