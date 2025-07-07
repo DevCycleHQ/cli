@@ -297,7 +297,7 @@ const UpdateAudienceDto = z
     .partial()
 const VariableValidationEntity = z.object({
     schemaType: z.string(),
-    enumValues: z.array(z.string()).optional(),
+    enumValues: z.array(z.any()).optional(),
     regexPattern: z.string().optional(),
     jsonSchema: z.string().optional(),
     description: z.string(),
