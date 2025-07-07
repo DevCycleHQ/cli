@@ -1,5 +1,4 @@
 import { ux } from '@oclif/core'
-import { Tree } from '@oclif/core/lib/cli-ux/styled/tree'
 import {
     FeatureConfig,
     Environment,
@@ -12,6 +11,25 @@ import {
     buildAudienceNameMap,
     replaceAudienceIdInFilter,
 } from '../utils/audiences'
+
+// Simple tree implementation
+class Tree {
+    private nodes: Map<string, any> = new Map()
+
+    insert(key: string, value?: any) {
+        this.nodes.set(key, value)
+    }
+
+    display(indent = 0) {
+        const prefix = '  '.repeat(indent)
+        for (const [key, value] of this.nodes) {
+            console.log(prefix + key)
+            if (value instanceof Tree) {
+                value.display(indent + 1)
+            }
+        }
+    }
+}
 
 type Distribution = FeatureConfig['targets'][0]['distribution']
 type Audience = FeatureConfig['targets'][0]['audience']
@@ -51,9 +69,9 @@ export const renderTargetingTree = (
     variations: Variation[],
     audiences: AudienceSchema[],
 ) => {
-    const targetingTree = ux.tree()
+    const targetingTree = new Tree()
     featureConfigs.forEach((config) => {
-        const environmentTree = ux.tree()
+        const environmentTree = new Tree()
 
         insertStatusTree(environmentTree, config.status)
         insertRulesTree(environmentTree, config.targets, variations, audiences)
@@ -88,7 +106,7 @@ export const renderDefinitionTree = (
 }
 
 const insertStatusTree = (rootTree: Tree, status: FeatureConfig['status']) => {
-    const statusTree = ux.tree()
+    const statusTree = new Tree()
     const convertedStatus = status === 'active' ? 'enabled' : 'disabled'
     const displayStatus = coloredStatus(convertedStatus)
     statusTree.insert(displayStatus)
@@ -101,9 +119,9 @@ const buildRulesTree = (
     variations: Variation[],
     audiences: AudienceSchema[],
 ) => {
-    const rulesTree = ux.tree()
+    const rulesTree = new Tree()
     targets.forEach((target, idx) => {
-        const ruleTree = ux.tree()
+        const ruleTree = new Tree()
 
         insertDefinitionTree(ruleTree, target.audience, audiences)
         insertServeTree(ruleTree, target.distribution, variations)
@@ -135,7 +153,7 @@ const buildDefinitionTree = (
     operator: Operator,
     audiences: AudienceSchema[],
 ) => {
-    const definitionTree = ux.tree()
+    const definitionTree = new Tree()
     const prefixWithOperator = (value: string, index: number) =>
         index !== 0 ? `${operator.toUpperCase()} ${value}` : value
 
@@ -144,8 +162,8 @@ const buildDefinitionTree = (
             const prefixedProperty = prefixWithOperator('All Users', index)
             definitionTree.insert(prefixedProperty)
         } else if (filter.type === 'user') {
-            const userFilter = ux.tree()
-            const values = ux.tree()
+            const userFilter = new Tree()
+            const values = new Tree()
             if (
                 Array.isArray(filter.values) &&
                 !['exist', '!exist'].includes(filter.subType)
@@ -162,8 +180,8 @@ const buildDefinitionTree = (
             const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
         } else if (filter.type === 'audienceMatch') {
-            const audienceFilter = ux.tree()
-            const audienceTree = ux.tree()
+            const audienceFilter = new Tree()
+            const audienceTree = new Tree()
             const audienceMap = buildAudienceNameMap(audiences)
             const replacedIdFilter = (replaceAudienceIdInFilter(
                 filter,
@@ -209,7 +227,7 @@ const insertServeTree = (
         {} as Record<string, Variation>,
     )
 
-    const serveTree = ux.tree()
+    const serveTree = new Tree()
     if (distribution.length === 1) {
         const variationId = distribution[0]._variation
         const variationName = variationById[variationId]?.name
@@ -217,7 +235,7 @@ const insertServeTree = (
         serveTree.insert(coloredValue)
     } else {
         distribution.forEach((dist) => {
-            const variationTree = ux.tree()
+            const variationTree = new Tree()
             variationTree.insert(`${dist.percentage * 100}%`)
             const variationName = variationById[dist._variation]?.name
             const coloredValue = coloredVariation(
@@ -233,35 +251,35 @@ const insertServeTree = (
 const insertScheduleTree = (rootTree: Tree, rollout?: Rollout) => {
     if (!rollout) return
 
-    const scheduleTree = ux.tree()
+    const scheduleTree = new Tree()
     if (rollout.type === 'schedule') {
-        const startTree = ux.tree()
+        const startTree = new Tree()
         scheduleTree.insert('start', startTree)
         startTree.insert(rollout.startDate)
         rootTree.insert('schedule', scheduleTree)
     } else if (rollout.type === 'gradual' && rollout.stages?.[0]) {
         // Start
-        const startTree = ux.tree()
+        const startTree = new Tree()
         scheduleTree.insert('start', startTree)
 
-        const startDateTree = ux.tree()
+        const startDateTree = new Tree()
         startDateTree.insert(rollout.startDate)
         startTree.insert('date', startDateTree)
 
-        const startPercentTree = ux.tree()
+        const startPercentTree = new Tree()
         startPercentTree.insert((rollout.startPercentage || 0) * 100 + '%')
         startTree.insert('percentage', startPercentTree)
 
         // End
-        const endTree = ux.tree()
+        const endTree = new Tree()
         const endStage = rollout.stages[0]
         scheduleTree.insert('end', endTree)
 
-        const endPercentTree = ux.tree()
+        const endPercentTree = new Tree()
         endPercentTree.insert(endStage.percentage * 100 + '%')
         endTree.insert('percentage', endPercentTree)
 
-        const endDateTree = ux.tree()
+        const endDateTree = new Tree()
         endDateTree.insert(endStage.date)
         endTree.insert('date', endDateTree)
 

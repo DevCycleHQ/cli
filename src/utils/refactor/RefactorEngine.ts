@@ -180,12 +180,14 @@ export abstract class RefactorEngine {
 
         const engine = this
         estraverse.replace(this.ast, {
-            enter: function (node) {
+            enter: function (node: any) {
                 const variableProperty = getVariableProperty(node)
                 if (variableProperty) {
                     engine.changed = true
                     if (variableProperty === 'variable') {
-                        return RefactorEngine.dvcVariableObject(engine.variable)
+                        return RefactorEngine.dvcVariableObject(
+                            engine.variable,
+                        ) as any
                     } else {
                         const [_, property] = variableProperty.split('.')
                         return {
@@ -196,7 +198,7 @@ export abstract class RefactorEngine {
                             property: RefactorEngine.identifier(property),
                             computed: false,
                             optional: false,
-                        }
+                        } as any
                     }
                 }
             },
@@ -211,10 +213,10 @@ export abstract class RefactorEngine {
     private reduceObjects = () => {
         const engine = this
         estraverse.replace(this.ast, {
-            enter: function (node) {
+            enter: function (node: any) {
                 // Refactor DVC object properties (ie. key, value, isDefaulted)
                 if (
-                    isMemberExpression(node) &&
+                    isMemberExpression(node as any) &&
                     RefactorEngine.isDVCObject(node.object)
                 ) {
                     const propertyName = (node.property as Identifier).name
@@ -226,7 +228,7 @@ export abstract class RefactorEngine {
                     )?.value
                     if (valueLiteral) {
                         engine.changed = true
-                        return valueLiteral
+                        return valueLiteral as any
                     }
                 }
                 // Refactor DVC object methods (ie. onUpdate)
@@ -255,7 +257,7 @@ export abstract class RefactorEngine {
         const engine = this
 
         estraverse.replace(this.ast, {
-            leave: function (node) {
+            leave: function (node: any) {
                 let updatedNode
                 if (node.type === 'LogicalExpression') {
                     const expression1 = engine.getAssignmentValueIfSet(
@@ -317,7 +319,7 @@ export abstract class RefactorEngine {
 
                 if (updatedNode) {
                     engine.changed = true
-                    return updatedNode
+                    return updatedNode as any
                 }
             },
             fallback: 'iteration',
@@ -441,7 +443,7 @@ export abstract class RefactorEngine {
     private pruneVarReferences() {
         const engine = this
         estraverse.replace(this.ast, {
-            enter: function (node, parent) {
+            enter: function (node: any, parent: any) {
                 // Remove variable declaration if necessary
                 let identifier
                 if (node.type === 'VariableDeclarator') {
@@ -472,12 +474,12 @@ export abstract class RefactorEngine {
                     engine.varAssignments[node.name].replace
                 ) {
                     engine.changed = true
-                    return engine.varAssignments[node.name].value
+                    return engine.varAssignments[node.name].value as any
                 }
             },
 
             // After previous step, some declaration may have no declarators, delete them.
-            leave: function (node) {
+            leave: function (node: any) {
                 if (node.type === 'VariableDeclaration') {
                     if (node.declarations.length === 0) {
                         engine.changed = true

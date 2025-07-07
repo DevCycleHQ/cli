@@ -126,7 +126,6 @@ export const fetchVariableByKey = async (
         )
 
         return response
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         if (e.response?.status === 404) {
             return null

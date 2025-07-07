@@ -1,13 +1,13 @@
 `dvc autocomplete`
 ==================
 
-display autocomplete installation instructions
+Display autocomplete installation instructions.
 
 * [`dvc autocomplete [SHELL]`](#dvc-autocomplete-shell)
 
 ## `dvc autocomplete [SHELL]`
 
-display autocomplete installation instructions
+Display autocomplete installation instructions.
 
 ```
 USAGE
@@ -20,7 +20,7 @@ FLAGS
   -r, --refresh-cache  Refresh cache (ignores displaying instructions)
 
 DESCRIPTION
-  display autocomplete installation instructions
+  Display autocomplete installation instructions.
 
 EXAMPLES
   $ dvc autocomplete
@@ -34,4 +34,4 @@ EXAMPLES
   $ dvc autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v2.3.10/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.32/src/commands/autocomplete/index.ts)_

@@ -99,7 +99,7 @@ export default class Cleanup extends Base {
                         apiAuth,
                     )
                     variable.key = input.variable.key
-                } catch {} // eslint-disable-line no-empty
+                } catch {}
             }
             if (!variable.key) {
                 const input = await inquirer.prompt([variablePromptNoApi])

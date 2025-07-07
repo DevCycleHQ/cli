@@ -1,4 +1,4 @@
-import { ux } from '@oclif/core'
+import { ux, Flags } from '@oclif/core'
 import Base from '../base'
 import { fetchProjectOverridesForUser } from '../../api/overrides'
 import { UserOverride } from '../../api/schemas'
@@ -15,7 +15,10 @@ export default class DetailedOverrides extends Base {
     static args = {}
     static flags = {
         ...Base.flags,
-        ...ux.table.flags(),
+        'show-keys': Flags.boolean({
+            char: 's',
+            description: 'Show keys for each override',
+        }),
     }
 
     public async run(): Promise<void> {

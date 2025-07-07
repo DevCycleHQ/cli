@@ -67,7 +67,6 @@ export default class GetEnvironmentKey extends Base {
             return flags.env
         }
         this.writer.infoMessage(
-            // eslint-disable-next-line max-len
             `Fetched keys from project with key ${chalk.green(this.projectKey)} in organization ${chalk.green(this.organization?.display_name)}`,
         )
         const responses = await inquirer.prompt<EnvironmentPromptResult>(

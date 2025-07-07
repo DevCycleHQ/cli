@@ -38,8 +38,8 @@ Update your DevCycle Identity.
 
 ```
 USAGE
-  $ dvc identity update [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--userId <value>]
+  $ dvc identity update [--userId <value>] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>]
+    [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless]
 
 FLAGS
   --userId=<value>  DevCycle Identity User ID to be used for Overrides & Self-Targeting

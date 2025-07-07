@@ -13,7 +13,8 @@ Replace a DevCycle variable with a static value in the current version of your c
 USAGE
   $ dvc cleanup [KEY] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--value <value>] [--type
-    String|Boolean|Number|JSON] [--include <value>] [--exclude <value>] [--output console|file] [--var-alias <value>]
+    String|Boolean|Number|JSON] [--include <value>...] [--exclude <value>...] [--output console|file] [--var-alias
+    <value>...]
 
 ARGUMENTS
   KEY  Key of variable to replace.

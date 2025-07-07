@@ -1,11 +1,14 @@
 {
     "require": [
         "test-utils/init.js",
-        "ts-node/register",
-        "source-map-support/register"
+        "ts-node/register"
     ],
     "watch-extensions": ["ts"],
     "recursive": true,
     "reporter": "spec",
-    "timeout": 0
+    "timeout": 0,
+    "node-option": [
+        "loader=ts-node/esm",
+        "experimental-specifier-resolution=node"
+    ]
 }
