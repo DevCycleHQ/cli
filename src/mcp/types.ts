@@ -140,6 +140,38 @@ export const ClearSelfTargetingOverridesArgsSchema = z.object({
     environment_key: z.string(),
 })
 
+export const ListVariationsArgsSchema = z.object({
+    feature_key: z.string(),
+})
+
+const VariationVariablesSchema = z
+    .record(
+        z.union([z.string(), z.number(), z.boolean(), z.record(z.unknown())]),
+    )
+    .optional()
+
+export const CreateVariationArgsSchema = z.object({
+    feature_key: z.string(),
+    key: z
+        .string()
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().max(100),
+    variables: VariationVariablesSchema,
+})
+
+export const UpdateVariationArgsSchema = z.object({
+    feature_key: z.string(),
+    variation_key: z.string(),
+    key: z
+        .string()
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/)
+        .optional(),
+    name: z.string().max(100).optional(),
+    variables: VariationVariablesSchema,
+})
+
 // Type inference helpers
 export type ListFeaturesArgs = z.infer<typeof ListFeaturesArgsSchema>
 export type ListVariablesArgs = z.infer<typeof ListVariablesArgsSchema>
@@ -152,6 +184,9 @@ export type GetSdkKeysArgs = z.infer<typeof GetSdkKeysArgsSchema>
 export type EnableTargetingArgs = z.infer<typeof EnableTargetingArgsSchema>
 export type DisableTargetingArgs = z.infer<typeof DisableTargetingArgsSchema>
 export type CreateFeatureArgs = z.infer<typeof CreateFeatureArgsSchema>
+export type ListVariationsArgs = z.infer<typeof ListVariationsArgsSchema>
+export type CreateVariationArgs = z.infer<typeof CreateVariationArgsSchema>
+export type UpdateVariationArgs = z.infer<typeof UpdateVariationArgsSchema>
 export type UpdateSelfTargetingIdentityArgs = z.infer<
     typeof UpdateSelfTargetingIdentityArgsSchema
 >

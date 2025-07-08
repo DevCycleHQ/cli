@@ -1,12 +1,20 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
 import { DevCycleApiClient } from '../utils/api'
 import { fetchFeatures, createFeature } from '../../api/features'
+import {
+    fetchVariations,
+    createVariation,
+    updateVariation,
+} from '../../api/variations'
 import { enableTargeting, disableTargeting } from '../../api/targeting'
 import {
     ListFeaturesArgsSchema,
     CreateFeatureArgsSchema,
     EnableTargetingArgsSchema,
     DisableTargetingArgsSchema,
+    ListVariationsArgsSchema,
+    CreateVariationArgsSchema,
+    UpdateVariationArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
 
@@ -62,6 +70,81 @@ export const featureToolDefinitions: Tool[] = [
                         'Use interactive mode to prompt for missing fields',
                 },
             },
+        },
+    },
+    {
+        name: 'fetch_feature_variations',
+        description: 'Get a list of variations for a feature',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                feature_key: {
+                    type: 'string',
+                    description: 'The key of the feature',
+                },
+            },
+            required: ['feature_key'],
+        },
+    },
+    {
+        name: 'create_feature_variation',
+        description: 'Create a new variation within a feature',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                feature_key: {
+                    type: 'string',
+                    description: 'The key of the feature',
+                },
+                key: {
+                    type: 'string',
+                    description:
+                        'Unique variation key (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
+                },
+                name: {
+                    type: 'string',
+                    description:
+                        'Human-readable variation name (max 100 characters)',
+                },
+                variables: {
+                    type: 'object',
+                    description:
+                        'Optional key-value map of variable keys to their values for this variation (supports string, number, boolean, and object values)',
+                },
+            },
+            required: ['feature_key', 'key', 'name'],
+        },
+    },
+    {
+        name: 'update_feature_variation',
+        description: 'Update an existing variation by key',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                feature_key: {
+                    type: 'string',
+                    description: 'The key of the feature',
+                },
+                variation_key: {
+                    type: 'string',
+                    description: 'The key of the variation to update',
+                },
+                key: {
+                    type: 'string',
+                    description:
+                        'New variation key (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
+                },
+                name: {
+                    type: 'string',
+                    description: 'New variation name (max 100 characters)',
+                },
+                variables: {
+                    type: 'object',
+                    description:
+                        'Overrides the key-value map of variable keys to their values for this variation (supports string, number, boolean, and object values)',
+                },
+            },
+            required: ['feature_key', 'variation_key'],
         },
     },
     {
@@ -146,6 +229,75 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 }
 
                 return await createFeature(authToken, projectKey, featureData)
+            },
+        )
+    },
+    fetch_feature_variations: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
+        const validatedArgs = ListVariationsArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'fetchFeatureVariations',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await fetchVariations(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                )
+            },
+        )
+    },
+    create_feature_variation: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
+        const validatedArgs = CreateVariationArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'createFeatureVariation',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                const variationData = {
+                    key: validatedArgs.key,
+                    name: validatedArgs.name,
+                    variables: validatedArgs.variables,
+                }
+
+                return await createVariation(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    variationData,
+                )
+            },
+        )
+    },
+    update_feature_variation: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
+        const validatedArgs = UpdateVariationArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'updateFeatureVariation',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                const variationData = {
+                    key: validatedArgs.key,
+                    name: validatedArgs.name,
+                    variables: validatedArgs.variables,
+                }
+
+                return await updateVariation(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    validatedArgs.variation_key,
+                    variationData,
+                )
             },
         )
     },
