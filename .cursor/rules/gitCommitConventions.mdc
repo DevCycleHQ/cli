@@ -1,8 +1,8 @@
 ---
-description: 
-globs: 
+description: Git commit message conventions and Aviator CLI workflow guidelines
 alwaysApply: true
 ---
+
 # Git Commit Message Conventions
 
 - All git commit messages in this project must follow the Conventional Commits specification.
