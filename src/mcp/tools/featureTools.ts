@@ -6,7 +6,12 @@ import {
     createVariation,
     updateVariation,
 } from '../../api/variations'
-import { enableTargeting, disableTargeting } from '../../api/targeting'
+import {
+    enableTargeting,
+    disableTargeting,
+    fetchTargetingForFeature,
+    updateFeatureConfigForEnvironment,
+} from '../../api/targeting'
 import {
     ListFeaturesArgsSchema,
     CreateFeatureArgsSchema,
@@ -15,6 +20,8 @@ import {
     ListVariationsArgsSchema,
     CreateVariationArgsSchema,
     UpdateVariationArgsSchema,
+    ListFeatureTargetingArgsSchema,
+    UpdateFeatureTargetingArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
 
@@ -183,6 +190,185 @@ export const featureToolDefinitions: Tool[] = [
             required: ['feature_key', 'environment_key'],
         },
     },
+    {
+        name: 'list_feature_targeting',
+        description:
+            'List feature configurations (targeting rules) for a feature',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                feature_key: {
+                    type: 'string',
+                    description: 'The key of the feature',
+                },
+                environment_key: {
+                    type: 'string',
+                    description:
+                        'The key of the environment (optional - if not provided, returns all environments)',
+                },
+            },
+            required: ['feature_key'],
+        },
+    },
+    {
+        name: 'update_feature_targeting',
+        description:
+            'Update feature configuration (targeting rules) for a feature in an environment',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                feature_key: {
+                    type: 'string',
+                    description: 'The key of the feature',
+                },
+                environment_key: {
+                    type: 'string',
+                    description: 'The key of the environment',
+                },
+                status: {
+                    type: 'string',
+                    enum: ['active', 'inactive', 'archived'],
+                    description: 'The targeting status for the feature',
+                },
+                targets: {
+                    type: 'array',
+                    description:
+                        'Array of targeting rules/targets for the feature',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            _id: {
+                                type: 'string',
+                                description:
+                                    'Target ID (optional for new targets)',
+                            },
+                            name: {
+                                type: 'string',
+                                description: 'Target name',
+                            },
+                            audience: {
+                                type: 'object',
+                                description:
+                                    'Audience definition for the target',
+                                properties: {
+                                    name: {
+                                        type: 'string',
+                                        description: 'Audience name',
+                                    },
+                                    filters: {
+                                        type: 'object',
+                                        description: 'Filter definition',
+                                        properties: {
+                                            filters: {
+                                                type: 'array',
+                                                description:
+                                                    'Array of filter conditions',
+                                            },
+                                            operator: {
+                                                type: 'string',
+                                                enum: ['and', 'or'],
+                                                description:
+                                                    'Logical operator for combining filters',
+                                            },
+                                        },
+                                        required: ['filters', 'operator'],
+                                    },
+                                },
+                                required: ['filters'],
+                            },
+                            distribution: {
+                                type: 'array',
+                                description:
+                                    'Variation distribution for the target',
+                                items: {
+                                    type: 'object',
+                                    properties: {
+                                        percentage: {
+                                            type: 'number',
+                                            minimum: 0,
+                                            maximum: 1,
+                                            description:
+                                                'Percentage of traffic for this variation (0-1)',
+                                        },
+                                        _variation: {
+                                            type: 'string',
+                                            description: 'Variation ID',
+                                        },
+                                    },
+                                    required: ['percentage', '_variation'],
+                                },
+                            },
+                            rollout: {
+                                type: 'object',
+                                description: 'Rollout configuration (optional)',
+                                properties: {
+                                    type: {
+                                        type: 'string',
+                                        enum: [
+                                            'schedule',
+                                            'gradual',
+                                            'stepped',
+                                        ],
+                                        description: 'Rollout type',
+                                    },
+                                    startDate: {
+                                        type: 'string',
+                                        format: 'date-time',
+                                        description: 'Rollout start date',
+                                    },
+                                    startPercentage: {
+                                        type: 'number',
+                                        minimum: 0,
+                                        maximum: 1,
+                                        description:
+                                            'Starting percentage for rollout',
+                                    },
+                                    stages: {
+                                        type: 'array',
+                                        description: 'Rollout stages',
+                                        items: {
+                                            type: 'object',
+                                            properties: {
+                                                percentage: {
+                                                    type: 'number',
+                                                    minimum: 0,
+                                                    maximum: 1,
+                                                    description:
+                                                        'Target percentage for this stage',
+                                                },
+                                                type: {
+                                                    type: 'string',
+                                                    enum: [
+                                                        'linear',
+                                                        'discrete',
+                                                    ],
+                                                    description: 'Stage type',
+                                                },
+                                                date: {
+                                                    type: 'string',
+                                                    format: 'date-time',
+                                                    description:
+                                                        'Date for this stage',
+                                                },
+                                            },
+                                            required: [
+                                                'percentage',
+                                                'type',
+                                                'date',
+                                            ],
+                                        },
+                                    },
+                                },
+                                required: ['type', 'startDate'],
+                            },
+                        },
+                        required: ['audience', 'distribution'],
+                    },
+                },
+            },
+            required: ['feature_key', 'environment_key'],
+        },
+    },
 ]
 
 export const featureToolHandlers: Record<string, ToolHandler> = {
@@ -329,6 +515,48 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     projectKey,
                     validatedArgs.feature_key,
                     validatedArgs.environment_key,
+                )
+            },
+        )
+    },
+    list_feature_targeting: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
+        const validatedArgs = ListFeatureTargetingArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'listFeatureTargeting',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await fetchTargetingForFeature(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    validatedArgs.environment_key,
+                )
+            },
+        )
+    },
+    update_feature_targeting: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
+        const validatedArgs = UpdateFeatureTargetingArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'updateFeatureTargeting',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await updateFeatureConfigForEnvironment(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    validatedArgs.environment_key,
+                    {
+                        status: validatedArgs.status,
+                        targets: validatedArgs.targets,
+                    },
                 )
             },
         )
