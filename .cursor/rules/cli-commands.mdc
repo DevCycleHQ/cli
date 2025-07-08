@@ -1,4 +1,5 @@
 ---
+description: CLI command patterns and base command structure guidelines
 globs: src/commands/**/*.ts
 ---
 

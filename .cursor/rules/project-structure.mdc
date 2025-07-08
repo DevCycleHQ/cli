@@ -1,4 +1,5 @@
 ---
+description: DevCycle CLI project structure overview and architecture guidelines
 alwaysApply: true
 ---
 
@@ -50,5 +51,6 @@ All commands extend [src/commands/base.ts](mdc:src/commands/base.ts) which provi
 ## Package Management
 
 - Uses Yarn with workspaces
+- Always use `yarn` not `npm`
 - Main dependencies: oclif, axios, zod, inquirer
 - Build process: TypeScript → dist/ directory
