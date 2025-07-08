@@ -13,6 +13,59 @@ export const ListVariablesArgsSchema = z.object({
     per_page: z.number().min(1).max(1000).default(100).optional(),
 })
 
+export const CreateVariableArgsSchema = z.object({
+    name: z.string().min(1).max(100).optional(),
+    description: z.string().max(1000).optional(),
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    _feature: z.string().optional(),
+    type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
+    defaultValue: z.any().optional(),
+    validationSchema: z
+        .object({
+            schemaType: z.string(),
+            enumValues: z.array(z.any()).optional(),
+            regexPattern: z.string().optional(),
+            jsonSchema: z.string().optional(),
+            description: z.string(),
+            exampleValue: z.any(),
+        })
+        .optional(),
+    tags: z.array(z.string()).optional(),
+})
+
+export const UpdateVariableArgsSchema = z.object({
+    key: z.string(),
+    name: z.string().min(1).max(100).optional(),
+    description: z.string().max(1000).optional(),
+    new_key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/)
+        .optional(),
+    type: z.enum(['String', 'Boolean', 'Number', 'JSON']).optional(),
+    validationSchema: z
+        .object({
+            schemaType: z.string(),
+            enumValues: z.array(z.any()).optional(),
+            regexPattern: z.string().optional(),
+            jsonSchema: z.string().optional(),
+            description: z.string(),
+            exampleValue: z.any(),
+        })
+        .optional(),
+    persistent: z.boolean().optional(),
+    tags: z.array(z.string()).optional(),
+})
+
+export const DeleteVariableArgsSchema = z.object({
+    key: z.string(),
+})
+
 export const ListProjectsArgsSchema = z.object({
     sort_by: z
         .enum([
@@ -90,6 +143,9 @@ export const ClearSelfTargetingOverridesArgsSchema = z.object({
 // Type inference helpers
 export type ListFeaturesArgs = z.infer<typeof ListFeaturesArgsSchema>
 export type ListVariablesArgs = z.infer<typeof ListVariablesArgsSchema>
+export type CreateVariableArgs = z.infer<typeof CreateVariableArgsSchema>
+export type UpdateVariableArgs = z.infer<typeof UpdateVariableArgsSchema>
+export type DeleteVariableArgs = z.infer<typeof DeleteVariableArgsSchema>
 export type ListProjectsArgs = z.infer<typeof ListProjectsArgsSchema>
 export type ListEnvironmentsArgs = z.infer<typeof ListEnvironmentsArgsSchema>
 export type GetSdkKeysArgs = z.infer<typeof GetSdkKeysArgsSchema>

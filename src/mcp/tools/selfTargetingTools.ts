@@ -1,13 +1,12 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
+import { DevCycleApiClient } from '../utils/api'
+import { fetchUserProfile, updateUserProfile } from '../../api/userProfile'
 import {
-    DevCycleApiClient,
-    fetchUserProfile,
-    updateUserProfile,
     fetchProjectOverridesForUser,
     updateOverride,
     deleteFeatureOverrides,
     deleteAllProjectOverrides,
-} from '../utils/api'
+} from '../../api/overrides'
 import {
     UpdateSelfTargetingIdentityArgsSchema,
     SetSelfTargetingOverrideArgsSchema,
