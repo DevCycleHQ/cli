@@ -1,5 +1,13 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient } from '../utils/api'
+import {
+    DevCycleApiClient,
+    fetchUserProfile,
+    updateUserProfile,
+    fetchProjectOverridesForUser,
+    updateOverride,
+    deleteFeatureOverrides,
+    deleteAllProjectOverrides,
+} from '../utils/api'
 import {
     UpdateSelfTargetingIdentityArgsSchema,
     SetSelfTargetingOverrideArgsSchema,
@@ -13,7 +21,13 @@ export const selfTargetingToolDefinitions: Tool[] = [
         description: 'Get current DevCycle identity for self-targeting',
         inputSchema: {
             type: 'object',
-            properties: {},
+            properties: {
+                random_string: {
+                    type: 'string',
+                    description: 'Dummy parameter for no-parameter tools',
+                },
+            },
+            required: ['random_string'],
         },
     },
     {
@@ -38,7 +52,13 @@ export const selfTargetingToolDefinitions: Tool[] = [
             'List all self-targeting overrides for the current project',
         inputSchema: {
             type: 'object',
-            properties: {},
+            properties: {
+                random_string: {
+                    type: 'string',
+                    description: 'Dummy parameter for no-parameter tools',
+                },
+            },
+            required: ['random_string'],
         },
     },
     {
@@ -88,7 +108,13 @@ export const selfTargetingToolDefinitions: Tool[] = [
             'Clear all self-targeting overrides for the current project',
         inputSchema: {
             type: 'object',
-            properties: {},
+            properties: {
+                random_string: {
+                    type: 'string',
+                    description: 'Dummy parameter for no-parameter tools',
+                },
+            },
+            required: ['random_string'],
         },
     },
 ]
@@ -98,39 +124,98 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
         args: unknown,
         apiClient: DevCycleApiClient,
     ) => {
-        return await apiClient.getSelfTargetingIdentity()
+        return await apiClient.executeWithLogging(
+            'getSelfTargetingIdentity',
+            args,
+            async (authToken, projectKey) => {
+                return await fetchUserProfile(authToken, projectKey)
+            },
+        )
     },
     update_self_targeting_identity: async (
         args: unknown,
         apiClient: DevCycleApiClient,
     ) => {
         const validatedArgs = UpdateSelfTargetingIdentityArgsSchema.parse(args)
-        return await apiClient.updateSelfTargetingIdentity(validatedArgs)
+
+        return await apiClient.executeWithLogging(
+            'updateSelfTargetingIdentity',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await updateUserProfile(authToken, projectKey, {
+                    dvcUserId: validatedArgs.dvc_user_id,
+                })
+            },
+        )
     },
     list_self_targeting_overrides: async (
         args: unknown,
         apiClient: DevCycleApiClient,
     ) => {
-        return await apiClient.listSelfTargetingOverrides()
+        return await apiClient.executeWithLogging(
+            'listSelfTargetingOverrides',
+            args,
+            async (authToken, projectKey) => {
+                return await fetchProjectOverridesForUser(authToken, projectKey)
+            },
+        )
     },
     set_self_targeting_override: async (
         args: unknown,
         apiClient: DevCycleApiClient,
     ) => {
         const validatedArgs = SetSelfTargetingOverrideArgsSchema.parse(args)
-        return await apiClient.setSelfTargetingOverride(validatedArgs)
+
+        return await apiClient.executeWithLogging(
+            'setSelfTargetingOverride',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await updateOverride(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    {
+                        environment: validatedArgs.environment_key,
+                        variation: validatedArgs.variation_key,
+                    },
+                )
+            },
+        )
     },
     clear_feature_self_targeting_overrides: async (
         args: unknown,
         apiClient: DevCycleApiClient,
     ) => {
         const validatedArgs = ClearSelfTargetingOverridesArgsSchema.parse(args)
-        return await apiClient.clearFeatureSelfTargetingOverrides(validatedArgs)
+
+        return await apiClient.executeWithLogging(
+            'clearFeatureSelfTargetingOverrides',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                await deleteFeatureOverrides(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key!,
+                    validatedArgs.environment_key!,
+                )
+
+                return {
+                    message: `Cleared override for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
+                }
+            },
+        )
     },
     clear_all_self_targeting_overrides: async (
         args: unknown,
         apiClient: DevCycleApiClient,
     ) => {
-        return await apiClient.clearAllSelfTargetingOverrides()
+        return await apiClient.executeWithLogging(
+            'clearAllSelfTargetingOverrides',
+            args,
+            async (authToken, projectKey) => {
+                await deleteAllProjectOverrides(authToken, projectKey)
+                return { message: 'Cleared all overrides for the project' }
+            },
+        )
     },
 }

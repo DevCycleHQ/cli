@@ -31,6 +31,24 @@ export const ListProjectsArgsSchema = z.object({
     per_page: z.number().min(1).max(1000).default(100).optional(),
 })
 
+export const ListEnvironmentsArgsSchema = z.object({
+    search: z.string().min(3).optional(),
+    page: z.number().min(1).optional(),
+    per_page: z.number().min(1).max(1000).default(100).optional(),
+    sort_by: z
+        .enum([
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ])
+        .optional(),
+    sort_order: z.enum(['asc', 'desc']).optional(),
+    created_by: z.string().optional(),
+})
+
 export const GetSdkKeysArgsSchema = z.object({
     environment_key: z.string(),
     key_type: z.enum(['mobile', 'server', 'client']).optional(),
@@ -73,6 +91,7 @@ export const ClearSelfTargetingOverridesArgsSchema = z.object({
 export type ListFeaturesArgs = z.infer<typeof ListFeaturesArgsSchema>
 export type ListVariablesArgs = z.infer<typeof ListVariablesArgsSchema>
 export type ListProjectsArgs = z.infer<typeof ListProjectsArgsSchema>
+export type ListEnvironmentsArgs = z.infer<typeof ListEnvironmentsArgsSchema>
 export type GetSdkKeysArgs = z.infer<typeof GetSdkKeysArgsSchema>
 export type EnableTargetingArgs = z.infer<typeof EnableTargetingArgsSchema>
 export type DisableTargetingArgs = z.infer<typeof DisableTargetingArgsSchema>
