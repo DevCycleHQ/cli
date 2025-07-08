@@ -250,41 +250,71 @@ export class DevCycleMCPServer {
                         case 'list_features': {
                             const validatedArgs =
                                 ListFeaturesArgsSchema.parse(args)
-                            result = await this.listFeatures(validatedArgs)
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.listFeatures(validatedArgs),
+                                'listing features',
+                            )
                             break
                         }
                         case 'list_variables': {
                             const validatedArgs =
                                 ListVariablesArgsSchema.parse(args)
-                            result = await this.listVariables(validatedArgs)
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.listVariables(validatedArgs),
+                                'listing variables',
+                            )
                             break
                         }
                         case 'list_environments': {
-                            result = await this.listEnvironments()
+                            result = await this.executeApiCall(
+                                () => this.apiClient.listEnvironments(),
+                                'listing environments',
+                            )
                             break
                         }
                         case 'get_sdk_keys': {
                             const validatedArgs =
                                 GetSdkKeysArgsSchema.parse(args)
-                            result = await this.getSdkKeys(validatedArgs)
+                            result = await this.executeApiCall(
+                                () => this.apiClient.getSdkKeys(validatedArgs),
+                                'getting SDK keys',
+                            )
                             break
                         }
                         case 'enable_targeting': {
                             const validatedArgs =
                                 EnableTargetingArgsSchema.parse(args)
-                            result = await this.enableTargeting(validatedArgs)
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.enableTargeting(
+                                        validatedArgs,
+                                    ),
+                                'enabling targeting',
+                            )
                             break
                         }
                         case 'disable_targeting': {
                             const validatedArgs =
                                 DisableTargetingArgsSchema.parse(args)
-                            result = await this.disableTargeting(validatedArgs)
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.disableTargeting(
+                                        validatedArgs,
+                                    ),
+                                'disabling targeting',
+                            )
                             break
                         }
                         case 'create_feature': {
                             const validatedArgs =
                                 CreateFeatureArgsSchema.parse(args)
-                            result = await this.createFeature(validatedArgs)
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.createFeature(validatedArgs),
+                                'creating feature',
+                            )
                             break
                         }
                         default:
@@ -316,93 +346,24 @@ export class DevCycleMCPServer {
         }
     }
 
-    // Tool implementations
-    private async listFeatures(args: ListFeaturesArgs) {
+    // Generic helper method for tool responses
+    private async executeApiCall<T>(
+        apiCall: () => Promise<T>,
+        errorContext: string,
+    ) {
         try {
-            const features = await this.apiClient.listFeatures(args)
+            const result = await apiCall()
             return {
                 content: [
                     {
                         type: 'text',
-                        text: JSON.stringify(features, null, 2),
+                        text: JSON.stringify(result, null, 2),
                     },
                 ],
             }
         } catch (error) {
-            console.error('Error listing features:', error)
+            console.error(`Error ${errorContext}:`, error)
             throw error
-        }
-    }
-
-    private async listVariables(args: ListVariablesArgs) {
-        const variables = await this.apiClient.listVariables(args)
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify(variables, null, 2),
-                },
-            ],
-        }
-    }
-
-    private async listEnvironments() {
-        const environments = await this.apiClient.listEnvironments()
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify(environments, null, 2),
-                },
-            ],
-        }
-    }
-
-    private async getSdkKeys(args: GetSdkKeysArgs) {
-        const keys = await this.apiClient.getSdkKeys(args)
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify(keys, null, 2),
-                },
-            ],
-        }
-    }
-
-    private async enableTargeting(args: EnableTargetingArgs) {
-        const result = await this.apiClient.enableTargeting(args)
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify(result, null, 2),
-                },
-            ],
-        }
-    }
-
-    private async disableTargeting(args: DisableTargetingArgs) {
-        const result = await this.apiClient.disableTargeting(args)
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify(result, null, 2),
-                },
-            ],
-        }
-    }
-
-    private async createFeature(args: CreateFeatureArgs) {
-        const result = await this.apiClient.createFeature(args)
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify(result, null, 2),
-                },
-            ],
         }
     }
 }
