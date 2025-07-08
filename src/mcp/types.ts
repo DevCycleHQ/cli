@@ -172,6 +172,54 @@ export const UpdateVariationArgsSchema = z.object({
     variables: VariationVariablesSchema,
 })
 
+export const ListFeatureTargetingArgsSchema = z.object({
+    feature_key: z.string(),
+    environment_key: z.string().optional(),
+})
+
+export const UpdateFeatureTargetingArgsSchema = z.object({
+    feature_key: z.string(),
+    environment_key: z.string(),
+    status: z.enum(['active', 'inactive', 'archived']).optional(),
+    targets: z
+        .array(
+            z.object({
+                _id: z.string().optional(),
+                name: z.string().optional(),
+                audience: z.object({
+                    name: z.string().max(100).optional(),
+                    filters: z.object({
+                        filters: z.array(z.any()),
+                        operator: z.enum(['and', 'or']),
+                    }),
+                }),
+                rollout: z
+                    .object({
+                        startPercentage: z.number().gte(0).lte(1).optional(),
+                        type: z.enum(['schedule', 'gradual', 'stepped']),
+                        startDate: z.string().datetime(),
+                        stages: z
+                            .array(
+                                z.object({
+                                    percentage: z.number().gte(0).lte(1),
+                                    type: z.enum(['linear', 'discrete']),
+                                    date: z.string().datetime(),
+                                }),
+                            )
+                            .optional(),
+                    })
+                    .optional(),
+                distribution: z.array(
+                    z.object({
+                        percentage: z.number().gte(0).lte(1),
+                        _variation: z.string(),
+                    }),
+                ),
+            }),
+        )
+        .optional(),
+})
+
 // Type inference helpers
 export type ListFeaturesArgs = z.infer<typeof ListFeaturesArgsSchema>
 export type ListVariablesArgs = z.infer<typeof ListVariablesArgsSchema>
@@ -195,4 +243,10 @@ export type SetSelfTargetingOverrideArgs = z.infer<
 >
 export type ClearSelfTargetingOverridesArgs = z.infer<
     typeof ClearSelfTargetingOverridesArgsSchema
+>
+export type ListFeatureTargetingArgs = z.infer<
+    typeof ListFeatureTargetingArgsSchema
+>
+export type UpdateFeatureTargetingArgs = z.infer<
+    typeof UpdateFeatureTargetingArgsSchema
 >
