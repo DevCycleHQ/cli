@@ -14,6 +14,8 @@ import {
     DisableTargetingArgsSchema,
     CreateFeatureArgsSchema,
     UpdateSelfTargetingIdentityArgsSchema,
+    SetSelfTargetingOverrideArgsSchema,
+    ClearSelfTargetingOverridesArgsSchema,
     type ListFeaturesArgs,
     type ListVariablesArgs,
     type GetSdkKeysArgs,
@@ -21,6 +23,8 @@ import {
     type DisableTargetingArgs,
     type CreateFeatureArgs,
     type UpdateSelfTargetingIdentityArgs,
+    type SetSelfTargetingOverrideArgs,
+    type ClearSelfTargetingOverridesArgs,
     ListProjectsArgsSchema,
 } from './types'
 
@@ -317,6 +321,63 @@ export class DevCycleMCPServer {
                             required: ['dvc_user_id'],
                         },
                     },
+                    {
+                        name: 'list_self_targeting_overrides',
+                        description:
+                            'List all self-targeting overrides for the current project',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {},
+                        },
+                    },
+                    {
+                        name: 'set_self_targeting_override',
+                        description:
+                            'Set a self-targeting override for a feature variation',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {
+                                feature_key: {
+                                    type: 'string',
+                                    description: 'The key of the feature',
+                                },
+                                environment_key: {
+                                    type: 'string',
+                                    description: 'The key of the environment',
+                                },
+                                variation_key: {
+                                    type: 'string',
+                                    description:
+                                        'The key of the variation to serve',
+                                },
+                            },
+                            required: [
+                                'feature_key',
+                                'environment_key',
+                                'variation_key',
+                            ],
+                        },
+                    },
+                    {
+                        name: 'clear_self_targeting_overrides',
+                        description:
+                            'Clear self-targeting overrides (all or specific feature/environment)',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {
+                                feature_key: {
+                                    type: 'string',
+                                    description:
+                                        'The key of the feature (optional - if provided with environment_key, clears specific override)',
+                                },
+                                environment_key: {
+                                    type: 'string',
+                                    description:
+                                        'The key of the environment (optional - if provided with feature_key, clears specific override)',
+                                },
+                            },
+                        },
+                    },
                 ],
             }
         })
@@ -434,6 +495,40 @@ export class DevCycleMCPServer {
                                         validatedArgs,
                                     ),
                                 'updating self-targeting identity',
+                            )
+                            break
+                        }
+                        case 'list_self_targeting_overrides': {
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.listSelfTargetingOverrides(),
+                                'listing self-targeting overrides',
+                            )
+                            break
+                        }
+                        case 'set_self_targeting_override': {
+                            const validatedArgs =
+                                SetSelfTargetingOverrideArgsSchema.parse(args)
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.setSelfTargetingOverride(
+                                        validatedArgs,
+                                    ),
+                                'setting self-targeting override',
+                            )
+                            break
+                        }
+                        case 'clear_self_targeting_overrides': {
+                            const validatedArgs =
+                                ClearSelfTargetingOverridesArgsSchema.parse(
+                                    args,
+                                )
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.clearSelfTargetingOverrides(
+                                        validatedArgs,
+                                    ),
+                                'clearing self-targeting overrides',
                             )
                             break
                         }

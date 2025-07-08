@@ -58,6 +58,17 @@ export const UpdateSelfTargetingIdentityArgsSchema = z.object({
     dvc_user_id: z.string().nullable(),
 })
 
+export const SetSelfTargetingOverrideArgsSchema = z.object({
+    feature_key: z.string(),
+    environment_key: z.string(),
+    variation_key: z.string(),
+})
+
+export const ClearSelfTargetingOverridesArgsSchema = z.object({
+    feature_key: z.string().optional(),
+    environment_key: z.string().optional(),
+})
+
 // Type inference helpers
 export type ListFeaturesArgs = z.infer<typeof ListFeaturesArgsSchema>
 export type ListVariablesArgs = z.infer<typeof ListVariablesArgsSchema>
@@ -68,4 +79,10 @@ export type DisableTargetingArgs = z.infer<typeof DisableTargetingArgsSchema>
 export type CreateFeatureArgs = z.infer<typeof CreateFeatureArgsSchema>
 export type UpdateSelfTargetingIdentityArgs = z.infer<
     typeof UpdateSelfTargetingIdentityArgsSchema
+>
+export type SetSelfTargetingOverrideArgs = z.infer<
+    typeof SetSelfTargetingOverrideArgsSchema
+>
+export type ClearSelfTargetingOverridesArgs = z.infer<
+    typeof ClearSelfTargetingOverridesArgsSchema
 >
