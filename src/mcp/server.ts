@@ -6,6 +6,20 @@ import {
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
 import Writer from '../ui/writer'
+import {
+    ListFeaturesArgsSchema,
+    ListVariablesArgsSchema,
+    GetSdkKeysArgsSchema,
+    EnableTargetingArgsSchema,
+    DisableTargetingArgsSchema,
+    CreateFeatureArgsSchema,
+    type ListFeaturesArgs,
+    type ListVariablesArgs,
+    type GetSdkKeysArgs,
+    type EnableTargetingArgs,
+    type DisableTargetingArgs,
+    type CreateFeatureArgs,
+} from './types'
 
 export class DevCycleMCPServer {
     private auth: DevCycleAuth
@@ -190,30 +204,48 @@ export class DevCycleMCPServer {
 
         this.server.setRequestHandler(
             CallToolRequestSchema,
-            async (request: any) => {
+            async (request) => {
                 const { name, arguments: args } = request.params
 
                 try {
                     let result
                     switch (name) {
-                        case 'list_features':
-                            result = await this.listFeatures(args)
+                        case 'list_features': {
+                            const validatedArgs =
+                                ListFeaturesArgsSchema.parse(args)
+                            result = await this.listFeatures(validatedArgs)
                             break
-                        case 'list_variables':
-                            result = await this.listVariables(args)
+                        }
+                        case 'list_variables': {
+                            const validatedArgs =
+                                ListVariablesArgsSchema.parse(args)
+                            result = await this.listVariables(validatedArgs)
                             break
-                        case 'get_sdk_keys':
-                            result = await this.getSdkKeys(args)
+                        }
+                        case 'get_sdk_keys': {
+                            const validatedArgs =
+                                GetSdkKeysArgsSchema.parse(args)
+                            result = await this.getSdkKeys(validatedArgs)
                             break
-                        case 'enable_targeting':
-                            result = await this.enableTargeting(args)
+                        }
+                        case 'enable_targeting': {
+                            const validatedArgs =
+                                EnableTargetingArgsSchema.parse(args)
+                            result = await this.enableTargeting(validatedArgs)
                             break
-                        case 'disable_targeting':
-                            result = await this.disableTargeting(args)
+                        }
+                        case 'disable_targeting': {
+                            const validatedArgs =
+                                DisableTargetingArgsSchema.parse(args)
+                            result = await this.disableTargeting(validatedArgs)
                             break
-                        case 'create_feature':
-                            result = await this.createFeature(args)
+                        }
+                        case 'create_feature': {
+                            const validatedArgs =
+                                CreateFeatureArgsSchema.parse(args)
+                            result = await this.createFeature(validatedArgs)
                             break
+                        }
                         default:
                             throw new Error(`Unknown tool: ${name}`)
                     }
@@ -244,7 +276,7 @@ export class DevCycleMCPServer {
     }
 
     // Tool implementations
-    private async listFeatures(args: any) {
+    private async listFeatures(args: ListFeaturesArgs) {
         try {
             const features = await this.apiClient.listFeatures(args)
             return {
@@ -261,7 +293,7 @@ export class DevCycleMCPServer {
         }
     }
 
-    private async listVariables(args: any) {
+    private async listVariables(args: ListVariablesArgs) {
         const variables = await this.apiClient.listVariables(args)
         return {
             content: [
@@ -273,11 +305,8 @@ export class DevCycleMCPServer {
         }
     }
 
-    private async getSdkKeys(args: any) {
-        const keys = await this.apiClient.getSdkKeys(
-            args.environment_key,
-            args.key_type,
-        )
+    private async getSdkKeys(args: GetSdkKeysArgs) {
+        const keys = await this.apiClient.getSdkKeys(args)
         return {
             content: [
                 {
@@ -288,11 +317,8 @@ export class DevCycleMCPServer {
         }
     }
 
-    private async enableTargeting(args: any) {
-        const result = await this.apiClient.enableTargeting(
-            args.feature_key,
-            args.environment_key,
-        )
+    private async enableTargeting(args: EnableTargetingArgs) {
+        const result = await this.apiClient.enableTargeting(args)
         return {
             content: [
                 {
@@ -303,11 +329,8 @@ export class DevCycleMCPServer {
         }
     }
 
-    private async disableTargeting(args: any) {
-        const result = await this.apiClient.disableTargeting(
-            args.feature_key,
-            args.environment_key,
-        )
+    private async disableTargeting(args: DisableTargetingArgs) {
+        const result = await this.apiClient.disableTargeting(args)
         return {
             content: [
                 {
@@ -318,7 +341,7 @@ export class DevCycleMCPServer {
         }
     }
 
-    private async createFeature(args: any) {
+    private async createFeature(args: CreateFeatureArgs) {
         const result = await this.apiClient.createFeature(args)
         return {
             content: [
