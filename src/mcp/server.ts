@@ -19,6 +19,7 @@ import {
     type EnableTargetingArgs,
     type DisableTargetingArgs,
     type CreateFeatureArgs,
+    ListProjectsArgsSchema,
 } from './types'
 
 export class DevCycleMCPServer {
@@ -75,7 +76,7 @@ export class DevCycleMCPServer {
                                 per_page: {
                                     type: 'number',
                                     description:
-                                        'Number of items per page (default: 10)',
+                                        'Number of items per page (default: 100, max: 1000)',
                                 },
                             },
                         },
@@ -98,7 +99,7 @@ export class DevCycleMCPServer {
                                 per_page: {
                                     type: 'number',
                                     description:
-                                        'Number of items per page (default: 10)',
+                                        'Number of items per page (default: 100, max: 1000)',
                                 },
                             },
                         },
@@ -136,6 +137,52 @@ export class DevCycleMCPServer {
                                 created_by: {
                                     type: 'string',
                                     description: 'Filter by creator user ID',
+                                },
+                            },
+                        },
+                    },
+                    {
+                        name: 'list_projects',
+                        description:
+                            'List all projects in the current organization',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {
+                                sort_by: {
+                                    type: 'string',
+                                    enum: [
+                                        'createdAt',
+                                        'updatedAt',
+                                        'name',
+                                        'key',
+                                        'createdBy',
+                                        'propertyKey',
+                                    ],
+                                    description:
+                                        'Field to sort by (default: createdAt)',
+                                },
+                                sort_order: {
+                                    type: 'string',
+                                    enum: ['asc', 'desc'],
+                                    description: 'Sort order (default: desc)',
+                                },
+                                search: {
+                                    type: 'string',
+                                    description:
+                                        'Search query to filter projects (minimum 3 characters)',
+                                },
+                                created_by: {
+                                    type: 'string',
+                                    description: 'Filter by creator user ID',
+                                },
+                                page: {
+                                    type: 'number',
+                                    description: 'Page number (default: 1)',
+                                },
+                                per_page: {
+                                    type: 'number',
+                                    description:
+                                        'Number of items per page (default: 100, max: 1000)',
                                 },
                             },
                         },
@@ -279,6 +326,16 @@ export class DevCycleMCPServer {
                             result = await this.executeApiCall(
                                 () => this.apiClient.listEnvironments(),
                                 'listing environments',
+                            )
+                            break
+                        }
+                        case 'list_projects': {
+                            const validatedArgs =
+                                ListProjectsArgsSchema.parse(args)
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.listProjects(validatedArgs),
+                                'listing projects',
                             )
                             break
                         }
