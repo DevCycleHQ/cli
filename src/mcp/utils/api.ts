@@ -5,11 +5,12 @@ import {
     fetchEnvironmentByKey,
     fetchEnvironments,
 } from '../../api/environments'
-import { fetchProject } from '../../api/projects'
+import { fetchProject, fetchProjects } from '../../api/projects'
 import { enableTargeting, disableTargeting } from '../../api/targeting'
 import type {
     ListFeaturesArgs,
     ListVariablesArgs,
+    ListProjectsArgs,
     GetSdkKeysArgs,
     EnableTargetingArgs,
     DisableTargetingArgs,
@@ -120,6 +121,35 @@ export class DevCycleApiClient {
         } catch (error) {
             console.error(
                 'MCP listEnvironments error:',
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
+        }
+    }
+
+    async listProjects(args: ListProjectsArgs) {
+        console.error('MCP listProjects params:', JSON.stringify(args, null, 2))
+
+        try {
+            this.auth.requireAuth()
+
+            const query: any = {}
+            if (args.sort_by) query.sortBy = args.sort_by
+            if (args.sort_order) query.sortOrder = args.sort_order
+            if (args.search) query.search = args.search
+            if (args.created_by) query.createdBy = args.created_by
+            if (args.page) query.page = args.page
+            if (args.per_page) query.perPage = args.per_page
+
+            const result = await fetchProjects(this.auth.getAuthToken(), query)
+            console.error(
+                'MCP listProjects result:',
+                JSON.stringify(result, null, 2),
+            )
+            return result
+        } catch (error) {
+            console.error(
+                'MCP listProjects error:',
                 JSON.stringify({ error: getErrorMessage(error) }, null, 2),
             )
             throw ensureError(error)
