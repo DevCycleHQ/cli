@@ -104,6 +104,43 @@ export class DevCycleMCPServer {
                         },
                     },
                     {
+                        name: 'list_environments',
+                        description: 'List environments in the current project',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {
+                                search: {
+                                    type: 'string',
+                                    description:
+                                        'Search query to filter environments',
+                                },
+                                page: {
+                                    type: 'number',
+                                    description: 'Page number (default: 1)',
+                                },
+                                per_page: {
+                                    type: 'number',
+                                    description:
+                                        'Number of items per page (default: 100)',
+                                },
+                                sort_by: {
+                                    type: 'string',
+                                    description:
+                                        'Field to sort by (default: createdAt)',
+                                },
+                                sort_order: {
+                                    type: 'string',
+                                    enum: ['asc', 'desc'],
+                                    description: 'Sort order (default: desc)',
+                                },
+                                created_by: {
+                                    type: 'string',
+                                    description: 'Filter by creator user ID',
+                                },
+                            },
+                        },
+                    },
+                    {
                         name: 'get_sdk_keys',
                         description: 'Get SDK keys for an environment',
                         inputSchema: {
@@ -222,6 +259,10 @@ export class DevCycleMCPServer {
                             result = await this.listVariables(validatedArgs)
                             break
                         }
+                        case 'list_environments': {
+                            result = await this.listEnvironments()
+                            break
+                        }
                         case 'get_sdk_keys': {
                             const validatedArgs =
                                 GetSdkKeysArgsSchema.parse(args)
@@ -300,6 +341,18 @@ export class DevCycleMCPServer {
                 {
                     type: 'text',
                     text: JSON.stringify(variables, null, 2),
+                },
+            ],
+        }
+    }
+
+    private async listEnvironments() {
+        const environments = await this.apiClient.listEnvironments()
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify(environments, null, 2),
                 },
             ],
         }
