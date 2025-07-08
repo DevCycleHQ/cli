@@ -5,6 +5,7 @@ import {
     fetchEnvironmentByKey,
     fetchEnvironments,
 } from '../../api/environments'
+import { fetchProject } from '../../api/projects'
 import { enableTargeting, disableTargeting } from '../../api/targeting'
 import type {
     ListFeaturesArgs,
@@ -271,6 +272,32 @@ export class DevCycleApiClient {
         } catch (error) {
             console.error(
                 'MCP createFeature error:',
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
+        }
+    }
+
+    async getCurrentProject() {
+        console.error('MCP getCurrentProject')
+
+        try {
+            this.auth.requireAuth()
+            this.auth.requireProject()
+
+            const result = await fetchProject(
+                this.auth.getAuthToken(),
+                this.auth.getProjectKey(),
+            )
+
+            console.error(
+                'MCP getCurrentProject result:',
+                JSON.stringify(result, null, 2),
+            )
+            return result
+        } catch (error) {
+            console.error(
+                'MCP getCurrentProject error:',
                 JSON.stringify({ error: getErrorMessage(error) }, null, 2),
             )
             throw ensureError(error)
