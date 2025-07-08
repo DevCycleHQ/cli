@@ -21,13 +21,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
         description: 'Get current DevCycle identity for self-targeting',
         inputSchema: {
             type: 'object',
-            properties: {
-                random_string: {
-                    type: 'string',
-                    description: 'Dummy parameter for no-parameter tools',
-                },
-            },
-            required: ['random_string'],
+            properties: {},
         },
     },
     {
@@ -52,13 +46,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
             'List all self-targeting overrides for the current project',
         inputSchema: {
             type: 'object',
-            properties: {
-                random_string: {
-                    type: 'string',
-                    description: 'Dummy parameter for no-parameter tools',
-                },
-            },
-            required: ['random_string'],
+            properties: {},
         },
     },
     {
@@ -108,13 +96,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
             'Clear all self-targeting overrides for the current project',
         inputSchema: {
             type: 'object',
-            properties: {
-                random_string: {
-                    type: 'string',
-                    description: 'Dummy parameter for no-parameter tools',
-                },
-            },
-            required: ['random_string'],
+            properties: {},
         },
     },
 ]
@@ -126,7 +108,7 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
     ) => {
         return await apiClient.executeWithLogging(
             'getSelfTargetingIdentity',
-            args,
+            null,
             async (authToken, projectKey) => {
                 return await fetchUserProfile(authToken, projectKey)
             },
@@ -154,7 +136,7 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
     ) => {
         return await apiClient.executeWithLogging(
             'listSelfTargetingOverrides',
-            args,
+            null,
             async (authToken, projectKey) => {
                 return await fetchProjectOverridesForUser(authToken, projectKey)
             },
@@ -195,8 +177,8 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
                 await deleteFeatureOverrides(
                     authToken,
                     projectKey,
-                    validatedArgs.feature_key!,
-                    validatedArgs.environment_key!,
+                    validatedArgs.feature_key,
+                    validatedArgs.environment_key,
                 )
 
                 return {
@@ -211,7 +193,7 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
     ) => {
         return await apiClient.executeWithLogging(
             'clearAllSelfTargetingOverrides',
-            args,
+            null,
             async (authToken, projectKey) => {
                 await deleteAllProjectOverrides(authToken, projectKey)
                 return { message: 'Cleared all overrides for the project' }

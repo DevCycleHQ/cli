@@ -83,8 +83,8 @@ export const SetSelfTargetingOverrideArgsSchema = z.object({
 })
 
 export const ClearSelfTargetingOverridesArgsSchema = z.object({
-    feature_key: z.string().optional(),
-    environment_key: z.string().optional(),
+    feature_key: z.string(),
+    environment_key: z.string(),
 })
 
 // Type inference helpers
