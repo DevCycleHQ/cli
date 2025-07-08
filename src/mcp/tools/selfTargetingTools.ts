@@ -13,13 +13,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
         description: 'Get current DevCycle identity for self-targeting',
         inputSchema: {
             type: 'object',
-            properties: {
-                random_string: {
-                    type: 'string',
-                    description: 'Dummy parameter for no-parameter tools',
-                },
-            },
-            required: ['random_string'],
+            properties: {},
         },
     },
     {
@@ -44,13 +38,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
             'List all self-targeting overrides for the current project',
         inputSchema: {
             type: 'object',
-            properties: {
-                random_string: {
-                    type: 'string',
-                    description: 'Dummy parameter for no-parameter tools',
-                },
-            },
-            required: ['random_string'],
+            properties: {},
         },
     },
     {
@@ -76,23 +64,31 @@ export const selfTargetingToolDefinitions: Tool[] = [
         },
     },
     {
-        name: 'clear_self_targeting_overrides',
+        name: 'clear_feature_self_targeting_overrides',
         description:
-            'Clear self-targeting overrides (all or specific feature/environment)',
+            'Clear self-targeting overrides for a specific feature/environment',
         inputSchema: {
             type: 'object',
             properties: {
                 feature_key: {
                     type: 'string',
-                    description:
-                        'The key of the feature (optional - if provided with environment_key, clears specific override)',
+                    description: 'The key of the feature',
                 },
                 environment_key: {
                     type: 'string',
-                    description:
-                        'The key of the environment (optional - if provided with feature_key, clears specific override)',
+                    description: 'The key of the environment',
                 },
             },
+            required: ['feature_key', 'environment_key'],
+        },
+    },
+    {
+        name: 'clear_all_self_targeting_overrides',
+        description:
+            'Clear all self-targeting overrides for the current project',
+        inputSchema: {
+            type: 'object',
+            properties: {},
         },
     },
 ]
@@ -124,11 +120,17 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
         const validatedArgs = SetSelfTargetingOverrideArgsSchema.parse(args)
         return await apiClient.setSelfTargetingOverride(validatedArgs)
     },
-    clear_self_targeting_overrides: async (
+    clear_feature_self_targeting_overrides: async (
         args: unknown,
         apiClient: DevCycleApiClient,
     ) => {
         const validatedArgs = ClearSelfTargetingOverridesArgsSchema.parse(args)
-        return await apiClient.clearSelfTargetingOverrides(validatedArgs)
+        return await apiClient.clearFeatureSelfTargetingOverrides(validatedArgs)
+    },
+    clear_all_self_targeting_overrides: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
+        return await apiClient.clearAllSelfTargetingOverrides()
     },
 }
