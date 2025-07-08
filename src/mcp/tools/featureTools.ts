@@ -1,5 +1,11 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient } from '../utils/api'
+import {
+    DevCycleApiClient,
+    fetchFeatures,
+    createFeature,
+    enableTargeting,
+    disableTargeting,
+} from '../utils/api'
 import {
     ListFeaturesArgsSchema,
     CreateFeatureArgsSchema,
@@ -103,18 +109,80 @@ export const featureToolDefinitions: Tool[] = [
 export const featureToolHandlers: Record<string, ToolHandler> = {
     list_features: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = ListFeaturesArgsSchema.parse(args)
-        return await apiClient.listFeatures(validatedArgs)
+
+        return await apiClient.executeWithLogging(
+            'listFeatures',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                const query = {
+                    search: validatedArgs.search,
+                    page: validatedArgs.page,
+                    perPage: validatedArgs.per_page,
+                }
+                return await fetchFeatures(authToken, projectKey, query)
+            },
+        )
     },
     create_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = CreateFeatureArgsSchema.parse(args)
-        return await apiClient.createFeature(validatedArgs)
+
+        return await apiClient.executeWithLogging(
+            'createFeature',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                if (validatedArgs.interactive) {
+                    throw new Error(
+                        'Interactive mode not yet supported in MCP. Please provide explicit parameters: key, name, description, type',
+                    )
+                }
+
+                if (!validatedArgs.key || !validatedArgs.name) {
+                    throw new Error(
+                        'Feature key and name are required when not using interactive mode',
+                    )
+                }
+
+                const featureData = {
+                    key: validatedArgs.key,
+                    name: validatedArgs.name,
+                    description: validatedArgs.description || '',
+                    type: validatedArgs.type || 'release',
+                }
+
+                return await createFeature(authToken, projectKey, featureData)
+            },
+        )
     },
     enable_targeting: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = EnableTargetingArgsSchema.parse(args)
-        return await apiClient.enableTargeting(validatedArgs)
+
+        return await apiClient.executeWithLogging(
+            'enableTargeting',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await enableTargeting(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    validatedArgs.environment_key,
+                )
+            },
+        )
     },
     disable_targeting: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = DisableTargetingArgsSchema.parse(args)
-        return await apiClient.disableTargeting(validatedArgs)
+
+        return await apiClient.executeWithLogging(
+            'disableTargeting',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await disableTargeting(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    validatedArgs.environment_key,
+                )
+            },
+        )
     },
 }

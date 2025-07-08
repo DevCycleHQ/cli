@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient } from '../utils/api'
+import { DevCycleApiClient, fetchVariables } from '../utils/api'
 import { ListVariablesArgsSchema } from '../types'
 import { ToolHandler } from '../server'
 
@@ -31,6 +31,18 @@ export const variableToolDefinitions: Tool[] = [
 export const variableToolHandlers: Record<string, ToolHandler> = {
     list_variables: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = ListVariablesArgsSchema.parse(args)
-        return await apiClient.listVariables(validatedArgs)
+
+        return await apiClient.executeWithLogging(
+            'listVariables',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                const query = {
+                    search: validatedArgs.search,
+                    page: validatedArgs.page,
+                    perPage: validatedArgs.per_page,
+                }
+                return await fetchVariables(authToken, projectKey, query)
+            },
+        )
     },
 }
