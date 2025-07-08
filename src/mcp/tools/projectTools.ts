@@ -53,13 +53,7 @@ export const projectToolDefinitions: Tool[] = [
         description: 'Get the currently selected project',
         inputSchema: {
             type: 'object',
-            properties: {
-                random_string: {
-                    type: 'string',
-                    description: 'Dummy parameter for no-parameter tools',
-                },
-            },
-            required: ['random_string'],
+            properties: {},
         },
     },
 ]
@@ -71,19 +65,15 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithLogging(
             'listProjects',
             validatedArgs,
-            async (authToken, projectKey) => {
-                const query: any = {}
-                if (validatedArgs.sort_by) query.sortBy = validatedArgs.sort_by
-                if (validatedArgs.sort_order)
-                    query.sortOrder = validatedArgs.sort_order
-                if (validatedArgs.search) query.search = validatedArgs.search
-                if (validatedArgs.created_by)
-                    query.createdBy = validatedArgs.created_by
-                if (validatedArgs.page) query.page = validatedArgs.page
-                if (validatedArgs.per_page)
-                    query.perPage = validatedArgs.per_page
-
-                return await fetchProjects(authToken, query)
+            async (authToken) => {
+                return await fetchProjects(authToken, {
+                    sortBy: validatedArgs.sort_by,
+                    sortOrder: validatedArgs.sort_order,
+                    search: validatedArgs.search,
+                    createdBy: validatedArgs.created_by,
+                    page: validatedArgs.page,
+                    perPage: validatedArgs.per_page,
+                })
             },
             false,
         )
@@ -94,7 +84,7 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
     ) => {
         return await apiClient.executeWithLogging(
             'getCurrentProject',
-            args,
+            null,
             async (authToken, projectKey) => {
                 return await fetchProject(authToken, projectKey)
             },
