@@ -7,6 +7,7 @@ import {
 } from '../../api/environments'
 import { fetchProject, fetchProjects } from '../../api/projects'
 import { enableTargeting, disableTargeting } from '../../api/targeting'
+import { fetchUserProfile, updateUserProfile } from '../../api/userProfile'
 import type {
     ListFeaturesArgs,
     ListVariablesArgs,
@@ -15,6 +16,7 @@ import type {
     EnableTargetingArgs,
     DisableTargetingArgs,
     CreateFeatureArgs,
+    UpdateSelfTargetingIdentityArgs,
 } from '../types'
 
 function getErrorMessage(error: unknown): string {
@@ -328,6 +330,62 @@ export class DevCycleApiClient {
         } catch (error) {
             console.error(
                 'MCP getCurrentProject error:',
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
+        }
+    }
+
+    async getSelfTargetingIdentity() {
+        console.error('MCP getSelfTargetingIdentity')
+
+        try {
+            this.auth.requireAuth()
+            this.auth.requireProject()
+
+            const result = await fetchUserProfile(
+                this.auth.getAuthToken(),
+                this.auth.getProjectKey(),
+            )
+
+            console.error(
+                'MCP getSelfTargetingIdentity result:',
+                JSON.stringify(result, null, 2),
+            )
+            return result
+        } catch (error) {
+            console.error(
+                'MCP getSelfTargetingIdentity error:',
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
+        }
+    }
+
+    async updateSelfTargetingIdentity(args: UpdateSelfTargetingIdentityArgs) {
+        console.error(
+            'MCP updateSelfTargetingIdentity params:',
+            JSON.stringify(args, null, 2),
+        )
+
+        try {
+            this.auth.requireAuth()
+            this.auth.requireProject()
+
+            const result = await updateUserProfile(
+                this.auth.getAuthToken(),
+                this.auth.getProjectKey(),
+                { dvcUserId: args.dvc_user_id },
+            )
+
+            console.error(
+                'MCP updateSelfTargetingIdentity result:',
+                JSON.stringify(result, null, 2),
+            )
+            return result
+        } catch (error) {
+            console.error(
+                'MCP updateSelfTargetingIdentity error:',
                 JSON.stringify({ error: getErrorMessage(error) }, null, 2),
             )
             throw ensureError(error)
