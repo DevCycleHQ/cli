@@ -1,9 +1,7 @@
 ---
-description: MCP tools can have empty parameters - no dummy parameters needed
-globs: ["src/mcp/tools/**/*.ts"]
-alwaysApply: true
+globs: src/mcp/tools/**/*.ts
+alwaysApply: false
 ---
-
 # MCP Tool Parameters
 
 MCP tools that don't need parameters should use empty properties:

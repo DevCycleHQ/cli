@@ -1,4 +1,5 @@
 ---
+description: UI patterns and user interaction guidelines for prompts and output formatting
 globs: src/ui/**/*.ts,src/utils/prompts.ts
 ---
 

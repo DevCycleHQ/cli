@@ -1,7 +1,8 @@
 ---
-globs: *.ts,*.js,src/**/*.ts,src/**/*.js
+globs: *.ts,*.js
+alwaysApply: false
 ---
-
+  
 # TypeScript/JavaScript Patterns
 
 ## Import Organization
