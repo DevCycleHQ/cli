@@ -54,6 +54,10 @@ export const CreateFeatureArgsSchema = z.object({
     interactive: z.boolean().optional(),
 })
 
+export const UpdateSelfTargetingIdentityArgsSchema = z.object({
+    dvc_user_id: z.string().nullable(),
+})
+
 // Type inference helpers
 export type ListFeaturesArgs = z.infer<typeof ListFeaturesArgsSchema>
 export type ListVariablesArgs = z.infer<typeof ListVariablesArgsSchema>
@@ -62,3 +66,6 @@ export type GetSdkKeysArgs = z.infer<typeof GetSdkKeysArgsSchema>
 export type EnableTargetingArgs = z.infer<typeof EnableTargetingArgsSchema>
 export type DisableTargetingArgs = z.infer<typeof DisableTargetingArgsSchema>
 export type CreateFeatureArgs = z.infer<typeof CreateFeatureArgsSchema>
+export type UpdateSelfTargetingIdentityArgs = z.infer<
+    typeof UpdateSelfTargetingIdentityArgsSchema
+>

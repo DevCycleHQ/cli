@@ -13,12 +13,14 @@ import {
     EnableTargetingArgsSchema,
     DisableTargetingArgsSchema,
     CreateFeatureArgsSchema,
+    UpdateSelfTargetingIdentityArgsSchema,
     type ListFeaturesArgs,
     type ListVariablesArgs,
     type GetSdkKeysArgs,
     type EnableTargetingArgs,
     type DisableTargetingArgs,
     type CreateFeatureArgs,
+    type UpdateSelfTargetingIdentityArgs,
     ListProjectsArgsSchema,
 } from './types'
 
@@ -290,6 +292,31 @@ export class DevCycleMCPServer {
                             properties: {},
                         },
                     },
+                    {
+                        name: 'get_self_targeting_identity',
+                        description:
+                            'Get current DevCycle identity for self-targeting',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {},
+                        },
+                    },
+                    {
+                        name: 'update_self_targeting_identity',
+                        description:
+                            'Update DevCycle identity for self-targeting and overrides',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {
+                                dvc_user_id: {
+                                    type: 'string',
+                                    description:
+                                        'DevCycle User ID for self-targeting (use null or empty string to clear)',
+                                },
+                            },
+                            required: ['dvc_user_id'],
+                        },
+                    },
                 ],
             }
         })
@@ -386,6 +413,27 @@ export class DevCycleMCPServer {
                             result = await this.executeApiCall(
                                 () => this.apiClient.getCurrentProject(),
                                 'getting current project',
+                            )
+                            break
+                        }
+                        case 'get_self_targeting_identity': {
+                            result = await this.executeApiCall(
+                                () => this.apiClient.getSelfTargetingIdentity(),
+                                'getting self-targeting identity',
+                            )
+                            break
+                        }
+                        case 'update_self_targeting_identity': {
+                            const validatedArgs =
+                                UpdateSelfTargetingIdentityArgsSchema.parse(
+                                    args,
+                                )
+                            result = await this.executeApiCall(
+                                () =>
+                                    this.apiClient.updateSelfTargetingIdentity(
+                                        validatedArgs,
+                                    ),
+                                'updating self-targeting identity',
                             )
                             break
                         }
