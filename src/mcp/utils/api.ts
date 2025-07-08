@@ -106,10 +106,10 @@ export class DevCycleApiClient {
             this.auth.requireAuth()
             this.auth.requireProject()
 
-            const authToken = this.auth.getAuthToken()
-            const projectKey = this.auth.getProjectKey()
-
-            const result = await fetchEnvironments(authToken, projectKey)
+            const result = await fetchEnvironments(
+                this.auth.getAuthToken(),
+                this.auth.getProjectKey(),
+            )
 
             console.error(
                 'MCP listEnvironments result:',
