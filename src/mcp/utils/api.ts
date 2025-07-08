@@ -3,6 +3,14 @@ import { fetchFeatures, createFeature } from '../../api/features'
 import { fetchVariables } from '../../api/variables'
 import { fetchEnvironmentByKey } from '../../api/environments'
 import { enableTargeting, disableTargeting } from '../../api/targeting'
+import type {
+    ListFeaturesArgs,
+    ListVariablesArgs,
+    GetSdkKeysArgs,
+    EnableTargetingArgs,
+    DisableTargetingArgs,
+    CreateFeatureArgs,
+} from '../types'
 
 function getErrorMessage(error: unknown): string {
     if (error instanceof Error) {
@@ -21,11 +29,7 @@ function ensureError(error: unknown): Error {
 export class DevCycleApiClient {
     constructor(private auth: DevCycleAuth) {}
 
-    async listFeatures(args: {
-        search?: string
-        page?: number
-        per_page?: number
-    }) {
+    async listFeatures(args: ListFeaturesArgs) {
         console.error('MCP listFeatures params:', JSON.stringify(args, null, 2))
 
         try {
@@ -57,11 +61,7 @@ export class DevCycleApiClient {
         }
     }
 
-    async listVariables(args: {
-        search?: string
-        page?: number
-        per_page?: number
-    }) {
+    async listVariables(args: ListVariablesArgs) {
         console.error(
             'MCP listVariables params:',
             JSON.stringify(args, null, 2),
@@ -96,14 +96,8 @@ export class DevCycleApiClient {
         }
     }
 
-    async getSdkKeys(
-        environmentKey: string,
-        keyType?: 'mobile' | 'server' | 'client',
-    ) {
-        console.error(
-            'MCP getSdkKeys params:',
-            JSON.stringify({ environmentKey, keyType }, null, 2),
-        )
+    async getSdkKeys(args: GetSdkKeysArgs) {
+        console.error('MCP getSdkKeys params:', JSON.stringify(args, null, 2))
 
         try {
             this.auth.requireAuth()
@@ -112,15 +106,15 @@ export class DevCycleApiClient {
             const environment = await fetchEnvironmentByKey(
                 this.auth.getAuthToken(),
                 this.auth.getProjectKey(),
-                environmentKey,
+                args.environment_key,
             )
 
             const sdkKeys = environment.sdkKeys
 
             let result
-            if (keyType) {
+            if (args.key_type) {
                 result = {
-                    [keyType]: sdkKeys[keyType],
+                    [args.key_type]: sdkKeys[args.key_type],
                 }
             } else {
                 result = {
@@ -144,10 +138,10 @@ export class DevCycleApiClient {
         }
     }
 
-    async enableTargeting(featureKey: string, environmentKey: string) {
+    async enableTargeting(args: EnableTargetingArgs) {
         console.error(
             'MCP enableTargeting params:',
-            JSON.stringify({ featureKey, environmentKey }, null, 2),
+            JSON.stringify(args, null, 2),
         )
 
         try {
@@ -157,8 +151,8 @@ export class DevCycleApiClient {
             const result = await enableTargeting(
                 this.auth.getAuthToken(),
                 this.auth.getProjectKey(),
-                featureKey,
-                environmentKey,
+                args.feature_key,
+                args.environment_key,
             )
             console.error(
                 'MCP enableTargeting result:',
@@ -174,10 +168,10 @@ export class DevCycleApiClient {
         }
     }
 
-    async disableTargeting(featureKey: string, environmentKey: string) {
+    async disableTargeting(args: DisableTargetingArgs) {
         console.error(
             'MCP disableTargeting params:',
-            JSON.stringify({ featureKey, environmentKey }, null, 2),
+            JSON.stringify(args, null, 2),
         )
 
         try {
@@ -187,8 +181,8 @@ export class DevCycleApiClient {
             const result = await disableTargeting(
                 this.auth.getAuthToken(),
                 this.auth.getProjectKey(),
-                featureKey,
-                environmentKey,
+                args.feature_key,
+                args.environment_key,
             )
             console.error(
                 'MCP disableTargeting result:',
@@ -204,13 +198,7 @@ export class DevCycleApiClient {
         }
     }
 
-    async createFeature(args: {
-        key?: string
-        name?: string
-        description?: string
-        type?: 'release' | 'experiment' | 'permission' | 'ops'
-        interactive?: boolean
-    }) {
+    async createFeature(args: CreateFeatureArgs) {
         console.error(
             'MCP createFeature params:',
             JSON.stringify(args, null, 2),
