@@ -17,8 +17,8 @@ export class FileFilters {
     config: CodeInsights
 
     constructor(
-        flags?: FileFilters["flags"],
-        codeInsightsConfig?: CodeInsights
+        flags?: FileFilters['flags'],
+        codeInsightsConfig?: CodeInsights,
     ) {
         this.flags = flags ?? {}
         this.config = codeInsightsConfig ?? {}
