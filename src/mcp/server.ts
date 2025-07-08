@@ -2,31 +2,55 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import {
     CallToolRequestSchema,
     ListToolsRequestSchema,
+    Tool,
 } from '@modelcontextprotocol/sdk/types.js'
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
 import Writer from '../ui/writer'
 import {
-    ListFeaturesArgsSchema,
-    ListVariablesArgsSchema,
-    GetSdkKeysArgsSchema,
-    EnableTargetingArgsSchema,
-    DisableTargetingArgsSchema,
-    CreateFeatureArgsSchema,
-    UpdateSelfTargetingIdentityArgsSchema,
-    SetSelfTargetingOverrideArgsSchema,
-    ClearSelfTargetingOverridesArgsSchema,
-    type ListFeaturesArgs,
-    type ListVariablesArgs,
-    type GetSdkKeysArgs,
-    type EnableTargetingArgs,
-    type DisableTargetingArgs,
-    type CreateFeatureArgs,
-    type UpdateSelfTargetingIdentityArgs,
-    type SetSelfTargetingOverrideArgs,
-    type ClearSelfTargetingOverridesArgs,
-    ListProjectsArgsSchema,
-} from './types'
+    featureToolDefinitions,
+    featureToolHandlers,
+} from './tools/featureTools'
+import {
+    environmentToolDefinitions,
+    environmentToolHandlers,
+} from './tools/environmentTools'
+import {
+    projectToolDefinitions,
+    projectToolHandlers,
+} from './tools/projectTools'
+import {
+    variableToolDefinitions,
+    variableToolHandlers,
+} from './tools/variableTools'
+import {
+    selfTargetingToolDefinitions,
+    selfTargetingToolHandlers,
+} from './tools/selfTargetingTools'
+
+// Tool handler function type
+export type ToolHandler = (
+    args: unknown,
+    apiClient: DevCycleApiClient,
+) => Promise<any>
+
+// Combine all tool definitions
+const allToolDefinitions: Tool[] = [
+    ...featureToolDefinitions,
+    ...environmentToolDefinitions,
+    ...projectToolDefinitions,
+    ...variableToolDefinitions,
+    ...selfTargetingToolDefinitions,
+]
+
+// Combine all tool handlers
+const allToolHandlers: Record<string, ToolHandler> = {
+    ...featureToolHandlers,
+    ...environmentToolHandlers,
+    ...projectToolHandlers,
+    ...variableToolHandlers,
+    ...selfTargetingToolHandlers,
+}
 
 export class DevCycleMCPServer {
     private auth: DevCycleAuth
@@ -61,326 +85,9 @@ export class DevCycleMCPServer {
     }
 
     private setupToolHandlers() {
-        this.server.setRequestHandler(ListToolsRequestSchema, async () => {
-            return {
-                tools: [
-                    {
-                        name: 'list_features',
-                        description: 'List features in the current project',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                search: {
-                                    type: 'string',
-                                    description:
-                                        'Search query to filter features',
-                                },
-                                page: {
-                                    type: 'number',
-                                    description: 'Page number (default: 1)',
-                                },
-                                per_page: {
-                                    type: 'number',
-                                    description:
-                                        'Number of items per page (default: 100, max: 1000)',
-                                },
-                            },
-                        },
-                    },
-                    {
-                        name: 'list_variables',
-                        description: 'List variables in the current project',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                search: {
-                                    type: 'string',
-                                    description:
-                                        'Search query to filter variables',
-                                },
-                                page: {
-                                    type: 'number',
-                                    description: 'Page number (default: 1)',
-                                },
-                                per_page: {
-                                    type: 'number',
-                                    description:
-                                        'Number of items per page (default: 100, max: 1000)',
-                                },
-                            },
-                        },
-                    },
-                    {
-                        name: 'list_environments',
-                        description: 'List environments in the current project',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                search: {
-                                    type: 'string',
-                                    description:
-                                        'Search query to filter environments',
-                                },
-                                page: {
-                                    type: 'number',
-                                    description: 'Page number (default: 1)',
-                                },
-                                per_page: {
-                                    type: 'number',
-                                    description:
-                                        'Number of items per page (default: 100)',
-                                },
-                                sort_by: {
-                                    type: 'string',
-                                    description:
-                                        'Field to sort by (default: createdAt)',
-                                },
-                                sort_order: {
-                                    type: 'string',
-                                    enum: ['asc', 'desc'],
-                                    description: 'Sort order (default: desc)',
-                                },
-                                created_by: {
-                                    type: 'string',
-                                    description: 'Filter by creator user ID',
-                                },
-                            },
-                        },
-                    },
-                    {
-                        name: 'list_projects',
-                        description:
-                            'List all projects in the current organization',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                sort_by: {
-                                    type: 'string',
-                                    enum: [
-                                        'createdAt',
-                                        'updatedAt',
-                                        'name',
-                                        'key',
-                                        'createdBy',
-                                        'propertyKey',
-                                    ],
-                                    description:
-                                        'Field to sort by (default: createdAt)',
-                                },
-                                sort_order: {
-                                    type: 'string',
-                                    enum: ['asc', 'desc'],
-                                    description: 'Sort order (default: desc)',
-                                },
-                                search: {
-                                    type: 'string',
-                                    description:
-                                        'Search query to filter projects (minimum 3 characters)',
-                                },
-                                created_by: {
-                                    type: 'string',
-                                    description: 'Filter by creator user ID',
-                                },
-                                page: {
-                                    type: 'number',
-                                    description: 'Page number (default: 1)',
-                                },
-                                per_page: {
-                                    type: 'number',
-                                    description:
-                                        'Number of items per page (default: 100, max: 1000)',
-                                },
-                            },
-                        },
-                    },
-                    {
-                        name: 'get_sdk_keys',
-                        description: 'Get SDK keys for an environment',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                environment_key: {
-                                    type: 'string',
-                                    description: 'The key of the environment',
-                                },
-                                key_type: {
-                                    type: 'string',
-                                    enum: ['mobile', 'server', 'client'],
-                                    description:
-                                        'The type of SDK key to retrieve',
-                                },
-                            },
-                            required: ['environment_key'],
-                        },
-                    },
-                    {
-                        name: 'enable_targeting',
-                        description:
-                            'Enable targeting for a feature in an environment',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                feature_key: {
-                                    type: 'string',
-                                    description: 'The key of the feature',
-                                },
-                                environment_key: {
-                                    type: 'string',
-                                    description: 'The key of the environment',
-                                },
-                            },
-                            required: ['feature_key', 'environment_key'],
-                        },
-                    },
-                    {
-                        name: 'disable_targeting',
-                        description:
-                            'Disable targeting for a feature in an environment',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                feature_key: {
-                                    type: 'string',
-                                    description: 'The key of the feature',
-                                },
-                                environment_key: {
-                                    type: 'string',
-                                    description: 'The key of the environment',
-                                },
-                            },
-                            required: ['feature_key', 'environment_key'],
-                        },
-                    },
-                    {
-                        name: 'create_feature',
-                        description:
-                            'Create a new feature flag (supports interactive mode)',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                key: {
-                                    type: 'string',
-                                    description: 'Unique feature key',
-                                },
-                                name: {
-                                    type: 'string',
-                                    description: 'Human-readable feature name',
-                                },
-                                description: {
-                                    type: 'string',
-                                    description: 'Feature description',
-                                },
-                                type: {
-                                    type: 'string',
-                                    enum: [
-                                        'release',
-                                        'experiment',
-                                        'permission',
-                                        'ops',
-                                    ],
-                                    description: 'Feature type',
-                                },
-                                interactive: {
-                                    type: 'boolean',
-                                    description:
-                                        'Use interactive mode to prompt for missing fields',
-                                },
-                            },
-                        },
-                    },
-                    {
-                        name: 'get_current_project',
-                        description: 'Get the currently selected project',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {},
-                        },
-                    },
-                    {
-                        name: 'get_self_targeting_identity',
-                        description:
-                            'Get current DevCycle identity for self-targeting',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {},
-                        },
-                    },
-                    {
-                        name: 'update_self_targeting_identity',
-                        description:
-                            'Update DevCycle identity for self-targeting and overrides',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                dvc_user_id: {
-                                    type: 'string',
-                                    description:
-                                        'DevCycle User ID for self-targeting (use null or empty string to clear)',
-                                },
-                            },
-                            required: ['dvc_user_id'],
-                        },
-                    },
-                    {
-                        name: 'list_self_targeting_overrides',
-                        description:
-                            'List all self-targeting overrides for the current project',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {},
-                        },
-                    },
-                    {
-                        name: 'set_self_targeting_override',
-                        description:
-                            'Set a self-targeting override for a feature variation',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                feature_key: {
-                                    type: 'string',
-                                    description: 'The key of the feature',
-                                },
-                                environment_key: {
-                                    type: 'string',
-                                    description: 'The key of the environment',
-                                },
-                                variation_key: {
-                                    type: 'string',
-                                    description:
-                                        'The key of the variation to serve',
-                                },
-                            },
-                            required: [
-                                'feature_key',
-                                'environment_key',
-                                'variation_key',
-                            ],
-                        },
-                    },
-                    {
-                        name: 'clear_self_targeting_overrides',
-                        description:
-                            'Clear self-targeting overrides (all or specific feature/environment)',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                feature_key: {
-                                    type: 'string',
-                                    description:
-                                        'The key of the feature (optional - if provided with environment_key, clears specific override)',
-                                },
-                                environment_key: {
-                                    type: 'string',
-                                    description:
-                                        'The key of the environment (optional - if provided with feature_key, clears specific override)',
-                                },
-                            },
-                        },
-                    },
-                ],
-            }
-        })
+        this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
+            tools: allToolDefinitions,
+        }))
 
         this.server.setRequestHandler(
             CallToolRequestSchema,
@@ -388,155 +95,20 @@ export class DevCycleMCPServer {
                 const { name, arguments: args } = request.params
 
                 try {
-                    let result
-                    switch (name) {
-                        case 'list_features': {
-                            const validatedArgs =
-                                ListFeaturesArgsSchema.parse(args)
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.listFeatures(validatedArgs),
-                                'listing features',
-                            )
-                            break
-                        }
-                        case 'list_variables': {
-                            const validatedArgs =
-                                ListVariablesArgsSchema.parse(args)
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.listVariables(validatedArgs),
-                                'listing variables',
-                            )
-                            break
-                        }
-                        case 'list_environments': {
-                            result = await this.executeApiCall(
-                                () => this.apiClient.listEnvironments(),
-                                'listing environments',
-                            )
-                            break
-                        }
-                        case 'list_projects': {
-                            const validatedArgs =
-                                ListProjectsArgsSchema.parse(args)
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.listProjects(validatedArgs),
-                                'listing projects',
-                            )
-                            break
-                        }
-                        case 'get_sdk_keys': {
-                            const validatedArgs =
-                                GetSdkKeysArgsSchema.parse(args)
-                            result = await this.executeApiCall(
-                                () => this.apiClient.getSdkKeys(validatedArgs),
-                                'getting SDK keys',
-                            )
-                            break
-                        }
-                        case 'enable_targeting': {
-                            const validatedArgs =
-                                EnableTargetingArgsSchema.parse(args)
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.enableTargeting(
-                                        validatedArgs,
-                                    ),
-                                'enabling targeting',
-                            )
-                            break
-                        }
-                        case 'disable_targeting': {
-                            const validatedArgs =
-                                DisableTargetingArgsSchema.parse(args)
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.disableTargeting(
-                                        validatedArgs,
-                                    ),
-                                'disabling targeting',
-                            )
-                            break
-                        }
-                        case 'create_feature': {
-                            const validatedArgs =
-                                CreateFeatureArgsSchema.parse(args)
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.createFeature(validatedArgs),
-                                'creating feature',
-                            )
-                            break
-                        }
-                        case 'get_current_project': {
-                            result = await this.executeApiCall(
-                                () => this.apiClient.getCurrentProject(),
-                                'getting current project',
-                            )
-                            break
-                        }
-                        case 'get_self_targeting_identity': {
-                            result = await this.executeApiCall(
-                                () => this.apiClient.getSelfTargetingIdentity(),
-                                'getting self-targeting identity',
-                            )
-                            break
-                        }
-                        case 'update_self_targeting_identity': {
-                            const validatedArgs =
-                                UpdateSelfTargetingIdentityArgsSchema.parse(
-                                    args,
-                                )
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.updateSelfTargetingIdentity(
-                                        validatedArgs,
-                                    ),
-                                'updating self-targeting identity',
-                            )
-                            break
-                        }
-                        case 'list_self_targeting_overrides': {
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.listSelfTargetingOverrides(),
-                                'listing self-targeting overrides',
-                            )
-                            break
-                        }
-                        case 'set_self_targeting_override': {
-                            const validatedArgs =
-                                SetSelfTargetingOverrideArgsSchema.parse(args)
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.setSelfTargetingOverride(
-                                        validatedArgs,
-                                    ),
-                                'setting self-targeting override',
-                            )
-                            break
-                        }
-                        case 'clear_self_targeting_overrides': {
-                            const validatedArgs =
-                                ClearSelfTargetingOverridesArgsSchema.parse(
-                                    args,
-                                )
-                            result = await this.executeApiCall(
-                                () =>
-                                    this.apiClient.clearSelfTargetingOverrides(
-                                        validatedArgs,
-                                    ),
-                                'clearing self-targeting overrides',
-                            )
-                            break
-                        }
-                        default:
-                            throw new Error(`Unknown tool: ${name}`)
+                    const handler = allToolHandlers[name]
+                    if (!handler) {
+                        throw new Error(`Unknown tool: ${name}`)
                     }
 
-                    return result
+                    const result = await handler(args, this.apiClient)
+                    return {
+                        content: [
+                            {
+                                type: 'text',
+                                text: JSON.stringify(result, null, 2),
+                            },
+                        ],
+                    }
                 } catch (error) {
                     console.error(`Error in tool handler ${name}:`, error)
 
@@ -558,27 +130,6 @@ export class DevCycleMCPServer {
     private setupErrorHandling() {
         this.server.onerror = (error: Error) => {
             console.error('MCP Server Error:', error)
-        }
-    }
-
-    // Generic helper method for tool responses
-    private async executeApiCall<T>(
-        apiCall: () => Promise<T>,
-        errorContext: string,
-    ) {
-        try {
-            const result = await apiCall()
-            return {
-                content: [
-                    {
-                        type: 'text',
-                        text: JSON.stringify(result, null, 2),
-                    },
-                ],
-            }
-        } catch (error) {
-            console.error(`Error ${errorContext}:`, error)
-            throw error
         }
     }
 }
