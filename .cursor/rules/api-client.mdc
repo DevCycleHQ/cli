@@ -1,4 +1,5 @@
 ---
+description: API client patterns and HTTP client setup guidelines
 globs: src/api/**/*.ts
 ---
 

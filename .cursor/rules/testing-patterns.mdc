@@ -1,4 +1,5 @@
 ---
+description: Testing patterns and framework setup guidelines
 globs: **/*.test.ts,**/*.spec.ts,test/**/*.ts
 ---
 
