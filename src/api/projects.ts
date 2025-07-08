@@ -19,10 +19,24 @@ export class CreateProjectParams {
 export class GetProjectsParams {
     @IsString()
     @IsOptional()
-    sortBy: string
+    sortBy?: string
 
     @IsOptional()
-    sortOrder: 'asc' | 'desc'
+    sortOrder?: 'asc' | 'desc'
+
+    @IsString()
+    @IsOptional()
+    search?: string
+
+    @IsString()
+    @IsOptional()
+    createdBy?: string
+
+    @IsOptional()
+    page?: number
+
+    @IsOptional()
+    perPage?: number
 }
 
 const BASE_URL = '/v1/projects'
