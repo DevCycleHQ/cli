@@ -1,31 +1,4 @@
 import { DevCycleAuth } from './auth'
-import { fetchFeatures, createFeature } from '../../api/features'
-import { fetchVariables } from '../../api/variables'
-import {
-    fetchEnvironmentByKey,
-    fetchEnvironments,
-} from '../../api/environments'
-import { fetchProject, fetchProjects } from '../../api/projects'
-import { enableTargeting, disableTargeting } from '../../api/targeting'
-import { fetchUserProfile, updateUserProfile } from '../../api/userProfile'
-import {
-    fetchProjectOverridesForUser,
-    updateOverride,
-    deleteAllProjectOverrides,
-    deleteFeatureOverrides,
-} from '../../api/overrides'
-import type {
-    ListFeaturesArgs,
-    ListVariablesArgs,
-    ListProjectsArgs,
-    GetSdkKeysArgs,
-    EnableTargetingArgs,
-    DisableTargetingArgs,
-    CreateFeatureArgs,
-    UpdateSelfTargetingIdentityArgs,
-    SetSelfTargetingOverrideArgs,
-    ClearSelfTargetingOverridesArgs,
-} from '../types'
 
 function getErrorMessage(error: unknown): string {
     if (error instanceof Error) {
@@ -85,23 +58,4 @@ export class DevCycleApiClient {
     public getAuth(): DevCycleAuth {
         return this.auth
     }
-}
-
-// Export API functions for use in tool files
-export {
-    fetchFeatures,
-    createFeature,
-    fetchVariables,
-    fetchEnvironmentByKey,
-    fetchEnvironments,
-    fetchProject,
-    fetchProjects,
-    enableTargeting,
-    disableTargeting,
-    fetchUserProfile,
-    updateUserProfile,
-    fetchProjectOverridesForUser,
-    updateOverride,
-    deleteAllProjectOverrides,
-    deleteFeatureOverrides,
 }

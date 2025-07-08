@@ -1,11 +1,7 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import {
-    DevCycleApiClient,
-    fetchFeatures,
-    createFeature,
-    enableTargeting,
-    disableTargeting,
-} from '../utils/api'
+import { DevCycleApiClient } from '../utils/api'
+import { fetchFeatures, createFeature } from '../../api/features'
+import { enableTargeting, disableTargeting } from '../../api/targeting'
 import {
     ListFeaturesArgsSchema,
     CreateFeatureArgsSchema,
