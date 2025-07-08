@@ -1,7 +1,10 @@
 import { DevCycleAuth } from './auth'
 import { fetchFeatures, createFeature } from '../../api/features'
 import { fetchVariables } from '../../api/variables'
-import { fetchEnvironmentByKey } from '../../api/environments'
+import {
+    fetchEnvironmentByKey,
+    fetchEnvironments,
+} from '../../api/environments'
 import { enableTargeting, disableTargeting } from '../../api/targeting'
 import type {
     ListFeaturesArgs,
@@ -90,6 +93,32 @@ export class DevCycleApiClient {
         } catch (error) {
             console.error(
                 'MCP listVariables error:',
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
+        }
+    }
+
+    async listEnvironments() {
+        console.error('MCP listEnvironments')
+
+        try {
+            this.auth.requireAuth()
+            this.auth.requireProject()
+
+            const authToken = this.auth.getAuthToken()
+            const projectKey = this.auth.getProjectKey()
+
+            const result = await fetchEnvironments(authToken, projectKey)
+
+            console.error(
+                'MCP listEnvironments result:',
+                JSON.stringify(result, null, 2),
+            )
+            return result
+        } catch (error) {
+            console.error(
+                'MCP listEnvironments error:',
                 JSON.stringify({ error: getErrorMessage(error) }, null, 2),
             )
             throw ensureError(error)
