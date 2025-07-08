@@ -8,6 +8,12 @@ import {
 import { fetchProject, fetchProjects } from '../../api/projects'
 import { enableTargeting, disableTargeting } from '../../api/targeting'
 import { fetchUserProfile, updateUserProfile } from '../../api/userProfile'
+import {
+    fetchProjectOverridesForUser,
+    updateOverride,
+    deleteAllProjectOverrides,
+    deleteFeatureOverrides,
+} from '../../api/overrides'
 import type {
     ListFeaturesArgs,
     ListVariablesArgs,
@@ -17,6 +23,8 @@ import type {
     DisableTargetingArgs,
     CreateFeatureArgs,
     UpdateSelfTargetingIdentityArgs,
+    SetSelfTargetingOverrideArgs,
+    ClearSelfTargetingOverridesArgs,
 } from '../types'
 
 function getErrorMessage(error: unknown): string {
@@ -386,6 +394,116 @@ export class DevCycleApiClient {
         } catch (error) {
             console.error(
                 'MCP updateSelfTargetingIdentity error:',
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
+        }
+    }
+
+    async listSelfTargetingOverrides() {
+        console.error('MCP listSelfTargetingOverrides')
+
+        try {
+            this.auth.requireAuth()
+            this.auth.requireProject()
+
+            const result = await fetchProjectOverridesForUser(
+                this.auth.getAuthToken(),
+                this.auth.getProjectKey(),
+            )
+
+            console.error(
+                'MCP listSelfTargetingOverrides result:',
+                JSON.stringify(result, null, 2),
+            )
+            return result
+        } catch (error) {
+            console.error(
+                'MCP listSelfTargetingOverrides error:',
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
+        }
+    }
+
+    async setSelfTargetingOverride(args: SetSelfTargetingOverrideArgs) {
+        console.error(
+            'MCP setSelfTargetingOverride params:',
+            JSON.stringify(args, null, 2),
+        )
+
+        try {
+            this.auth.requireAuth()
+            this.auth.requireProject()
+
+            const result = await updateOverride(
+                this.auth.getAuthToken(),
+                this.auth.getProjectKey(),
+                args.feature_key,
+                {
+                    environment: args.environment_key,
+                    variation: args.variation_key,
+                },
+            )
+
+            console.error(
+                'MCP setSelfTargetingOverride result:',
+                JSON.stringify(result, null, 2),
+            )
+            return result
+        } catch (error) {
+            console.error(
+                'MCP setSelfTargetingOverride error:',
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
+        }
+    }
+
+    async clearSelfTargetingOverrides(args: ClearSelfTargetingOverridesArgs) {
+        console.error(
+            'MCP clearSelfTargetingOverrides params:',
+            JSON.stringify(args, null, 2),
+        )
+
+        try {
+            this.auth.requireAuth()
+            this.auth.requireProject()
+
+            if (args.feature_key && args.environment_key) {
+                // Clear specific feature/environment override
+                const result = await deleteFeatureOverrides(
+                    this.auth.getAuthToken(),
+                    this.auth.getProjectKey(),
+                    args.feature_key,
+                    args.environment_key,
+                )
+
+                console.error(
+                    'MCP clearSelfTargetingOverrides (specific) result:',
+                    JSON.stringify(result, null, 2),
+                )
+                return {
+                    message: `Cleared override for feature '${args.feature_key}' in environment '${args.environment_key}'`,
+                }
+            } else {
+                // Clear all project overrides
+                const result = await deleteAllProjectOverrides(
+                    this.auth.getAuthToken(),
+                    this.auth.getProjectKey(),
+                )
+
+                console.error(
+                    'MCP clearSelfTargetingOverrides (all) result:',
+                    JSON.stringify(result, null, 2),
+                )
+                return {
+                    message: 'Cleared all overrides for the project',
+                }
+            }
+        } catch (error) {
+            console.error(
+                'MCP clearSelfTargetingOverrides error:',
                 JSON.stringify({ error: getErrorMessage(error) }, null, 2),
             )
             throw ensureError(error)
