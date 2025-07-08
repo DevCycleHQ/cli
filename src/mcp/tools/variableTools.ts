@@ -1,6 +1,17 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, fetchVariables } from '../utils/api'
-import { ListVariablesArgsSchema } from '../types'
+import { DevCycleApiClient } from '../utils/api'
+import {
+    fetchVariables,
+    createVariable,
+    updateVariable,
+    deleteVariable,
+} from '../../api/variables'
+import {
+    ListVariablesArgsSchema,
+    CreateVariableArgsSchema,
+    UpdateVariableArgsSchema,
+    DeleteVariableArgsSchema,
+} from '../types'
 import { ToolHandler } from '../server'
 
 export const variableToolDefinitions: Tool[] = [
@@ -26,6 +37,166 @@ export const variableToolDefinitions: Tool[] = [
             },
         },
     },
+    {
+        name: 'create_variable',
+        description: 'Create a new variable',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'Variable name (1-100 characters)',
+                },
+                description: {
+                    type: 'string',
+                    description: 'Variable description (max 1000 characters)',
+                },
+                key: {
+                    type: 'string',
+                    description:
+                        'Unique variable key (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
+                },
+                _feature: {
+                    type: 'string',
+                    description:
+                        'Feature key or ID to associate with this variable',
+                },
+                type: {
+                    type: 'string',
+                    enum: ['String', 'Boolean', 'Number', 'JSON'],
+                    description: 'Variable type',
+                },
+                defaultValue: {
+                    description: 'Default value for the variable',
+                },
+                validationSchema: {
+                    type: 'object',
+                    description: 'Validation schema for variable values',
+                    properties: {
+                        schemaType: {
+                            type: 'string',
+                            description: 'Schema type',
+                        },
+                        enumValues: {
+                            type: 'array',
+                            description: 'Allowed enum values',
+                        },
+                        regexPattern: {
+                            type: 'string',
+                            description: 'Regex pattern for validation',
+                        },
+                        jsonSchema: {
+                            type: 'string',
+                            description: 'JSON schema for validation',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Schema description',
+                        },
+                        exampleValue: {
+                            description: 'Example value for the schema',
+                        },
+                    },
+                },
+                tags: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                    description: 'Tags to organize variables',
+                },
+            },
+            required: ['key', 'type'],
+        },
+    },
+    {
+        name: 'update_variable',
+        description: 'Update an existing variable',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                key: {
+                    type: 'string',
+                    description: 'Current variable key',
+                },
+                name: {
+                    type: 'string',
+                    description: 'Updated variable name (1-100 characters)',
+                },
+                description: {
+                    type: 'string',
+                    description:
+                        'Updated variable description (max 1000 characters)',
+                },
+                new_key: {
+                    type: 'string',
+                    description:
+                        'New variable key (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
+                },
+                type: {
+                    type: 'string',
+                    enum: ['String', 'Boolean', 'Number', 'JSON'],
+                    description: 'Variable type',
+                },
+                validationSchema: {
+                    type: 'object',
+                    description: 'Validation schema for variable values',
+                    properties: {
+                        schemaType: {
+                            type: 'string',
+                            description: 'Schema type',
+                        },
+                        enumValues: {
+                            type: 'array',
+                            description: 'Allowed enum values',
+                        },
+                        regexPattern: {
+                            type: 'string',
+                            description: 'Regex pattern for validation',
+                        },
+                        jsonSchema: {
+                            type: 'string',
+                            description: 'JSON schema for validation',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Schema description',
+                        },
+                        exampleValue: {
+                            description: 'Example value for the schema',
+                        },
+                    },
+                },
+                persistent: {
+                    type: 'boolean',
+                    description:
+                        'Whether the variable is intended to be long-lived within a feature',
+                },
+                tags: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                    description: 'Tags to organize variables',
+                },
+            },
+            required: ['key'],
+        },
+    },
+    {
+        name: 'delete_variable',
+        description: 'Delete a variable',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                key: {
+                    type: 'string',
+                    description: 'Variable key to delete',
+                },
+            },
+            required: ['key'],
+        },
+    },
 ]
 
 export const variableToolHandlers: Record<string, ToolHandler> = {
@@ -42,6 +213,66 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
                     perPage: validatedArgs.per_page,
                 }
                 return await fetchVariables(authToken, projectKey, query)
+            },
+        )
+    },
+    create_variable: async (args: unknown, apiClient: DevCycleApiClient) => {
+        const validatedArgs = CreateVariableArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'createVariable',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                const params = {
+                    name: validatedArgs.name,
+                    description: validatedArgs.description,
+                    key: validatedArgs.key,
+                    _feature: validatedArgs._feature,
+                    type: validatedArgs.type,
+                    defaultValue: validatedArgs.defaultValue,
+                    validationSchema: validatedArgs.validationSchema,
+                    tags: validatedArgs.tags,
+                }
+                return await createVariable(authToken, projectKey, params)
+            },
+        )
+    },
+    update_variable: async (args: unknown, apiClient: DevCycleApiClient) => {
+        const validatedArgs = UpdateVariableArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'updateVariable',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                const params = {
+                    name: validatedArgs.name,
+                    description: validatedArgs.description,
+                    key: validatedArgs.new_key,
+                    type: validatedArgs.type,
+                    validationSchema: validatedArgs.validationSchema,
+                    persistent: validatedArgs.persistent,
+                    tags: validatedArgs.tags,
+                }
+                return await updateVariable(
+                    authToken,
+                    projectKey,
+                    validatedArgs.key,
+                    params,
+                )
+            },
+        )
+    },
+    delete_variable: async (args: unknown, apiClient: DevCycleApiClient) => {
+        const validatedArgs = DeleteVariableArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'deleteVariable',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                await deleteVariable(authToken, projectKey, validatedArgs.key)
+                return {
+                    message: `Variable '${validatedArgs.key}' deleted successfully`,
+                }
             },
         )
     },

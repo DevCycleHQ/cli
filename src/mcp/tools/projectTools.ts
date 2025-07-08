@@ -1,5 +1,6 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, fetchProjects, fetchProject } from '../utils/api'
+import { DevCycleApiClient } from '../utils/api'
+import { fetchProjects, fetchProject } from '../../api/projects'
 import { ListProjectsArgsSchema } from '../types'
 import { ToolHandler } from '../server'
 

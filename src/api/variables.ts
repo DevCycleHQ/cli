@@ -49,6 +49,23 @@ export const updateVariable = async (
     })
 }
 
+export const deleteVariable = async (
+    token: string,
+    project_id: string,
+    variableKey: string,
+) => {
+    return apiClient.delete('/v1/projects/:project/variables/:key', undefined, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        },
+        params: {
+            project: project_id,
+            key: variableKey,
+        },
+    })
+}
+
 export const fetchVariables = async (
     token: string,
     project_id: string,

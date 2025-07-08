@@ -1,9 +1,9 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
+import { DevCycleApiClient } from '../utils/api'
 import {
-    DevCycleApiClient,
     fetchEnvironments,
     fetchEnvironmentByKey,
-} from '../utils/api'
+} from '../../api/environments'
 import { GetSdkKeysArgsSchema, ListEnvironmentsArgsSchema } from '../types'
 import { ToolHandler } from '../server'
 
