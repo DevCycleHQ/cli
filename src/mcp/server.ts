@@ -235,6 +235,14 @@ export class DevCycleMCPServer {
                             },
                         },
                     },
+                    {
+                        name: 'get_current_project',
+                        description: 'Get the currently selected project',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {},
+                        },
+                    },
                 ],
             }
         })
@@ -314,6 +322,13 @@ export class DevCycleMCPServer {
                                 () =>
                                     this.apiClient.createFeature(validatedArgs),
                                 'creating feature',
+                            )
+                            break
+                        }
+                        case 'get_current_project': {
+                            result = await this.executeApiCall(
+                                () => this.apiClient.getCurrentProject(),
+                                'getting current project',
                             )
                             break
                         }
