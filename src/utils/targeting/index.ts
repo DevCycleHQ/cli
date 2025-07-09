@@ -77,6 +77,10 @@ export const getFeatureAndEnvironmentKeyFromArgs = async (
         )
     }
 
+    if (!environment) {
+        throw new Error(`No environment found for key ${environmentKey}`)
+    }
+
     return {
         environmentKey: environmentKey || environment._id,
         featureKey: featureKey || feature.key,
@@ -184,6 +188,10 @@ export const createTargetAndEnable = async (
     const fetchedEnvironment =
         environment ||
         (await fetchEnvironmentByKey(authToken, projectKey, environmentKey))
+
+    if (!fetchedEnvironment) {
+        throw new Error(`No environment found for key ${environmentKey}`)
+    }
 
     updatedFeatureConfig &&
         renderTargetingTree(

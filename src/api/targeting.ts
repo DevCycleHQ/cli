@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsArray, IsNotEmpty } from 'class-validator'
-import apiClient from './apiClient'
+import apiClient, { axiosClient } from './apiClient'
 import { buildHeaders } from './common'
 import { Filter, UpdateFeatureConfigDto } from './schemas'
 
@@ -108,21 +108,12 @@ const updateTargetingStatusForFeatureAndEnvironment = async (
     environment_key: string,
     status: TargetingStatus,
 ) => {
-    const url = '/v1/projects/:project/features/:feature/configurations'
-    return apiClient.patch(
-        url,
-        { status: status as 'active' | 'inactive' },
-        {
-            headers: buildHeaders(token),
-            params: {
-                project: project_id,
-                feature: feature_key,
-            },
-            queries: {
-                environment: environment_key,
-            },
-        },
-    )
+    // Use axiosClient directly to avoid type instantiation issues
+    const url = `/v1/projects/${project_id}/features/${feature_key}/configurations?environment=${environment_key}`
+    const response = await axiosClient.patch(url, { status: status as 'active' | 'inactive' }, {
+        headers: buildHeaders(token),
+    })
+    return response.data
 }
 
 export const updateFeatureConfigForEnvironment = async (
@@ -132,16 +123,10 @@ export const updateFeatureConfigForEnvironment = async (
     environment_key: string,
     params: UpdateFeatureConfigDto,
 ) => {
-    const url = '/v1/projects/:project/features/:feature/configurations'
-    const response = await apiClient.patch(url, params, {
+    // Use axiosClient directly to avoid type instantiation issues
+    const url = `/v1/projects/${project_id}/features/${feature_key}/configurations?environment=${environment_key}`
+    const response = await axiosClient.patch(url, params, {
         headers: buildHeaders(token),
-        params: {
-            project: project_id,
-            feature: feature_key,
-        },
-        queries: {
-            environment: environment_key,
-        },
     })
-    return response
+    return response.data
 }

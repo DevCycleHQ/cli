@@ -1289,7 +1289,7 @@ const UpdateWebhookDto = z
     })
     .passthrough()
 
-export const schemas = {
+export const schemas: any = {
     EdgeDBSettingsDTO,
     ColorSettingsDTO,
     OptInSettingsDTO,
@@ -5011,12 +5011,12 @@ Generating new keys is restricted for protected environments to those with Publi
     },
 ])
 
-export const api = new Zodios(endpoints)
+export const api: any = new Zodios(endpoints)
 
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+export function createApiClient(baseUrl: string, options?: ZodiosOptions): any {
     return new Zodios(baseUrl, endpoints, options)
 }
 
-export function createV2ApiClient(baseUrl: string, options?: ZodiosOptions) {
+export function createV2ApiClient(baseUrl: string, options?: ZodiosOptions): any {
     return new Zodios(baseUrl, endpoints, options)
 }

@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator'
-import apiClient from './apiClient'
+import apiClient, { axiosClient } from './apiClient'
 import { buildHeaders } from './common'
 
 const BASE_URL = '/v1/projects/:project/userProfile/current'
@@ -29,10 +29,10 @@ export const updateUserProfile = async (
     project_id: string,
     dvcUserId: UpdateUserProfileParams,
 ) => {
-    return apiClient.patch(`${BASE_URL}`, dvcUserId, {
+    // Use axiosClient directly to avoid type instantiation issues
+    const url = `/v1/projects/${project_id}/userProfile/current`
+    const response = await axiosClient.patch(url, dvcUserId, {
         headers: buildHeaders(token),
-        params: {
-            project: project_id,
-        },
     })
+    return response.data
 }

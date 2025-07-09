@@ -93,19 +93,19 @@ export default class DetailedOverrides extends Base {
             environmentKey,
         )
         const override = overrides.overrides.find(
-            (override) => override._environment === environment._id,
+            (override) => override._environment === environment?._id,
         )
 
         if (!override) {
             if (headless) {
                 this.writer.showResults({
-                    environment: environment.key,
+                    environment: environment?.key,
                     variation: null,
                 })
                 return
             }
             this.writer.showRawResults(
-                `Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`,
+                `Override for feature: ${featureKey} on environment: ${environment?.key} is variation: <not-set>`,
             )
             this.writer.infoMessageWithCommand(
                 'To set an override, use:',
@@ -123,7 +123,7 @@ export default class DetailedOverrides extends Base {
 
         if (headless) {
             this.writer.showResults({
-                environment: environment.key,
+                environment: environment?.key,
                 variation: variation.key,
             })
             return
@@ -131,8 +131,8 @@ export default class DetailedOverrides extends Base {
 
         this.tableOutput.printOverrides<UserOverride>([
             {
-                _environment: environment._id ?? override._environment,
-                environmentName: environment.name ?? environmentKey,
+                _environment: environment?._id ?? override._environment,
+                environmentName: environment?.name ?? environmentKey,
                 _feature: feature?._id ?? featureKey,
                 featureName: feature?.name ?? featureKey,
                 _variation: variation._id ?? override._variation,

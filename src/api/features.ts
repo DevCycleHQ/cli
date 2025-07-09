@@ -27,7 +27,7 @@ export const fetchFeatures = async (
         params: queries,
     })
 
-    return response.data
+    return response.data as Feature[]
 }
 
 export const fetchFeatureByKey = async (
@@ -42,7 +42,7 @@ export const fetchFeatureByKey = async (
             headers: buildHeaders(token),
         })
 
-        return response.data
+        return response.data as Feature
     } catch (e: unknown) {
         if (e instanceof AxiosError && e.response?.status === 404) {
             return null
@@ -62,7 +62,7 @@ export const createFeature = async (
         headers: buildHeaders(token),
     })
 
-    return response.data
+    return response.data as Feature
 }
 
 export const updateFeature = async (
@@ -77,7 +77,7 @@ export const updateFeature = async (
         headers: buildHeaders(token),
     })
 
-    return response.data
+    return response.data as Feature
 }
 
 export const deleteFeature = async (

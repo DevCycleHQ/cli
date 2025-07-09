@@ -1,5 +1,5 @@
 import { IsString, IsOptional } from 'class-validator'
-import apiClient from './apiClient'
+import apiClient, { axiosClient } from './apiClient'
 import { CreateVariationParams, Feature, Variation } from './schemas'
 import { buildHeaders } from './common'
 
@@ -93,16 +93,10 @@ export const updateVariation = async (
     variationKey: string,
     variation: UpdateVariationParams,
 ) => {
-    return apiClient.patch(
-        '/v1/projects/:project/features/:feature/variations/:key',
-        variation,
-        {
-            headers: buildHeaders(token),
-            params: {
-                project: project_id,
-                feature: feature_key,
-                key: variationKey,
-            },
-        },
-    )
+    // Use axiosClient directly to avoid type instantiation issues
+    const url = `/v1/projects/${project_id}/features/${feature_key}/variations/${variationKey}`
+    const response = await axiosClient.patch(url, variation, {
+        headers: buildHeaders(token),
+    })
+    return response.data
 }
