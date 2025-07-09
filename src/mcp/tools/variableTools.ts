@@ -39,7 +39,8 @@ export const variableToolDefinitions: Tool[] = [
     },
     {
         name: 'create_variable',
-        description: 'Create a new variable',
+        description:
+            'Create a new variable. ⚠️ IMPORTANT: Variables can affect feature flags in production environments. Always confirm with the user before creating variables for features that are active in production.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -104,7 +105,8 @@ export const variableToolDefinitions: Tool[] = [
     },
     {
         name: 'update_variable',
-        description: 'Update an existing variable',
+        description:
+            'Update an existing variable. ⚠️ IMPORTANT: Variable changes can affect feature flags in production environments. Always confirm with the user before updating variables for features that are active in production.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -161,7 +163,8 @@ export const variableToolDefinitions: Tool[] = [
     },
     {
         name: 'delete_variable',
-        description: 'Delete a variable',
+        description:
+            'Delete a variable. ⚠️ CRITICAL: Deleting a variable will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any variable.',
         inputSchema: {
             type: 'object',
             properties: {
