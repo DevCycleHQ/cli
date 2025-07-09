@@ -142,3 +142,8 @@ export const UpdateFeatureTargetingArgsSchema =
         feature_key: z.string(), // MCP-specific: identifies which feature to update targeting for
         environment_key: z.string(), // MCP-specific: identifies which environment to update targeting in
     })
+
+export const GetFeatureAuditLogHistoryArgsSchema = z.object({
+    feature_key: z.string(),
+    days_back: z.number().min(1).max(365).default(30).optional(),
+})
