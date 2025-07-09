@@ -32,27 +32,142 @@ import {
 } from '../types'
 import { ToolHandler } from '../server'
 
+// Reusable schema components
+const FEATURE_KEY_PROPERTY = {
+    type: 'string' as const,
+    description: 'The key of the feature',
+}
+
+const ENVIRONMENT_KEY_PROPERTY = {
+    type: 'string' as const,
+    description: 'The key of the environment',
+}
+
+const ENVIRONMENT_KEY_OPTIONAL_PROPERTY = {
+    type: 'string' as const,
+    description:
+        'The key of the environment (optional - if not provided, returns all environments)',
+}
+
+const FEATURE_NAME_PROPERTY = {
+    type: 'string' as const,
+    description: 'Human-readable feature name (max 100 characters)',
+}
+
+const FEATURE_DESCRIPTION_PROPERTY = {
+    type: 'string' as const,
+    description: 'Feature description (max 1000 characters)',
+}
+
+const FEATURE_TYPE_PROPERTY = {
+    type: 'string' as const,
+    enum: ['release', 'experiment', 'permission', 'ops'] as const,
+    description: 'Feature type',
+}
+
+const CONTROL_VARIATION_PROPERTY = {
+    type: 'string' as const,
+    description:
+        'The key of the variation that is used as the control variation for Metrics',
+}
+
+const FEATURE_SETTINGS_PROPERTY = {
+    type: 'object' as const,
+    properties: {
+        publicName: {
+            type: 'string' as const,
+            description: 'Public name for the feature (max 100 characters)',
+        },
+        publicDescription: {
+            type: 'string' as const,
+            description:
+                'Public description for the feature (max 1000 characters)',
+        },
+        optInEnabled: {
+            type: 'boolean' as const,
+            description: 'Whether opt-in is enabled for the feature',
+        },
+    },
+    description: 'Feature-level settings (all properties required if provided)',
+    required: ['publicName', 'publicDescription', 'optInEnabled'] as const,
+}
+
+const SDK_VISIBILITY_PROPERTY = {
+    type: 'object' as const,
+    properties: {
+        mobile: {
+            type: 'boolean' as const,
+            description: 'Whether the feature is visible to mobile SDKs',
+        },
+        client: {
+            type: 'boolean' as const,
+            description: 'Whether the feature is visible to client SDKs',
+        },
+        server: {
+            type: 'boolean' as const,
+            description: 'Whether the feature is visible to server SDKs',
+        },
+    },
+    description:
+        'SDK Type Visibility Settings (all properties required if provided)',
+    required: ['mobile', 'client', 'server'] as const,
+}
+
+const FEATURE_VARIABLES_PROPERTY = {
+    type: 'array' as const,
+    description:
+        'Array of variables to create or reassociate with this feature',
+    items: {
+        type: 'object' as const,
+        description: 'Variable creation or reassociation data',
+    },
+}
+
+const VARIATION_KEY_PROPERTY = {
+    type: 'string' as const,
+    description:
+        'Unique variation key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
+}
+
+const VARIATION_NAME_PROPERTY = {
+    type: 'string' as const,
+    description: 'Human-readable variation name (max 100 characters)',
+}
+
+const VARIATION_VARIABLES_PROPERTY = {
+    type: 'object' as const,
+    description:
+        'Key-value map of variable keys to their values for this variation (supports string, number, boolean, and object values)',
+    additionalProperties: true,
+}
+
+const PAGINATION_PROPERTIES = {
+    search: {
+        type: 'string' as const,
+        description: 'Search query to filter features',
+    },
+    page: {
+        type: 'number' as const,
+        description: 'Page number (default: 1)',
+    },
+    per_page: {
+        type: 'number' as const,
+        description: 'Number of items per page (default: 100, max: 1000)',
+    },
+}
+
+const FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES = {
+    feature_key: FEATURE_KEY_PROPERTY,
+    environment_key: ENVIRONMENT_KEY_PROPERTY,
+}
+
 export const featureToolDefinitions: Tool[] = [
     {
         name: 'list_features',
         description: 'List features in the current project',
         inputSchema: {
             type: 'object',
-            properties: {
-                search: {
-                    type: 'string',
-                    description: 'Search query to filter features',
-                },
-                page: {
-                    type: 'number',
-                    description: 'Page number (default: 1)',
-                },
-                per_page: {
-                    type: 'number',
-                    description:
-                        'Number of items per page (default: 100, max: 1000)',
-                },
-            },
+            properties: PAGINATION_PROPERTIES,
         },
     },
     {
@@ -66,20 +181,9 @@ export const featureToolDefinitions: Tool[] = [
                     description:
                         'Unique feature key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
                 },
-                name: {
-                    type: 'string',
-                    description:
-                        'Human-readable feature name (max 100 characters)',
-                },
-                description: {
-                    type: 'string',
-                    description: 'Feature description (max 1000 characters)',
-                },
-                type: {
-                    type: 'string',
-                    enum: ['release', 'experiment', 'permission', 'ops'],
-                    description: 'Feature type',
-                },
+                name: FEATURE_NAME_PROPERTY,
+                description: FEATURE_DESCRIPTION_PROPERTY,
+                type: FEATURE_TYPE_PROPERTY,
                 tags: {
                     type: 'array',
                     items: {
@@ -87,70 +191,10 @@ export const featureToolDefinitions: Tool[] = [
                     },
                     description: 'Tags to organize features',
                 },
-                controlVariation: {
-                    type: 'string',
-                    description:
-                        'The key of the variation that is used as the control variation for Metrics',
-                },
-                settings: {
-                    type: 'object',
-                    properties: {
-                        publicName: {
-                            type: 'string',
-                            description:
-                                'Public name for the feature (max 100 characters)',
-                        },
-                        publicDescription: {
-                            type: 'string',
-                            description:
-                                'Public description for the feature (max 1000 characters)',
-                        },
-                        optInEnabled: {
-                            type: 'boolean',
-                            description:
-                                'Whether opt-in is enabled for the feature',
-                        },
-                    },
-                    description:
-                        'Feature-level settings (all properties required if provided)',
-                    required: [
-                        'publicName',
-                        'publicDescription',
-                        'optInEnabled',
-                    ],
-                },
-                sdkVisibility: {
-                    type: 'object',
-                    properties: {
-                        mobile: {
-                            type: 'boolean',
-                            description:
-                                'Whether the feature is visible to mobile SDKs',
-                        },
-                        client: {
-                            type: 'boolean',
-                            description:
-                                'Whether the feature is visible to client SDKs',
-                        },
-                        server: {
-                            type: 'boolean',
-                            description:
-                                'Whether the feature is visible to server SDKs',
-                        },
-                    },
-                    description:
-                        'SDK Type Visibility Settings (all properties required if provided)',
-                    required: ['mobile', 'client', 'server'],
-                },
-                variables: {
-                    type: 'array',
-                    description:
-                        'Array of variables to create or reassociate with this feature',
-                    items: {
-                        type: 'object',
-                        description: 'Variable creation or reassociation data',
-                    },
-                },
+                controlVariation: CONTROL_VARIATION_PROPERTY,
+                settings: FEATURE_SETTINGS_PROPERTY,
+                sdkVisibility: SDK_VISIBILITY_PROPERTY,
+                variables: FEATURE_VARIABLES_PROPERTY,
                 variations: {
                     type: 'array',
                     description: 'Array of variations for this feature',
@@ -197,20 +241,9 @@ export const featureToolDefinitions: Tool[] = [
                     description:
                         'The key of the feature to update(1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
                 },
-                name: {
-                    type: 'string',
-                    description:
-                        'Human-readable feature name (max 100 characters)',
-                },
-                description: {
-                    type: 'string',
-                    description: 'Feature description (max 1000 characters)',
-                },
-                type: {
-                    type: 'string',
-                    enum: ['release', 'experiment', 'permission', 'ops'],
-                    description: 'Feature type',
-                },
+                name: FEATURE_NAME_PROPERTY,
+                description: FEATURE_DESCRIPTION_PROPERTY,
+                type: FEATURE_TYPE_PROPERTY,
                 tags: {
                     type: 'array',
                     items: {
@@ -218,70 +251,10 @@ export const featureToolDefinitions: Tool[] = [
                     },
                     description: 'Tags to organize Features on the dashboard',
                 },
-                controlVariation: {
-                    type: 'string',
-                    description:
-                        'The key of the variation that is used as the control variation for Metrics',
-                },
-                settings: {
-                    type: 'object',
-                    properties: {
-                        publicName: {
-                            type: 'string',
-                            description:
-                                'Public name for the feature (max 100 characters)',
-                        },
-                        publicDescription: {
-                            type: 'string',
-                            description:
-                                'Public description for the feature (max 1000 characters)',
-                        },
-                        optInEnabled: {
-                            type: 'boolean',
-                            description:
-                                'Whether opt-in is enabled for the feature',
-                        },
-                    },
-                    description:
-                        'Feature-level settings (all properties required if provided)',
-                    required: [
-                        'publicName',
-                        'publicDescription',
-                        'optInEnabled',
-                    ],
-                },
-                sdkVisibility: {
-                    type: 'object',
-                    properties: {
-                        mobile: {
-                            type: 'boolean',
-                            description:
-                                'Whether the feature is visible to mobile SDKs',
-                        },
-                        client: {
-                            type: 'boolean',
-                            description:
-                                'Whether the feature is visible to client SDKs',
-                        },
-                        server: {
-                            type: 'boolean',
-                            description:
-                                'Whether the feature is visible to server SDKs',
-                        },
-                    },
-                    description:
-                        'SDK Type Visibility Settings (all properties required if provided)',
-                    required: ['mobile', 'client', 'server'],
-                },
-                variables: {
-                    type: 'array',
-                    description:
-                        'Array of variables to create or reassociate with this feature',
-                    items: {
-                        type: 'object',
-                        description: 'Variable creation or reassociation data',
-                    },
-                },
+                controlVariation: CONTROL_VARIATION_PROPERTY,
+                settings: FEATURE_SETTINGS_PROPERTY,
+                sdkVisibility: SDK_VISIBILITY_PROPERTY,
+                variables: FEATURE_VARIABLES_PROPERTY,
                 variations: {
                     type: 'array',
                     description: 'Array of variations for this feature',
@@ -315,10 +288,7 @@ export const featureToolDefinitions: Tool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                feature_key: {
-                    type: 'string',
-                    description: 'The key of the feature',
-                },
+                feature_key: FEATURE_KEY_PROPERTY,
             },
             required: ['feature_key'],
         },
@@ -329,20 +299,9 @@ export const featureToolDefinitions: Tool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                feature_key: {
-                    type: 'string',
-                    description: 'The key of the feature',
-                },
-                key: {
-                    type: 'string',
-                    description:
-                        'Unique variation key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
-                },
-                name: {
-                    type: 'string',
-                    description:
-                        'Human-readable variation name (max 100 characters)',
-                },
+                feature_key: FEATURE_KEY_PROPERTY,
+                key: VARIATION_KEY_PROPERTY,
+                name: VARIATION_NAME_PROPERTY,
                 variables: {
                     type: 'object',
                     description:
@@ -359,10 +318,7 @@ export const featureToolDefinitions: Tool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                feature_key: {
-                    type: 'string',
-                    description: 'The key of the feature',
-                },
+                feature_key: FEATURE_KEY_PROPERTY,
                 variation_key: {
                     type: 'string',
                     description: 'The key of the variation to update',
@@ -376,12 +332,7 @@ export const featureToolDefinitions: Tool[] = [
                     type: 'string',
                     description: 'New variation name (max 100 characters)',
                 },
-                variables: {
-                    type: 'object',
-                    description:
-                        'Key-value map of variable keys to their values for this variation (supports string, number, boolean, and object values)',
-                    additionalProperties: true,
-                },
+                variables: VARIATION_VARIABLES_PROPERTY,
                 _id: {
                     type: 'string',
                     description: 'Internal variation ID (optional)',
@@ -391,38 +342,20 @@ export const featureToolDefinitions: Tool[] = [
         },
     },
     {
-        name: 'enable_targeting',
+        name: 'enable_feature_targeting',
         description: 'Enable targeting for a feature in an environment',
         inputSchema: {
             type: 'object',
-            properties: {
-                feature_key: {
-                    type: 'string',
-                    description: 'The key of the feature',
-                },
-                environment_key: {
-                    type: 'string',
-                    description: 'The key of the environment',
-                },
-            },
+            properties: FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES,
             required: ['feature_key', 'environment_key'],
         },
     },
     {
-        name: 'disable_targeting',
+        name: 'disable_feature_targeting',
         description: 'Disable targeting for a feature in an environment',
         inputSchema: {
             type: 'object',
-            properties: {
-                feature_key: {
-                    type: 'string',
-                    description: 'The key of the feature',
-                },
-                environment_key: {
-                    type: 'string',
-                    description: 'The key of the environment',
-                },
-            },
+            properties: FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES,
             required: ['feature_key', 'environment_key'],
         },
     },
@@ -433,15 +366,8 @@ export const featureToolDefinitions: Tool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                feature_key: {
-                    type: 'string',
-                    description: 'The key of the feature',
-                },
-                environment_key: {
-                    type: 'string',
-                    description:
-                        'The key of the environment (optional - if not provided, returns all environments)',
-                },
+                feature_key: FEATURE_KEY_PROPERTY,
+                environment_key: ENVIRONMENT_KEY_OPTIONAL_PROPERTY,
             },
             required: ['feature_key'],
         },
@@ -453,14 +379,8 @@ export const featureToolDefinitions: Tool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                feature_key: {
-                    type: 'string',
-                    description: 'The key of the feature',
-                },
-                environment_key: {
-                    type: 'string',
-                    description: 'The key of the environment',
-                },
+                feature_key: FEATURE_KEY_PROPERTY,
+                environment_key: ENVIRONMENT_KEY_PROPERTY,
                 status: {
                     type: 'string',
                     enum: ['active', 'inactive', 'archived'],
@@ -642,6 +562,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 }
 
                 // Remove the MCP-specific 'interactive' property and pass the rest to the API
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { interactive, ...featureData } = validatedArgs
 
                 return await createFeature(authToken, projectKey, featureData)
@@ -743,7 +664,10 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             },
         )
     },
-    enable_targeting: async (args: unknown, apiClient: DevCycleApiClient) => {
+    enable_feature_targeting: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
         const validatedArgs = EnableTargetingArgsSchema.parse(args)
 
         return await apiClient.executeWithLogging(
@@ -759,7 +683,10 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             },
         )
     },
-    disable_targeting: async (args: unknown, apiClient: DevCycleApiClient) => {
+    disable_feature_targeting: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
         const validatedArgs = DisableTargetingArgsSchema.parse(args)
 
         return await apiClient.executeWithLogging(
