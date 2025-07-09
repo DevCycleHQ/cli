@@ -53,9 +53,7 @@ export default class DetailedOverrides extends Base {
         }
 
         if (headless && (!featureKey || !environmentKey)) {
-            this.writer.showError(
-                'Feature and Environment arguments are required',
-            )
+            this.writer.showError('Feature and Environment keys are required')
             return
         }
 
@@ -81,6 +79,12 @@ export default class DetailedOverrides extends Base {
             environmentKey = environmentPromptResult.key
         }
 
+        // At this point, both featureKey and environmentKey should be defined
+        if (!featureKey || !environmentKey) {
+            this.writer.showError('Failed to get required feature and environment keys')
+            return
+        }
+
         const overrides = await fetchFeatureOverridesForUser(
             this.authToken,
             this.projectKey,
@@ -93,7 +97,7 @@ export default class DetailedOverrides extends Base {
             environmentKey,
         )
         const override = overrides.overrides.find(
-            (override) => override._environment === environment?._id,
+            (override: UserOverride) => override._environment === environment?._id,
         )
 
         if (!override) {

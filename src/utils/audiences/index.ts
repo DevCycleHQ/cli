@@ -28,7 +28,7 @@ export const replaceAudienceIdInFilter = (
     if (newFilter.type === 'audienceMatch') {
         const audienceIds = newFilter._audiences!
         const audienceNames = audienceIds.map(
-            (audienceId) => audienceNameMap[audienceId] || audienceId,
+            (audienceId: string) => audienceNameMap[audienceId] || audienceId,
         )
         newFilter._audiences = audienceNames
     }

@@ -143,7 +143,7 @@ const buildDefinitionTree = (
     const prefixWithOperator = (value: string, index: number) =>
         index !== 0 ? `${operator.toUpperCase()} ${value}` : value
 
-    filters.forEach((filter, index) => {
+    filters.forEach((filter: any, index: number) => {
         if (filter.type === 'all') {
             const prefixedProperty = prefixWithOperator('All Users', index)
             definitionTree.insert(prefixedProperty)
@@ -154,15 +154,16 @@ const buildDefinitionTree = (
                 Array.isArray(filter.values) &&
                 !['exist', '!exist'].includes(filter.subType)
             ) {
-                filter.values.forEach((value) =>
+                filter.values.forEach((value: any) =>
                     values.insert(value.toString()),
                 )
             }
-            userFilter.insert(comparatorMap[filter.comparator], values)
+            const comparator = filter.comparator as keyof typeof comparatorMap
+            userFilter.insert(comparatorMap[comparator], values)
             const userProperty =
                 filter.subType === 'customData'
                     ? filter.dataKey
-                    : subTypeMap[filter.subType]
+                    : (subTypeMap as Record<string, string>)[filter.subType] || filter.subType
             const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
         } else if (filter.type === 'audienceMatch') {
@@ -173,11 +174,12 @@ const buildDefinitionTree = (
                 filter,
                 audienceMap,
             ) || filter) as typeof filter
-            replacedIdFilter._audiences?.forEach((audience) =>
+            replacedIdFilter._audiences?.forEach((audience: string) =>
                 audienceTree.insert(audience),
             )
+            const comparator = filter.comparator as keyof typeof comparatorMap
             audienceFilter.insert(
-                comparatorMap[filter.comparator!],
+                comparatorMap[comparator],
                 audienceTree,
             )
             definitionTree.insert(
@@ -220,7 +222,7 @@ const insertServeTree = (
         const coloredValue = coloredVariation(variationName || variationId)
         serveTree.insert(coloredValue)
     } else {
-        distribution.forEach((dist) => {
+        distribution.forEach((dist: any) => {
             const variationTree = ux.tree()
             variationTree.insert(`${dist.percentage * 100}%`)
             const variationName = variationById[dist._variation]?.name

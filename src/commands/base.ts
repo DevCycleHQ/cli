@@ -287,7 +287,7 @@ export default abstract class Base extends Command {
         const projects = await fetchProjects(this.authToken)
 
         const findProjectByKey = (key: string) => {
-            const project = projects.find((proj) => proj.key === key)
+            const project = projects.find((proj: Project) => proj.key === key)
             if (!project) {
                 throw new Error(
                     `Project details could not be retrieved for configured project: ${key}`,

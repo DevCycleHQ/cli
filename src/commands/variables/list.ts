@@ -1,6 +1,7 @@
 import { Flags } from '@oclif/core'
 import { fetchVariables } from '../../api/variables'
 import Base from '../base'
+import { Variable } from '../../api/schemas'
 
 export default class ListVariables extends Base {
     static aliases: string[] = ['variables:ls']
@@ -34,7 +35,7 @@ export default class ListVariables extends Base {
             this.projectKey,
             query,
         )
-        const variableKeys = variables.map((variable) => variable.key)
+        const variableKeys = variables.map((variable: Variable) => variable.key)
         this.writer.showResults(variableKeys)
     }
 }

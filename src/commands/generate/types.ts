@@ -451,7 +451,7 @@ const generateCustomDataType = (
             const optionalMarker = isRequired ? '' : '?'
             if (schema) {
                 const enumValues = schema.allowedValues
-                    .map(({ label, value }) => {
+                    .map(({ label, value }: { label: string; value: string }) => {
                         const valueStr =
                             typeof value === 'number' ? value : `'${value}'`
                         return `        // ${label}\n        ${valueStr}`

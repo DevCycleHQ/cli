@@ -90,6 +90,11 @@ export default class UpdateTargeting extends UpdateCommand {
             envKey = promptResult.environment.key
         }
 
+        if (!envKey) {
+            this.writer.showError('Environment key is required')
+            return
+        }
+
         const environment = await fetchEnvironmentByKey(
             this.authToken,
             this.projectKey,
