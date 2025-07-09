@@ -1,5 +1,6 @@
 import { Flags } from '@oclif/core'
-import { createProject, CreateProjectParams } from '../../api/projects'
+import { createProject } from '../../api/projects'
+import { CreateProjectDto } from '../../api/schemas'
 import { descriptionPrompt, keyPrompt, namePrompt } from '../../ui/prompts'
 import CreateCommand from '../createCommand'
 
@@ -25,8 +26,8 @@ export default class CreateProject extends CreateCommand {
             )
             return
         }
-        const params = await this.populateParameters(
-            CreateProjectParams,
+        const params = await this.populateParametersWithZod(
+            CreateProjectDto,
             this.prompts,
             {
                 key,
