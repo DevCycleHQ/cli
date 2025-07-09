@@ -27,6 +27,10 @@ export const DeleteVariableArgsSchema = z.object({
     key: z.string(),
 })
 
+export const DeleteFeatureArgsSchema = z.object({
+    key: z.string(),
+})
+
 export const ListProjectsArgsSchema = z.object({
     sortBy: z
         .enum([
