@@ -18,6 +18,7 @@ export const fetchFeatures = async (
         page?: number
         perPage?: number
         search?: string
+        staleness?: string
     } = {},
 ): Promise<Feature[]> => {
     const response = await apiClient.get(FEATURE_URL, {

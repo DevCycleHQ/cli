@@ -7,7 +7,10 @@ import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
 import { upperCase } from 'lodash'
 import { createHash } from 'crypto'
 import path from 'path'
-import { fetchAllCompletedOrArchivedFeatures } from '../../api/features'
+import {
+    fetchAllCompletedOrArchivedFeatures,
+    fetchFeatures,
+} from '../../api/features'
 import { fetchCustomProperties } from '../../api/customProperties'
 
 const reactImports = (oldRepos: boolean, strictCustomData: boolean) => {
@@ -176,10 +179,23 @@ export default class GenerateTypes extends Base {
             )
         }
 
-        this.features = await fetchAllCompletedOrArchivedFeatures(
-            this.authToken,
-            this.projectKey,
-        )
+        if (this.project.settings?.staleness?.enabled) {
+            const [completedFeatures, staleFeatures] = await Promise.all([
+                fetchAllCompletedOrArchivedFeatures(
+                    this.authToken,
+                    this.projectKey,
+                ),
+                fetchFeatures(this.authToken, this.projectKey, {
+                    staleness: 'all',
+                }),
+            ])
+            this.features = [...completedFeatures, ...staleFeatures]
+        } else {
+            this.features = await fetchAllCompletedOrArchivedFeatures(
+                this.authToken,
+                this.projectKey,
+            )
+        }
 
         const variables = await fetchAllVariables(
             this.authToken,
@@ -294,11 +310,24 @@ export default class GenerateTypes extends Base {
         const createdDate = variable.createdAt.split('T')[0]
 
         const deprecationInfo = isVariableDeprecated(variable, this.features)
+
         const isDeprecated =
             this.includeDeprecationWarnings && deprecationInfo.deprecated
         const deprecationWarning = isDeprecated
             ? `@deprecated This variable is part of ${deprecationInfo.feature?.status} feature "${deprecationInfo.feature?.name}" and should be cleaned up.\n`
             : ''
+
+        let staleWarning = ''
+        if (this.project.settings?.staleness?.enabled) {
+            const staleInfo = isVariableStale(variable, this.features)
+            const recommendedValue = getRecommendedValueForStale(
+                variable,
+                staleInfo.feature as Feature,
+            )
+            staleWarning = staleInfo.stale
+                ? `@stale This variable is part of "${staleInfo.feature?.name}" feature with stale reason: ${staleInfo.feature?.staleness?.reason}. ${recommendedValue ? `Recommended value to set it to: ${recommendedValue}` : ''}\n`
+                : ''
+        }
 
         return blockComment(
             descriptionText,
@@ -307,6 +336,7 @@ export default class GenerateTypes extends Base {
             indent,
             !this.obfuscate ? variable.key : undefined,
             deprecationWarning,
+            staleWarning,
         )
     }
 
@@ -385,6 +415,7 @@ export const blockComment = (
     indent: boolean,
     key?: string,
     deprecationWarning?: string,
+    staleWarning?: string,
 ) => {
     const indentString = indent ? '    ' : ''
     return (
@@ -399,6 +430,7 @@ export const blockComment = (
         (deprecationWarning
             ? `${indentString} * ${deprecationWarning}\n`
             : '') +
+        (staleWarning ? `${indentString} * ${staleWarning}\n` : '') +
         indentString +
         '*/'
     )
@@ -428,6 +460,39 @@ function isVariableDeprecated(variable: Variable, features: Feature[]) {
     if (!variable._feature || variable.persistent) return { deprecated: false }
     const feature = features.find((f) => f._id === variable._feature)
     return { deprecated: feature && feature.status !== 'active', feature }
+}
+
+function isVariableStale(variable: Variable, features: Feature[]) {
+    if (!variable._feature || variable.persistent) return { stale: false }
+    const feature = features.find((f) => f._id === variable._feature)
+    return { stale: feature && feature.staleness, feature }
+}
+
+function getRecommendedValueForStale(variable: Variable, feature: Feature) {
+    if (!feature) {
+        return variable.defaultValue
+    }
+    const reason = feature.staleness?.reason
+    if (reason === 'unused') {
+        return variable.defaultValue
+    } else if (reason === 'released') {
+        if (feature.staleness?.metaData?.releaseVariation) {
+            const stalenessMetaData = feature.staleness?.metaData
+                ?.releaseVariation as {
+                _variation: string
+                variationKey: string
+                variationName: string
+            }
+            const releaseVariation = feature.variations?.find(
+                (v) => v._id === stalenessMetaData._variation,
+            )
+            return (
+                releaseVariation?.variables?.[variable.key] ||
+                variable.defaultValue
+            )
+        }
+    }
+    return variable.defaultValue
 }
 
 const generateCustomDataType = (
