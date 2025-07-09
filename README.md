@@ -8,6 +8,7 @@ Major features include:
 - Detect and list DevCycle Variable usages in your codebase
 - Manage your Self-Targeting Overrides to quickly switch between Variable values
 - Generate type definitions for type-safe usage of DevCycle (Typescript only)
+- MCP (Model Context Protocol) server for AI-powered feature flag management with Cursor and Claude
 
 The CLI can be customized in several ways using command-line args or by creating a [configuration file](#repo-configuration).
 
@@ -20,6 +21,7 @@ The CLI can be customized in several ways using command-line args or by creating
 * [Authentication](#authentication)
 * [Usage](#usage)
 * [Command Topics](#command-topics)
+* [MCP Server for AI Assistants](#mcp-server-for-ai-assistants)
 * [Repo Configuration](#repo-configuration)
 <!-- tocstop -->
 # Setup
@@ -142,6 +144,40 @@ USAGE
 * [`dvc variations`](docs/variations.md) - Create a new Variation for an existing Feature.
 
 <!-- commandsstop -->
+
+# MCP Server for AI Assistants
+
+The DevCycle CLI includes an MCP (Model Context Protocol) server that enables AI coding assistants like Cursor and Claude to manage feature flags directly. This allows you to create, update, and manage feature flags without leaving your coding environment.
+
+## Quick Setup
+
+### For Cursor
+Add to `.cursor/mcp_settings.json`:
+```json
+{
+  "mcpServers": {
+    "devcycle": {
+      "command": "dvc-mcp"
+    }
+  }
+}
+```
+
+### For Claude Desktop
+Add to your Claude configuration file:
+```json
+{
+  "mcpServers": {
+    "devcycle": {
+      "command": "dvc-mcp"
+    }
+  }
+}
+```
+
+The MCP server uses the same authentication as the CLI. Simply run `dvc login sso` first, then your AI assistant can manage feature flags on your behalf.
+
+For detailed documentation, see [docs/mcp.md](docs/mcp.md).
 
 # Repo Configuration
 The following commands can only be run from the root of a configured repository
