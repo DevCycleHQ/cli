@@ -1,4 +1,3 @@
-import { IsOptional, IsString, IsArray, IsNotEmpty } from 'class-validator'
 import apiClient from './apiClient'
 import { buildHeaders } from './common'
 import { Filter, UpdateFeatureConfigDto } from './schemas'
@@ -36,20 +35,6 @@ enum TargetingStatus {
     active = 'active',
     inactive = 'inactive',
     archived = 'archived',
-}
-
-export class UpdateTargetingParamsInput {
-    @IsString()
-    @IsNotEmpty()
-    name: string
-
-    @IsOptional()
-    @IsString()
-    serve: string
-
-    @IsOptional()
-    @IsArray()
-    definition: Filter[]
 }
 
 export const fetchTargetingForFeature = async (

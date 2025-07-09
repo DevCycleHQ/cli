@@ -8,19 +8,24 @@ import {
 } from '../../ui/prompts'
 import inquirer from '../../ui/autocomplete'
 import {
-    UpdateTargetingParamsInput,
     fetchTargetingForFeature,
     updateFeatureConfigForEnvironment,
 } from '../../api/targeting'
 import { TargetingListOptions } from '../../ui/prompts/listPrompts/targetingListPrompt'
-import { validateSync } from 'class-validator'
-import { plainToClass } from 'class-transformer'
-import { reportValidationErrors } from '../../utils/reportValidationErrors'
+import { reportZodValidationErrors } from '../../utils/reportValidationErrors'
 import { renderTargetingTree } from '../../ui/targetingTree'
 import { fetchEnvironmentByKey } from '../../api/environments'
 import { fetchVariations } from '../../api/variations'
-import { FeatureConfig, UpdateFeatureConfigDto } from '../../api/schemas'
+import { FeatureConfig, UpdateFeatureConfigDto, Filter } from '../../api/schemas'
+import { z } from 'zod'
 import { targetingStatusPrompt } from '../../ui/prompts/targetingPrompts'
+
+// Custom input schema for targeting update command
+const UpdateTargetingParamsInput = z.object({
+    name: z.string(),
+    serve: z.string().optional(),
+    definition: z.array(z.any()).optional(),
+})
 import UpdateCommand from '../updateCommand'
 import { fetchAudiences } from '../../api/audiences'
 import { createTargetAndEnable } from '../../utils/targeting'
@@ -109,16 +114,26 @@ export default class UpdateTargeting extends UpdateCommand {
             const parsedTargets = JSON.parse(flags.targets)
 
             for (const t of parsedTargets) {
-                const target = plainToClass(UpdateTargetingParamsInput, t)
-                const errors = validateSync(target)
-                reportValidationErrors(errors)
-                const { name, serve: variation, definition } = target
+                const validationResult = UpdateTargetingParamsInput.safeParse(t)
+                if (!validationResult.success) {
+                    reportZodValidationErrors(validationResult.error, this.writer)
+                    return
+                }
+                const { name, serve: variation, definition } = validationResult.data
+                if (!variation) {
+                    this.writer.showError('serve field is required')
+                    return
+                }
+                if (!definition) {
+                    this.writer.showError('definition field is required')
+                    return
+                }
                 targets.push({
                     distribution: [{ _variation: variation, percentage: 1 }],
                     audience: {
                         name,
                         filters: {
-                            filters: definition,
+                            filters: definition as Filter[],
                             operator: 'and' as const,
                         },
                     },

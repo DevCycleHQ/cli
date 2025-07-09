@@ -1,13 +1,8 @@
-import { IsString } from 'class-validator'
 import apiClient from './apiClient'
 import { buildHeaders } from './common'
+import { UpdateUserProfileParams } from './schemas'
 
 const BASE_URL = '/v1/projects/:project/userProfile/current'
-
-export class UpdateUserProfileParams {
-    @IsString()
-    dvcUserId: string | null
-}
 
 export const fetchUserProfile = async (token: string, project_id: string) => {
     return apiClient.get(`${BASE_URL}`, {

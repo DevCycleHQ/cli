@@ -53,7 +53,8 @@ export const UpdateVariableDto = schemas.UpdateVariableDto
 export type CreateVariationParams = z.infer<typeof schemas.CreateVariationDto>
 export const CreateVariationDto = schemas.CreateVariationDto
 
-export type UpdateVariationParams = Partial<CreateVariationParams>
+export type UpdateVariationParams = z.infer<typeof schemas.UpdateFeatureVariationDto>
+export const UpdateVariationDto = schemas.UpdateFeatureVariationDto
 
 export type UpdateFeatureConfigDto = z.infer<
     typeof schemas.UpdateFeatureConfigDto
@@ -110,3 +111,6 @@ export type Filter =
     | AudienceMatchFilter
 
 export type UserOverride = z.infer<typeof schemas.UserOverride>
+
+export type UpdateUserProfileParams = z.infer<typeof schemas.UpdateProjectUserProfileDto>
+export const UpdateUserProfileDto = schemas.UpdateProjectUserProfileDto

@@ -2,7 +2,6 @@ import inquirer from 'inquirer'
 import {
     fetchVariationByKey,
     updateVariation,
-    UpdateVariationParams,
 } from '../../api/variations'
 import {
     featurePrompt,
@@ -10,13 +9,22 @@ import {
     keyPrompt,
     namePrompt,
 } from '../../ui/prompts'
-import { Feature, Variable } from '../../api/schemas'
+import { Feature, Variable, UpdateVariationDto } from '../../api/schemas'
+import { z } from 'zod'
 
 import {
     getVariationVariablePrompt,
     promptForVariationVariableValues,
     variationPrompt,
 } from '../../ui/prompts/variationPrompts'
+
+// Custom schema that allows variables to be either array (from prompts) or object (from flags)
+const UpdateVariationInputSchema = UpdateVariationDto.extend({
+    variables: z.union([
+        z.array(z.any()).optional(), // Array from prompts
+        z.record(z.any()).optional(), // Object from flags
+    ]).optional(),
+})
 import { Args, Flags } from '@oclif/core'
 import { fetchFeatureByKey } from '../../api/features'
 import UpdateCommandWithCommonProperties from '../updateCommandWithCommonProperties'
@@ -97,8 +105,8 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
 
         this.writer.printCurrentValues(selectedVariation)
 
-        const data = await this.populateParameters(
-            UpdateVariationParams,
+        const rawData = await this.populateParametersWithZod(
+            UpdateVariationInputSchema,
             this.prompts,
             {
                 name,
@@ -106,17 +114,33 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
                 ...(variables ? { variables: JSON.parse(variables) } : {}),
                 headless,
             },
-            true,
         )
+        
+        // Handle the case where variables come from prompt (as array) vs flags (as object)
         let variableAnswers: Record<string, unknown> = {}
-        if (!variables && data.variables) {
-            variableAnswers = await promptForVariationVariableValues(
-                // This is a hack that's needed since the output from the variable prompt is different
-                // from the input for the --variable flag. That variation variable value data comes from
-                // this prompt.
-                data.variables as unknown as Variable[],
-                selectedVariation.variables,
-            )
+        let promptedVariables: Variable[] | undefined
+        
+        if (!variables && rawData.variables) {
+            // If variables came from prompt, they'll be an array that needs to be processed
+            if (Array.isArray(rawData.variables)) {
+                promptedVariables = rawData.variables as Variable[]
+                variableAnswers = await promptForVariationVariableValues(
+                    promptedVariables,
+                    selectedVariation.variables,
+                )
+            } else {
+                // Variables came from flags, already in correct format
+                variableAnswers = rawData.variables as Record<string, unknown>
+            }
+        }
+        
+        // Create the final data object with properly formatted variables
+        const data = {
+            key: rawData.key,
+            name: rawData.name,
+            variables: variables
+                ? JSON.parse(variables)
+                : { ...selectedVariation.variables, ...variableAnswers },
         }
 
         const result = await updateVariation(
@@ -124,13 +148,7 @@ export default class UpdateVariation extends UpdateCommandWithCommonProperties {
             this.projectKey,
             featureKey,
             selectedVariation.key,
-            {
-                key: data.key,
-                name: data.name,
-                variables: variables
-                    ? JSON.parse(variables)
-                    : { ...selectedVariation.variables, ...variableAnswers },
-            },
+            data,
         )
         this.writer.showResults(result)
     }
