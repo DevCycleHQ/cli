@@ -1,6 +1,6 @@
 import apiClient from './apiClient'
 import { buildHeaders } from './common'
-import { CreateEnvironmentParams, UpdateEnvironmentParams } from './schemas'
+import { CreateEnvironmentParams, UpdateEnvironmentParams, Environment } from './schemas'
 
 export class APIKey {
     key: string
@@ -12,7 +12,7 @@ export const createEnvironment = async (
     token: string,
     project_id: string,
     params: CreateEnvironmentParams,
-) => {
+): Promise<Environment> => {
     return apiClient.post('/v1/projects/:project/environments', params, {
         headers: buildHeaders(token),
         params: { project: project_id },
@@ -24,7 +24,7 @@ export const updateEnvironment = async (
     project_id: string,
     environmentKey: string,
     params: UpdateEnvironmentParams,
-) => {
+): Promise<Environment> => {
     return apiClient.patch('/v1/projects/:project/environments/:key', params, {
         headers: buildHeaders(token),
         params: {
@@ -34,7 +34,7 @@ export const updateEnvironment = async (
     })
 }
 
-export const fetchEnvironments = async (token: string, project_id: string) => {
+export const fetchEnvironments = async (token: string, project_id: string): Promise<Environment[]> => {
     return apiClient.get('/v1/projects/:project/environments', {
         headers: buildHeaders(token),
         params: {
@@ -47,7 +47,7 @@ export const fetchEnvironmentByKey = async (
     token: string,
     project_id: string,
     key: string,
-) => {
+): Promise<Environment | null> => {
     const response = await apiClient.get(
         '/v1/projects/:project/environments/:key',
         {

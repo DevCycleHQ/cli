@@ -5,6 +5,7 @@ import { buildHeaders } from './common'
 
 // TODO: Update these functions to use the new v2 API client once the v2 variations endpoint is implemented
 const variationsUrl = '/v1/projects/:project/features/:feature/variations'
+
 export class UpdateVariationParams {
     @IsString()
     @IsOptional()
@@ -19,8 +20,17 @@ export class UpdateVariationParams {
         [key: string]: string | number | boolean | Record<string, unknown>
     }
 
+    @IsString()
+    @IsOptional()
+    _id?: string
+
     [key: string]: any
+
+    constructor(data: Partial<UpdateVariationParams> = {}) {
+        Object.assign(this, data)
+    }
 }
+
 export const fetchVariations = async (
     token: string,
     project_id: string,
@@ -85,7 +95,7 @@ export const updateVariation = async (
 ) => {
     return apiClient.patch(
         '/v1/projects/:project/features/:feature/variations/:key',
-        variation as any,
+        variation,
         {
             headers: buildHeaders(token),
             params: {

@@ -42,6 +42,7 @@ export const fetchFeatureByKey = async (
             params: {
                 project: project_id,
                 feature: key,
+                key: key,
             },
         })
 
@@ -95,6 +96,7 @@ export const deleteFeature = async (
             params: {
                 project: project_id,
                 feature: key,
+                key: key,
             },
         },
     )

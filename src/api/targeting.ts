@@ -111,7 +111,7 @@ const updateTargetingStatusForFeatureAndEnvironment = async (
     const url = '/v1/projects/:project/features/:feature/configurations'
     return apiClient.patch(
         url,
-        { status } as any,
+        { status: status as 'active' | 'inactive' },
         {
             headers: buildHeaders(token),
             params: {

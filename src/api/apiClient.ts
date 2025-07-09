@@ -93,13 +93,13 @@ export const errorMap = (issue: ZodIssueOptionalMessage, ctx: ErrorMapCtx) => {
     }
 }
 
-export const apiClient: any = createApiClient(BASE_URL, {
+export const apiClient = createApiClient(BASE_URL, {
     axiosInstance: axiosClient,
     validate: 'request',
 })
 export default apiClient
 
-export const v2ApiClient: any = createV2ApiClient(BASE_URL, {
+export const v2ApiClient = createV2ApiClient(BASE_URL, {
     axiosInstance: axiosClient,
     validate: 'request',
 })

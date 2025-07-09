@@ -9,24 +9,47 @@ export class CreateProjectParams {
 
     @IsString()
     @IsOptional()
-    description: string
+    description?: string
 
     @IsNotEmpty()
     @IsString()
     key: string
 
+    @IsOptional()
+    color?: string
+
+    @IsOptional()
+    settings?: any
+
     [key: string]: any
+
+    constructor(data: Partial<CreateProjectParams> = {}) {
+        Object.assign(this, data)
+    }
 }
 
 export class GetProjectsParams {
-    @IsString()
     @IsOptional()
-    sortBy: 'name' | 'key' | 'createdAt' | 'updatedAt' | 'createdBy' | 'propertyKey' | undefined
+    sortBy?: 'name' | 'key' | 'createdAt' | 'updatedAt' | 'createdBy' | 'propertyKey'
 
     @IsOptional()
-    sortOrder: 'asc' | 'desc'
+    sortOrder?: 'asc' | 'desc'
 
-    [key: string]: any
+    @IsOptional()
+    search?: string
+
+    @IsOptional()
+    createdBy?: string
+
+    @IsOptional()
+    page?: number
+
+    @IsOptional()
+    perPage?: number
+
+    constructor(data: Partial<GetProjectsParams> = {}) {
+        Object.assign(this, data)
+    }
 }
 
 const BASE_URL = '/v1/projects'
@@ -37,7 +60,7 @@ export const fetchProjects = async (
 ) => {
     return apiClient.get(BASE_URL, {
         headers: buildHeaders(token),
-        queries: queries as any,
+        queries,
     })
 }
 
@@ -54,7 +77,7 @@ export const createProject = async (
     token: string,
     params: CreateProjectParams,
 ) => {
-    return apiClient.post(BASE_URL, params as any, {
+    return apiClient.post(BASE_URL, params, {
         headers: buildHeaders(token),
     })
 }

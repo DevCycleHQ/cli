@@ -155,11 +155,10 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
 
         let subType = filterToEdit.subType
         if (fieldsToEdit.includes('subType')) {
-            subType = (
-                await inquirer.prompt<{ subType: any }>([
-                    filterSubTypePrompt,
-                ])
-            ).subType
+            const result = await inquirer.prompt<{ subType: string }>([
+                filterSubTypePrompt,
+            ])
+            subType = result.subType as typeof filterToEdit.subType
         }
 
         let promptsWithDefaults: Prompt[]

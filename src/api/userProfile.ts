@@ -9,6 +9,10 @@ export class UpdateUserProfileParams {
     dvcUserId: string | null
 
     [key: string]: any
+
+    constructor(data: Partial<UpdateUserProfileParams> = {}) {
+        Object.assign(this, data)
+    }
 }
 
 export const fetchUserProfile = async (token: string, project_id: string) => {
@@ -25,7 +29,7 @@ export const updateUserProfile = async (
     project_id: string,
     dvcUserId: UpdateUserProfileParams,
 ) => {
-    return apiClient.patch(`${BASE_URL}`, dvcUserId as any, {
+    return apiClient.patch(`${BASE_URL}`, dvcUserId, {
         headers: buildHeaders(token),
         params: {
             project: project_id,
