@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { schemas } from '../api/zodClient'
+import { UpdateFeatureStatusDto } from '../api/schemas'
 
 // Zod schemas for MCP tool arguments
 export const ListFeaturesArgsSchema = z.object({
@@ -107,6 +108,13 @@ export const UpdateFeatureArgsSchema = schemas.UpdateFeatureDto.extend({
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/), // Make key required for identifying the feature
+})
+
+export const UpdateFeatureStatusArgsSchema = UpdateFeatureStatusDto.extend({
+    key: z
+        .string()
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/), // Feature key for identifying the feature
 })
 
 export const UpdateSelfTargetingIdentityArgsSchema = z.object({

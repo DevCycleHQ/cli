@@ -4,7 +4,12 @@ import {
     apiClient as apiV1Client,
     axiosClient,
 } from './apiClient'
-import { CreateFeatureParams, Feature, UpdateFeatureParams } from './schemas'
+import {
+    CreateFeatureParams,
+    Feature,
+    UpdateFeatureParams,
+    UpdateFeatureStatusParams,
+} from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
 
@@ -81,6 +86,22 @@ export const updateFeature = async (
             feature: feature_id,
         },
     })
+}
+
+export const updateFeatureStatus = async (
+    token: string,
+    project_id: string,
+    feature_id: string,
+    params: UpdateFeatureStatusParams,
+): Promise<Feature> => {
+    const response = await axiosClient.patch(
+        `/v1/projects/${project_id}/features/${feature_id}/status`,
+        params,
+        {
+            headers: buildHeaders(token),
+        },
+    )
+    return response.data
 }
 
 export const deleteFeature = async (
