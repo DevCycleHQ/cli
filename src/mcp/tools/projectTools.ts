@@ -11,7 +11,7 @@ export const projectToolDefinitions: Tool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                sort_by: {
+                sortBy: {
                     type: 'string',
                     enum: [
                         'createdAt',
@@ -23,7 +23,7 @@ export const projectToolDefinitions: Tool[] = [
                     ],
                     description: 'Field to sort by (default: createdAt)',
                 },
-                sort_order: {
+                sortOrder: {
                     type: 'string',
                     enum: ['asc', 'desc'],
                     description: 'Sort order (default: desc)',
@@ -33,7 +33,7 @@ export const projectToolDefinitions: Tool[] = [
                     description:
                         'Search query to filter projects (minimum 3 characters)',
                 },
-                created_by: {
+                createdBy: {
                     type: 'string',
                     description: 'Filter by creator user ID',
                 },
@@ -41,7 +41,7 @@ export const projectToolDefinitions: Tool[] = [
                     type: 'number',
                     description: 'Page number (default: 1)',
                 },
-                per_page: {
+                perPage: {
                     type: 'number',
                     description:
                         'Number of items per page (default: 100, max: 1000)',
@@ -67,14 +67,7 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             'listProjects',
             validatedArgs,
             async (authToken) => {
-                return await fetchProjects(authToken, {
-                    sortBy: validatedArgs.sort_by,
-                    sortOrder: validatedArgs.sort_order,
-                    search: validatedArgs.search,
-                    createdBy: validatedArgs.created_by,
-                    page: validatedArgs.page,
-                    perPage: validatedArgs.per_page,
-                })
+                return await fetchProjects(authToken, validatedArgs)
             },
             false,
         )
