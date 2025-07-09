@@ -72,6 +72,12 @@ export const GetSdkKeysArgsSchema = z.object({
     keyType: z.enum(['mobile', 'server', 'client']).optional(),
 })
 
+export const CreateEnvironmentArgsSchema = schemas.CreateEnvironmentDto
+
+export const UpdateEnvironmentArgsSchema = schemas.UpdateEnvironmentDto.extend({
+    key: z.string(), // Make key required for identifying the environment
+})
+
 export const EnableTargetingArgsSchema = z.object({
     feature_key: z.string(),
     environment_key: z.string(),
