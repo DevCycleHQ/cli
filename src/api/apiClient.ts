@@ -13,12 +13,16 @@ export const setDVCReferrer = (
     caller = 'cli',
 ): void => {
     axiosClient.defaults.headers.common['dvc-referrer'] = 'cli'
+
+    // Ensure we have valid values before stringifying
+    const metadata = {
+        command: command || 'unknown',
+        version: version || 'unknown',
+        caller: caller || 'cli',
+    }
+
     axiosClient.defaults.headers.common['dvc-referrer-metadata'] =
-        JSON.stringify({
-            command,
-            version,
-            caller,
-        })
+        JSON.stringify(metadata)
 }
 
 axiosClient.interceptors.response.use(
@@ -28,10 +32,22 @@ axiosClient.interceptors.response.use(
     (error: AxiosError) => {
         let isCallerCli = false
         if (error.config) {
-            const parsedDvcReferrerMetadata = JSON.parse(
-                error.config.headers['dvc-referrer-metadata'],
-            )
-            isCallerCli = parsedDvcReferrerMetadata.caller === 'cli'
+            try {
+                const referrerMetadata =
+                    error.config.headers['dvc-referrer-metadata']
+                if (referrerMetadata && typeof referrerMetadata === 'string') {
+                    const parsedDvcReferrerMetadata =
+                        JSON.parse(referrerMetadata)
+                    isCallerCli = parsedDvcReferrerMetadata.caller === 'cli'
+                }
+            } catch (parseError) {
+                // If we can't parse the referrer metadata, assume it's not from CLI
+                console.error(
+                    'Failed to parse dvc-referrer-metadata:',
+                    parseError,
+                )
+                isCallerCli = false
+            }
         }
 
         if (error.response?.status === 401) {
