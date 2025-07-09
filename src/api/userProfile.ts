@@ -7,6 +7,8 @@ const BASE_URL = '/v1/projects/:project/userProfile/current'
 export class UpdateUserProfileParams {
     @IsString()
     dvcUserId: string | null
+
+    [key: string]: any
 }
 
 export const fetchUserProfile = async (token: string, project_id: string) => {
@@ -23,7 +25,7 @@ export const updateUserProfile = async (
     project_id: string,
     dvcUserId: UpdateUserProfileParams,
 ) => {
-    return apiClient.patch(`${BASE_URL}`, dvcUserId, {
+    return apiClient.patch(`${BASE_URL}`, dvcUserId as any, {
         headers: buildHeaders(token),
         params: {
             project: project_id,

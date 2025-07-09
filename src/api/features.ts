@@ -37,11 +37,11 @@ export const fetchFeatureByKey = async (
     key: string,
 ): Promise<Feature | null> => {
     try {
-        const response = await apiClient.get(`${FEATURE_URL}/:key`, {
+        const response = await apiClient.get(`/v1/projects/:project/features/:feature`, {
             headers: buildHeaders(token),
             params: {
                 project: project_id,
-                key,
+                feature: key,
             },
         })
 
@@ -88,13 +88,13 @@ export const deleteFeature = async (
     key: string,
 ): Promise<void> => {
     return apiV1Client.delete(
-        '/v1/projects/:project/features/:key',
+        '/v1/projects/:project/features/:feature',
         undefined,
         {
             headers: buildHeaders(token),
             params: {
                 project: project_id,
-                key,
+                feature: key,
             },
         },
     )

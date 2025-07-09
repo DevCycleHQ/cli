@@ -407,13 +407,13 @@ export const blockComment = (
 export function getVariableType(variable: Variable) {
     if (
         variable.validationSchema &&
-        variable.validationSchema.schemaType === 'enum'
+        (variable.validationSchema.schemaType as any) === 'enum'
     ) {
         // TODO fix the schema so it doesn't think enumValues is an object
-        const enumValues = variable.validationSchema.enumValues as
+        const enumValues = variable.validationSchema.enumValues as unknown as
             | string[]
             | number[]
-        if (enumValues === undefined || enumValues.length === 0) {
+        if (!enumValues || !Array.isArray(enumValues) || enumValues.length === 0) {
             return variable.type.toLocaleLowerCase()
         }
         return enumValues.map((value) => `'${value}'`).join(' | ')

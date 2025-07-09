@@ -18,6 +18,8 @@ export class UpdateVariationParams {
     variables?: {
         [key: string]: string | number | boolean | Record<string, unknown>
     }
+
+    [key: string]: any
 }
 export const fetchVariations = async (
     token: string,
@@ -83,7 +85,7 @@ export const updateVariation = async (
 ) => {
     return apiClient.patch(
         '/v1/projects/:project/features/:feature/variations/:key',
-        variation,
+        variation as any,
         {
             headers: buildHeaders(token),
             params: {

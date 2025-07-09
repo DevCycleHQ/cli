@@ -122,8 +122,10 @@ export default class CreateVariable extends CreateCommand {
                 const parsedVariations = JSON.parse(variations as string)
                 const featureVariables = feature.variables
                 const featureVariations = feature.variations
-                featureVariables.push(params as Variable)
-                for (const featVar of featureVariations) {
+                if (featureVariables) {
+                    featureVariables.push(params as Variable)
+                }
+                for (const featVar of featureVariations || []) {
                     featVar.variables = featVar.variables || {}
                     featVar.variables[params.key] =
                         parsedVariations[featVar.key]

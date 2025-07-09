@@ -14,15 +14,19 @@ export class CreateProjectParams {
     @IsNotEmpty()
     @IsString()
     key: string
+
+    [key: string]: any
 }
 
 export class GetProjectsParams {
     @IsString()
     @IsOptional()
-    sortBy: string
+    sortBy: 'name' | 'key' | 'createdAt' | 'updatedAt' | 'createdBy' | 'propertyKey' | undefined
 
     @IsOptional()
     sortOrder: 'asc' | 'desc'
+
+    [key: string]: any
 }
 
 const BASE_URL = '/v1/projects'
@@ -33,7 +37,7 @@ export const fetchProjects = async (
 ) => {
     return apiClient.get(BASE_URL, {
         headers: buildHeaders(token),
-        queries,
+        queries: queries as any,
     })
 }
 
@@ -50,7 +54,7 @@ export const createProject = async (
     token: string,
     params: CreateProjectParams,
 ) => {
-    return apiClient.post(BASE_URL, params, {
+    return apiClient.post(BASE_URL, params as any, {
         headers: buildHeaders(token),
     })
 }

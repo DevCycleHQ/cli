@@ -107,7 +107,6 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         let prompts = this.getPromptsByType(filterToEdit.type)
         if (
             filterToEdit.type !== 'all' &&
-            filterToEdit.type !== 'optIn' &&
             filterToEdit.type !== 'audienceMatch'
         ) {
             prompts = [
@@ -136,7 +135,6 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
 
         if (
             filterToEdit.type === 'all' ||
-            filterToEdit.type === 'optIn' ||
             filterToEdit.type === 'audienceMatch'
         ) {
             prompts = prompts.filter(
@@ -158,7 +156,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
         let subType = filterToEdit.subType
         if (fieldsToEdit.includes('subType')) {
             subType = (
-                await inquirer.prompt<{ subType: UserSubType }>([
+                await inquirer.prompt<{ subType: any }>([
                     filterSubTypePrompt,
                 ])
             ).subType
@@ -214,7 +212,7 @@ export class FilterListOptions extends ListOptionsPrompt<Filter> {
     }
 
     getPromptsByType(type: string): Prompt[] {
-        if (type === 'all' || type === 'optIn') {
+        if (type === 'all') {
             return [filterTypePrompt]
         } else if (type === 'audienceMatch') {
             return [

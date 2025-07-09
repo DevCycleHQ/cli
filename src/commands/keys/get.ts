@@ -47,15 +47,17 @@ export default class GetEnvironmentKey extends Base {
             return
         }
         const sdkType = await this.getSdkType()
-        if (sdkType && sdkType !== 'all') {
-            const activeKeys = environment.sdkKeys[sdkType] as APIKey[]
-            const currentKey = activeKeys[activeKeys.length - 1]
-            if (currentKey.compromised) {
-                this.writer.warningMessage(
-                    `The most recent key for ${environmentKey} ${sdkType} has been compromised}`,
-                )
+        if (sdkType && sdkType !== 'all' && environment.sdkKeys) {
+            const activeKeys = (environment.sdkKeys as any)[sdkType] as APIKey[]
+            if (activeKeys && activeKeys.length > 0) {
+                const currentKey = activeKeys[activeKeys.length - 1]
+                if (currentKey.compromised) {
+                    this.writer.warningMessage(
+                        `The most recent key for ${environmentKey} ${sdkType} has been compromised}`,
+                    )
+                }
+                this.writer.showRawResults(currentKey.key)
             }
-            this.writer.showRawResults(currentKey.key)
         } else {
             this.writer.showResults(environment.sdkKeys)
         }

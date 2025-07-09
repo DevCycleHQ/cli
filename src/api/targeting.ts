@@ -35,7 +35,6 @@ export enum DataKeyType {
 enum TargetingStatus {
     active = 'active',
     inactive = 'inactive',
-    archived = 'archived',
 }
 
 export class UpdateTargetingParamsInput {
@@ -112,7 +111,7 @@ const updateTargetingStatusForFeatureAndEnvironment = async (
     const url = '/v1/projects/:project/features/:feature/configurations'
     return apiClient.patch(
         url,
-        { status },
+        { status } as any,
         {
             headers: buildHeaders(token),
             params: {
