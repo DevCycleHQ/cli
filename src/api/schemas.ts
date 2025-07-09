@@ -28,6 +28,13 @@ export const CreateFeatureDto = schemas.CreateFeatureDto
 export type UpdateFeatureParams = z.infer<typeof schemas.UpdateFeatureDto>
 export const UpdateFeatureDto = schemas.UpdateFeatureDto
 
+export const UpdateFeatureStatusDto = z.object({
+    status: z.enum(['active', 'complete', 'archived']),
+    staticVariation: z.string().optional(),
+})
+
+export type UpdateFeatureStatusParams = z.infer<typeof UpdateFeatureStatusDto>
+
 export type CreateVariableParams = z.infer<typeof schemas.CreateVariableDto>
 export const CreateVariableDto = schemas.CreateVariableDto
 

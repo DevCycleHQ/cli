@@ -4,6 +4,7 @@ import {
     fetchFeatures,
     createFeature,
     updateFeature,
+    updateFeatureStatus,
     deleteFeature,
     getFeatureAuditLogHistory,
 } from '../../api/features'
@@ -23,6 +24,7 @@ import {
     ListFeaturesArgsSchema,
     CreateFeatureArgsSchema,
     UpdateFeatureArgsSchema,
+    UpdateFeatureStatusArgsSchema,
     DeleteFeatureArgsSchema,
     EnableTargetingArgsSchema,
     DisableTargetingArgsSchema,
@@ -271,6 +273,32 @@ export const featureToolDefinitions: Tool[] = [
                 },
             },
             required: ['key'],
+        },
+    },
+    {
+        name: 'update_feature_status',
+        description:
+            'Update the status of an existing feature flag. ⚠️ IMPORTANT: Changes to feature status may affect production environments. Always confirm with the user before making changes to features that are active in production.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                key: {
+                    type: 'string',
+                    description:
+                        'The key of the feature to update status for (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
+                },
+                status: {
+                    type: 'string',
+                    enum: ['active', 'complete', 'archived'],
+                    description: 'The status to set the feature to',
+                },
+                staticVariation: {
+                    type: 'string',
+                    description:
+                        'The variation key or ID to serve if the status is set to complete (optional)',
+                },
+            },
+            required: ['key', 'status'],
         },
     },
     {
@@ -610,6 +638,27 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     projectKey,
                     key,
                     updateData,
+                )
+            },
+        )
+    },
+    update_feature_status: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
+        const validatedArgs = UpdateFeatureStatusArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'updateFeatureStatus',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                const { key, ...statusData } = validatedArgs
+
+                return await updateFeatureStatus(
+                    authToken,
+                    projectKey,
+                    key,
+                    statusData,
                 )
             },
         )
