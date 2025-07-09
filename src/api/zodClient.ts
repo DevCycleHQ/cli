@@ -33,6 +33,24 @@ const ProjectSettings = z.object({
     sdkTypeVisibility: SDKTypeVisibilitySettings,
     obfuscation: ObfuscationSettings,
 })
+const GetProjectsParams = z.object({
+    page: z.number().gte(1).optional().default(1),
+    perPage: z.number().gte(1).lte(1000).optional().default(100),
+    sortBy: z
+        .enum([
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ])
+        .optional()
+        .default('createdAt'),
+    sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
+    search: z.string().optional(),
+    createdBy: z.string().optional(),
+})
 const CreateProjectDto = z.object({
     name: z.string().max(100),
     key: z
@@ -848,6 +866,7 @@ export const schemas = {
     OptInSettings,
     SDKTypeVisibilitySettings,
     ProjectSettings,
+    GetProjectsParams,
     CreateProjectDto,
     Project,
     BadRequestErrorResponse,

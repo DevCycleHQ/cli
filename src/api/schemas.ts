@@ -12,6 +12,15 @@ export type Audience = z.infer<typeof schemas.Audience>
 export type Target = z.infer<typeof schemas.Target>
 export type Override = z.infer<typeof schemas.Override>
 export type CustomProperty = z.infer<typeof schemas.CustomProperty>
+export type GetProjectsParams = z.infer<typeof schemas.GetProjectsParams>
+export const GetProjectsParams = schemas.GetProjectsParams
+
+export type CreateProjectParams = z.infer<typeof schemas.CreateProjectDto>
+export const CreateProjectDto = schemas.CreateProjectDto
+
+export type UpdateProjectParams = z.infer<typeof schemas.UpdateProjectDto>
+export const UpdateProjectDto = schemas.UpdateProjectDto
+
 export type CreateEnvironmentParams = z.infer<
     typeof schemas.CreateEnvironmentDto
 >

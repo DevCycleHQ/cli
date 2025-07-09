@@ -32,32 +32,15 @@ export const DeleteFeatureArgsSchema = z.object({
     key: z.string(),
 })
 
-export const ListProjectsArgsSchema = z.object({
-    sortBy: z
-        .enum([
-            'createdAt',
-            'updatedAt',
-            'name',
-            'key',
-            'createdBy',
-            'propertyKey',
-        ])
-        .optional(),
-    sortOrder: z.enum(['asc', 'desc']).optional(),
-    search: z.string().min(3).optional(),
-    createdBy: z.string().optional(),
-    page: z.number().min(1).optional(),
-    perPage: z.number().min(1).max(1000).default(100).optional(),
-})
+export const ListProjectsArgsSchema = schemas.GetProjectsParams
 
-export const CreateProjectArgsSchema = z.object({
+export const CreateProjectArgsSchema = schemas.CreateProjectDto
+
+export const UpdateProjectArgsSchema = schemas.UpdateProjectDto.extend({
     key: z
         .string()
-        .min(1)
         .max(100)
-        .regex(/^[a-z0-9-_.]+$/),
-    name: z.string().min(1),
-    description: z.string().optional(),
+        .regex(/^[a-z0-9-_.]+$/), // Make key required for identifying the project
 })
 
 export const ListEnvironmentsArgsSchema = z.object({
