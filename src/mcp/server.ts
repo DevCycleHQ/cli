@@ -112,13 +112,29 @@ export class DevCycleMCPServer {
                 } catch (error) {
                     console.error(`Error in tool handler ${name}:`, error)
 
-                    const errorMessage =
-                        error instanceof Error ? error.message : 'Unknown error'
+                    // Safely extract error message, handling undefined/null cases
+                    let errorMessage = 'Unknown error'
+                    if (error instanceof Error && error.message) {
+                        errorMessage = error.message
+                    } else if (error && typeof error === 'string') {
+                        errorMessage = error
+                    } else if (error && typeof error === 'object') {
+                        errorMessage = JSON.stringify(error)
+                    }
+
+                    // Return error as JSON to maintain consistent response format
+                    const errorResponse = {
+                        error: true,
+                        message: errorMessage,
+                        tool: name,
+                        timestamp: new Date().toISOString(),
+                    }
+
                     return {
                         content: [
                             {
                                 type: 'text',
-                                text: `Error: ${errorMessage}`,
+                                text: JSON.stringify(errorResponse, null, 2),
                             },
                         ],
                     }
