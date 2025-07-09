@@ -4,9 +4,13 @@ import {
     fetchProjects,
     fetchProject,
     createProject,
-    CreateProjectParams,
+    updateProject,
 } from '../../api/projects'
-import { ListProjectsArgsSchema, CreateProjectArgsSchema } from '../types'
+import {
+    ListProjectsArgsSchema,
+    CreateProjectArgsSchema,
+    UpdateProjectArgsSchema,
+} from '../types'
 import { ToolHandler } from '../server'
 
 export const projectToolDefinitions: Tool[] = [
@@ -84,6 +88,33 @@ export const projectToolDefinitions: Tool[] = [
             required: ['name', 'key'],
         },
     },
+    {
+        name: 'update_project',
+        description: 'Update an existing project',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                key: {
+                    type: 'string',
+                    description:
+                        'Project key to identify the project to update',
+                },
+                name: {
+                    type: 'string',
+                    description: 'Updated project name',
+                },
+                description: {
+                    type: 'string',
+                    description: 'Updated project description',
+                },
+                color: {
+                    type: 'string',
+                    description: 'Project color (hex format)',
+                },
+            },
+            required: ['key'],
+        },
+    },
 ]
 
 export const projectToolHandlers: Record<string, ToolHandler> = {
@@ -119,6 +150,19 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             validatedArgs,
             async (authToken) => {
                 return await createProject(authToken, validatedArgs)
+            },
+            false,
+        )
+    },
+    update_project: async (args: unknown, apiClient: DevCycleApiClient) => {
+        const validatedArgs = UpdateProjectArgsSchema.parse(args)
+        const { key, ...updateParams } = validatedArgs
+
+        return await apiClient.executeWithLogging(
+            'updateProject',
+            validatedArgs,
+            async (authToken) => {
+                return await updateProject(authToken, key, updateParams)
             },
             false,
         )
