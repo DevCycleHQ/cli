@@ -9,7 +9,7 @@ export class CreateProjectParams {
 
     @IsString()
     @IsOptional()
-    description: string
+    description?: string
 
     @IsNotEmpty()
     @IsString()
