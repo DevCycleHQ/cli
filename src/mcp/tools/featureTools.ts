@@ -5,6 +5,7 @@ import {
     createFeature,
     updateFeature,
     deleteFeature,
+    getFeatureAuditLogHistory,
 } from '../../api/features'
 import {
     fetchVariations,
@@ -29,6 +30,7 @@ import {
     UpdateVariationArgsSchema,
     ListFeatureTargetingArgsSchema,
     UpdateFeatureTargetingArgsSchema,
+    GetFeatureAuditLogHistoryArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
 
@@ -528,6 +530,25 @@ export const featureToolDefinitions: Tool[] = [
             required: ['feature_key', 'environment_key'],
         },
     },
+    {
+        name: 'get_feature_audit_log_history',
+        description:
+            'Get timeline of feature flag changes from DevCycle audit log',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                feature_key: FEATURE_KEY_PROPERTY,
+                days_back: {
+                    type: 'number',
+                    description:
+                        'Number of days to look back (default: 30, max: 365)',
+                    minimum: 1,
+                    maximum: 365,
+                },
+            },
+            required: ['feature_key'],
+        },
+    },
 ]
 
 export const featureToolHandlers: Record<string, ToolHandler> = {
@@ -740,6 +761,25 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     feature_key,
                     environment_key,
                     configData,
+                )
+            },
+        )
+    },
+    get_feature_audit_log_history: async (
+        args: unknown,
+        apiClient: DevCycleApiClient,
+    ) => {
+        const validatedArgs = GetFeatureAuditLogHistoryArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'getFeatureAuditLogHistory',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await getFeatureAuditLogHistory(
+                    authToken,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    validatedArgs.days_back || 30,
                 )
             },
         )
