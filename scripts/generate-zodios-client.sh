@@ -2,5 +2,5 @@
 url="https://api.devcycle.com/swagger.json"
 temp_file=$(mktemp)
 curl -s "$url" -o "$temp_file"
-npx openapi-zod-client "$temp_file" --with-alias --export-schemas --prettier ".prettierrc.json" -o "src/api/zodClient.ts"
+yarn openapi-zod-client "$temp_file" --with-alias --export-schemas --prettier ".prettierrc.json" -o "src/api/zodClient.ts"
 rm "$temp_file"
