@@ -8,7 +8,7 @@ import { CreateFeatureParams, Feature, UpdateFeatureParams } from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
 
-const FEATURE_URL = '/v1/projects/:project/features'
+const FEATURE_URL = '/v2/projects/:project/features'
 
 export const fetchFeatures = async (
     token: string,
@@ -37,11 +37,10 @@ export const fetchFeatureByKey = async (
     key: string,
 ): Promise<Feature | null> => {
     try {
-        const response = await apiClient.get(`/v1/projects/:project/features/:feature`, {
+        const response = await apiClient.get(`/v2/projects/:project/features/:key`, {
             headers: buildHeaders(token),
             params: {
                 project: project_id,
-                feature: key,
                 key: key,
             },
         })
@@ -74,11 +73,11 @@ export const updateFeature = async (
     feature_id: string,
     params: UpdateFeatureParams,
 ): Promise<Feature> => {
-    return await apiClient.patch(`${FEATURE_URL}/:feature`, params, {
+    return await apiClient.patch(`${FEATURE_URL}/:key`, params, {
         headers: buildHeaders(token),
         params: {
             project: project_id,
-            feature: feature_id,
+            key: feature_id,
         },
     })
 }
@@ -89,13 +88,12 @@ export const deleteFeature = async (
     key: string,
 ): Promise<void> => {
     return apiV1Client.delete(
-        '/v1/projects/:project/features/:feature',
+        '/v2/projects/:project/features/:key',
         undefined,
         {
             headers: buildHeaders(token),
             params: {
                 project: project_id,
-                feature: key,
                 key: key,
             },
         },
@@ -155,5 +153,5 @@ const generatePaginatedFeatureUrl = (
     perPage: number,
     status: string,
 ): string => {
-    return `/v1/projects/${project_id}/features?perPage=${perPage}&page=${page}&status=${status}`
+    return `/v2/projects/${project_id}/features?perPage=${perPage}&page=${page}&status=${status}`
 }
