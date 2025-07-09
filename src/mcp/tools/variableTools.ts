@@ -98,13 +98,6 @@ export const variableToolDefinitions: Tool[] = [
                         },
                     },
                 },
-                tags: {
-                    type: 'array',
-                    items: {
-                        type: 'string',
-                    },
-                    description: 'Tags to organize variables',
-                },
             },
             required: ['key', 'type'],
         },
@@ -127,11 +120,6 @@ export const variableToolDefinitions: Tool[] = [
                     type: 'string',
                     description:
                         'Updated variable description (max 1000 characters)',
-                },
-                new_key: {
-                    type: 'string',
-                    description:
-                        'New variable key (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
                 },
                 type: {
                     type: 'string',
@@ -167,18 +155,6 @@ export const variableToolDefinitions: Tool[] = [
                         },
                     },
                 },
-                persistent: {
-                    type: 'boolean',
-                    description:
-                        'Whether the variable is intended to be long-lived within a feature',
-                },
-                tags: {
-                    type: 'array',
-                    items: {
-                        type: 'string',
-                    },
-                    description: 'Tags to organize variables',
-                },
             },
             required: ['key'],
         },
@@ -207,12 +183,11 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             'listVariables',
             validatedArgs,
             async (authToken, projectKey) => {
-                const query = {
-                    search: validatedArgs.search,
-                    page: validatedArgs.page,
-                    perPage: validatedArgs.per_page,
-                }
-                return await fetchVariables(authToken, projectKey, query)
+                return await fetchVariables(
+                    authToken,
+                    projectKey,
+                    validatedArgs,
+                )
             },
         )
     },
@@ -223,17 +198,11 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             'createVariable',
             validatedArgs,
             async (authToken, projectKey) => {
-                const params = {
-                    name: validatedArgs.name,
-                    description: validatedArgs.description,
-                    key: validatedArgs.key,
-                    _feature: validatedArgs._feature,
-                    type: validatedArgs.type,
-                    defaultValue: validatedArgs.defaultValue,
-                    validationSchema: validatedArgs.validationSchema,
-                    tags: validatedArgs.tags,
-                }
-                return await createVariable(authToken, projectKey, params)
+                return await createVariable(
+                    authToken,
+                    projectKey,
+                    validatedArgs,
+                )
             },
         )
     },
@@ -244,20 +213,13 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             'updateVariable',
             validatedArgs,
             async (authToken, projectKey) => {
-                const params = {
-                    name: validatedArgs.name,
-                    description: validatedArgs.description,
-                    key: validatedArgs.new_key,
-                    type: validatedArgs.type,
-                    validationSchema: validatedArgs.validationSchema,
-                    persistent: validatedArgs.persistent,
-                    tags: validatedArgs.tags,
-                }
+                const { key, ...updateData } = validatedArgs
+
                 return await updateVariable(
                     authToken,
                     projectKey,
-                    validatedArgs.key,
-                    params,
+                    key,
+                    updateData,
                 )
             },
         )

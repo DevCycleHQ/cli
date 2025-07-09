@@ -25,14 +25,14 @@ export const environmentToolDefinitions: Tool[] = [
                     description: 'Page number (default: 1)',
                     minimum: 1,
                 },
-                per_page: {
+                perPage: {
                     type: 'number',
                     description:
                         'Number of items per page (default: 100, max: 1000)',
                     minimum: 1,
                     maximum: 1000,
                 },
-                sort_by: {
+                sortBy: {
                     type: 'string',
                     description: 'Field to sort by (default: createdAt)',
                     enum: [
@@ -44,12 +44,12 @@ export const environmentToolDefinitions: Tool[] = [
                         'propertyKey',
                     ],
                 },
-                sort_order: {
+                sortOrder: {
                     type: 'string',
                     enum: ['asc', 'desc'],
                     description: 'Sort order (default: desc)',
                 },
-                created_by: {
+                createdBy: {
                     type: 'string',
                     description: 'Filter by creator user ID',
                 },
@@ -62,17 +62,17 @@ export const environmentToolDefinitions: Tool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                environment_key: {
+                environmentKey: {
                     type: 'string',
                     description: 'The key of the environment',
                 },
-                key_type: {
+                keyType: {
                     type: 'string',
                     enum: ['mobile', 'server', 'client'],
                     description: 'The type of SDK key to retrieve',
                 },
             },
-            required: ['environment_key'],
+            required: ['environmentKey'],
         },
     },
 ]
@@ -99,15 +99,14 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
                 const environment = await fetchEnvironmentByKey(
                     authToken,
                     projectKey,
-                    validatedArgs.environment_key,
+                    validatedArgs.environmentKey,
                 )
 
                 const sdkKeys = environment.sdkKeys
 
-                if (validatedArgs.key_type) {
+                if (validatedArgs.keyType) {
                     return {
-                        [validatedArgs.key_type]:
-                            sdkKeys[validatedArgs.key_type],
+                        [validatedArgs.keyType]: sdkKeys[validatedArgs.keyType],
                     }
                 } else {
                     return {
