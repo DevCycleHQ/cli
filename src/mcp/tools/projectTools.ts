@@ -1,7 +1,12 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
 import { DevCycleApiClient } from '../utils/api'
-import { fetchProjects, fetchProject } from '../../api/projects'
-import { ListProjectsArgsSchema } from '../types'
+import {
+    fetchProjects,
+    fetchProject,
+    createProject,
+    CreateProjectParams,
+} from '../../api/projects'
+import { ListProjectsArgsSchema, CreateProjectArgsSchema } from '../types'
 import { ToolHandler } from '../server'
 
 export const projectToolDefinitions: Tool[] = [
@@ -57,6 +62,28 @@ export const projectToolDefinitions: Tool[] = [
             properties: {},
         },
     },
+    {
+        name: 'create_project',
+        description: 'Create a new project',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'Project name',
+                },
+                description: {
+                    type: 'string',
+                    description: 'Project description',
+                },
+                key: {
+                    type: 'string',
+                    description: 'Unique project key',
+                },
+            },
+            required: ['name', 'key'],
+        },
+    },
 ]
 
 export const projectToolHandlers: Record<string, ToolHandler> = {
@@ -82,6 +109,18 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             async (authToken, projectKey) => {
                 return await fetchProject(authToken, projectKey)
             },
+        )
+    },
+    create_project: async (args: unknown, apiClient: DevCycleApiClient) => {
+        const validatedArgs = CreateProjectArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'createProject',
+            validatedArgs,
+            async (authToken) => {
+                return await createProject(authToken, validatedArgs)
+            },
+            false,
         )
     },
 }

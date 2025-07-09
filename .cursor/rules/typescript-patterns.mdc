@@ -48,6 +48,41 @@ export default class MyCommand extends Base {
 - Use Zod schemas for validation
 - Export types from dedicated files
 
+## Type Safety and Avoiding `any`
+
+- **NEVER use `any` casting to fix TypeScript errors** - this defeats the purpose of TypeScript
+- Instead of `as any`, find the root cause and fix it properly:
+  - Update type definitions to be more accurate
+  - Use proper type guards and narrowing
+  - Add missing properties to interfaces
+  - Use union types for flexible typing
+  - Create proper type assertions with specific types
+
+```typescript
+// ❌ Wrong - using any to bypass TypeScript
+const result = (someValue as any).property
+
+// ✅ Correct - fix the underlying type issue
+interface ProperType {
+    property: string
+}
+const result = (someValue as ProperType).property
+
+// ✅ Or use type guards
+if ('property' in someValue) {
+    const result = someValue.property
+}
+```
+
+- When working with external libraries, use the type definitions from the library
+- Use `unknown` instead of `any` when you genuinely don't know the type
+- Prefer type narrowing over type assertions
+- **If you cannot fix a TypeScript issue directly**, propose potential solutions to the user:
+  - Explain what the type error means
+  - Suggest multiple approaches to fix it properly
+  - Identify if the issue is in type definitions, API design, or usage
+  - Recommend the most appropriate solution based on the context
+
 ## Error Handling
 
 ```typescript
