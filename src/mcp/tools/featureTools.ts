@@ -1,6 +1,11 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
 import { DevCycleApiClient } from '../utils/api'
-import { fetchFeatures, createFeature, updateFeature } from '../../api/features'
+import {
+    fetchFeatures,
+    createFeature,
+    updateFeature,
+    deleteFeature,
+} from '../../api/features'
 import {
     fetchVariations,
     createVariation,
@@ -16,6 +21,7 @@ import {
     ListFeaturesArgsSchema,
     CreateFeatureArgsSchema,
     UpdateFeatureArgsSchema,
+    DeleteFeatureArgsSchema,
     EnableTargetingArgsSchema,
     DisableTargetingArgsSchema,
     ListVariationsArgsSchema,
@@ -284,6 +290,20 @@ export const featureToolDefinitions: Tool[] = [
                         description:
                             'Variation data with key, name, variables, and _id',
                     },
+                },
+            },
+            required: ['key'],
+        },
+    },
+    {
+        name: 'delete_feature',
+        description: 'Delete an existing feature flag',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                key: {
+                    type: 'string',
+                    description: 'The key of the feature to delete',
                 },
             },
             required: ['key'],
@@ -642,6 +662,21 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     projectKey,
                     key,
                     updateData,
+                )
+            },
+        )
+    },
+    delete_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
+        const validatedArgs = DeleteFeatureArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'deleteFeature',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                return await deleteFeature(
+                    authToken,
+                    projectKey,
+                    validatedArgs.key,
                 )
             },
         )
