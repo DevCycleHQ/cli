@@ -49,6 +49,16 @@ export const ListProjectsArgsSchema = z.object({
     perPage: z.number().min(1).max(1000).default(100).optional(),
 })
 
+export const CreateProjectArgsSchema = z.object({
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1),
+    description: z.string().optional(),
+})
+
 export const ListEnvironmentsArgsSchema = z.object({
     search: z.string().min(3).optional(),
     page: z.number().min(1).optional(),
