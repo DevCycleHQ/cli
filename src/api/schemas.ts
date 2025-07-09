@@ -34,8 +34,8 @@ export const CreateVariableDto = schemas.CreateVariableDto
 export type UpdateVariableParams = z.infer<typeof schemas.UpdateVariableDto>
 export const UpdateVariableDto = schemas.UpdateVariableDto
 
-export type CreateVariationParams = z.infer<typeof schemas.CreateVariationDto>
-export const CreateVariationDto = schemas.CreateVariationDto
+export type CreateVariationParams = z.infer<typeof schemas.FeatureVariationDto>
+export const CreateVariationDto = schemas.FeatureVariationDto
 
 export type UpdateVariationParams = Partial<CreateVariationParams>
 
@@ -57,8 +57,8 @@ export type Filters = z.infer<
 export type AllFilter = z.infer<typeof schemas.AllFilter>
 export const AllFilterSchema = schemas.AllFilter
 
-export type OptInFilter = z.infer<typeof schemas.OptInFilter>
-export const OptInFilterSchema = schemas.OptInFilter
+export type OptInFilter = z.infer<typeof schemas.AllFilter>
+export const OptInFilterSchema = schemas.AllFilter
 
 export type UserFilter = z.infer<typeof schemas.UserFilter>
 export const UserFilterSchema = schemas.UserFilter
@@ -80,8 +80,8 @@ export const UserCustomFilterSchema = schemas.UserCustomFilter
 export type AudienceMatchFilter = z.infer<typeof schemas.AudienceMatchFilter>
 export const AudienceMatchFilterSchema = schemas.AudienceMatchFilter
 
-export type UpdateOverrideParams = z.infer<typeof schemas.UpdateUserOverrideDto>
-export const UpdateOverrideDto = schemas.UpdateUserOverrideDto
+export type UpdateOverrideParams = z.infer<typeof schemas.UpdateOverrideDto>
+export const UpdateOverrideDto = schemas.UpdateOverrideDto
 
 export type Filter =
     | AllFilter

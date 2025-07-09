@@ -8,7 +8,7 @@ import { CreateFeatureParams, Feature, UpdateFeatureParams } from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
 
-const FEATURE_URL = '/v2/projects/:project/features'
+const FEATURE_URL = '/v1/projects/:project/features'
 
 export const fetchFeatures = async (
     token: string,

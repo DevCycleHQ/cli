@@ -99,4 +99,7 @@ export const apiClient = createApiClient(BASE_URL, {
 })
 export default apiClient
 
-export const v2ApiClient = createV2ApiClient(BASE_URL)
+export const v2ApiClient = createV2ApiClient(BASE_URL, {
+    axiosInstance: axiosClient,
+    validate: 'request',
+})
