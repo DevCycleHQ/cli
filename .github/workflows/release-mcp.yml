@@ -1,0 +1,342 @@
+name: Release MCP Server
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        run: yarn test:ci
+
+      - name: Test MCP server build
+        run: yarn build:mcp
+
+      - name: Test MCP server startup
+        run: |
+          timeout 10s dist/mcp/index.js << 'EOF' || true
+          {"jsonrpc": "2.0", "method": "tools/list", "id": 1}
+          EOF
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      release_created: ${{ steps.release.outputs.release_created }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build MCP server
+        run: yarn build:mcp
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload MCP server artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-server
+          path: dist/mcp/
+
+  build-binaries:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build standalone binaries
+        run: yarn build:mcp-standalone
+
+      - name: Test binaries
+        run: |
+          # Test Linux binary
+          timeout 10s ./dist/mcp/binaries/dvc-mcp-linux-x64 << 'EOF' || true
+          {"jsonrpc": "2.0", "method": "tools/list", "id": 1}
+          EOF
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-binaries
+          path: dist/mcp/binaries/
+
+  test-cross-platform:
+    needs: build-binaries
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: mcp-binaries
+          path: ./binaries
+
+      - name: Test binary (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          chmod +x ./binaries/dvc-mcp-linux-x64
+          timeout 10s ./binaries/dvc-mcp-linux-x64 << 'EOF' || true
+          {"jsonrpc": "2.0", "method": "tools/list", "id": 1}
+          EOF
+
+      - name: Test binary (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          chmod +x ./binaries/dvc-mcp-macos-x64
+          timeout 10s ./binaries/dvc-mcp-macos-x64 << 'EOF' || true
+          {"jsonrpc": "2.0", "method": "tools/list", "id": 1}
+          EOF
+
+      - name: Test binary (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          echo '{"jsonrpc": "2.0", "method": "tools/list", "id": 1}' | .\binaries\dvc-mcp-win-x64.exe
+
+  publish:
+    needs: [build, test-cross-platform]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build for production
+        run: yarn build
+
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  release:
+    needs: [publish, build, test-cross-platform]
+    runs-on: ubuntu-latest
+    if: always() && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download MCP server artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mcp-server
+          path: ./dist/mcp/
+
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: mcp-binaries
+          path: ./binaries
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the latest two tags
+          current_tag=$(git describe --tags --abbrev=0)
+          previous_tag=$(git describe --tags --abbrev=0 --exclude="$current_tag")
+          
+          # Generate changelog
+          echo "## Changes in $current_tag" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          
+          if [ -n "$previous_tag" ]; then
+            echo "### Features" >> CHANGELOG.md
+            git log --oneline --grep="feat:" "$previous_tag..$current_tag" | sed 's/^/- /' >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            
+            echo "### Bug Fixes" >> CHANGELOG.md
+            git log --oneline --grep="fix:" "$previous_tag..$current_tag" | sed 's/^/- /' >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            
+            echo "### Other Changes" >> CHANGELOG.md
+            git log --oneline --grep="chore:\|docs:\|refactor:" "$previous_tag..$current_tag" | sed 's/^/- /' >> CHANGELOG.md
+          else
+            echo "### All Changes" >> CHANGELOG.md
+            git log --oneline | head -20 | sed 's/^/- /' >> CHANGELOG.md
+          fi
+          
+          echo "" >> CHANGELOG.md
+          echo "### Installation" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "#### NPM Package" >> CHANGELOG.md
+          echo '```bash' >> CHANGELOG.md
+          echo "npm install -g @devcycle/cli" >> CHANGELOG.md
+          echo '```' >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "#### Standalone Binaries" >> CHANGELOG.md
+          echo "Download the appropriate binary for your platform from the release assets below." >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "### Usage" >> CHANGELOG.md
+          echo "After installation, the MCP server is available as \`dvc-mcp\`." >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "Test the installation:" >> CHANGELOG.md
+          echo '```bash' >> CHANGELOG.md
+          echo 'echo '"'"'{"jsonrpc": "2.0", "method": "tools/list", "id": 1}'"'"' | dvc-mcp' >> CHANGELOG.md
+          echo '```' >> CHANGELOG.md
+          
+          # Set output for release body
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat CHANGELOG.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.build.outputs.version }}
+          name: "DevCycle MCP Server ${{ needs.build.outputs.version }}"
+          body: ${{ steps.changelog.outputs.changelog }}
+          artifacts: |
+            binaries/dvc-mcp-linux-x64
+            binaries/dvc-mcp-macos-x64
+            binaries/dvc-mcp-win-x64.exe
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          prerelease: false
+
+  update-documentation:
+    needs: release
+    runs-on: ubuntu-latest
+    if: always() && needs.release.result == 'success'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update installation documentation
+        run: |
+          # Update version references in documentation
+          version=${{ needs.build.outputs.version }}
+          
+          # Update INSTALLATION.md with new version
+          sed -i "s/dvc-mcp-.*-x64/dvc-mcp-${version}-x64/g" docs/mcp/INSTALLATION.md
+          
+          # Update README.md if it contains version references
+          if grep -q "dvc-mcp-.*-x64" README.md; then
+            sed -i "s/dvc-mcp-.*-x64/dvc-mcp-${version}-x64/g" README.md
+          fi
+
+      - name: Create PR for documentation updates
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: update MCP server version to ${{ needs.build.outputs.version }}"
+          title: "Update MCP server documentation for ${{ needs.build.outputs.version }}"
+          body: |
+            This PR updates the MCP server documentation to reference the new version ${{ needs.build.outputs.version }}.
+            
+            Changes:
+            - Updated version references in installation guides
+            - Updated download links for standalone binaries
+            
+            Auto-generated by release workflow.
+          branch: update-mcp-docs-${{ needs.build.outputs.version }}
+
+  notify:
+    needs: [release, update-documentation]
+    runs-on: ubuntu-latest
+    if: always() && needs.release.result == 'success'
+    steps:
+      - name: Notify team
+        run: |
+          echo "🚀 DevCycle MCP Server ${{ needs.build.outputs.version }} has been released!"
+          echo "📦 NPM: npm install -g @devcycle/cli"
+          echo "🔗 GitHub: https://github.com/DevCycleHQ/cli/releases/tag/${{ needs.build.outputs.version }}"
+          echo "📚 Documentation: https://github.com/DevCycleHQ/cli/tree/main/docs/mcp"
+          
+          # Add Discord/Slack notification here if needed
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data '{"text":"DevCycle MCP Server ${{ needs.build.outputs.version }} released!"}' \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  cleanup:
+    needs: [notify]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Clean up artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Clean up build artifacts after successful release
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
+            
+            for (const artifact of artifacts.data.artifacts) {
+              if (artifact.name.startsWith('mcp-')) {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id,
+                });
+              }
+            }

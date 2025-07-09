@@ -8,6 +8,7 @@ Major features include:
 - Detect and list DevCycle Variable usages in your codebase
 - Manage your Self-Targeting Overrides to quickly switch between Variable values
 - Generate type definitions for type-safe usage of DevCycle (Typescript only)
+- **MCP Server for AI Integration** - Seamlessly integrate with AI coding assistants like Cursor and Claude Desktop
 
 The CLI can be customized in several ways using command-line args or by creating a [configuration file](#repo-configuration).
 
@@ -18,6 +19,7 @@ The CLI can be customized in several ways using command-line args or by creating
 <!-- toc -->
 * [Setup](#setup)
 * [Authentication](#authentication)
+* [MCP Server](#mcp-server)
 * [Usage](#usage)
 * [Command Topics](#command-topics)
 * [Repo Configuration](#repo-configuration)
@@ -99,6 +101,131 @@ $ dvc --client-id=<your client id> --client-secret=<your client secret> --projec
 ## Github Action
 
 The Devcycle Github actions are configured with auth information through the `project-key`, `client-id` and `client-secret` configuration parameters. This is passed to the CLI via command line arguments.
+
+# MCP Server
+
+The DevCycle CLI includes a Model Context Protocol (MCP) server that enables seamless integration with AI coding assistants like Cursor and Claude Desktop. This allows you to manage DevCycle features, variables, environments, and projects using natural language.
+
+## What is MCP?
+
+The Model Context Protocol (MCP) is an open standard that enables AI assistants to securely connect to external tools and data sources. The DevCycle MCP server acts as a bridge between your AI assistant and the DevCycle Management API.
+
+## Quick Setup
+
+### For Cursor IDE
+
+1. Install the DevCycle CLI:
+   ```bash
+   npm install -g @devcycle/cli
+   ```
+
+2. Configure your Cursor settings (`.cursor/settings.json`):
+   ```json
+   {
+     "mcp": {
+       "servers": {
+         "devcycle": {
+           "command": "dvc-mcp",
+           "args": [],
+           "env": {
+             "DEVCYCLE_CLIENT_ID": "your-client-id",
+             "DEVCYCLE_CLIENT_SECRET": "your-client-secret",
+             "DEVCYCLE_PROJECT_KEY": "your-project-key"
+           }
+         }
+       }
+     }
+   }
+   ```
+
+### For Claude Desktop
+
+1. Install the DevCycle CLI:
+   ```bash
+   npm install -g @devcycle/cli
+   ```
+
+2. Configure Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+   ```json
+   {
+     "mcpServers": {
+       "devcycle": {
+         "command": "dvc-mcp",
+         "args": [],
+         "env": {
+           "DEVCYCLE_CLIENT_ID": "your-client-id",
+           "DEVCYCLE_CLIENT_SECRET": "your-client-secret",
+           "DEVCYCLE_PROJECT_KEY": "your-project-key"
+         }
+       }
+     }
+   }
+   ```
+
+## Usage Examples
+
+Once configured, you can interact with DevCycle using natural language:
+
+### Feature Management
+- *"List all feature flags in the current project"*
+- *"Create a new feature flag called 'new-checkout-flow' with type 'release'"*
+- *"Update the feature flag 'user-dashboard' to set the status to 'active'"*
+
+### Environment Operations
+- *"Show me all environments in this project"*
+- *"Get the SDK keys for the 'production' environment"*
+- *"Create a new staging environment called 'staging-v2'"*
+
+### Self-Targeting
+- *"Set my targeting override for feature 'beta-features' in 'development' to variation 'enabled'"*
+- *"Clear all my targeting overrides"*
+
+## Available Tools
+
+The MCP server provides comprehensive access to DevCycle functionality:
+
+- **Feature Management**: Create, update, list, and delete feature flags
+- **Environment Management**: Manage environments and retrieve SDK keys
+- **Project Management**: List and manage projects
+- **Variable Management**: Create, update, and manage variables
+- **Self-Targeting**: Manage personal targeting overrides
+
+## Authentication
+
+The MCP server uses the same authentication methods as the CLI:
+
+1. **Environment Variables** (recommended):
+   ```bash
+   export DEVCYCLE_CLIENT_ID="your-client-id"
+   export DEVCYCLE_CLIENT_SECRET="your-client-secret"
+   export DEVCYCLE_PROJECT_KEY="your-project-key"
+   ```
+
+2. **CLI Authentication**:
+   ```bash
+   dvc login sso
+   dvc projects select your-project-key
+   ```
+
+3. **Configuration Files**: Automatic discovery from `.devcycle/config.yml` or `~/.config/devcycle/user.yml`
+
+## Troubleshooting
+
+### Test Installation
+```bash
+echo '{"jsonrpc": "2.0", "method": "tools/list", "id": 1}' | dvc-mcp
+```
+
+### Common Issues
+- **Command not found**: Ensure the CLI is installed globally
+- **Authentication errors**: Verify your credentials and project key
+- **Permission denied**: Check your API credentials have necessary permissions
+
+## Documentation
+
+For detailed installation guides, troubleshooting, and advanced configuration:
+- [Installation Guide](docs/mcp/INSTALLATION.md)
+- [Distribution Plan](docs/mcp/DISTRIBUTION_PLAN.md)
 
 # Usage
 

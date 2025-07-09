@@ -4,7 +4,8 @@
     "description": "DevCycle CLI Tool",
     "author": "support@devcycle.com",
     "bin": {
-        "dvc": "./bin/run"
+        "dvc": "./bin/run",
+        "dvc-mcp": "./dist/mcp/index.js"
     },
     "homepage": "https://github.com/DevCycleHQ/cli",
     "license": "MIT",
@@ -18,6 +19,7 @@
     ],
     "dependencies": {
         "@babel/parser": "^7.27.0",
+        "@modelcontextprotocol/sdk": "^0.5.0",
         "@oclif/core": "^2.16.0",
         "@oclif/plugin-autocomplete": "^2.3.10",
         "@oclif/plugin-help": "^6.2.27",
@@ -63,6 +65,7 @@
         "mocha": "^9.2.2",
         "nock": "^13.5.6",
         "oclif": "^3.17.2",
+        "pkg": "^5.8.1",
         "prettier": "3.5.3",
         "shx": "^0.3.4",
         "sinon": "^15.2.0",
@@ -121,6 +124,8 @@
     },
     "scripts": {
         "build": "shx rm -rf dist && tsc -b && oclif manifest && oclif readme --multi",
+        "build:mcp": "shx rm -rf dist && tsc -b && chmod +x dist/mcp/index.js",
+        "build:mcp-standalone": "yarn build:mcp && pkg dist/mcp/index.js --target node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path dist/mcp/binaries",
         "build:tar": "oclif pack tarballs",
         "lint": "eslint . --ext .ts --config .eslintrc",
         "postpack": "shx rm -f oclif.manifest.json",
