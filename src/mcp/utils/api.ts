@@ -1,8 +1,20 @@
 import { DevCycleAuth } from './auth'
 
 function getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
+    if (error instanceof Error && error.message) {
         return error.message
+    }
+    if (error && typeof error === 'string') {
+        return error
+    }
+    if (error && typeof error === 'object') {
+        return JSON.stringify(error)
+    }
+    if (error === null) {
+        return 'null'
+    }
+    if (error === undefined) {
+        return 'undefined'
     }
     return String(error)
 }
