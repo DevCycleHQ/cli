@@ -316,7 +316,7 @@ export const featureToolDefinitions: Tool[] = [
                 key: {
                     type: 'string',
                     description:
-                        'Unique variation key (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
+                        'Unique variation key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
                 },
                 name: {
                     type: 'string',
@@ -327,6 +327,7 @@ export const featureToolDefinitions: Tool[] = [
                     type: 'object',
                     description:
                         'Optional key-value map of variable keys to their values for this variation (supports string, number, boolean, and object values)',
+                    additionalProperties: true,
                 },
             },
             required: ['feature_key', 'key', 'name'],
@@ -349,7 +350,7 @@ export const featureToolDefinitions: Tool[] = [
                 key: {
                     type: 'string',
                     description:
-                        'New variation key (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
+                        'New variation key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
                 },
                 name: {
                     type: 'string',
@@ -358,7 +359,12 @@ export const featureToolDefinitions: Tool[] = [
                 variables: {
                     type: 'object',
                     description:
-                        'Overrides the key-value map of variable keys to their values for this variation (supports string, number, boolean, and object values)',
+                        'Key-value map of variable keys to their values for this variation (supports string, number, boolean, and object values)',
+                    additionalProperties: true,
+                },
+                _id: {
+                    type: 'string',
+                    description: 'Internal variation ID (optional)',
                 },
             },
             required: ['feature_key', 'variation_key'],
@@ -454,7 +460,7 @@ export const featureToolDefinitions: Tool[] = [
                             },
                             name: {
                                 type: 'string',
-                                description: 'Target name',
+                                description: 'Target name (optional)',
                             },
                             audience: {
                                 type: 'object',
@@ -463,16 +469,18 @@ export const featureToolDefinitions: Tool[] = [
                                 properties: {
                                     name: {
                                         type: 'string',
-                                        description: 'Audience name',
+                                        description:
+                                            'Audience name (max 100 characters, optional)',
                                     },
                                     filters: {
                                         type: 'object',
-                                        description: 'Filter definition',
+                                        description:
+                                            'Audience filters with logical operator',
                                         properties: {
                                             filters: {
                                                 type: 'array',
                                                 description:
-                                                    'Array of filter conditions',
+                                                    'Array of filter conditions (supports all, optIn, user, userCountry, userAppVersion, userPlatformVersion, userCustom, audienceMatch filters)',
                                             },
                                             operator: {
                                                 type: 'string',
@@ -512,6 +520,13 @@ export const featureToolDefinitions: Tool[] = [
                                 type: 'object',
                                 description: 'Rollout configuration (optional)',
                                 properties: {
+                                    startPercentage: {
+                                        type: 'number',
+                                        minimum: 0,
+                                        maximum: 1,
+                                        description:
+                                            'Starting percentage for rollout (optional)',
+                                    },
                                     type: {
                                         type: 'string',
                                         enum: [
@@ -526,16 +541,10 @@ export const featureToolDefinitions: Tool[] = [
                                         format: 'date-time',
                                         description: 'Rollout start date',
                                     },
-                                    startPercentage: {
-                                        type: 'number',
-                                        minimum: 0,
-                                        maximum: 1,
-                                        description:
-                                            'Starting percentage for rollout',
-                                    },
                                     stages: {
                                         type: 'array',
-                                        description: 'Rollout stages',
+                                        description:
+                                            'Rollout stages (optional)',
                                         items: {
                                             type: 'object',
                                             properties: {
@@ -589,12 +598,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'listFeatures',
             validatedArgs,
             async (authToken, projectKey) => {
-                const query = {
-                    search: validatedArgs.search,
-                    page: validatedArgs.page,
-                    perPage: validatedArgs.per_page,
-                }
-                return await fetchFeatures(authToken, projectKey, query)
+                return await fetchFeatures(authToken, projectKey, validatedArgs)
             },
         )
     },
@@ -670,16 +674,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'createFeatureVariation',
             validatedArgs,
             async (authToken, projectKey) => {
-                const variationData = {
-                    key: validatedArgs.key,
-                    name: validatedArgs.name,
-                    variables: validatedArgs.variables,
-                }
+                const { feature_key, ...variationData } = validatedArgs
 
                 return await createVariation(
                     authToken,
                     projectKey,
-                    validatedArgs.feature_key,
+                    feature_key,
                     variationData,
                 )
             },
@@ -695,17 +695,14 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'updateFeatureVariation',
             validatedArgs,
             async (authToken, projectKey) => {
-                const variationData = {
-                    key: validatedArgs.key,
-                    name: validatedArgs.name,
-                    variables: validatedArgs.variables,
-                }
+                const { feature_key, variation_key, ...variationData } =
+                    validatedArgs
 
                 return await updateVariation(
                     authToken,
                     projectKey,
-                    validatedArgs.feature_key,
-                    validatedArgs.variation_key,
+                    feature_key,
+                    variation_key,
                     variationData,
                 )
             },
@@ -772,15 +769,15 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'updateFeatureTargeting',
             validatedArgs,
             async (authToken, projectKey) => {
+                const { feature_key, environment_key, ...configData } =
+                    validatedArgs
+
                 return await updateFeatureConfigForEnvironment(
                     authToken,
                     projectKey,
-                    validatedArgs.feature_key,
-                    validatedArgs.environment_key,
-                    {
-                        status: validatedArgs.status,
-                        targets: validatedArgs.targets,
-                    },
+                    feature_key,
+                    environment_key,
+                    configData,
                 )
             },
         )
