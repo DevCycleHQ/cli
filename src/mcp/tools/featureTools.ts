@@ -1,6 +1,6 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
 import { DevCycleApiClient } from '../utils/api'
-import { fetchFeatures, createFeature } from '../../api/features'
+import { fetchFeatures, createFeature, updateFeature } from '../../api/features'
 import {
     fetchVariations,
     createVariation,
@@ -15,6 +15,7 @@ import {
 import {
     ListFeaturesArgsSchema,
     CreateFeatureArgsSchema,
+    UpdateFeatureArgsSchema,
     EnableTargetingArgsSchema,
     DisableTargetingArgsSchema,
     ListVariationsArgsSchema,
@@ -56,20 +57,120 @@ export const featureToolDefinitions: Tool[] = [
             properties: {
                 key: {
                     type: 'string',
-                    description: 'Unique feature key',
+                    description:
+                        'Unique feature key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
                 },
                 name: {
                     type: 'string',
-                    description: 'Human-readable feature name',
+                    description:
+                        'Human-readable feature name (max 100 characters)',
                 },
                 description: {
                     type: 'string',
-                    description: 'Feature description',
+                    description: 'Feature description (max 1000 characters)',
                 },
                 type: {
                     type: 'string',
                     enum: ['release', 'experiment', 'permission', 'ops'],
                     description: 'Feature type',
+                },
+                tags: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                    description: 'Tags to organize features',
+                },
+                controlVariation: {
+                    type: 'string',
+                    description:
+                        'The key of the variation that is used as the control variation for Metrics',
+                },
+                settings: {
+                    type: 'object',
+                    properties: {
+                        publicName: {
+                            type: 'string',
+                            description:
+                                'Public name for the feature (max 100 characters)',
+                        },
+                        publicDescription: {
+                            type: 'string',
+                            description:
+                                'Public description for the feature (max 1000 characters)',
+                        },
+                        optInEnabled: {
+                            type: 'boolean',
+                            description:
+                                'Whether opt-in is enabled for the feature',
+                        },
+                    },
+                    description:
+                        'Feature-level settings (all properties required if provided)',
+                    required: [
+                        'publicName',
+                        'publicDescription',
+                        'optInEnabled',
+                    ],
+                },
+                sdkVisibility: {
+                    type: 'object',
+                    properties: {
+                        mobile: {
+                            type: 'boolean',
+                            description:
+                                'Whether the feature is visible to mobile SDKs',
+                        },
+                        client: {
+                            type: 'boolean',
+                            description:
+                                'Whether the feature is visible to client SDKs',
+                        },
+                        server: {
+                            type: 'boolean',
+                            description:
+                                'Whether the feature is visible to server SDKs',
+                        },
+                    },
+                    description:
+                        'SDK Type Visibility Settings (all properties required if provided)',
+                    required: ['mobile', 'client', 'server'],
+                },
+                variables: {
+                    type: 'array',
+                    description:
+                        'Array of variables to create or reassociate with this feature',
+                    items: {
+                        type: 'object',
+                        description: 'Variable creation or reassociation data',
+                    },
+                },
+                variations: {
+                    type: 'array',
+                    description: 'Array of variations for this feature',
+                    items: {
+                        type: 'object',
+                        description: 'Variation data with key, name, variables',
+                    },
+                },
+                configurations: {
+                    type: 'object',
+                    description:
+                        'Environment-specific configurations (key-value map of environment keys to config)',
+                    additionalProperties: {
+                        type: 'object',
+                        properties: {
+                            targets: {
+                                type: 'array',
+                                description:
+                                    'Targeting rules for this environment',
+                            },
+                            status: {
+                                type: 'string',
+                                description: 'Status for this environment',
+                            },
+                        },
+                    },
                 },
                 interactive: {
                     type: 'boolean',
@@ -77,6 +178,115 @@ export const featureToolDefinitions: Tool[] = [
                         'Use interactive mode to prompt for missing fields',
                 },
             },
+        },
+    },
+    {
+        name: 'update_feature',
+        description: 'Update an existing feature flag',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                key: {
+                    type: 'string',
+                    description:
+                        'The key of the feature to update(1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
+                },
+                name: {
+                    type: 'string',
+                    description:
+                        'Human-readable feature name (max 100 characters)',
+                },
+                description: {
+                    type: 'string',
+                    description: 'Feature description (max 1000 characters)',
+                },
+                type: {
+                    type: 'string',
+                    enum: ['release', 'experiment', 'permission', 'ops'],
+                    description: 'Feature type',
+                },
+                tags: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                    description: 'Tags to organize Features on the dashboard',
+                },
+                controlVariation: {
+                    type: 'string',
+                    description:
+                        'The key of the variation that is used as the control variation for Metrics',
+                },
+                settings: {
+                    type: 'object',
+                    properties: {
+                        publicName: {
+                            type: 'string',
+                            description:
+                                'Public name for the feature (max 100 characters)',
+                        },
+                        publicDescription: {
+                            type: 'string',
+                            description:
+                                'Public description for the feature (max 1000 characters)',
+                        },
+                        optInEnabled: {
+                            type: 'boolean',
+                            description:
+                                'Whether opt-in is enabled for the feature',
+                        },
+                    },
+                    description:
+                        'Feature-level settings (all properties required if provided)',
+                    required: [
+                        'publicName',
+                        'publicDescription',
+                        'optInEnabled',
+                    ],
+                },
+                sdkVisibility: {
+                    type: 'object',
+                    properties: {
+                        mobile: {
+                            type: 'boolean',
+                            description:
+                                'Whether the feature is visible to mobile SDKs',
+                        },
+                        client: {
+                            type: 'boolean',
+                            description:
+                                'Whether the feature is visible to client SDKs',
+                        },
+                        server: {
+                            type: 'boolean',
+                            description:
+                                'Whether the feature is visible to server SDKs',
+                        },
+                    },
+                    description:
+                        'SDK Type Visibility Settings (all properties required if provided)',
+                    required: ['mobile', 'client', 'server'],
+                },
+                variables: {
+                    type: 'array',
+                    description:
+                        'Array of variables to create or reassociate with this feature',
+                    items: {
+                        type: 'object',
+                        description: 'Variable creation or reassociation data',
+                    },
+                },
+                variations: {
+                    type: 'array',
+                    description: 'Array of variations for this feature',
+                    items: {
+                        type: 'object',
+                        description:
+                            'Variation data with key, name, variables, and _id',
+                    },
+                },
+            },
+            required: ['key'],
         },
     },
     {
@@ -407,14 +617,28 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     )
                 }
 
-                const featureData = {
-                    key: validatedArgs.key,
-                    name: validatedArgs.name,
-                    description: validatedArgs.description || '',
-                    type: validatedArgs.type || 'release',
-                }
+                // Remove the MCP-specific 'interactive' property and pass the rest to the API
+                const { interactive, ...featureData } = validatedArgs
 
                 return await createFeature(authToken, projectKey, featureData)
+            },
+        )
+    },
+    update_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
+        const validatedArgs = UpdateFeatureArgsSchema.parse(args)
+
+        return await apiClient.executeWithLogging(
+            'updateFeature',
+            validatedArgs,
+            async (authToken, projectKey) => {
+                const { key, ...updateData } = validatedArgs
+
+                return await updateFeature(
+                    authToken,
+                    projectKey,
+                    key,
+                    updateData,
+                )
             },
         )
     },

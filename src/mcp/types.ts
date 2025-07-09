@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { schemas } from '../api/zodClient'
 
 // Zod schemas for MCP tool arguments
 export const ListFeaturesArgsSchema = z.object({
@@ -117,12 +118,15 @@ export const DisableTargetingArgsSchema = z.object({
     environment_key: z.string(),
 })
 
-export const CreateFeatureArgsSchema = z.object({
-    key: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
-    interactive: z.boolean().optional(),
+export const CreateFeatureArgsSchema = schemas.CreateFeatureDto.extend({
+    interactive: z.boolean().optional(), // MCP-specific: prompt for missing fields
+})
+
+export const UpdateFeatureArgsSchema = schemas.UpdateFeatureDto.extend({
+    key: z
+        .string()
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/), // Make key required for identifying the feature
 })
 
 export const UpdateSelfTargetingIdentityArgsSchema = z.object({
@@ -232,6 +236,7 @@ export type GetSdkKeysArgs = z.infer<typeof GetSdkKeysArgsSchema>
 export type EnableTargetingArgs = z.infer<typeof EnableTargetingArgsSchema>
 export type DisableTargetingArgs = z.infer<typeof DisableTargetingArgsSchema>
 export type CreateFeatureArgs = z.infer<typeof CreateFeatureArgsSchema>
+export type UpdateFeatureArgs = z.infer<typeof UpdateFeatureArgsSchema>
 export type ListVariationsArgs = z.infer<typeof ListVariationsArgsSchema>
 export type CreateVariationArgs = z.infer<typeof CreateVariationArgsSchema>
 export type UpdateVariationArgs = z.infer<typeof UpdateVariationArgsSchema>
