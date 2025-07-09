@@ -18,6 +18,7 @@ import {
     fetchTargetingForFeature,
     updateFeatureConfigForEnvironment,
 } from '../../api/targeting'
+
 import {
     ListFeaturesArgsSchema,
     CreateFeatureArgsSchema,
@@ -174,7 +175,8 @@ export const featureToolDefinitions: Tool[] = [
     },
     {
         name: 'create_feature',
-        description: 'Create a new feature flag (supports interactive mode)',
+        description:
+            'Create a new feature flag (supports interactive mode). ⚠️ IMPORTANT: If creating configurations for production environments, always confirm with the user before proceeding.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -234,7 +236,8 @@ export const featureToolDefinitions: Tool[] = [
     },
     {
         name: 'update_feature',
-        description: 'Update an existing feature flag',
+        description:
+            'Update an existing feature flag. ⚠️ IMPORTANT: Changes to feature flags may affect production environments. Always confirm with the user before making changes to features that are active in production.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -272,7 +275,8 @@ export const featureToolDefinitions: Tool[] = [
     },
     {
         name: 'delete_feature',
-        description: 'Delete an existing feature flag',
+        description:
+            'Delete an existing feature flag. ⚠️ CRITICAL: Deleting a feature flag will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any feature flag.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -345,7 +349,8 @@ export const featureToolDefinitions: Tool[] = [
     },
     {
         name: 'enable_feature_targeting',
-        description: 'Enable targeting for a feature in an environment',
+        description:
+            'Enable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
         inputSchema: {
             type: 'object',
             properties: FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES,
@@ -354,7 +359,8 @@ export const featureToolDefinitions: Tool[] = [
     },
     {
         name: 'disable_feature_targeting',
-        description: 'Disable targeting for a feature in an environment',
+        description:
+            'Disable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
         inputSchema: {
             type: 'object',
             properties: FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES,
@@ -377,7 +383,7 @@ export const featureToolDefinitions: Tool[] = [
     {
         name: 'update_feature_targeting',
         description:
-            'Update feature configuration (targeting rules) for a feature in an environment',
+            'Update feature configuration (targeting rules) for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
         inputSchema: {
             type: 'object',
             properties: {
