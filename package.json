@@ -122,10 +122,13 @@
     "scripts": {
         "build": "shx rm -rf dist && tsc -b && oclif manifest && oclif readme --multi",
         "build:tar": "oclif pack tarballs",
+        "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
+        "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
         "lint": "eslint . --ext .ts --config .eslintrc",
         "postpack": "shx rm -f oclif.manifest.json",
         "posttest": "yarn lint",
         "prepack": "yarn build && oclif manifest && oclif readme --multi",
+        "pretest": "yarn format:check",
         "test": "mocha test/*.ts \"src/**/*.test.ts\"",
         "test:ci": "yarn test --forbid-only",
         "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
