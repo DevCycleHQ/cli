@@ -1,1 +1,0 @@
-{"version":3,"file":"setCurrentTestFile.js","sourceRoot":"","sources":["setCurrentTestFile.ts"],"names":[],"mappings":";;;AAEA;;;GAGG;AACI,MAAM,kBAAkB,GAAG,CAAC,QAAgB,EAAgB,EAAE,CACjE;IACI,IAAI,IAAI,CAAC,WAAW,EAAE,CAAC;QACnB,IAAI,CAAC,WAAW,CAAC,IAAI,GAAG,QAAQ,CAAA;IACpC,CAAC;AACL,CAAC,CAAA;AALQ,QAAA,kBAAkB,sBAK1B"}
