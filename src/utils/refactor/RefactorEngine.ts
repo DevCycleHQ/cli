@@ -176,7 +176,7 @@ export abstract class RefactorEngine {
             ) {
                 return this.sdkMethods[identifier.name]
             }
-            
+
             return undefined
         }
 
