@@ -4,9 +4,7 @@ import { readFileSync, rmSync, existsSync } from 'fs'
 
 const TEMP_FILE = 'diff.txt'
 
-export const executeDiff = (
-    diffCommand: string,
-): parse.File[] => {
+export const executeDiff = (diffCommand: string): parse.File[] => {
     try {
         execSync(`git diff ${diffCommand} > diff.txt`, {
             stdio: 'ignore',
