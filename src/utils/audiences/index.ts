@@ -1,10 +1,6 @@
 import {
     Audience,
-    AudienceMatchFilter,
-    FeatureConfig,
     Filter,
-    Target,
-    UpdateTargetParams,
 } from '../../api/schemas'
 
 export const buildAudienceNameMap = (audiences?: Audience[]) => {
@@ -25,8 +21,8 @@ export const replaceAudienceIdInFilter = (
     audienceNameMap: Record<string, string>,
 ) => {
     const newFilter = structuredClone(filter) as typeof filter
-    if (newFilter.type === 'audienceMatch') {
-        const audienceIds = newFilter._audiences!
+    if (newFilter.type === 'audienceMatch' && newFilter._audiences) {
+        const audienceIds = newFilter._audiences
         const audienceNames = audienceIds.map(
             (audienceId) => audienceNameMap[audienceId] || audienceId,
         )

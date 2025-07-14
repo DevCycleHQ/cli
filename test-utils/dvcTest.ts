@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+ 
 import { test } from '@oclif/test'
 import { AUTH_URL, BASE_URL } from '../src/api/common'
 

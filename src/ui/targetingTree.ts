@@ -173,7 +173,7 @@ const buildDefinitionTree = (
                 audienceTree.insert(audience),
             )
             audienceFilter.insert(
-                comparatorMap[filter.comparator!],
+                comparatorMap[filter.comparator || 'exists'],
                 audienceTree,
             )
             definitionTree.insert(

@@ -55,7 +55,7 @@ export const getVariableAliasesFromTypeGeneratorFile = (
     const lines = file.split('\n')
     lines.forEach((line, index) => {
         if (line.startsWith('export const') && !line.includes('useVariable')) {
-            const [_, assignment] = line.split('export const')
+            const [, assignment] = line.split('export const')
             const [constant, keyAndExtras] = assignment.split('=')
             let key = keyAndExtras.match(/'([^']+)'/)?.[1]
 

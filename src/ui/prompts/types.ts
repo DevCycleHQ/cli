@@ -1,5 +1,3 @@
-import { ListOption } from './listPrompts/listOptionsPrompt'
-
 export type PromptResult = {
     token: string
     projectKey: string

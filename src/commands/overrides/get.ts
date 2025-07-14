@@ -1,4 +1,4 @@
-import { Flags, ux } from '@oclif/core'
+import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
 import {
     environmentPrompt,

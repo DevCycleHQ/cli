@@ -189,7 +189,7 @@ export abstract class RefactorEngine {
                     if (variableProperty === 'variable') {
                         return RefactorEngine.dvcVariableObject(engine.variable)
                     } else {
-                        const [_, property] = variableProperty.split('.')
+                        const [, property] = variableProperty.split('.')
                         return {
                             type: 'MemberExpression',
                             object: RefactorEngine.dvcVariableObject(
