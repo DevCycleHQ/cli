@@ -83,6 +83,8 @@ export function storeAccessToken(
     if (orgId) config.sso.orgs[orgId] = { accessToken, refreshToken }
 
     // Use file descriptor to safely write config
+    // Note: 0o600 permissions work on Unix-like systems (macOS, Linux)
+    // On Windows, Node.js will approximate these permissions
     const fd = fs.openSync(authPath, 'w', 0o600)
     try {
         fs.writeFileSync(fd, jsYaml.dump(config))
