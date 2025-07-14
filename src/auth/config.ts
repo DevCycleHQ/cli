@@ -50,9 +50,26 @@ export function storeAccessToken(
         fs.mkdirSync(configDir, { recursive: true })
     }
 
-    const config = fs.existsSync(authPath)
-        ? (jsYaml.load(fs.readFileSync(authPath, 'utf8')) as AuthConfig)
-        : new AuthConfig()
+    let config: AuthConfig
+
+    // Use file descriptor to safely read existing config
+    try {
+        const fd = fs.openSync(authPath, 'r')
+        try {
+            const data = fs.readFileSync(fd, 'utf8')
+            const parsedConfig = jsYaml.load(data) as AuthConfig
+            config = parsedConfig || new AuthConfig()
+        } finally {
+            fs.closeSync(fd)
+        }
+    } catch (error: any) {
+        // If file doesn't exist or can't be read, create new config
+        if (error.code === 'ENOENT') {
+            config = new AuthConfig()
+        } else {
+            throw error
+        }
+    }
 
     config.sso = config.sso || new SSOAuthConfig()
     config.sso.orgs = config.sso.orgs || {}
@@ -66,5 +83,14 @@ export function storeAccessToken(
     const orgId = getOrgIdFromToken(accessToken)
     if (orgId) config.sso.orgs[orgId] = { accessToken, refreshToken }
 
-    fs.writeFileSync(authPath, jsYaml.dump(config))
+    // Use file descriptor to safely write config
+    // Note: 0o600 permissions work on Unix-like systems (macOS, Linux)
+    // On Windows, Node.js will approximate these permissions
+    const fd = fs.openSync(authPath, 'w', 0o600)
+    try {
+        fs.writeFileSync(fd, jsYaml.dump(config))
+        fs.fsyncSync(fd) // Ensure data is flushed to disk
+    } finally {
+        fs.closeSync(fd)
+    }
 }
