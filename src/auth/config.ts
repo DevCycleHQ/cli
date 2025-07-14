@@ -57,7 +57,8 @@ export function storeAccessToken(
         const fd = fs.openSync(authPath, 'r')
         try {
             const data = fs.readFileSync(fd, 'utf8')
-            config = jsYaml.load(data) as AuthConfig
+            const parsedConfig = jsYaml.load(data) as AuthConfig
+            config = parsedConfig || new AuthConfig()
         } finally {
             fs.closeSync(fd)
         }
@@ -88,6 +89,7 @@ export function storeAccessToken(
     const fd = fs.openSync(authPath, 'w', 0o600)
     try {
         fs.writeFileSync(fd, jsYaml.dump(config))
+        fs.fsyncSync(fd) // Ensure data is flushed to disk
     } finally {
         fs.closeSync(fd)
     }
