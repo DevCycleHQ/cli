@@ -27,11 +27,17 @@ const ObfuscationSettings = z.object({
     enabled: z.boolean(),
     required: z.boolean(),
 })
+const StalenessSettings = z
+    .object({
+        enabled: z.boolean(),
+    })
+    .optional()
 const ProjectSettings = z.object({
     edgeDB: EdgeDBSettings,
     optIn: OptInSettings,
     sdkTypeVisibility: SDKTypeVisibilitySettings,
     obfuscation: ObfuscationSettings,
+    staleness: StalenessSettings,
 })
 const CreateProjectDto = z.object({
     name: z.string().max(100),
@@ -290,12 +296,12 @@ const UpdateAudienceDto = z
     })
     .partial()
 const VariableValidationEntity = z.object({
-    schemaType: z.object({}).partial(),
-    enumValues: z.object({}).partial().optional(),
+    schemaType: z.string(),
+    enumValues: z.array(z.string()).optional(),
     regexPattern: z.string().optional(),
     jsonSchema: z.string().optional(),
     description: z.string(),
-    exampleValue: z.object({}).partial(),
+    exampleValue: z.any(),
 })
 const CreateVariableDto = z.object({
     name: z.string().max(100).optional(),
@@ -540,7 +546,7 @@ const Target = z.object({
     _id: z.string(),
     name: z.string().optional(),
     audience: TargetAudience,
-    rollout: Rollout.optional(),
+    rollout: Rollout.nullable().optional(),
     distribution: z.array(TargetDistribution),
 })
 const FeatureConfig = z.object({
@@ -556,7 +562,7 @@ const FeatureConfig = z.object({
 const UpdateTargetDto = z.object({
     _id: z.string().optional(),
     name: z.string().optional(),
-    rollout: Rollout.optional(),
+    rollout: Rollout.nullable().optional(),
     distribution: z.array(TargetDistribution),
     audience: TargetAudience,
 })
@@ -615,6 +621,16 @@ const Feature = z.object({
     readonly: z.boolean(),
     settings: FeatureSettings.partial().optional(),
     sdkVisibility: FeatureSDKVisibility.optional(),
+    staleness: z
+        .object({
+            stale: z.boolean(),
+            updatedAt: z.string().datetime().optional(),
+            disabled: z.boolean().optional(),
+            snoozedUntil: z.string().datetime().optional(),
+            reason: z.string().optional(),
+            metaData: z.record(z.string(), z.unknown()).optional(),
+        })
+        .optional(),
 })
 const FeatureDataPoint = z.object({
     values: z.object({}).partial(),
