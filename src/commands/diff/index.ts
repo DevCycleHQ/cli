@@ -119,8 +119,11 @@ export default class Diff extends Base {
               : []
 
         const fileFilter = new FileFilters(flags, codeInsightsConfig)
-        parsedDiff = parsedDiff.filter(({ from = '', to = ''}) => {
-            return fileFilter.shouldIncludeFile(from) || fileFilter.shouldIncludeFile(to)
+        parsedDiff = parsedDiff.filter(({ from = '', to = '' }) => {
+            return (
+                fileFilter.shouldIncludeFile(from) ||
+                fileFilter.shouldIncludeFile(to)
+            )
         })
 
         const matchesBySdk = parseFiles(parsedDiff, {

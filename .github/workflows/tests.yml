@@ -25,4 +25,6 @@ jobs:
           
     - run: yarn install
     - run: yarn build
+    - name: Check formatting
+      run: yarn format:check
     - run: yarn test:ci
