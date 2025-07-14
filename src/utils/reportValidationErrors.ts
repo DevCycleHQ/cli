@@ -33,7 +33,7 @@ export function reportZodValidationErrors(
 ): void {
     const errorsByKey = error.flatten().fieldErrors
     for (const issues of Object.values(errorsByKey)) {
-        if (issues?.[0]) {
+        if (Array.isArray(issues) && issues.length > 0) {
             writer.showError(issues[0])
         }
     }

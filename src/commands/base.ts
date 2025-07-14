@@ -21,7 +21,7 @@ import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
 import Writer from '../ui/writer'
-import { errorMap, setDVCReferrer } from '../api/apiClient'
+import { setDVCReferrer } from '../api/apiClient'
 import { Prompt, handleCustomPrompts } from '../ui/prompts'
 import { filterPrompts, mergeFlagsAndAnswers } from '../utils/prompts'
 import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
@@ -368,7 +368,7 @@ export default abstract class Base extends Command {
         if (!flags.headless) {
             input = await this.populateParametersWithFlags(prompts, flags)
         }
-        const parse = schema.parse(input, { errorMap })
+        const parse = schema.parse(input)
         return parse
     }
     public async populateParametersWithFlags(

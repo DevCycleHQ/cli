@@ -11,7 +11,7 @@ import {
     Variable,
     Variation,
 } from '../../../api/schemas'
-import { errorMap } from '../../../api/apiClient'
+
 import Writer from '../../writer'
 
 export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams> {
@@ -67,7 +67,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         const variable = await inquirer.prompt(this.variablePropertyPrompts)
         await this.promptVariationValues(variable)
 
-        CreateVariableDto.parse(variable, { errorMap })
+        CreateVariableDto.parse(variable)
         return {
             name: variable.key,
             value: { item: variable as CreateVariableParams },
@@ -102,7 +102,7 @@ export class VariableListOptions extends ListOptionsPrompt<CreateVariableParams>
         const editedVariable = await inquirer.prompt(filledOutPrompts)
         await this.promptVariationValues(editedVariable)
 
-        UpdateVariableDto.parse(editedVariable, { errorMap })
+        UpdateVariableDto.parse(editedVariable)
         if (index >= 0) {
             list[index] = {
                 name: editedVariable.key,

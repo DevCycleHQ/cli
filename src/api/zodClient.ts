@@ -375,6 +375,7 @@ const FeatureVariationDto = z.object({
     name: z.string().max(100),
     variables: z
         .record(
+            z.string(),
             z.union([
                 z.string(),
                 z.number(),
@@ -429,6 +430,7 @@ const Variation = z.object({
     name: z.string().max(100),
     variables: z
         .record(
+            z.string(),
             z.union([
                 z.string(),
                 z.number(),
@@ -446,7 +448,7 @@ const CreateVariationDto = z.object({
         .max(100)
         .regex(/^[a-z0-9-_.]+$/),
     name: z.string().max(100),
-    variables: z.record(z.any()).optional(),
+    variables: z.record(z.string(), z.any()).optional(),
 })
 const FeatureSettings = z.object({
     publicName: z.string().max(100),
@@ -492,6 +494,7 @@ const UpdateFeatureVariationDto = z
             .regex(/^[a-z0-9-_.]+$/),
         name: z.string().max(100),
         variables: z.record(
+            z.string(),
             z.union([
                 z.string(),
                 z.number(),

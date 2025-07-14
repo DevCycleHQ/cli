@@ -1,4 +1,4 @@
-import { errorMap } from '../../../api/apiClient'
+
 import {
     CreateVariationDto,
     CreateVariationParams,
@@ -89,7 +89,7 @@ export class VariationListOptions extends ListOptionsPrompt<CreateVariationParam
             ),
         )
 
-        CreateVariationDto.parse(editedVariation, { errorMap })
+        CreateVariationDto.parse(editedVariation)
         if (index >= 0) {
             list[index] = {
                 name: editedVariation.name || editedVariation.key,
