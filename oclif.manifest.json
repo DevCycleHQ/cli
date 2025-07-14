@@ -1,5 +1,5 @@
 {
-  "version": "5.20.3",
+  "version": "5.21.0",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -2405,6 +2405,12 @@
       "aliases": [],
       "hiddenAliases": [],
       "flags": {
+        "userId": {
+          "name": "userId",
+          "type": "option",
+          "description": "DevCycle Identity User ID to be used for Overrides & Self-Targeting",
+          "multiple": false
+        },
         "config-path": {
           "name": "config-path",
           "type": "option",
@@ -2486,12 +2492,6 @@
           "hidden": true,
           "helpGroup": "Global",
           "allowNo": false
-        },
-        "userId": {
-          "name": "userId",
-          "type": "option",
-          "description": "DevCycle Identity User ID to be used for Overrides & Self-Targeting",
-          "multiple": false
         }
       },
       "args": {}
@@ -3225,88 +3225,6 @@
       "aliases": [],
       "hiddenAliases": [],
       "flags": {
-        "config-path": {
-          "name": "config-path",
-          "type": "option",
-          "description": "Override the default location to look for the user.yml file",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "auth-path": {
-          "name": "auth-path",
-          "type": "option",
-          "description": "Override the default location to look for an auth.yml file",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "repo-config-path": {
-          "name": "repo-config-path",
-          "type": "option",
-          "description": "Override the default location to look for the repo config.yml file",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "client-id": {
-          "name": "client-id",
-          "type": "option",
-          "description": "Client ID to use for DevCycle API Authorization",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "client-secret": {
-          "name": "client-secret",
-          "type": "option",
-          "description": "Client Secret to use for DevCycle API Authorization",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "project": {
-          "name": "project",
-          "type": "option",
-          "description": "Project key to use for the DevCycle API requests",
-          "helpGroup": "Global",
-          "multiple": false
-        },
-        "no-api": {
-          "name": "no-api",
-          "type": "boolean",
-          "description": "Disable API-based enhancements for commands where authorization is optional. Suppresses warnings about missing credentials.",
-          "helpGroup": "Global",
-          "allowNo": false
-        },
-        "headless": {
-          "name": "headless",
-          "type": "boolean",
-          "description": "Disable all interactive flows and format output for easy parsing.",
-          "helpGroup": "Global",
-          "allowNo": false
-        },
-        "caller": {
-          "name": "caller",
-          "type": "option",
-          "description": "The integration that is calling the CLI.",
-          "hidden": true,
-          "helpGroup": "Global",
-          "multiple": false,
-          "options": [
-            "github.pr_insights",
-            "github.code_usages",
-            "gitlab.pr_insights",
-            "gitlab.code_usages",
-            "bitbucket.pr_insights",
-            "bitbucket.code_usages",
-            "cli",
-            "vscode_extension"
-          ]
-        },
-        "no-browser-auth": {
-          "name": "no-browser-auth",
-          "type": "boolean",
-          "description": "Disable automatic opening of a browser window",
-          "hidden": true,
-          "helpGroup": "Global",
-          "allowNo": false
-        },
         "all": {
           "name": "all",
           "type": "boolean",
@@ -3324,21 +3242,7 @@
           "type": "option",
           "description": "The key or id of the Environment to clear the Override for",
           "multiple": false
-        }
-      },
-      "args": {}
-    },
-    "overrides:get": {
-      "id": "overrides:get",
-      "description": "View the Overrides associated with your DevCycle Identity in your current project.",
-      "strict": true,
-      "pluginName": "@devcycle/cli",
-      "pluginAlias": "@devcycle/cli",
-      "pluginType": "core",
-      "hidden": false,
-      "aliases": [],
-      "hiddenAliases": [],
-      "flags": {
+        },
         "config-path": {
           "name": "config-path",
           "type": "option",
@@ -3420,7 +3324,21 @@
           "hidden": true,
           "helpGroup": "Global",
           "allowNo": false
-        },
+        }
+      },
+      "args": {}
+    },
+    "overrides:get": {
+      "id": "overrides:get",
+      "description": "View the Overrides associated with your DevCycle Identity in your current project.",
+      "strict": true,
+      "pluginName": "@devcycle/cli",
+      "pluginAlias": "@devcycle/cli",
+      "pluginType": "core",
+      "hidden": false,
+      "aliases": [],
+      "hiddenAliases": [],
+      "flags": {
         "feature": {
           "name": "feature",
           "type": "option",
@@ -3432,6 +3350,88 @@
           "type": "option",
           "description": "The key or id of the Environment to get Overrides for",
           "multiple": false
+        },
+        "config-path": {
+          "name": "config-path",
+          "type": "option",
+          "description": "Override the default location to look for the user.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "auth-path": {
+          "name": "auth-path",
+          "type": "option",
+          "description": "Override the default location to look for an auth.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "repo-config-path": {
+          "name": "repo-config-path",
+          "type": "option",
+          "description": "Override the default location to look for the repo config.yml file",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "client-id": {
+          "name": "client-id",
+          "type": "option",
+          "description": "Client ID to use for DevCycle API Authorization",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "client-secret": {
+          "name": "client-secret",
+          "type": "option",
+          "description": "Client Secret to use for DevCycle API Authorization",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "project": {
+          "name": "project",
+          "type": "option",
+          "description": "Project key to use for the DevCycle API requests",
+          "helpGroup": "Global",
+          "multiple": false
+        },
+        "no-api": {
+          "name": "no-api",
+          "type": "boolean",
+          "description": "Disable API-based enhancements for commands where authorization is optional. Suppresses warnings about missing credentials.",
+          "helpGroup": "Global",
+          "allowNo": false
+        },
+        "headless": {
+          "name": "headless",
+          "type": "boolean",
+          "description": "Disable all interactive flows and format output for easy parsing.",
+          "helpGroup": "Global",
+          "allowNo": false
+        },
+        "caller": {
+          "name": "caller",
+          "type": "option",
+          "description": "The integration that is calling the CLI.",
+          "hidden": true,
+          "helpGroup": "Global",
+          "multiple": false,
+          "options": [
+            "github.pr_insights",
+            "github.code_usages",
+            "gitlab.pr_insights",
+            "gitlab.code_usages",
+            "bitbucket.pr_insights",
+            "bitbucket.code_usages",
+            "cli",
+            "vscode_extension"
+          ]
+        },
+        "no-browser-auth": {
+          "name": "no-browser-auth",
+          "type": "boolean",
+          "description": "Disable automatic opening of a browser window",
+          "hidden": true,
+          "helpGroup": "Global",
+          "allowNo": false
         }
       },
       "args": {}

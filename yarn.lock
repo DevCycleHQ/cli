@@ -462,11 +462,11 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/minimatch": "npm:^5.1.2"
     "@types/mocha": "npm:^9.1.1"
-    "@types/node": "npm:^16.18.126"
+    "@types/node": "npm:^18.19.68"
     "@types/validator": "npm:^13.12.2"
     "@zodios/core": "npm:^10.9.6"
     "@zodios/openapi": "npm:^10.5.0"
-    axios: "npm:^1.8.4"
+    axios: "npm:^1.10.0"
     chai: "npm:^4.5.0"
     chalk: "npm:^4.1.2"
     class-transformer: "npm:^0.5.1"
@@ -498,7 +498,7 @@ __metadata:
     sinon: "npm:^15.2.0"
     ts-node: "npm:^10.9.2"
     tslib: "npm:^2.8.1"
-    typescript: "npm:^4.9.5"
+    typescript: "npm:^5.7.2"
     zod: "npm:^3.24.2"
   bin:
     dvc: ./bin/run
@@ -1662,10 +1662,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.18.126":
-  version: 16.18.126
-  resolution: "@types/node@npm:16.18.126"
-  checksum: 10c0/5c137eb141d33de32b16ff26047ff6d449432b58d0d25f7cced2040c97727d81fe1099a7581eb336d14a6840f5b09e363bdd43d7a6995e8e81eb47aa51e413fc
+"@types/node@npm:^18.19.68":
+  version: 18.19.118
+  resolution: "@types/node@npm:18.19.118"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/39ddf6a84f833bbcf5b5cd398e4f297adac0871fbf5387b5835f7c3f53e5002cae4db5eb42af8def261c2c4fd53afb3d884144c465aa2d020b6be95cb4dcd628
   languageName: node
   linkType: hard
 
@@ -2261,7 +2263,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.0, axios@npm:^1.8.4":
+"axios@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "axios@npm:1.10.0"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/2239cb269cc789eac22f5d1aabd58e1a83f8f364c92c2caa97b6f5cbb4ab2903d2e557d9dc670b5813e9bcdebfb149e783fb8ab3e45098635cd2f559b06bd5d8
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.0":
   version: 1.8.4
   resolution: "axios@npm:1.8.4"
   dependencies:
@@ -8450,7 +8463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.7.4, typescript@npm:^4.9.5":
+"typescript@npm:^4.7.4":
   version: 4.9.5
   resolution: "typescript@npm:4.9.5"
   bin:
@@ -8460,13 +8473,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^4.7.4#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^4.9.5#optional!builtin<compat/typescript>":
+"typescript@npm:^5.7.2":
+  version: 5.8.3
+  resolution: "typescript@npm:5.8.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10c0/5f8bb01196e542e64d44db3d16ee0e4063ce4f3e3966df6005f2588e86d91c03e1fb131c2581baf0fb65ee79669eea6e161cd448178986587e9f6844446dbb48
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^4.7.4#optional!builtin<compat/typescript>":
   version: 4.9.5
   resolution: "typescript@patch:typescript@npm%3A4.9.5#optional!builtin<compat/typescript>::version=4.9.5&hash=289587"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/e3333f887c6829dfe0ab6c1dbe0dd1e3e2aeb56c66460cb85c5440c566f900c833d370ca34eb47558c0c69e78ced4bfe09b8f4f98b6de7afed9b84b8d1dd06a1
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^5.7.2#optional!builtin<compat/typescript>":
+  version: 5.8.3
+  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=74658d"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10c0/92ea03509e06598948559ddcdd8a4ae5a7ab475766d5589f1b796f5731b3d631a4c7ddfb86a3bd44d58d10102b132cd4b4994dda9b63e6273c66d77d6a271dbd
   languageName: node
   linkType: hard
 
