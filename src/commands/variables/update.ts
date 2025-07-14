@@ -34,15 +34,8 @@ export default class UpdateVariable extends UpdateCommandWithCommonProperties {
             this.writer.showError('The key argument is required')
             return
         } else if (!variableKey) {
-            const { variable } = await inquirer.prompt<VariablePromptResult>(
-                [variablePrompt],
-                {
-                    token: this.authToken,
-                    projectKey: this.projectKey,
-                },
-            )
-            variableKey = variable.key
-            this.writer.printCurrentValues(variable)
+            this.writer.showError('Variable key is required')
+            return
         }
 
         const params = await this.populateParametersWithZod(

@@ -9,20 +9,47 @@ export class CreateProjectParams {
 
     @IsString()
     @IsOptional()
-    description: string
+    description?: string
 
     @IsNotEmpty()
     @IsString()
     key: string
+
+    @IsOptional()
+    color?: string
+
+    @IsOptional()
+    settings?: any
+
+    [key: string]: any
+
+    constructor(data: Partial<CreateProjectParams> = {}) {
+        Object.assign(this, data)
+    }
 }
 
 export class GetProjectsParams {
-    @IsString()
     @IsOptional()
-    sortBy: string
+    sortBy?: 'name' | 'key' | 'createdAt' | 'updatedAt' | 'createdBy' | 'propertyKey'
 
     @IsOptional()
-    sortOrder: 'asc' | 'desc'
+    sortOrder?: 'asc' | 'desc'
+
+    @IsOptional()
+    search?: string
+
+    @IsOptional()
+    createdBy?: string
+
+    @IsOptional()
+    page?: number
+
+    @IsOptional()
+    perPage?: number
+
+    constructor(data: Partial<GetProjectsParams> = {}) {
+        Object.assign(this, data)
+    }
 }
 
 const BASE_URL = '/v1/projects'

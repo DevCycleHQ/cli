@@ -53,9 +53,7 @@ export default class DetailedOverrides extends Base {
         }
 
         if (headless && (!featureKey || !environmentKey)) {
-            this.writer.showError(
-                'Feature and Environment arguments are required',
-            )
+            this.writer.showError('Feature and Environment keys are required')
             return
         }
 
@@ -81,6 +79,12 @@ export default class DetailedOverrides extends Base {
             environmentKey = environmentPromptResult.key
         }
 
+        // At this point, both featureKey and environmentKey should be defined
+        if (!featureKey || !environmentKey) {
+            this.writer.showError('Failed to get required feature and environment keys')
+            return
+        }
+
         const overrides = await fetchFeatureOverridesForUser(
             this.authToken,
             this.projectKey,
@@ -93,19 +97,19 @@ export default class DetailedOverrides extends Base {
             environmentKey,
         )
         const override = overrides.overrides.find(
-            (override) => override._environment === environment._id,
+            (override: UserOverride) => override._environment === environment?._id,
         )
 
         if (!override) {
             if (headless) {
                 this.writer.showResults({
-                    environment: environment.key,
+                    environment: environment?.key,
                     variation: null,
                 })
                 return
             }
             this.writer.showRawResults(
-                `Override for feature: ${featureKey} on environment: ${environment.key} is variation: <not-set>`,
+                `Override for feature: ${featureKey} on environment: ${environment?.key} is variation: <not-set>`,
             )
             this.writer.infoMessageWithCommand(
                 'To set an override, use:',
@@ -123,7 +127,7 @@ export default class DetailedOverrides extends Base {
 
         if (headless) {
             this.writer.showResults({
-                environment: environment.key,
+                environment: environment?.key,
                 variation: variation.key,
             })
             return
@@ -131,8 +135,8 @@ export default class DetailedOverrides extends Base {
 
         this.tableOutput.printOverrides<UserOverride>([
             {
-                _environment: environment._id ?? override._environment,
-                environmentName: environment.name ?? environmentKey,
+                _environment: environment?._id ?? override._environment,
+                environmentName: environment?.name ?? environmentKey,
                 _feature: feature?._id ?? featureKey,
                 featureName: feature?.name ?? featureKey,
                 _variation: variation._id ?? override._variation,

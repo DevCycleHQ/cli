@@ -37,16 +37,15 @@ export const updateVariable = async (
         _feature: params?._feature,
         type: params?.type,
     }
-    return apiClient.patch('/v1/projects/:project/variables/:key', data, {
+    // Use axiosClient directly to avoid type instantiation issues
+    const url = `/v1/projects/${project_id}/variables/${variableKey}`
+    const response = await axiosClient.patch(url, data, {
         headers: {
             'Content-Type': 'application/json',
             Authorization: token,
         },
-        params: {
-            project: project_id,
-            key: variableKey,
-        },
     })
+    return response.data
 }
 
 export const fetchVariables = async (

@@ -407,16 +407,25 @@ export const blockComment = (
 export function getVariableType(variable: Variable) {
     if (
         variable.validationSchema &&
+        typeof variable.validationSchema.schemaType === 'string' &&
         variable.validationSchema.schemaType === 'enum'
     ) {
         // TODO fix the schema so it doesn't think enumValues is an object
-        const enumValues = variable.validationSchema.enumValues as
-            | string[]
-            | number[]
-        if (enumValues === undefined || enumValues.length === 0) {
+        const enumValues = variable.validationSchema.enumValues
+        if (!enumValues || typeof enumValues !== 'object' || Array.isArray(enumValues)) {
             return variable.type.toLocaleLowerCase()
         }
-        return enumValues.map((value) => `'${value}'`).join(' | ')
+        
+        // Handle the case where enumValues might be an object with allowedValues
+        const allowedValues = (enumValues as any)?.allowedValues
+        if (Array.isArray(allowedValues)) {
+            return allowedValues.map((item: any) => {
+                const value = typeof item === 'object' && item.value !== undefined ? item.value : item
+                return `'${value}'`
+            }).join(' | ')
+        }
+        
+        return variable.type.toLocaleLowerCase()
     }
     if (variable.type === 'JSON') {
         return 'DevCycleJSON'
@@ -442,7 +451,7 @@ const generateCustomDataType = (
             const optionalMarker = isRequired ? '' : '?'
             if (schema) {
                 const enumValues = schema.allowedValues
-                    .map(({ label, value }) => {
+                    .map(({ label, value }: { label: string; value: string }) => {
                         const valueStr =
                             typeof value === 'number' ? value : `'${value}'`
                         return `        // ${label}\n        ${valueStr}`

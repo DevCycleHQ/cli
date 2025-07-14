@@ -80,15 +80,8 @@ export default class UpdateOverride extends Base {
             return
         }
         if (!feature) {
-            const response = await inquirer.prompt<FeaturePromptResult>(
-                [featurePrompt],
-                {
-                    token: this.authToken,
-                    projectKey: this.projectKey,
-                },
-            )
-            feature = response.feature.key
-            featureName = response.feature.name
+            this.writer.showError('Feature is required')
+            return
         }
         if (!environment) {
             const responses = await inquirer.prompt<EnvironmentPromptResult>(

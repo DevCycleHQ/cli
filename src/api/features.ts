@@ -20,15 +20,14 @@ export const fetchFeatures = async (
         search?: string
     } = {},
 ): Promise<Feature[]> => {
-    const response = await apiClient.get(FEATURE_URL, {
+    // Use axiosClient directly to bypass zodios type checking for v2 API
+    const url = `/v2/projects/${project_id}/features`
+    const response = await axiosClient.get(url, {
         headers: buildHeaders(token),
-        params: {
-            project: project_id,
-        },
-        queries,
+        params: queries,
     })
 
-    return response
+    return response.data as Feature[]
 }
 
 export const fetchFeatureByKey = async (
@@ -37,15 +36,13 @@ export const fetchFeatureByKey = async (
     key: string,
 ): Promise<Feature | null> => {
     try {
-        const response = await apiClient.get(`${FEATURE_URL}/:key`, {
+        // Use axiosClient directly to bypass zodios type checking for v2 API
+        const url = `/v2/projects/${project_id}/features/${key}`
+        const response = await axiosClient.get(url, {
             headers: buildHeaders(token),
-            params: {
-                project: project_id,
-                key,
-            },
         })
 
-        return response
+        return response.data as Feature
     } catch (e: unknown) {
         if (e instanceof AxiosError && e.response?.status === 404) {
             return null
@@ -59,12 +56,13 @@ export const createFeature = async (
     project_id: string,
     params: CreateFeatureParams,
 ): Promise<Feature> => {
-    return await apiClient.post(FEATURE_URL, params, {
+    // Use axiosClient directly to bypass zodios type checking for v2 API
+    const url = `/v2/projects/${project_id}/features`
+    const response = await axiosClient.post(url, params, {
         headers: buildHeaders(token),
-        params: {
-            project: project_id,
-        },
     })
+
+    return response.data as Feature
 }
 
 export const updateFeature = async (
@@ -73,13 +71,13 @@ export const updateFeature = async (
     feature_id: string,
     params: UpdateFeatureParams,
 ): Promise<Feature> => {
-    return await apiClient.patch(`${FEATURE_URL}/:feature`, params, {
+    // Use axiosClient directly to bypass zodios type checking for v2 API
+    const url = `/v2/projects/${project_id}/features/${feature_id}`
+    const response = await axiosClient.patch(url, params, {
         headers: buildHeaders(token),
-        params: {
-            project: project_id,
-            feature: feature_id,
-        },
     })
+
+    return response.data as Feature
 }
 
 export const deleteFeature = async (
@@ -87,17 +85,11 @@ export const deleteFeature = async (
     project_id: string,
     key: string,
 ): Promise<void> => {
-    return apiV1Client.delete(
-        '/v1/projects/:project/features/:key',
-        undefined,
-        {
-            headers: buildHeaders(token),
-            params: {
-                project: project_id,
-                key,
-            },
-        },
-    )
+    // Use axiosClient directly to bypass zodios type checking for v2 API
+    const url = `/v2/projects/${project_id}/features/${key}`
+    await axiosClient.delete(url, {
+        headers: buildHeaders(token),
+    })
 }
 
 export const fetchAllCompletedOrArchivedFeatures = async (
@@ -153,5 +145,5 @@ const generatePaginatedFeatureUrl = (
     perPage: number,
     status: string,
 ): string => {
-    return `/v1/projects/${project_id}/features?perPage=${perPage}&page=${page}&status=${status}`
+    return `/v2/projects/${project_id}/features?perPage=${perPage}&page=${page}&status=${status}`
 }

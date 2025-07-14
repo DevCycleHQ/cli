@@ -90,6 +90,11 @@ export default class UpdateTargeting extends UpdateCommand {
             envKey = promptResult.environment.key
         }
 
+        if (!envKey) {
+            this.writer.showError('Environment key is required')
+            return
+        }
+
         const environment = await fetchEnvironmentByKey(
             this.authToken,
             this.projectKey,
@@ -164,6 +169,11 @@ export default class UpdateTargeting extends UpdateCommand {
             !params.targets && // user is setting status active without changing targets
             featureTargetingRules?.targets.length === 0 // no targeting rules (ie. the status update will fail)
         ) {
+            if (!environment) {
+                this.writer.showError(`No environment found for key ${envKey}`)
+                return
+            }
+
             await createTargetAndEnable(
                 featureTargetingRules.targets,
                 featureKey,

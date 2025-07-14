@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
-import { APIKey, fetchEnvironmentByKey } from '../../api/environments'
+import { fetchEnvironmentByKey } from '../../api/environments'
 import {
     EnvironmentPromptResult,
     environmentPrompt,
@@ -8,6 +8,13 @@ import {
 } from '../../ui/prompts'
 import Base from '../base'
 import chalk from 'chalk'
+
+interface APIKey {
+    key: string
+    compromised: boolean
+    createdAt: string
+    [key: string]: any
+}
 
 export default class GetEnvironmentKey extends Base {
     static hidden = false
@@ -47,15 +54,18 @@ export default class GetEnvironmentKey extends Base {
             return
         }
         const sdkType = await this.getSdkType()
-        if (sdkType && sdkType !== 'all') {
-            const activeKeys = environment.sdkKeys[sdkType] as APIKey[]
-            const currentKey = activeKeys[activeKeys.length - 1]
-            if (currentKey.compromised) {
-                this.writer.warningMessage(
-                    `The most recent key for ${environmentKey} ${sdkType} has been compromised}`,
-                )
+        if (sdkType && sdkType !== 'all' && environment.sdkKeys) {
+            const sdkKeys = environment.sdkKeys as Record<string, APIKey[]>
+            const activeKeys = sdkKeys[sdkType]
+            if (activeKeys && Array.isArray(activeKeys) && activeKeys.length > 0) {
+                const currentKey = activeKeys[activeKeys.length - 1]
+                if (currentKey?.compromised) {
+                    this.writer.warningMessage(
+                        `The most recent key for ${environmentKey} ${sdkType} has been compromised}`,
+                    )
+                }
+                this.writer.showRawResults(currentKey?.key || 'No key available')
             }
-            this.writer.showRawResults(currentKey.key)
         } else {
             this.writer.showResults(environment.sdkKeys)
         }

@@ -35,7 +35,7 @@ export const variableChoices = async (
         const variables = await fetchVariables(input.token, input.projectKey, {
             perPage: 1000,
         })
-        choices = variables.map((variable) => {
+        choices = variables.map((variable: Variable) => {
             const name = variable.name
                 ? `${variable.name} ${chalk.dim(`(${variable.key})`)}`
                 : variable.key

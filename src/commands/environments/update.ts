@@ -9,6 +9,7 @@ import {
 import { Flags } from '@oclif/core'
 import { CreateEnvironmentDto, UpdateEnvironmentDto } from '../../api/schemas'
 import UpdateCommandWithCommonProperties from '../updateCommandWithCommonProperties'
+import { fetchEnvironmentByKey } from '../../api/environments'
 
 export default class UpdateEnvironment extends UpdateCommandWithCommonProperties {
     static hidden = false
@@ -36,21 +37,23 @@ export default class UpdateEnvironment extends UpdateCommandWithCommonProperties
 
         await this.requireProject(project, headless)
         let envKey = key
-        if (headless && !envKey) {
-            this.writer.showError('The key argument is required')
+        if (!envKey) {
+            this.writer.showError('Environment key is required')
             return
-        } else if (!envKey) {
-            const { environment } =
-                await inquirer.prompt<EnvironmentPromptResult>(
-                    [environmentPrompt],
-                    {
-                        token: this.authToken,
-                        projectKey: this.projectKey,
-                    },
-                )
-            envKey = environment._id
-            this.writer.printCurrentValues(environment)
         }
+
+        const environment = await fetchEnvironmentByKey(
+            this.authToken,
+            this.projectKey,
+            envKey,
+        )
+
+        if (!environment) {
+            this.writer.showError(`Environment with key "${envKey}" not found.`)
+            return
+        }
+
+        this.writer.printCurrentValues(environment)
 
         const params = await this.populateParametersWithZod(
             UpdateEnvironmentDto,
