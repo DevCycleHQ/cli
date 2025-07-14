@@ -3,13 +3,28 @@ DevCycle CLI
 
 DevCycle CLI for interacting with DevCycle features from the command line.
 
-Major features include:
-- Fully manage your Features, Variables, Variations and Targeting Rules from the command line
-- Detect and list DevCycle Variable usages in your codebase
-- Manage your Self-Targeting Overrides to quickly switch between Variable values
-- Generate type definitions for type-safe usage of DevCycle (Typescript only)
+## Major Features
 
-The CLI can be customized in several ways using command-line args or by creating a [configuration file](#repo-configuration).
+- **Feature Management**: Fully manage Features, Variables, Variations and Targeting Rules
+- **Code Analysis**: Detect and list DevCycle Variable usages across multiple programming languages
+- **Self-Targeting**: Manage Overrides to quickly switch between Variable values for testing
+- **Type Generation**: Generate TypeScript definitions for type-safe DevCycle usage
+- **Code Refactoring**: Replace DevCycle variables with static values using the cleanup command
+- **Multi-Organization Support**: Switch between different organizations seamlessly
+- **Interactive Mode**: User-friendly prompts for complex operations
+
+## Supported Languages
+
+The CLI can analyze code and detect DevCycle usage in:
+- JavaScript/TypeScript (including React)
+- Java/Kotlin (including Android)
+- C#/.NET
+- Python
+- Ruby
+- Go
+- Swift/iOS
+- PHP
+- Dart/Flutter
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/@devcycle/cli.svg)](https://www.npmjs.com/package/@devcycle/cli)
@@ -20,6 +35,8 @@ The CLI can be customized in several ways using command-line args or by creating
 * [Authentication](#authentication)
 * [Usage](#usage)
 * [Command Topics](#command-topics)
+* [Output Formats](#output-formats)
+* [Global Options](#global-options)
 * [Repo Configuration](#repo-configuration)
 <!-- tocstop -->
 # Setup
@@ -80,7 +97,7 @@ If there is a repo configuration file, the [`dvc diff`](docs/diff.md) and [`dvc 
 Otherwise, this is chosen during login or set using the [project select command](docs/projects.md#dvc-projects-select)
 
 ## Environment Variables
-Set the following environment variables:
+The CLI supports authentication via environment variables, useful for CI/CD pipelines:
 
 ```sh-session
 $ export DEVCYCLE_CLIENT_ID=<your client id>
@@ -116,11 +133,41 @@ USAGE
 ```
 <!-- usagestop -->
 
+# Output Formats
+
+Many commands support different output formats for integration with other tools:
+
+- **Console** (default): Human-readable output with formatting
+- **JSON**: Machine-readable format for scripting and automation
+- **Markdown**: Formatted output for documentation (diff command)
+
+Example:
+```sh-session
+$ dvc usages --format=json
+$ dvc diff --format=markdown
+```
+
+# Global Options
+
+The following options are available for all commands:
+
+- `--headless`: Disable interactive prompts, ideal for CI/CD environments
+- `--no-api`: Run commands offline without API enhancements
+- `--project=<key>`: Override the default project
+- `--config-path=<path>`: Custom user config file location
+- `--auth-path=<path>`: Custom auth file location
+- `--repo-config-path=<path>`: Custom repo config file location
+
+Example:
+```sh-session
+$ dvc features list --headless --project=my-project
+```
+
 <!-- commands -->
 # Command Topics
 
 * [`dvc alias`](docs/alias.md) - Manage repository variable aliases.
-* [`dvc autocomplete`](docs/autocomplete.md) - display autocomplete installation instructions
+* [`dvc autocomplete`](docs/autocomplete.md) - Display autocomplete installation instructions
 * [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
 * [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
@@ -144,47 +191,51 @@ USAGE
 <!-- commandsstop -->
 
 # Repo Configuration
-The following commands can only be run from the root of a configured repository
+The following commands require a configured repository:
 
-- [`dvc diff`](docs/diff.md)
-- [`dvc usages`](docs/usages.md)
-- [`dvc alias`](docs/alias.md)
-- [`dvc cleanup`](docs/cleanup.md)
+- [`dvc diff`](docs/diff.md) - Compare variable usage between code versions
+- [`dvc usages`](docs/usages.md) - Scan for variable usage
+- [`dvc alias`](docs/alias.md) - Manage variable aliases
+- [`dvc cleanup`](docs/cleanup.md) - Refactor code to remove variables
 
-Many of the options available as command-line args can also be specified using a repo configuration file. The default
-location for this file is `<REPO ROOT>/.devcycle/config.yml`.
+Configuration can be initialized using:
+```sh-session
+$ dvc repo init
+```
 
-This location can be overridden using the `--repo-config-path` flag.
-
-The configuration file format is documented below:
+Many options can be specified in the repo configuration file (default: `.devcycle/config.yml`):
 
 ```yml
-## the project and organization to use when connecting to the DevCycle Rest API for this repo
+## Project and organization settings
 project: "project-key"
 org:
   id: "org_xxxxxx"
   name: "unique-org-key"
   display_name: "Human Readable Org Name"
-## block for configuring "code insights" features like diff and variable usage scanning
-## use this section to improve the detection of DevCycle usage within your code
+
+## Code insights configuration
 codeInsights:
-  ## add additional names to check for when looking for instances of DVCClient from an SDK
+  ## Additional client names to detect (beyond defaults: dvcClient, devcycleClient, etc.)
   clientNames:
-    - "dvcClient"
-  ## map the values used in your code to the corresponding variable key in DevCycle
+    - "myCustomClient"
+  
+  ## Map code aliases to DevCycle variable keys
   variableAliases:
     "VARIABLES.ENABLE_V1": "enable-v1"
-  ## additional regex patterns used to match variables for a specific file extension
+  
+  ## Custom regex patterns for variable detection by file extension
   matchPatterns:
-    ## file extension to override for, containing a list of patterns to use
     js:
       - dvcClient\.variable\(\s*["']([^"']*)["']
-  ## an array of file glob patterns to include in usage scan
+    tsx:
+      - useVariable\(\s*["']([^"']*)["']
+  
+  ## File patterns to include/exclude in scans
   includeFiles:
-    - "*.[jt]s"
-  ## an array of file glob patterns to exclude from usage scan
+    - "src/**/*.[jt]s"
   excludeFiles:
-    - "dist/*"
+    - "dist/**"
+    - "node_modules/**"
 ```
 
 ## Match Patterns
@@ -211,11 +262,75 @@ codeInsights:
 ```
 
 Match patterns can also be passed directly to relevant commands using the `--match-pattern` flag:
-```
-dvc usages --match-pattern ts="customVariableGetter\(\s*[\"']([^\"']*)[\"']" js="customVariableGetter\(\s*[\"']([^\"']*)[\"']"
+```sh-session
+$ dvc usages --match-pattern ts="customVariableGetter\(\s*[\"']([^\"']*)[\"']" js="customVariableGetter\(\s*[\"']([^\"']*)[\"']"
 ```
 
 When testing your regex the `--show-regex` flag can be helpful. This will print all patterns used to find matches in your codebase.
+```sh-session
+$ dvc usages --show-regex
 ```
-dvc usages --show-regex
+
+## Interactive Mode
+
+Many commands support an interactive mode with helpful prompts when flags are not provided:
+
+```sh-session
+# Create a feature interactively
+$ dvc features create --interactive
+
+# Select a project interactively
+$ dvc projects select
+
+# Update variables with guided prompts
+$ dvc variables update
+```
+
+## CI/CD Integration
+
+The CLI is designed to work seamlessly in CI/CD environments:
+
+```sh-session
+# Run in headless mode with all required parameters
+$ dvc usages --headless --format=json --output=usages.json
+
+# Generate TypeScript definitions in CI
+$ dvc generate types --headless --output-dir=src/types
+
+# Check for feature flag changes in PR
+$ dvc diff main feature-branch --format=markdown
+```
+
+## Examples
+
+### Quick Feature Creation
+```sh-session
+# Create a feature with variations and variables in one command
+$ dvc features create --key=new-feature --name="New Feature" \
+  --variations='[{"key":"on","name":"On"},{"key":"off","name":"Off"}]' \
+  --variables='[{"key":"message","type":"String"}]'
+```
+
+### Scanning for Variable Usage
+```sh-session
+# Find all variable usages in your codebase
+$ dvc usages
+
+# Find unused variables
+$ dvc usages --only-unused
+
+# Export results to JSON
+$ dvc usages --format=json --output=usage-report.json
+```
+
+### Managing Self-Targeting Overrides
+```sh-session
+# View current overrides
+$ dvc overrides list
+
+# Set an override for testing
+$ dvc overrides update --feature=my-feature --environment=development
+
+# Clear all overrides
+$ dvc overrides clear
 ```
