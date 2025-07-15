@@ -67,6 +67,31 @@ export class DevCycleApiClient {
         }
     }
 
+    /**
+     * Helper method to execute API calls and include dashboard links in the response
+     */
+    public async executeWithDashboardLink<T>(
+        operationName: string,
+        args: any,
+        operation: (authToken: string, projectKey: string) => Promise<T>,
+        dashboardLink: (orgId: string, projectKey: string) => string,
+    ): Promise<{ result: T; dashboardLink: string }> {
+        const result = await this.executeWithLogging(
+            operationName,
+            args,
+            operation,
+        )
+
+        const organizationId = this.auth.getOrgId()
+        const projectKey = this.auth.getProjectKey()
+        const link = dashboardLink(organizationId, projectKey)
+
+        return {
+            result,
+            dashboardLink: link,
+        }
+    }
+
     public getAuth(): DevCycleAuth {
         return this.auth
     }
