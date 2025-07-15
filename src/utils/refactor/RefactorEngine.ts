@@ -176,6 +176,8 @@ export abstract class RefactorEngine {
             ) {
                 return this.sdkMethods[identifier.name]
             }
+
+            return undefined
         }
 
         const engine = this
@@ -199,6 +201,7 @@ export abstract class RefactorEngine {
                         }
                     }
                 }
+                return node
             },
             fallback: 'iteration',
         })
@@ -319,6 +322,7 @@ export abstract class RefactorEngine {
                     engine.changed = true
                     return updatedNode
                 }
+                return node
             },
             fallback: 'iteration',
         })
@@ -349,6 +353,7 @@ export abstract class RefactorEngine {
                         }
                     }
                 }
+                return node
             },
             fallback: 'iteration',
         })

@@ -15,9 +15,9 @@ Clear Overrides for a given Feature or Project.
 
 ```
 USAGE
-  $ dvc overrides clear [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--all] [--feature <value>]
-    [--environment <value>]
+  $ dvc overrides clear [--all] [--feature <value>] [--environment <value>] [--config-path <value>] [--auth-path
+    <value>] [--repo-config-path <value>] [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api]
+    [--headless]
 
 FLAGS
   --all                  All Overrides for the Project
@@ -47,9 +47,9 @@ View the Overrides associated with your DevCycle Identity in your current projec
 
 ```
 USAGE
-  $ dvc overrides get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--feature <value>] [--environment
-    <value>]
+  $ dvc overrides get [--feature <value>] [--environment <value>] [--config-path <value>] [--auth-path <value>]
+    [--repo-config-path <value>] [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api]
+    [--headless]
 
 FLAGS
   --environment=<value>  The key or id of the Environment to get Overrides for
