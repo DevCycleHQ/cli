@@ -238,7 +238,8 @@ const UPDATE_ENVIRONMENT_OUTPUT_SCHEMA = {
 export const environmentToolDefinitions: Tool[] = [
     {
         name: 'list_environments',
-        description: 'List environments in the current project',
+        description:
+            'List environments in the current project. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: PAGINATION_PROPERTIES,
@@ -247,7 +248,8 @@ export const environmentToolDefinitions: Tool[] = [
     },
     {
         name: 'get_sdk_keys',
-        description: 'Get SDK keys for an environment',
+        description:
+            'Get SDK keys for an environment. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -264,7 +266,8 @@ export const environmentToolDefinitions: Tool[] = [
     },
     {
         name: 'create_environment',
-        description: 'Create a new environment',
+        description:
+            'Create a new environment. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: ENVIRONMENT_COMMON_PROPERTIES,
@@ -274,7 +277,8 @@ export const environmentToolDefinitions: Tool[] = [
     },
     {
         name: 'update_environment',
-        description: 'Update an existing environment',
+        description:
+            'Update an existing environment. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: ENVIRONMENT_COMMON_PROPERTIES,
