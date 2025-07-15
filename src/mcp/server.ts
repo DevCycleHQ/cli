@@ -112,21 +112,98 @@ export class DevCycleMCPServer {
                 } catch (error) {
                     console.error(`Error in tool handler ${name}:`, error)
 
-                    // Safely extract error message, handling undefined/null cases
+                    // Enhanced error categorization and messages
                     let errorMessage = 'Unknown error'
-                    if (error instanceof Error && error.message) {
+                    let errorType = 'UNKNOWN_ERROR'
+                    let suggestions: string[] = []
+
+                    if (error instanceof Error) {
                         errorMessage = error.message
+
+                        // Categorize common error types
+                        if (
+                            error.message.includes('401') ||
+                            error.message.includes('Unauthorized')
+                        ) {
+                            errorType = 'AUTHENTICATION_ERROR'
+                            suggestions = [
+                                'Run "dvc login sso" to re-authenticate the devcycle cli',
+                                'Verify your API credentials are correct',
+                                'Check if your token has expired',
+                            ]
+                        } else if (
+                            error.message.includes('403') ||
+                            error.message.includes('Forbidden')
+                        ) {
+                            errorType = 'PERMISSION_ERROR'
+                            suggestions = [
+                                'Verify your account has permissions for this operation',
+                                'Check if you have access to the selected project',
+                                'Contact your DevCycle admin for permissions',
+                            ]
+                        } else if (
+                            error.message.includes('404') ||
+                            error.message.includes('Not Found')
+                        ) {
+                            errorType = 'RESOURCE_NOT_FOUND'
+                            suggestions = [
+                                'Verify the resource key/ID is correct',
+                                'Check if the resource exists in the selected project',
+                                "Ensure you're in the correct environment",
+                            ]
+                        } else if (
+                            error.message.includes('400') ||
+                            error.message.includes('Bad Request')
+                        ) {
+                            errorType = 'VALIDATION_ERROR'
+                            suggestions = [
+                                'Check the provided parameters are valid',
+                                'Verify required fields are not missing',
+                                'Review parameter format and constraints',
+                            ]
+                        } else if (
+                            error.message.includes('429') ||
+                            error.message.includes('rate limit')
+                        ) {
+                            errorType = 'RATE_LIMIT_ERROR'
+                            suggestions = [
+                                'Wait a moment before trying again',
+                                'Consider reducing the frequency of requests',
+                            ]
+                        } else if (
+                            error.message.includes('ENOTFOUND') ||
+                            error.message.includes('network')
+                        ) {
+                            errorType = 'NETWORK_ERROR'
+                            suggestions = [
+                                'Check your internet connection',
+                                'Verify firewall settings allow DevCycle API access',
+                                'Try again in a few moments',
+                            ]
+                        } else if (
+                            error.message.includes('project') &&
+                            error.message.includes('not found')
+                        ) {
+                            errorType = 'PROJECT_ERROR'
+                            suggestions = [
+                                'Run "dvc projects select" to choose a valid project',
+                                'Verify the project key is correct',
+                                'Check if you have access to this project',
+                            ]
+                        }
                     } else if (error && typeof error === 'string') {
                         errorMessage = error
                     } else if (error && typeof error === 'object') {
                         errorMessage = JSON.stringify(error)
                     }
 
-                    // Return error as JSON to maintain consistent response format
+                    // Return enhanced error response
                     const errorResponse = {
                         error: true,
+                        type: errorType,
                         message: errorMessage,
                         tool: name,
+                        suggestions,
                         timestamp: new Date().toISOString(),
                     }
 
