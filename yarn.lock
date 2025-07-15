@@ -642,7 +642,7 @@ __metadata:
     zod: "npm:^3.24.2"
   bin:
     dvc: ./bin/run
-    dvc-mcp: ./dist/mcp/index.js
+    dvc-mcp: ./bin/mcp
   languageName: unknown
   linkType: soft
 
