@@ -1,4 +1,4 @@
-import { expect } from '@oclif/test'
+import { expect } from 'chai'
 import { FileFilters } from './FileFilters'
 
 describe('FileFilters', () => {

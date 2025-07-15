@@ -1,4 +1,4 @@
-import { expect } from '@oclif/test'
+import { expect } from 'chai'
 import chai from 'chai'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import inquirer from 'inquirer'

@@ -1,5 +1,5 @@
 import * as path from 'node:path'
-import { expect } from '@oclif/test'
+import { expect } from 'chai'
 import { executeFileDiff } from './fileDiff'
 import { parseFiles } from './parse'
 

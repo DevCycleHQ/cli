@@ -1,7 +1,9 @@
-import { expect, test } from '@oclif/test'
+import { runCommand, captureOutput } from '@oclif/test'
+import { expect } from 'chai'
 import chai from 'chai'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import { setCurrentTestFile } from '../../../test-utils'
+import nock from 'nock'
 import { BASE_URL } from '../../api/common'
 
 describe('usages', () => {
@@ -24,120 +26,112 @@ describe('usages', () => {
         updatedAt: '2023-06-14T18:56:21.270Z',
     }
 
-    test.stdout()
-        .command([
-            'usages',
-            '--include',
-            'test-utils/fixtures/usages/nodejs.js',
-        ])
-        .it('runs against a node test file', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+    it('runs against a node test file', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand([
+                'usages',
+                '--include',
+                'test-utils/fixtures/usages/nodejs.js',
+            ])
         })
+        expect(stdout).toMatchSnapshot()
+    })
 
-    test.stdout()
-        .command([
-            'usages',
-            '--include',
-            'test-utils/fixtures/usages/[org_id]/nodejs.js',
-        ])
-        .it(
-            'runs against a node test file with special characters in the path',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            },
-        )
-
-    test.stdout()
-        .command(['usages', '--include', 'test-utils/fixtures/usages/*/*.js'])
-        .it('runs against all js files', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+    it('runs against a node test file with special characters in the path', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand([
+                'usages',
+                '--include',
+                'test-utils/fixtures/usages/[org_id]/nodejs.js',
+            ])
         })
+        expect(stdout).toMatchSnapshot()
+    })
 
-    test.nock(BASE_URL, (api) =>
-        api
-            .get(
-                `/v1/projects/${projectKey}/variables?perPage=1000&page=1&status=active`,
-            )
-            .reply(200, [mockVariable]),
-    )
-        .stdout()
-        .command([
-            'usages',
-            '--only-unused',
-            '--include',
-            'test-utils/fixtures/usages/nodejs.js',
-            '--project',
-            projectKey,
-        ])
-        .it(
-            'runs against a node test file and only returns variables not found as a variable in the api',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            },
-        )
-
-    test.stdout()
-        .command(['usages', '--include', 'test-utils/fixtures/usages/react.js'])
-        .it('runs against a react test file', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+    it('runs against all js files', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand(['usages', '--include', 'test-utils/fixtures/usages/*/*.js'])
         })
+        expect(stdout).toMatchSnapshot()
+    })
 
-    test.stdout()
-        .command([
-            'usages',
-            '--include',
-            'test-utils/fixtures/usages/[org_id]/react.js',
-        ])
-        .it(
-            'runs against a react test file with special characters in the path',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            },
-        )
+    it('runs against a node test file and only returns variables not found as a variable in the api', async () => {
+        nock(BASE_URL)
+            .get(`/v1/projects/${projectKey}/variables?perPage=1000&page=1&status=active`)
+            .reply(200, [mockVariable])
 
-    test.stdout()
-        .command([
-            'usages',
-            '--include',
-            'test-utils/fixtures/usages/golang.go',
-        ])
-        .it('runs against a go test file', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+        const { stdout } = await captureOutput(async () => {
+            await runCommand([
+                'usages',
+                '--only-unused',
+                '--include',
+                'test-utils/fixtures/usages/nodejs.js',
+                '--project',
+                projectKey,
+            ])
         })
+        expect(stdout).toMatchSnapshot()
+    })
 
-    test.stdout()
-        .command([
-            'usages',
-            '--include',
-            'test-utils/fixtures/usages/[org_id]/golang.go',
-        ])
-        .it(
-            'runs against a react test file with special characters in the path',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            },
-        )
-
-    test.stdout()
-        .command([
-            'usages',
-            '--include',
-            'test-utils/fixtures/usages/sample.dart',
-        ])
-        .it('runs against a dart test file', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+    it('runs against a react test file', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand(['usages', '--include', 'test-utils/fixtures/usages/react.js'])
         })
+        expect(stdout).toMatchSnapshot()
+    })
 
-    test.stdout()
-        .command([
-            'usages',
-            '--include',
-            'test-utils/fixtures/usages/[org_id]/sample.dart',
-        ])
-        .it(
-            'runs against a dart test file with special characters in the path',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            },
-        )
+    it('runs against a react test file with special characters in the path', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand([
+                'usages',
+                '--include',
+                'test-utils/fixtures/usages/[org_id]/react.js',
+            ])
+        })
+        expect(stdout).toMatchSnapshot()
+    })
+
+    it('runs against a go test file', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand([
+                'usages',
+                '--include',
+                'test-utils/fixtures/usages/golang.go',
+            ])
+        })
+        expect(stdout).toMatchSnapshot()
+    })
+
+    it('runs against a react test file with special characters in the path', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand([
+                'usages',
+                '--include',
+                'test-utils/fixtures/usages/[org_id]/golang.go',
+            ])
+        })
+        expect(stdout).toMatchSnapshot()
+    })
+
+    it('runs against a dart test file', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand([
+                'usages',
+                '--include',
+                'test-utils/fixtures/usages/sample.dart',
+            ])
+        })
+        expect(stdout).toMatchSnapshot()
+    })
+
+    it('runs against a dart test file with special characters in the path', async () => {
+        const { stdout } = await captureOutput(async () => {
+            await runCommand([
+                'usages',
+                '--include',
+                'test-utils/fixtures/usages/[org_id]/sample.dart',
+            ])
+        })
+        expect(stdout).toMatchSnapshot()
+    })
 })

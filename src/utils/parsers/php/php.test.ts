@@ -1,7 +1,7 @@
 import { executeFileDiff } from '../../diff/fileDiff'
 import * as path from 'node:path'
 import { parseFiles } from '../../diff/parse'
-import { expect } from '@oclif/test'
+import { expect } from 'chai'
 
 describe('php', () => {
     let simpleMatchResult = [

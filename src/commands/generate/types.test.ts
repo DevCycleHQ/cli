@@ -1,4 +1,4 @@
-import { expect } from '@oclif/test'
+import { expect } from 'chai'
 import { BASE_URL } from '../../api/common'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'

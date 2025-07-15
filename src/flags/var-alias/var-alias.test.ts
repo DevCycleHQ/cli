@@ -1,5 +1,5 @@
 import { getVariableAliasesFromTypeGeneratorFile } from './index'
-import { expect } from '@oclif/test'
+import { expect } from 'chai'
 import chai from 'chai'
 
 const unobfuscatedFile = `
