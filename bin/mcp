@@ -3,4 +3,4 @@
 const path = require('path')
 
 // Run the MCP server directly
-require(path.join(__dirname, '..', 'dist', 'mcp', 'index.js')) 
+require(path.resolve(__dirname, '..', 'dist', 'mcp', 'index.js')) 
