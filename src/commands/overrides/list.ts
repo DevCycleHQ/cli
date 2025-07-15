@@ -15,7 +15,6 @@ export default class DetailedOverrides extends Base {
     static args = {}
     static flags = {
         ...Base.flags,
-        ...ux.table.flags(),
     }
 
     public async run(): Promise<void> {
@@ -43,8 +42,6 @@ export default class DetailedOverrides extends Base {
             overrides,
             environments,
         )
-        this.tableOutput.printOverrides<UserOverride>(sortedOverrides, {
-            ...flags,
-        })
+        await this.tableOutput.printOverrides<UserOverride>(sortedOverrides)
     }
 }

@@ -21,12 +21,12 @@ USAGE
     [--variables <value>] [--variations <value>] [--sdkVisibility <value>] [-i]
 
 FLAGS
-  -i, --interactive        Interactive Feature Creation Mode
-  --key=<value>            Unique ID
-  --name=<value>           Human readable name
-  --sdkVisibility=<value>  The visibility of the feature for the SDKs
-  --variables=<value>      The variables to create for the feature
-  --variations=<value>     The variations to set for the feature
+  -i, --interactive            Interactive Feature Creation Mode
+      --key=<value>            Unique ID
+      --name=<value>           Human readable name
+      --sdkVisibility=<value>  The visibility of the feature for the SDKs
+      --variables=<value>      The variables to create for the feature
+      --variations=<value>     The variations to set for the feature
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file

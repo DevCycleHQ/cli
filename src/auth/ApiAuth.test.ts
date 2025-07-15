@@ -5,6 +5,7 @@ import fs from '../utils/fileSystem'
 import Writer from '../ui/writer'
 import { tokenCacheStub_get } from '../../test/setup'
 import test from '@oclif/test'
+import nock from 'nock'
 import { AUTH_URL } from '../api/common'
 import { CLI_CLIENT_ID } from './SSOAuth'
 import * as config from './config'
@@ -24,18 +25,15 @@ describe('ApiAuth', () => {
     const mockWriter = new Writer()
 
     describe('getToken', () => {
-        test.nock(AUTH_URL, (api) =>
-            api
+        it('fetches token using client id & secret when passed as flags', async () => {
+            nock(AUTH_URL)
                 .post('/oauth/token', {
                     grant_type: 'client_credentials',
                     client_id: 'flag-client-id',
                     client_secret: 'flag-client-secret',
                     audience: 'https://api.devcycle.com/',
                 })
-                .reply(200, { access_token: 'mock-token-flag-creds' }),
-        ).it(
-            'fetches token using client id & secret when passed as flags',
-            async () => {
+                .reply(200, { access_token: 'mock-token-flag-creds' })
                 const auth = new ApiAuth(
                     'mock-auth-path',
                     'mock-cache-dir',
@@ -52,18 +50,15 @@ describe('ApiAuth', () => {
             },
         )
 
-        test.nock(AUTH_URL, (api) =>
-            api
+        it('fetches token using client id & secret when passed as env vars', async () => {
+            nock(AUTH_URL)
                 .post('/oauth/token', {
                     grant_type: 'client_credentials',
                     client_id: 'env-client-id',
                     client_secret: 'env-client-secret',
                     audience: 'https://api.devcycle.com/',
                 })
-                .reply(200, { access_token: 'mock-token-env-creds' }),
-        ).it(
-            'fetches token using client id & secret when passed as env vars',
-            async () => {
+                .reply(200, { access_token: 'mock-token-env-creds' })
                 const auth = new ApiAuth(
                     'mock-auth-path',
                     'mock-cache-dir',
@@ -79,18 +74,15 @@ describe('ApiAuth', () => {
             },
         )
 
-        test.nock(AUTH_URL, (api) =>
-            api
+        it('fetches token using client id & secret from auth config', async () => {
+            nock(AUTH_URL)
                 .post('/oauth/token', {
                     grant_type: 'client_credentials',
                     client_id: 'config-client-id',
                     client_secret: 'config-client-secret',
                     audience: 'https://api.devcycle.com/',
                 })
-                .reply(200, { access_token: 'mock-token-config-creds' }),
-        ).it(
-            'fetches token using client id & secret from auth config',
-            async () => {
+                .reply(200, { access_token: 'mock-token-config-creds' })
                 const auth = new ApiAuth(
                     'mock-auth-path',
                     'mock-cache-dir',
@@ -153,8 +145,8 @@ describe('ApiAuth', () => {
             assert.equal(response, 'mock-config-token')
         })
 
-        test.nock(AUTH_URL, (api) =>
-            api
+        it('refreshes sso token from auth file when nearing expiration', async () => {
+            nock(AUTH_URL)
                 .post('/oauth/token', {
                     client_id: CLI_CLIENT_ID,
                     grant_type: 'refresh_token',
@@ -164,10 +156,7 @@ describe('ApiAuth', () => {
                 .reply(200, {
                     access_token: 'mock-refreshed-token',
                     refresh_token: 'mock-new-refresh-token',
-                }),
-        ).it(
-            'refreshes sso token from auth file when nearing expiration',
-            async () => {
+                })
                 const auth = new ApiAuth(
                     'mock-auth-path',
                     'mock-cache-dir',

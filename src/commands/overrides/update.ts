@@ -134,6 +134,6 @@ export default class UpdateOverride extends Base {
             ...result,
         }
 
-        this.tableOutput.printOverrides<UserOverride>([resultToPrint])
+        await this.tableOutput.printOverrides<UserOverride>([resultToPrint])
     }
 }

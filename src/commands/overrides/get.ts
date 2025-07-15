@@ -129,7 +129,7 @@ export default class DetailedOverrides extends Base {
             return
         }
 
-        this.tableOutput.printOverrides<UserOverride>([
+        await this.tableOutput.printOverrides<UserOverride>([
             {
                 _environment: environment._id ?? override._environment,
                 environmentName: environment.name ?? environmentKey,

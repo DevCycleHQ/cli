@@ -1,5 +1,4 @@
 import { ux } from '@oclif/core'
-import { table } from '@oclif/core/lib/cli-ux/styled/table'
 
 export default class TableOutput {
     public headless: boolean
@@ -9,23 +8,29 @@ export default class TableOutput {
         variationName: { header: 'Override Variation', minWidth: 20 },
     }
 
-    public print<T extends Record<string, unknown>>(
+    public async print<T extends Record<string, unknown>>(
         data: T[],
-        columns: table.Columns<T>,
-        options?: table.Options,
+        columns: any,
+        options?: any,
     ) {
         if (this.headless) {
             return
         }
 
-        ux.table(data, columns, options)
+        try {
+            const { printTable } = await import('@oclif/table')
+            printTable({ data, columns, ...options })
+        } catch (error) {
+            // Fallback to basic console.table if @oclif/table is not available
+            console.table(data)
+        }
         console.log('\r')
     }
 
-    public printOverrides<T extends Record<string, unknown>>(
+    public async printOverrides<T extends Record<string, unknown>>(
         data: T[],
-        options?: table.Options,
+        options?: any,
     ) {
-        this.print(data, this.overridesColumns, options)
+        await this.print(data, this.overridesColumns, options)
     }
 }

@@ -108,7 +108,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/5.21.1 linux-x64 node-v22.12.0
+@devcycle/cli/5.21.1 linux-x64 node-v22.16.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -120,7 +120,7 @@ USAGE
 # Command Topics
 
 * [`dvc alias`](docs/alias.md) - Manage repository variable aliases.
-* [`dvc autocomplete`](docs/autocomplete.md) - display autocomplete installation instructions
+* [`dvc autocomplete`](docs/autocomplete.md) - Display autocomplete installation instructions.
 * [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
 * [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
 * [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
