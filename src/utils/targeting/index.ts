@@ -185,13 +185,14 @@ export const createTargetAndEnable = async (
         environment ||
         (await fetchEnvironmentByKey(authToken, projectKey, environmentKey))
 
-    updatedFeatureConfig &&
+    if (updatedFeatureConfig) {
         renderTargetingTree(
             [updatedFeatureConfig],
             [fetchedEnvironment],
             fetchedVariations,
             audiences,
         )
+    }
 
     const { confirm } = await inquirer.prompt({
         name: 'confirm',
@@ -208,13 +209,14 @@ export const createTargetAndEnable = async (
             environmentKey,
             { status: 'active' },
         )
-        updatedFeatureConfig &&
+        if (updatedFeatureConfig) {
             renderTargetingTree(
                 [updatedFeatureConfig],
                 [fetchedEnvironment],
                 fetchedVariations,
                 audiences,
             )
+        }
     }
     return updatedFeatureConfig
 }

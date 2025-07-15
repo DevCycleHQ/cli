@@ -1,17 +1,28 @@
 {
     "compilerOptions": {
-        "declaration": true,
-        "emitDecoratorMetadata": true,
-        "esModuleInterop": true,
-        "importHelpers": true,
+        "target": "ES2022",
         "module": "commonjs",
+        "lib": ["ES2022"],
         "outDir": "dist",
         "rootDir": "src",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
         "strict": true,
         "strictPropertyInitialization": false,
+        "noImplicitReturns": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "importHelpers": true,
         "experimentalDecorators": true,
-        "target": "es2019"
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "incremental": true,
+        "tsBuildInfoFile": "./dist/.tsbuildinfo"
     },
     "include": ["src/**/*"],
-    "exclude": ["src/**/*.test.ts"]
+    "exclude": ["src/**/*.test.ts", "dist", "node_modules", "bin"]
 }
