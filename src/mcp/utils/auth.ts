@@ -70,7 +70,7 @@ export class DevCycleAuth {
 
                 if (hasProjectEnv) {
                     throw new Error(
-                        `Invalid project key "${this._projectKey}" in environment variable. ` +
+                        `Invalid project key "${hasProjectEnv}" in environment variable. ` +
                             'Please verify DEVCYCLE_PROJECT_KEY is correct, or run "dvc projects select" to configure a project.',
                     )
                 } else {

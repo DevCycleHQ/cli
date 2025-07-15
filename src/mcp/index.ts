@@ -6,18 +6,22 @@ import { DevCycleMCPServer } from './server'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-// Handle command line arguments
-const args = process.argv.slice(2)
-if (args.includes('--version') || args.includes('-v')) {
+// Get version for MCP server
+function getVersion(): string {
     try {
         const packagePath = join(__dirname, '..', '..', 'package.json')
         const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'))
-        console.log(packageJson.version)
-        process.exit(0)
+        return packageJson.version
     } catch (error) {
-        console.error('Unable to read version')
-        process.exit(1)
+        return 'unknown version'
     }
+}
+
+// Handle command line arguments
+const args = process.argv.slice(2)
+if (args.includes('--version') || args.includes('-v')) {
+    console.log(getVersion())
+    process.exit(0)
 }
 
 if (args.includes('--help') || args.includes('-h')) {
@@ -39,17 +43,6 @@ if (args.includes('--help') || args.includes('-h')) {
         'For setup instructions, see: https://github.com/DevCycleHQ/cli#mcp-server-for-ai-assistants',
     )
     process.exit(0)
-}
-
-// Get version for MCP server
-function getVersion(): string {
-    try {
-        const packagePath = join(__dirname, '..', '..', 'package.json')
-        const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'))
-        return packageJson.version
-    } catch (error) {
-        return '0.0.1'
-    }
 }
 
 async function main() {
