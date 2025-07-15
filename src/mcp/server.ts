@@ -121,7 +121,21 @@ export class DevCycleMCPServer {
                         errorMessage = error.message
 
                         // Categorize common error types
+                        // Check for Zodios schema validation errors first
                         if (
+                            error.message.includes(
+                                'Zodios: Invalid response',
+                            ) ||
+                            error.message.includes('invalid_type') ||
+                            error.message.includes('Expected object, received')
+                        ) {
+                            errorType = 'SCHEMA_VALIDATION_ERROR'
+                            suggestions = [
+                                'The API response format has changed or is unexpected',
+                                'This may be a temporary API issue - try again in a moment',
+                                'Contact DevCycle support if the issue persists',
+                            ]
+                        } else if (
                             error.message.includes('401') ||
                             error.message.includes('Unauthorized')
                         ) {
