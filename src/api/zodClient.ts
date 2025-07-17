@@ -340,12 +340,12 @@ const UpdateAudienceDto = z
     })
     .partial()
 const VariableValidationEntity = z.object({
-    schemaType: z.object({}).partial(),
-    enumValues: z.object({}).partial().optional(),
+    schemaType: z.string(),
+    enumValues: z.array(z.string()).optional(),
     regexPattern: z.string().optional(),
     jsonSchema: z.string().optional(),
     description: z.string(),
-    exampleValue: z.object({}).partial(),
+    exampleValue: z.any(),
 })
 const CreateVariableDto = z.object({
     name: z.string().max(100).optional(),
