@@ -151,6 +151,11 @@ const FEATURE_PAGINATION_PROPERTIES = {
         description: 'Filter by feature status',
         enum: ['active', 'complete', 'archived'],
     },
+    staleness: {
+        type: 'string' as const,
+        description: 'Filter by feature staleness',
+        enum: ['all', 'unused', 'released', 'unmodified', 'notStale'],
+    },
 }
 
 const FEATURE_SETTINGS_PROPERTY = {

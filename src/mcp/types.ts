@@ -4,9 +4,27 @@ import { UpdateFeatureStatusDto } from '../api/schemas'
 
 // Zod schemas for MCP tool arguments
 export const ListFeaturesArgsSchema = z.object({
-    search: z.string().optional(),
-    page: z.number().min(1).optional(),
+    page: z.number().min(1).default(1).optional(),
     perPage: z.number().min(1).max(1000).default(100).optional(),
+    sortBy: z
+        .enum([
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ])
+        .default('createdAt')
+        .optional(),
+    sortOrder: z.enum(['asc', 'desc']).default('desc').optional(),
+    search: z.string().min(3).optional(),
+    staleness: z
+        .enum(['all', 'unused', 'released', 'unmodified', 'notStale'])
+        .optional(),
+    createdBy: z.string().optional(),
+    type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
+    status: z.enum(['active', 'complete', 'archived']).optional(),
 })
 
 export const ListVariablesArgsSchema = z.object({

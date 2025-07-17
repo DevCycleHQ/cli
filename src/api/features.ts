@@ -30,6 +30,7 @@ export const fetchFeatures = async (
             | 'propertyKey'
         sortOrder?: 'asc' | 'desc'
         search?: string
+        staleness?: 'all' | 'unused' | 'released' | 'unmodified' | 'notStale'
         createdBy?: string
         type?: 'release' | 'experiment' | 'permission' | 'ops'
         status?: 'active' | 'complete' | 'archived'
