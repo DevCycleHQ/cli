@@ -1,4 +1,5 @@
 import { DevCycleAuth } from './auth'
+import { setMCPToolCommand } from './headers'
 
 function getErrorMessage(error: unknown): string {
     if (error instanceof Error && error.message) {
@@ -48,6 +49,9 @@ export class DevCycleApiClient {
             if (requiresProject) {
                 this.auth.requireProject()
             }
+
+            // Set the specific MCP tool command in headers before making API calls
+            setMCPToolCommand(operationName)
 
             const authToken = this.auth.getAuthToken()
             const projectKey = requiresProject ? this.auth.getProjectKey() : ''
