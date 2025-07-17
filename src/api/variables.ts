@@ -70,10 +70,20 @@ export const fetchVariables = async (
     token: string,
     project_id: string,
     queries: {
-        feature?: string
         page?: number
         perPage?: number
+        sortBy?:
+            | 'createdAt'
+            | 'updatedAt'
+            | 'name'
+            | 'key'
+            | 'createdBy'
+            | 'propertyKey'
+        sortOrder?: 'asc' | 'desc'
         search?: string
+        feature?: string
+        type?: 'String' | 'Boolean' | 'Number' | 'JSON'
+        status?: 'active' | 'archived'
     } = {},
 ) => {
     return await apiClient.get('/v1/projects/:project/variables', {
