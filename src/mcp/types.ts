@@ -10,9 +10,24 @@ export const ListFeaturesArgsSchema = z.object({
 })
 
 export const ListVariablesArgsSchema = z.object({
-    search: z.string().optional(),
-    page: z.number().min(1).optional(),
+    page: z.number().min(1).default(1).optional(),
     perPage: z.number().min(1).max(1000).default(100).optional(),
+    sortBy: z
+        .enum([
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ])
+        .default('createdAt')
+        .optional(),
+    sortOrder: z.enum(['asc', 'desc']).default('desc').optional(),
+    search: z.string().min(3).optional(),
+    feature: z.string().optional(),
+    type: z.enum(['String', 'Boolean', 'Number', 'JSON']).optional(),
+    status: z.enum(['active', 'archived']).optional(),
 })
 
 export const CreateVariableArgsSchema = schemas.CreateVariableDto

@@ -13,6 +13,10 @@ import {
     UpdateEnvironmentArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
+import {
+    DASHBOARD_LINK_PROPERTY,
+    ENVIRONMENT_KEY_PROPERTY,
+} from './commonSchemas'
 
 // Helper function to generate environment dashboard links
 const generateEnvironmentDashboardLink = (
@@ -27,17 +31,46 @@ const generateEnvironmentDashboardLink = (
 // =============================================================================
 
 // Reusable schema components
-const ENVIRONMENT_KEY_PROPERTY = {
+const ENVIRONMENT_COLOR_PROPERTY = {
     type: 'string' as const,
-    description:
-        "The key of the environment, must be unique and can't be changed after creation",
+    description: 'Color used to represent this environment in the UI',
 }
 
-const PAGINATION_PROPERTIES = {
+const ENVIRONMENT_TYPE_PROPERTY = {
+    type: 'string' as const,
+    enum: [
+        'development',
+        'staging',
+        'production',
+        'disaster_recovery',
+    ] as const,
+}
+
+const ENVIRONMENT_COMMON_PROPERTIES = {
+    key: ENVIRONMENT_KEY_PROPERTY,
+    name: {
+        type: 'string' as const,
+    },
+    description: {
+        type: 'string' as const,
+    },
+    color: ENVIRONMENT_COLOR_PROPERTY,
+    type: ENVIRONMENT_TYPE_PROPERTY,
+    settings: {
+        type: 'object' as const,
+        properties: {
+            appIconUri: {
+                type: 'string' as const,
+                description: 'URI for the app icon',
+            },
+        },
+    },
+}
+
+const ENVIRONMENT_PAGINATION_PROPERTIES = {
     search: {
         type: 'string' as const,
-        description:
-            'Search query to filter environments (minimum 3 characters)',
+        description: 'Search query to filter results (minimum 3 characters)',
         minLength: 3,
     },
     page: {
@@ -53,7 +86,6 @@ const PAGINATION_PROPERTIES = {
     },
     sortBy: {
         type: 'string' as const,
-        description: 'Field to sort by (default: createdAt)',
         enum: [
             'createdAt',
             'updatedAt',
@@ -62,6 +94,7 @@ const PAGINATION_PROPERTIES = {
             'createdBy',
             'propertyKey',
         ] as const,
+        description: 'Field to sort by',
     },
     sortOrder: {
         type: 'string' as const,
@@ -70,23 +103,7 @@ const PAGINATION_PROPERTIES = {
     },
     createdBy: {
         type: 'string' as const,
-        description: 'Filter by creator user ID',
-    },
-}
-
-const ENVIRONMENT_COMMON_PROPERTIES = {
-    key: ENVIRONMENT_KEY_PROPERTY,
-    name: {
-        type: 'string' as const,
-        description: 'The name of the environment',
-    },
-    description: {
-        type: 'string' as const,
-        description: 'The description of the environment',
-    },
-    color: {
-        type: 'string' as const,
-        description: 'The color for the environment',
+        description: 'Filter by user who created the environment',
     },
 }
 
@@ -113,7 +130,6 @@ const SDK_KEY_PROPERTIES = {
 // Output schema components
 const SDK_KEYS_OBJECT_SCHEMA = {
     type: 'object' as const,
-    description: 'SDK keys for mobile, server, and client applications',
     properties: SDK_KEY_PROPERTIES,
     required: ['mobile', 'server', 'client'],
 }
@@ -122,34 +138,10 @@ const ENVIRONMENT_OBJECT_SCHEMA = {
     type: 'object' as const,
     description: 'A DevCycle environment configuration',
     properties: {
+        ...ENVIRONMENT_COMMON_PROPERTIES,
         _id: {
             type: 'string' as const,
             description: 'Unique identifier for the environment',
-        },
-        key: {
-            type: 'string' as const,
-            description: 'The environment key (unique, immutable)',
-        },
-        name: {
-            type: 'string' as const,
-            description: 'Display name of the environment',
-        },
-        description: {
-            type: 'string' as const,
-            description: 'Optional description of the environment',
-        },
-        color: {
-            type: 'string' as const,
-            description: 'Color used to represent this environment in the UI',
-        },
-        type: {
-            type: 'string' as const,
-            description:
-                'Environment type (e.g., development, staging, production)',
-        },
-        settings: {
-            type: 'object' as const,
-            description: 'Environment-specific configuration settings',
         },
         sdkKeys: SDK_KEYS_OBJECT_SCHEMA,
         createdAt: {
@@ -172,18 +164,9 @@ const ENVIRONMENT_OBJECT_SCHEMA = {
     ],
 }
 
-const DASHBOARD_LINK_PROPERTY = {
-    type: 'string' as const,
-    format: 'uri' as const,
-    description:
-        'URL to view and manage environments in the DevCycle dashboard',
-}
-
 // Complete output schema definitions
 const ENVIRONMENT_OUTPUT_SCHEMA = {
     type: 'object' as const,
-    description:
-        'Response containing the updated environment and dashboard link',
     properties: {
         result: ENVIRONMENT_OBJECT_SCHEMA,
         dashboardLink: DASHBOARD_LINK_PROPERTY,
@@ -201,7 +184,7 @@ export const environmentToolDefinitions: Tool[] = [
             'List environments in the current project. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: PAGINATION_PROPERTIES,
+            properties: ENVIRONMENT_PAGINATION_PROPERTIES,
         },
         outputSchema: {
             type: 'object' as const,

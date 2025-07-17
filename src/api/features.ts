@@ -19,11 +19,20 @@ export const fetchFeatures = async (
     token: string,
     project_id: string,
     queries: {
-        feature?: string
         page?: number
         perPage?: number
+        sortBy?:
+            | 'createdAt'
+            | 'updatedAt'
+            | 'name'
+            | 'key'
+            | 'createdBy'
+            | 'propertyKey'
+        sortOrder?: 'asc' | 'desc'
         search?: string
-        staleness?: string
+        createdBy?: string
+        type?: 'release' | 'experiment' | 'permission' | 'ops'
+        status?: 'active' | 'complete' | 'archived'
     } = {},
 ): Promise<Feature[]> => {
     const response = await apiClient.get(FEATURE_URL, {

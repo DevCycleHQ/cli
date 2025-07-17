@@ -36,7 +36,14 @@ import {
     GetFeatureAuditLogHistoryArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
-import { Feature } from '../../api/schemas'
+import {
+    DASHBOARD_LINK_PROPERTY,
+    MESSAGE_RESPONSE_SCHEMA,
+    FEATURE_KEY_PROPERTY,
+    ENVIRONMENT_KEY_PROPERTY,
+    VARIATION_KEY_PROPERTY,
+    TARGET_AUDIENCE_PROPERTY,
+} from './commonSchemas'
 
 // Helper function to generate feature dashboard links
 const generateFeaturesDashboardLink = (
@@ -58,21 +65,10 @@ const generateFeatureDashboardLink = (
 // =============================================================================
 // INPUT SCHEMAS
 // =============================================================================
-const FEATURE_KEY_PROPERTY = {
-    type: 'string' as const,
-    description:
-        'The key of the feature (unique, immutable, max 100 characters, pattern: ^[a-z0-9-_.]+$)',
-}
-
-const ENVIRONMENT_KEY_PROPERTY = {
-    type: 'string' as const,
-    description: 'The key of the environment',
-}
 
 const ENVIRONMENT_KEY_OPTIONAL_PROPERTY = {
     type: 'string' as const,
-    description:
-        'The key of the environment (optional - if not provided, returns all environments)',
+    description: 'Optional environment key to filter by',
 }
 
 const FEATURE_NAME_PROPERTY = {
@@ -91,14 +87,75 @@ const FEATURE_TYPE_PROPERTY = {
     description: 'Feature type',
 }
 
+const FEATURE_STATUS_PROPERTY = {
+    type: 'string' as const,
+    enum: ['active', 'complete', 'archived'] as const,
+    description: 'Feature status',
+}
+
 const CONTROL_VARIATION_PROPERTY = {
     type: 'string' as const,
     description:
         'The key of the variation that is used as the control variation for Metrics',
 }
 
+const FEATURE_PAGINATION_PROPERTIES = {
+    page: {
+        type: 'number' as const,
+        description: 'Page number',
+        minimum: 1,
+        default: 1,
+    },
+    perPage: {
+        type: 'number' as const,
+        description: 'Items per page',
+        minimum: 1,
+        maximum: 1000,
+        default: 100,
+    },
+    sortBy: {
+        type: 'string' as const,
+        description: 'Sort field',
+        enum: [
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ],
+        default: 'createdAt',
+    },
+    sortOrder: {
+        type: 'string' as const,
+        description: 'Sort order',
+        enum: ['asc', 'desc'],
+        default: 'desc',
+    },
+    search: {
+        type: 'string' as const,
+        description: 'Search query to filter results',
+        minLength: 3,
+    },
+    createdBy: {
+        type: 'string' as const,
+        description: 'Filter by creator',
+    },
+    type: {
+        type: 'string' as const,
+        description: 'Filter by feature type',
+        enum: ['release', 'experiment', 'permission', 'ops'],
+    },
+    status: {
+        type: 'string' as const,
+        description: 'Filter by feature status',
+        enum: ['active', 'complete', 'archived'],
+    },
+}
+
 const FEATURE_SETTINGS_PROPERTY = {
     type: 'object' as const,
+    description: 'Feature-level settings (all properties required if provided)',
     properties: {
         publicName: {
             type: 'string' as const,
@@ -114,7 +171,6 @@ const FEATURE_SETTINGS_PROPERTY = {
             description: 'Whether opt-in is enabled for the feature',
         },
     },
-    description: 'Feature-level settings (all properties required if provided)',
     required: ['publicName', 'publicDescription', 'optInEnabled'] as const,
 }
 
@@ -123,19 +179,16 @@ const SDK_VISIBILITY_PROPERTY = {
     properties: {
         mobile: {
             type: 'boolean' as const,
-            description: 'Whether the feature is visible to mobile SDKs',
         },
         client: {
             type: 'boolean' as const,
-            description: 'Whether the feature is visible to client SDKs',
         },
         server: {
             type: 'boolean' as const,
-            description: 'Whether the feature is visible to server SDKs',
         },
     },
     description:
-        'SDK Type Visibility Settings (all properties required if provided)',
+        'SDK Type Visibility Settings for mobile, client, and server SDKs',
     required: ['mobile', 'client', 'server'] as const,
 }
 
@@ -149,12 +202,6 @@ const FEATURE_VARIABLES_PROPERTY = {
     },
 }
 
-const VARIATION_KEY_PROPERTY = {
-    type: 'string' as const,
-    description:
-        'Unique variation key (unique, immutable, max 100 characters, pattern: ^[a-z0-9-_.]+$)',
-}
-
 const VARIATION_NAME_PROPERTY = {
     type: 'string' as const,
     description: 'Human-readable variation name (max 100 characters)',
@@ -165,26 +212,6 @@ const VARIATION_VARIABLES_PROPERTY = {
     description:
         'Key-value map of variable keys to their values for this variation (supports string, number, boolean, and object values)',
     additionalProperties: true,
-}
-
-const PAGINATION_PROPERTIES = {
-    search: {
-        type: 'string' as const,
-        description: 'Search query to filter features',
-    },
-    page: {
-        type: 'number' as const,
-        description: 'Page number (default: 1)',
-    },
-    per_page: {
-        type: 'number' as const,
-        description: 'Number of items per page (default: 100, max: 1000)',
-    },
-}
-
-const FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES = {
-    feature_key: FEATURE_KEY_PROPERTY,
-    environment_key: ENVIRONMENT_KEY_PROPERTY,
 }
 
 // =============================================================================
@@ -200,22 +227,10 @@ const FEATURE_OBJECT_SCHEMA = {
             description: 'MongoDB ID for the feature',
         },
         key: FEATURE_KEY_PROPERTY,
-        name: {
-            type: 'string' as const,
-            description: 'Display name of the feature',
-        },
-        description: {
-            type: 'string' as const,
-            description: 'Optional description of the feature',
-        },
-        type: {
-            type: 'string' as const,
-            description: 'Feature type (release, experiment, permission, ops)',
-        },
-        status: {
-            type: 'string' as const,
-            description: 'Feature status (active, complete, archived)',
-        },
+        name: FEATURE_NAME_PROPERTY,
+        description: FEATURE_DESCRIPTION_PROPERTY,
+        type: FEATURE_TYPE_PROPERTY,
+        status: FEATURE_STATUS_PROPERTY,
         variations: {
             type: 'array' as const,
             description: 'Array of variations for this feature',
@@ -246,12 +261,11 @@ const VARIATION_OBJECT_SCHEMA = {
     properties: {
         _id: {
             type: 'string' as const,
-            description: 'Unique identifier for the variation',
+            description: 'MongoDB ID for the variation',
         },
         key: VARIATION_KEY_PROPERTY,
         name: {
             type: 'string' as const,
-            description: 'Display name of the variation',
         },
         variables: {
             type: 'object' as const,
@@ -259,24 +273,6 @@ const VARIATION_OBJECT_SCHEMA = {
         },
     },
     required: ['_id', 'key', 'name'],
-}
-
-const MESSAGE_RESPONSE_SCHEMA = {
-    type: 'object' as const,
-    description: 'Simple message response',
-    properties: {
-        message: {
-            type: 'string' as const,
-            description: 'Response message',
-        },
-    },
-    required: ['message'],
-}
-
-const DASHBOARD_LINK_PROPERTY = {
-    type: 'string' as const,
-    format: 'uri' as const,
-    description: 'URL to view and manage features in the DevCycle dashboard',
 }
 
 // =============================================================================
@@ -290,7 +286,7 @@ export const featureToolDefinitions: Tool[] = [
             'List features in the current project. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: PAGINATION_PROPERTIES,
+            properties: FEATURE_PAGINATION_PROPERTIES,
         },
         outputSchema: {
             type: 'object' as const,
@@ -347,10 +343,7 @@ export const featureToolDefinitions: Tool[] = [
                                 description:
                                     'Targeting rules for this environment',
                             },
-                            status: {
-                                type: 'string',
-                                description: 'Status for this environment',
-                            },
+                            status: FEATURE_STATUS_PROPERTY,
                         },
                     },
                 },
@@ -416,11 +409,7 @@ export const featureToolDefinitions: Tool[] = [
             type: 'object',
             properties: {
                 key: FEATURE_KEY_PROPERTY,
-                status: {
-                    type: 'string',
-                    enum: ['active', 'complete', 'archived'],
-                    description: 'The status to set the feature to',
-                },
+                status: FEATURE_STATUS_PROPERTY,
                 staticVariation: {
                     type: 'string',
                     description:
@@ -520,25 +509,15 @@ export const featureToolDefinitions: Tool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                feature_key: FEATURE_KEY_PROPERTY,
-                variation_key: {
-                    type: 'string',
-                    description: 'The key of the variation to update',
-                },
-                key: {
-                    type: 'string',
-                    description:
-                        'New variation key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
-                },
-                name: {
-                    type: 'string',
-                    description: 'New variation name (max 100 characters)',
-                },
-                variables: VARIATION_VARIABLES_PROPERTY,
                 _id: {
                     type: 'string',
-                    description: 'Internal variation ID (optional)',
+                    description: 'MongoDB ID for the variation',
                 },
+                feature_key: FEATURE_KEY_PROPERTY,
+                variation_key: VARIATION_KEY_PROPERTY,
+                key: VARIATION_KEY_PROPERTY,
+                name: VARIATION_NAME_PROPERTY,
+                variables: VARIATION_VARIABLES_PROPERTY,
             },
             required: ['feature_key', 'variation_key'],
         },
@@ -557,7 +536,10 @@ export const featureToolDefinitions: Tool[] = [
             'Enable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES,
+            properties: {
+                feature_key: FEATURE_KEY_PROPERTY,
+                environment_key: ENVIRONMENT_KEY_PROPERTY,
+            },
             required: ['feature_key', 'environment_key'],
         },
         outputSchema: {
@@ -575,7 +557,10 @@ export const featureToolDefinitions: Tool[] = [
             'Disable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES,
+            properties: {
+                feature_key: FEATURE_KEY_PROPERTY,
+                environment_key: ENVIRONMENT_KEY_PROPERTY,
+            },
             required: ['feature_key', 'environment_key'],
         },
         outputSchema: {
@@ -634,45 +619,12 @@ export const featureToolDefinitions: Tool[] = [
                         properties: {
                             _id: {
                                 type: 'string',
-                                description:
-                                    'Target ID (optional for new targets)',
+                                description: 'MongoDB ID for the target',
                             },
                             name: {
                                 type: 'string',
-                                description: 'Target name (optional)',
                             },
-                            audience: {
-                                type: 'object',
-                                description:
-                                    'Audience definition for the target',
-                                properties: {
-                                    name: {
-                                        type: 'string',
-                                        description:
-                                            'Audience name (max 100 characters, optional)',
-                                    },
-                                    filters: {
-                                        type: 'object',
-                                        description:
-                                            'Audience filters with logical operator',
-                                        properties: {
-                                            filters: {
-                                                type: 'array',
-                                                description:
-                                                    'Array of filter conditions (supports all, optIn, user, userCountry, userAppVersion, userPlatformVersion, userCustom, audienceMatch filters)',
-                                            },
-                                            operator: {
-                                                type: 'string',
-                                                enum: ['and', 'or'],
-                                                description:
-                                                    'Logical operator for combining filters',
-                                            },
-                                        },
-                                        required: ['filters', 'operator'],
-                                    },
-                                },
-                                required: ['filters'],
-                            },
+                            audience: TARGET_AUDIENCE_PROPERTY,
                             distribution: {
                                 type: 'array',
                                 description:
@@ -804,7 +756,6 @@ export const featureToolDefinitions: Tool[] = [
                     description: 'Array of audit log entries for the feature',
                     items: {
                         type: 'object' as const,
-                        description: 'Audit log entry',
                     },
                 },
                 dashboardLink: DASHBOARD_LINK_PROPERTY,

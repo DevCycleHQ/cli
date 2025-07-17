@@ -12,6 +12,7 @@ import {
     UpdateProjectArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
+import { DASHBOARD_LINK_PROPERTY, PROJECT_KEY_PROPERTY } from './commonSchemas'
 
 // Helper functions to generate project dashboard links
 const generateProjectDashboardLink = (
@@ -26,57 +27,12 @@ const generateOrganizationSettingsLink = (orgId: string): string => {
 }
 
 const generateEditProjectLink = (orgId: string, projectKey: string): string => {
-    return `https://app.devcycle.com/o/${orgId}/settings/p/${projectKey}/details`
+    return `https://app.devcycle.com/o/${orgId}/settings/projects/${projectKey}/edit`
 }
 
 // =============================================================================
 // INPUT SCHEMAS
 // =============================================================================
-
-const PROJECT_KEY_PROPERTY = {
-    type: 'string' as const,
-    description: 'The project key (unique, immutable)',
-}
-
-const PAGINATION_PROPERTIES = {
-    search: {
-        type: 'string' as const,
-        description: 'Search query to filter projects (minimum 3 characters)',
-        minLength: 3,
-    },
-    page: {
-        type: 'number' as const,
-        description: 'Page number (default: 1)',
-        minimum: 1,
-    },
-    perPage: {
-        type: 'number' as const,
-        description: 'Number of items per page (default: 100, max: 1000)',
-        minimum: 1,
-        maximum: 1000,
-    },
-    sortBy: {
-        type: 'string' as const,
-        description: 'Field to sort by (default: createdAt)',
-        enum: [
-            'createdAt',
-            'updatedAt',
-            'name',
-            'key',
-            'createdBy',
-            'propertyKey',
-        ] as const,
-    },
-    sortOrder: {
-        type: 'string' as const,
-        enum: ['asc', 'desc'] as const,
-        description: 'Sort order (default: desc)',
-    },
-    createdBy: {
-        type: 'string' as const,
-        description: 'Filter by creator user ID',
-    },
-}
 
 const PROJECT_COMMON_PROPERTIES = {
     name: {
@@ -91,6 +47,49 @@ const PROJECT_COMMON_PROPERTIES = {
     color: {
         type: 'string' as const,
         description: 'Project color (hex format)',
+    },
+}
+
+const PROJECT_PAGINATION_PROPERTIES = {
+    page: {
+        type: 'number' as const,
+        description: 'Page number',
+        minimum: 1,
+        default: 1,
+    },
+    perPage: {
+        type: 'number' as const,
+        description: 'Items per page',
+        minimum: 1,
+        maximum: 1000,
+        default: 100,
+    },
+    sortBy: {
+        type: 'string' as const,
+        description: 'Sort field',
+        enum: [
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ],
+        default: 'createdAt',
+    },
+    sortOrder: {
+        type: 'string' as const,
+        description: 'Sort order',
+        enum: ['asc', 'desc'],
+        default: 'desc',
+    },
+    search: {
+        type: 'string' as const,
+        description: 'Search query to filter results',
+    },
+    createdBy: {
+        type: 'string' as const,
+        description: 'Filter by creator',
     },
 }
 
@@ -131,12 +130,6 @@ const PROJECT_OBJECT_SCHEMA = {
     required: ['_id', 'key', 'name', 'createdAt', 'updatedAt'],
 }
 
-const DASHBOARD_LINK_PROPERTY = {
-    type: 'string' as const,
-    format: 'uri' as const,
-    description: 'URL to view and manage projects in the DevCycle dashboard',
-}
-
 // Complete output schema definitions
 const PROJECT_OUTPUT_SCHEMA = {
     type: 'object' as const,
@@ -158,7 +151,7 @@ export const projectToolDefinitions: Tool[] = [
             'List all projects in the current organization. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: PAGINATION_PROPERTIES,
+            properties: PROJECT_PAGINATION_PROPERTIES,
         },
         outputSchema: {
             type: 'object' as const,

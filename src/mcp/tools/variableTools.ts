@@ -13,6 +13,11 @@ import {
     DeleteVariableArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
+import {
+    DASHBOARD_LINK_PROPERTY,
+    MESSAGE_RESPONSE_SCHEMA,
+    VARIABLE_KEY_PROPERTY,
+} from './commonSchemas'
 
 // Helper function to generate variable dashboard links
 const generateVariablesDashboardLink = (
@@ -25,27 +30,57 @@ const generateVariablesDashboardLink = (
 // =============================================================================
 // INPUT SCHEMAS
 // =============================================================================
-
-const VARIABLE_KEY_PROPERTY = {
-    type: 'string' as const,
-    description: 'The variable key (unique, immutable)',
-}
-
-const PAGINATION_PROPERTIES = {
+const VARIABLE_PAGINATION_PROPERTIES = {
+    page: {
+        type: 'number' as const,
+        description: 'Page number',
+        minimum: 1,
+        default: 1,
+    },
+    perPage: {
+        type: 'number' as const,
+        description: 'Items per page',
+        minimum: 1,
+        maximum: 1000,
+        default: 100,
+    },
+    sortBy: {
+        type: 'string' as const,
+        description: 'Sort field',
+        enum: [
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ],
+        default: 'createdAt',
+    },
+    sortOrder: {
+        type: 'string' as const,
+        description: 'Sort order',
+        enum: ['asc', 'desc'],
+        default: 'desc',
+    },
     search: {
         type: 'string' as const,
         description: 'Search query to filter variables',
+        minLength: 3,
     },
-    page: {
-        type: 'number' as const,
-        description: 'Page number (default: 1)',
-        minimum: 1,
+    feature: {
+        type: 'string' as const,
+        description: 'Filter by feature',
     },
-    per_page: {
-        type: 'number' as const,
-        description: 'Number of items per page (default: 100, max: 1000)',
-        minimum: 1,
-        maximum: 1000,
+    type: {
+        type: 'string' as const,
+        description: 'Filter by variable type',
+        enum: ['String', 'Boolean', 'Number', 'JSON'],
+    },
+    status: {
+        type: 'string' as const,
+        description: 'Filter by variable status',
+        enum: ['active', 'archived'],
     },
 }
 
@@ -169,24 +204,6 @@ const VARIABLE_OBJECT_SCHEMA = {
     required: ['_id', 'key', 'name', 'type', 'createdAt', 'updatedAt'],
 }
 
-const MESSAGE_RESPONSE_SCHEMA = {
-    type: 'object' as const,
-    description: 'Simple message response',
-    properties: {
-        message: {
-            type: 'string' as const,
-            description: 'Response message',
-        },
-    },
-    required: ['message'],
-}
-
-const DASHBOARD_LINK_PROPERTY = {
-    type: 'string' as const,
-    format: 'uri' as const,
-    description: 'URL to view and manage variables in the DevCycle dashboard',
-}
-
 // =============================================================================
 // TOOL DEFINITIONS
 // =============================================================================
@@ -198,7 +215,7 @@ export const variableToolDefinitions: Tool[] = [
             'List variables in the current project. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: PAGINATION_PROPERTIES,
+            properties: VARIABLE_PAGINATION_PROPERTIES,
         },
         outputSchema: {
             type: 'object' as const,

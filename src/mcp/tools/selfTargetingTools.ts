@@ -13,6 +13,13 @@ import {
     ClearSelfTargetingOverridesArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
+import {
+    DASHBOARD_LINK_PROPERTY,
+    MESSAGE_RESPONSE_SCHEMA,
+    FEATURE_KEY_PROPERTY,
+    ENVIRONMENT_KEY_PROPERTY,
+    VARIATION_KEY_PROPERTY,
+} from './commonSchemas'
 
 // Helper functions to generate dashboard links
 const generateSelfTargetingDashboardLink = (orgId: string): string => {
@@ -22,21 +29,6 @@ const generateSelfTargetingDashboardLink = (orgId: string): string => {
 // =============================================================================
 // INPUT SCHEMAS
 // =============================================================================
-
-const FEATURE_KEY_PROPERTY = {
-    type: 'string' as const,
-    description: 'The key of the feature',
-}
-
-const ENVIRONMENT_KEY_PROPERTY = {
-    type: 'string' as const,
-    description: 'The key of the environment',
-}
-
-const VARIATION_KEY_PROPERTY = {
-    type: 'string' as const,
-    description: 'The key of the variation to serve',
-}
 
 const DVC_USER_ID_PROPERTY = {
     type: 'string' as const,
@@ -83,25 +75,6 @@ const OVERRIDE_OBJECT_SCHEMA = {
         },
     },
     required: ['feature', 'environment', 'variation'],
-}
-
-const MESSAGE_RESPONSE_SCHEMA = {
-    type: 'object' as const,
-    description: 'Simple message response',
-    properties: {
-        message: {
-            type: 'string' as const,
-            description: 'Response message',
-        },
-    },
-    required: ['message'],
-}
-
-const DASHBOARD_LINK_PROPERTY = {
-    type: 'string' as const,
-    format: 'uri' as const,
-    description:
-        'URL to view and manage self-targeting in the DevCycle dashboard',
 }
 
 // Complete output schema definitions
