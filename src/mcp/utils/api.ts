@@ -74,7 +74,7 @@ export class DevCycleApiClient {
         operationName: string,
         args: any,
         operation: (authToken: string, projectKey: string) => Promise<T>,
-        dashboardLink: (orgId: string, projectKey: string) => string,
+        dashboardLink: (orgId: string, projectKey: string, result: T) => string,
     ): Promise<{ result: T; dashboardLink: string }> {
         const result = await this.executeWithLogging(
             operationName,
@@ -84,7 +84,7 @@ export class DevCycleApiClient {
 
         const organizationId = this.auth.getOrgId()
         const projectKey = this.auth.getProjectKey()
-        const link = dashboardLink(organizationId, projectKey)
+        const link = dashboardLink(organizationId, projectKey, result)
 
         return {
             result,
