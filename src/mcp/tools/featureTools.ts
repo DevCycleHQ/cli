@@ -36,22 +36,39 @@ import {
     GetFeatureAuditLogHistoryArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
+import {
+    DASHBOARD_LINK_PROPERTY,
+    MESSAGE_RESPONSE_SCHEMA,
+    FEATURE_KEY_PROPERTY,
+    ENVIRONMENT_KEY_PROPERTY,
+    VARIATION_KEY_PROPERTY,
+    TARGET_AUDIENCE_PROPERTY,
+} from './commonSchemas'
 
-// Reusable schema components
-const FEATURE_KEY_PROPERTY = {
-    type: 'string' as const,
-    description: 'The key of the feature',
+// Helper function to generate feature dashboard links
+const generateFeaturesDashboardLink = (
+    orgId: string,
+    projectKey: string,
+): string => {
+    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features`
 }
 
-const ENVIRONMENT_KEY_PROPERTY = {
-    type: 'string' as const,
-    description: 'The key of the environment',
+const generateFeatureDashboardLink = (
+    orgId: string,
+    projectKey: string,
+    featureKey: string,
+    page: 'overview' | 'manage-feature' | 'audit-log' = 'overview',
+): string => {
+    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features/${featureKey}/${page}`
 }
+
+// =============================================================================
+// INPUT SCHEMAS
+// =============================================================================
 
 const ENVIRONMENT_KEY_OPTIONAL_PROPERTY = {
     type: 'string' as const,
-    description:
-        'The key of the environment (optional - if not provided, returns all environments)',
+    description: 'Optional environment key to filter by',
 }
 
 const FEATURE_NAME_PROPERTY = {
@@ -70,14 +87,80 @@ const FEATURE_TYPE_PROPERTY = {
     description: 'Feature type',
 }
 
+const FEATURE_STATUS_PROPERTY = {
+    type: 'string' as const,
+    enum: ['active', 'complete', 'archived'] as const,
+    description: 'Feature status',
+}
+
 const CONTROL_VARIATION_PROPERTY = {
     type: 'string' as const,
     description:
         'The key of the variation that is used as the control variation for Metrics',
 }
 
+const FEATURE_PAGINATION_PROPERTIES = {
+    page: {
+        type: 'number' as const,
+        description: 'Page number',
+        minimum: 1,
+        default: 1,
+    },
+    perPage: {
+        type: 'number' as const,
+        description: 'Items per page',
+        minimum: 1,
+        maximum: 1000,
+        default: 100,
+    },
+    sortBy: {
+        type: 'string' as const,
+        description: 'Sort field',
+        enum: [
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ],
+        default: 'createdAt',
+    },
+    sortOrder: {
+        type: 'string' as const,
+        description: 'Sort order',
+        enum: ['asc', 'desc'],
+        default: 'desc',
+    },
+    search: {
+        type: 'string' as const,
+        description: 'Search query to filter results',
+        minLength: 3,
+    },
+    createdBy: {
+        type: 'string' as const,
+        description: 'Filter by creator',
+    },
+    type: {
+        type: 'string' as const,
+        description: 'Filter by feature type',
+        enum: ['release', 'experiment', 'permission', 'ops'],
+    },
+    status: {
+        type: 'string' as const,
+        description: 'Filter by feature status',
+        enum: ['active', 'complete', 'archived'],
+    },
+    staleness: {
+        type: 'string' as const,
+        description: 'Filter by feature staleness',
+        enum: ['all', 'unused', 'released', 'unmodified', 'notStale'],
+    },
+}
+
 const FEATURE_SETTINGS_PROPERTY = {
     type: 'object' as const,
+    description: 'Feature-level settings (all properties required if provided)',
     properties: {
         publicName: {
             type: 'string' as const,
@@ -93,7 +176,6 @@ const FEATURE_SETTINGS_PROPERTY = {
             description: 'Whether opt-in is enabled for the feature',
         },
     },
-    description: 'Feature-level settings (all properties required if provided)',
     required: ['publicName', 'publicDescription', 'optInEnabled'] as const,
 }
 
@@ -102,19 +184,16 @@ const SDK_VISIBILITY_PROPERTY = {
     properties: {
         mobile: {
             type: 'boolean' as const,
-            description: 'Whether the feature is visible to mobile SDKs',
         },
         client: {
             type: 'boolean' as const,
-            description: 'Whether the feature is visible to client SDKs',
         },
         server: {
             type: 'boolean' as const,
-            description: 'Whether the feature is visible to server SDKs',
         },
     },
     description:
-        'SDK Type Visibility Settings (all properties required if provided)',
+        'SDK Type Visibility Settings for mobile, client, and server SDKs',
     required: ['mobile', 'client', 'server'] as const,
 }
 
@@ -126,12 +205,6 @@ const FEATURE_VARIABLES_PROPERTY = {
         type: 'object' as const,
         description: 'Variable creation or reassociation data',
     },
-}
-
-const VARIATION_KEY_PROPERTY = {
-    type: 'string' as const,
-    description:
-        'Unique variation key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
 }
 
 const VARIATION_NAME_PROPERTY = {
@@ -146,47 +219,101 @@ const VARIATION_VARIABLES_PROPERTY = {
     additionalProperties: true,
 }
 
-const PAGINATION_PROPERTIES = {
-    search: {
-        type: 'string' as const,
-        description: 'Search query to filter features',
+// =============================================================================
+// OUTPUT SCHEMAS
+// =============================================================================
+
+const FEATURE_OBJECT_SCHEMA = {
+    type: 'object' as const,
+    description: 'A DevCycle feature configuration',
+    properties: {
+        _id: {
+            type: 'string' as const,
+            description: 'MongoDB ID for the feature',
+        },
+        key: FEATURE_KEY_PROPERTY,
+        name: FEATURE_NAME_PROPERTY,
+        description: FEATURE_DESCRIPTION_PROPERTY,
+        type: FEATURE_TYPE_PROPERTY,
+        status: FEATURE_STATUS_PROPERTY,
+        variations: {
+            type: 'array' as const,
+            description: 'Array of variations for this feature',
+        },
+        createdAt: {
+            type: 'string' as const,
+            description: 'ISO timestamp when the feature was created',
+        },
+        updatedAt: {
+            type: 'string' as const,
+            description: 'ISO timestamp when the feature was last updated',
+        },
     },
-    page: {
-        type: 'number' as const,
-        description: 'Page number (default: 1)',
-    },
-    per_page: {
-        type: 'number' as const,
-        description: 'Number of items per page (default: 100, max: 1000)',
-    },
+    required: [
+        '_id',
+        'key',
+        'name',
+        'type',
+        'status',
+        'createdAt',
+        'updatedAt',
+    ],
 }
 
-const FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES = {
-    feature_key: FEATURE_KEY_PROPERTY,
-    environment_key: ENVIRONMENT_KEY_PROPERTY,
+const VARIATION_OBJECT_SCHEMA = {
+    type: 'object' as const,
+    description: 'A feature variation configuration',
+    properties: {
+        _id: {
+            type: 'string' as const,
+            description: 'MongoDB ID for the variation',
+        },
+        key: VARIATION_KEY_PROPERTY,
+        name: {
+            type: 'string' as const,
+        },
+        variables: {
+            type: 'object' as const,
+            description: 'Variable values for this variation',
+        },
+    },
+    required: ['_id', 'key', 'name'],
 }
+
+// =============================================================================
+// TOOL DEFINITIONS
+// =============================================================================
 
 export const featureToolDefinitions: Tool[] = [
     {
         name: 'list_features',
-        description: 'List features in the current project',
+        description:
+            'List features in the current project. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: PAGINATION_PROPERTIES,
+            properties: FEATURE_PAGINATION_PROPERTIES,
+        },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: {
+                    type: 'array' as const,
+                    description: 'Array of feature objects in the project',
+                    items: FEATURE_OBJECT_SCHEMA,
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
         },
     },
     {
         name: 'create_feature',
         description:
-            'Create a new feature flag (supports interactive mode). ⚠️ IMPORTANT: If creating configurations for production environments, always confirm with the user before proceeding.',
+            'Create a new feature flag. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
-                key: {
-                    type: 'string',
-                    description:
-                        'Unique feature key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
-                },
+                key: FEATURE_KEY_PROPERTY,
                 name: FEATURE_NAME_PROPERTY,
                 description: FEATURE_DESCRIPTION_PROPERTY,
                 type: FEATURE_TYPE_PROPERTY,
@@ -221,33 +348,29 @@ export const featureToolDefinitions: Tool[] = [
                                 description:
                                     'Targeting rules for this environment',
                             },
-                            status: {
-                                type: 'string',
-                                description: 'Status for this environment',
-                            },
+                            status: FEATURE_STATUS_PROPERTY,
                         },
                     },
                 },
-                interactive: {
-                    type: 'boolean',
-                    description:
-                        'Use interactive mode to prompt for missing fields',
-                },
             },
+        },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: FEATURE_OBJECT_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
         },
     },
     {
         name: 'update_feature',
         description:
-            'Update an existing feature flag. ⚠️ IMPORTANT: Changes to feature flags may affect production environments. Always confirm with the user before making changes to features that are active in production.',
+            'Update an existing feature flag. ⚠️ IMPORTANT: Changes to feature flags may affect production environments. Always confirm with the user before making changes to features that are active in production. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
-                key: {
-                    type: 'string',
-                    description:
-                        'The key of the feature to update(1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
-                },
+                key: FEATURE_KEY_PROPERTY,
                 name: FEATURE_NAME_PROPERTY,
                 description: FEATURE_DESCRIPTION_PROPERTY,
                 type: FEATURE_TYPE_PROPERTY,
@@ -274,24 +397,24 @@ export const featureToolDefinitions: Tool[] = [
             },
             required: ['key'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: FEATURE_OBJECT_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'update_feature_status',
         description:
-            'Update the status of an existing feature flag. ⚠️ IMPORTANT: Changes to feature status may affect production environments. Always confirm with the user before making changes to features that are active in production.',
+            'Update the status of an existing feature flag. ⚠️ IMPORTANT: Changes to feature status may affect production environments. Always confirm with the user before making changes to features that are active in production. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
-                key: {
-                    type: 'string',
-                    description:
-                        'The key of the feature to update status for (1-100 characters, must match pattern ^[a-z0-9-_.]+$)',
-                },
-                status: {
-                    type: 'string',
-                    enum: ['active', 'complete', 'archived'],
-                    description: 'The status to set the feature to',
-                },
+                key: FEATURE_KEY_PROPERTY,
+                status: FEATURE_STATUS_PROPERTY,
                 staticVariation: {
                     type: 'string',
                     description:
@@ -300,11 +423,19 @@ export const featureToolDefinitions: Tool[] = [
             },
             required: ['key', 'status'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: FEATURE_OBJECT_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'delete_feature',
         description:
-            'Delete an existing feature flag. ⚠️ CRITICAL: Deleting a feature flag will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any feature flag.',
+            'Delete an existing feature flag. ⚠️ CRITICAL: Deleting a feature flag will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any feature flag. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -315,10 +446,19 @@ export const featureToolDefinitions: Tool[] = [
             },
             required: ['key'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: MESSAGE_RESPONSE_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'fetch_feature_variations',
-        description: 'Get a list of variations for a feature',
+        description:
+            'Get a list of variations for a feature. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -326,10 +466,23 @@ export const featureToolDefinitions: Tool[] = [
             },
             required: ['feature_key'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: {
+                    type: 'array' as const,
+                    description: 'Array of variation objects for the feature',
+                    items: VARIATION_OBJECT_SCHEMA,
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'create_feature_variation',
-        description: 'Create a new variation within a feature',
+        description:
+            'Create a new variation within a feature. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -345,60 +498,89 @@ export const featureToolDefinitions: Tool[] = [
             },
             required: ['feature_key', 'key', 'name'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: VARIATION_OBJECT_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'update_feature_variation',
-        description: 'Update an existing variation by key',
+        description:
+            'Update an existing variation by key. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
-                feature_key: FEATURE_KEY_PROPERTY,
-                variation_key: {
-                    type: 'string',
-                    description: 'The key of the variation to update',
-                },
-                key: {
-                    type: 'string',
-                    description:
-                        'New variation key (max 100 characters, pattern: ^[a-z0-9-_.]+$)',
-                },
-                name: {
-                    type: 'string',
-                    description: 'New variation name (max 100 characters)',
-                },
-                variables: VARIATION_VARIABLES_PROPERTY,
                 _id: {
                     type: 'string',
-                    description: 'Internal variation ID (optional)',
+                    description: 'MongoDB ID for the variation',
                 },
+                feature_key: FEATURE_KEY_PROPERTY,
+                variation_key: VARIATION_KEY_PROPERTY,
+                key: VARIATION_KEY_PROPERTY,
+                name: VARIATION_NAME_PROPERTY,
+                variables: VARIATION_VARIABLES_PROPERTY,
             },
             required: ['feature_key', 'variation_key'],
+        },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: VARIATION_OBJECT_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
         },
     },
     {
         name: 'enable_feature_targeting',
         description:
-            'Enable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
+            'Enable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES,
+            properties: {
+                feature_key: FEATURE_KEY_PROPERTY,
+                environment_key: ENVIRONMENT_KEY_PROPERTY,
+            },
             required: ['feature_key', 'environment_key'],
+        },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: MESSAGE_RESPONSE_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
         },
     },
     {
         name: 'disable_feature_targeting',
         description:
-            'Disable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
+            'Disable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: FEATURE_ENVIRONMENT_REQUIRED_PROPERTIES,
+            properties: {
+                feature_key: FEATURE_KEY_PROPERTY,
+                environment_key: ENVIRONMENT_KEY_PROPERTY,
+            },
             required: ['feature_key', 'environment_key'],
+        },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: MESSAGE_RESPONSE_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
         },
     },
     {
         name: 'list_feature_targeting',
         description:
-            'List feature configurations (targeting rules) for a feature',
+            'List feature configurations (targeting rules) for a feature. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -407,11 +589,22 @@ export const featureToolDefinitions: Tool[] = [
             },
             required: ['feature_key'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: {
+                    type: 'object' as const,
+                    description: 'Feature targeting configuration object',
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'update_feature_targeting',
         description:
-            'Update feature configuration (targeting rules) for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
+            'Update feature configuration (targeting rules) for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -431,45 +624,12 @@ export const featureToolDefinitions: Tool[] = [
                         properties: {
                             _id: {
                                 type: 'string',
-                                description:
-                                    'Target ID (optional for new targets)',
+                                description: 'MongoDB ID for the target',
                             },
                             name: {
                                 type: 'string',
-                                description: 'Target name (optional)',
                             },
-                            audience: {
-                                type: 'object',
-                                description:
-                                    'Audience definition for the target',
-                                properties: {
-                                    name: {
-                                        type: 'string',
-                                        description:
-                                            'Audience name (max 100 characters, optional)',
-                                    },
-                                    filters: {
-                                        type: 'object',
-                                        description:
-                                            'Audience filters with logical operator',
-                                        properties: {
-                                            filters: {
-                                                type: 'array',
-                                                description:
-                                                    'Array of filter conditions (supports all, optIn, user, userCountry, userAppVersion, userPlatformVersion, userCustom, audienceMatch filters)',
-                                            },
-                                            operator: {
-                                                type: 'string',
-                                                enum: ['and', 'or'],
-                                                description:
-                                                    'Logical operator for combining filters',
-                                            },
-                                        },
-                                        required: ['filters', 'operator'],
-                                    },
-                                },
-                                required: ['filters'],
-                            },
+                            audience: TARGET_AUDIENCE_PROPERTY,
                             distribution: {
                                 type: 'array',
                                 description:
@@ -563,11 +723,22 @@ export const featureToolDefinitions: Tool[] = [
             },
             required: ['feature_key', 'environment_key'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: {
+                    type: 'object' as const,
+                    description: 'Updated feature targeting configuration',
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'get_feature_audit_log_history',
         description:
-            'Get timeline of feature flag changes from DevCycle audit log',
+            'Get timeline of feature flag changes from DevCycle audit log. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -582,6 +753,20 @@ export const featureToolDefinitions: Tool[] = [
             },
             required: ['feature_key'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: {
+                    type: 'array' as const,
+                    description: 'Array of audit log entries for the feature',
+                    items: {
+                        type: 'object' as const,
+                    },
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
 ]
 
@@ -589,18 +774,19 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     list_features: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = ListFeaturesArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'listFeatures',
             validatedArgs,
             async (authToken, projectKey) => {
                 return await fetchFeatures(authToken, projectKey, validatedArgs)
             },
+            generateFeaturesDashboardLink,
         )
     },
     create_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = CreateFeatureArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'createFeature',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -622,12 +808,19 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
 
                 return await createFeature(authToken, projectKey, featureData)
             },
+            (orgId, projectKey, result) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    result.key,
+                    'overview',
+                ),
         )
     },
     update_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = UpdateFeatureArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'updateFeature',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -640,6 +833,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     updateData,
                 )
             },
+            (orgId, projectKey, result) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    result.key,
+                    'manage-feature',
+                ),
         )
     },
     update_feature_status: async (
@@ -648,7 +848,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = UpdateFeatureStatusArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'updateFeatureStatus',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -661,21 +861,28 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     statusData,
                 )
             },
+            (orgId, projectKey, result) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    result.key,
+                    'overview',
+                ),
         )
     },
     delete_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = DeleteFeatureArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'deleteFeature',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await deleteFeature(
-                    authToken,
-                    projectKey,
-                    validatedArgs.key,
-                )
+                await deleteFeature(authToken, projectKey, validatedArgs.key)
+                return {
+                    message: `Feature '${validatedArgs.key}' deleted successfully`,
+                }
             },
+            generateFeaturesDashboardLink,
         )
     },
     fetch_feature_variations: async (
@@ -684,7 +891,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = ListVariationsArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'fetchFeatureVariations',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -694,6 +901,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     validatedArgs.feature_key,
                 )
             },
+            (orgId, projectKey) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    'overview',
+                ),
         )
     },
     create_feature_variation: async (
@@ -702,7 +916,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = CreateVariationArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'createFeatureVariation',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -715,6 +929,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     variationData,
                 )
             },
+            (orgId, projectKey, result) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    result.key,
+                    'manage-feature',
+                ),
         )
     },
     update_feature_variation: async (
@@ -723,7 +944,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = UpdateVariationArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'updateFeatureVariation',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -738,6 +959,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     variationData,
                 )
             },
+            (orgId, projectKey, result) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    result.key,
+                    'manage-feature',
+                ),
         )
     },
     enable_feature_targeting: async (
@@ -746,17 +974,27 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = EnableTargetingArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'enableTargeting',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await enableTargeting(
+                await enableTargeting(
                     authToken,
                     projectKey,
                     validatedArgs.feature_key,
                     validatedArgs.environment_key,
                 )
+                return {
+                    message: `Targeting enabled for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
+                }
             },
+            (orgId, projectKey) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    'manage-feature',
+                ),
         )
     },
     disable_feature_targeting: async (
@@ -765,17 +1003,27 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = DisableTargetingArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'disableTargeting',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await disableTargeting(
+                await disableTargeting(
                     authToken,
                     projectKey,
                     validatedArgs.feature_key,
                     validatedArgs.environment_key,
                 )
+                return {
+                    message: `Targeting disabled for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
+                }
             },
+            (orgId, projectKey) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    'manage-feature',
+                ),
         )
     },
     list_feature_targeting: async (
@@ -784,7 +1032,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = ListFeatureTargetingArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'listFeatureTargeting',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -795,6 +1043,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     validatedArgs.environment_key,
                 )
             },
+            (orgId, projectKey) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    'manage-feature',
+                ),
         )
     },
     update_feature_targeting: async (
@@ -803,7 +1058,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = UpdateFeatureTargetingArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'updateFeatureTargeting',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -818,6 +1073,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     configData,
                 )
             },
+            (orgId, projectKey) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    'manage-feature',
+                ),
         )
     },
     get_feature_audit_log_history: async (
@@ -826,7 +1088,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
     ) => {
         const validatedArgs = GetFeatureAuditLogHistoryArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'getFeatureAuditLogHistory',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -837,6 +1099,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     validatedArgs.days_back || 30,
                 )
             },
+            (orgId, projectKey) =>
+                generateFeatureDashboardLink(
+                    orgId,
+                    projectKey,
+                    validatedArgs.feature_key,
+                    'audit-log',
+                ),
         )
     },
 }
