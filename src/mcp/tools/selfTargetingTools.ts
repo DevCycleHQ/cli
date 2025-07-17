@@ -105,50 +105,10 @@ const DASHBOARD_LINK_PROPERTY = {
 }
 
 // Complete output schema definitions
-const GET_SELF_TARGETING_IDENTITY_OUTPUT_SCHEMA = {
+const SELF_TARGETING_IDENTITY_OUTPUT_SCHEMA = {
     type: 'object' as const,
     properties: {
         result: USER_PROFILE_OBJECT_SCHEMA,
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const UPDATE_SELF_TARGETING_IDENTITY_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    properties: {
-        result: USER_PROFILE_OBJECT_SCHEMA,
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const LIST_SELF_TARGETING_OVERRIDES_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    properties: {
-        result: {
-            type: 'array' as const,
-            description: 'Array of self-targeting override objects',
-            items: OVERRIDE_OBJECT_SCHEMA,
-        },
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const SET_SELF_TARGETING_OVERRIDE_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    properties: {
-        result: OVERRIDE_OBJECT_SCHEMA,
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const CLEAR_OVERRIDES_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    properties: {
-        result: MESSAGE_RESPONSE_SCHEMA,
         dashboardLink: DASHBOARD_LINK_PROPERTY,
     },
     required: ['result', 'dashboardLink'],
@@ -167,7 +127,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
             type: 'object',
             properties: {},
         },
-        outputSchema: GET_SELF_TARGETING_IDENTITY_OUTPUT_SCHEMA,
+        outputSchema: SELF_TARGETING_IDENTITY_OUTPUT_SCHEMA,
     },
     {
         name: 'update_self_targeting_identity',
@@ -180,7 +140,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
             },
             required: ['dvc_user_id'],
         },
-        outputSchema: UPDATE_SELF_TARGETING_IDENTITY_OUTPUT_SCHEMA,
+        outputSchema: SELF_TARGETING_IDENTITY_OUTPUT_SCHEMA,
     },
     {
         name: 'list_self_targeting_overrides',
@@ -190,7 +150,18 @@ export const selfTargetingToolDefinitions: Tool[] = [
             type: 'object',
             properties: {},
         },
-        outputSchema: LIST_SELF_TARGETING_OVERRIDES_OUTPUT_SCHEMA,
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: {
+                    type: 'array' as const,
+                    description: 'Array of self-targeting override objects',
+                    items: OVERRIDE_OBJECT_SCHEMA,
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'set_self_targeting_override',
@@ -201,7 +172,14 @@ export const selfTargetingToolDefinitions: Tool[] = [
             properties: OVERRIDE_COMMON_PROPERTIES,
             required: ['feature_key', 'environment_key', 'variation_key'],
         },
-        outputSchema: SET_SELF_TARGETING_OVERRIDE_OUTPUT_SCHEMA,
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: OVERRIDE_OBJECT_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'clear_feature_self_targeting_overrides',
@@ -215,7 +193,14 @@ export const selfTargetingToolDefinitions: Tool[] = [
             },
             required: ['feature_key', 'environment_key'],
         },
-        outputSchema: CLEAR_OVERRIDES_OUTPUT_SCHEMA,
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: MESSAGE_RESPONSE_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'clear_all_self_targeting_overrides',
@@ -225,7 +210,14 @@ export const selfTargetingToolDefinitions: Tool[] = [
             type: 'object',
             properties: {},
         },
-        outputSchema: CLEAR_OVERRIDES_OUTPUT_SCHEMA,
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: MESSAGE_RESPONSE_SCHEMA,
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
 ]
 

@@ -180,48 +180,7 @@ const DASHBOARD_LINK_PROPERTY = {
 }
 
 // Complete output schema definitions
-const LIST_ENVIRONMENTS_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    description:
-        'Response containing a list of environments and dashboard link',
-    properties: {
-        result: {
-            type: 'array' as const,
-            description: 'Array of environment objects in the project',
-            items: ENVIRONMENT_OBJECT_SCHEMA,
-        },
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const GET_SDK_KEYS_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    description: 'Response containing SDK keys and dashboard link',
-    properties: {
-        result: {
-            type: 'object' as const,
-            description:
-                'SDK keys for the requested environment (filtered by keyType if specified)',
-            properties: SDK_KEY_PROPERTIES,
-        },
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const CREATE_ENVIRONMENT_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    description:
-        'Response containing the newly created environment and dashboard link',
-    properties: {
-        result: ENVIRONMENT_OBJECT_SCHEMA,
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const UPDATE_ENVIRONMENT_OUTPUT_SCHEMA = {
+const ENVIRONMENT_OUTPUT_SCHEMA = {
     type: 'object' as const,
     description:
         'Response containing the updated environment and dashboard link',
@@ -244,7 +203,20 @@ export const environmentToolDefinitions: Tool[] = [
             type: 'object',
             properties: PAGINATION_PROPERTIES,
         },
-        outputSchema: LIST_ENVIRONMENTS_OUTPUT_SCHEMA,
+        outputSchema: {
+            type: 'object' as const,
+            description:
+                'Response containing a list of environments and dashboard link',
+            properties: {
+                result: {
+                    type: 'array' as const,
+                    description: 'Array of environment objects in the project',
+                    items: ENVIRONMENT_OBJECT_SCHEMA,
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'get_sdk_keys',
@@ -262,7 +234,20 @@ export const environmentToolDefinitions: Tool[] = [
             },
             required: ['environmentKey'],
         },
-        outputSchema: GET_SDK_KEYS_OUTPUT_SCHEMA,
+        outputSchema: {
+            type: 'object' as const,
+            description: 'Response containing SDK keys and dashboard link',
+            properties: {
+                result: {
+                    type: 'object' as const,
+                    description:
+                        'SDK keys for the requested environment (filtered by keyType if specified)',
+                    properties: SDK_KEY_PROPERTIES,
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'create_environment',
@@ -273,7 +258,7 @@ export const environmentToolDefinitions: Tool[] = [
             properties: ENVIRONMENT_COMMON_PROPERTIES,
             required: ['name', 'key'],
         },
-        outputSchema: CREATE_ENVIRONMENT_OUTPUT_SCHEMA,
+        outputSchema: ENVIRONMENT_OUTPUT_SCHEMA,
     },
     {
         name: 'update_environment',
@@ -284,7 +269,7 @@ export const environmentToolDefinitions: Tool[] = [
             properties: ENVIRONMENT_COMMON_PROPERTIES,
             required: ['key'],
         },
-        outputSchema: UPDATE_ENVIRONMENT_OUTPUT_SCHEMA,
+        outputSchema: ENVIRONMENT_OUTPUT_SCHEMA,
     },
 ]
 

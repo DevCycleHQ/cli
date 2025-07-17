@@ -138,38 +138,7 @@ const DASHBOARD_LINK_PROPERTY = {
 }
 
 // Complete output schema definitions
-const LIST_PROJECTS_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    properties: {
-        result: {
-            type: 'array' as const,
-            description: 'Array of project objects in the organization',
-            items: PROJECT_OBJECT_SCHEMA,
-        },
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const GET_CURRENT_PROJECT_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    properties: {
-        result: PROJECT_OBJECT_SCHEMA,
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const CREATE_PROJECT_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    properties: {
-        result: PROJECT_OBJECT_SCHEMA,
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
-}
-
-const UPDATE_PROJECT_OUTPUT_SCHEMA = {
+const PROJECT_OUTPUT_SCHEMA = {
     type: 'object' as const,
     properties: {
         result: PROJECT_OBJECT_SCHEMA,
@@ -191,7 +160,18 @@ export const projectToolDefinitions: Tool[] = [
             type: 'object',
             properties: PAGINATION_PROPERTIES,
         },
-        outputSchema: LIST_PROJECTS_OUTPUT_SCHEMA,
+        outputSchema: {
+            type: 'object' as const,
+            properties: {
+                result: {
+                    type: 'array' as const,
+                    description: 'Array of project objects in the organization',
+                    items: PROJECT_OBJECT_SCHEMA,
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'get_current_project',
@@ -201,7 +181,7 @@ export const projectToolDefinitions: Tool[] = [
             type: 'object',
             properties: {},
         },
-        outputSchema: GET_CURRENT_PROJECT_OUTPUT_SCHEMA,
+        outputSchema: PROJECT_OUTPUT_SCHEMA,
     },
     {
         name: 'create_project',
@@ -212,7 +192,7 @@ export const projectToolDefinitions: Tool[] = [
             properties: PROJECT_COMMON_PROPERTIES,
             required: ['name', 'key'],
         },
-        outputSchema: CREATE_PROJECT_OUTPUT_SCHEMA,
+        outputSchema: PROJECT_OUTPUT_SCHEMA,
     },
     {
         name: 'update_project',
@@ -223,7 +203,7 @@ export const projectToolDefinitions: Tool[] = [
             properties: PROJECT_COMMON_PROPERTIES,
             required: ['key'],
         },
-        outputSchema: UPDATE_PROJECT_OUTPUT_SCHEMA,
+        outputSchema: PROJECT_OUTPUT_SCHEMA,
     },
 ]
 
