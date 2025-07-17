@@ -13,19 +13,64 @@ import {
     UpdateEnvironmentArgsSchema,
 } from '../types'
 import { ToolHandler } from '../server'
+import {
+    DASHBOARD_LINK_PROPERTY,
+    ENVIRONMENT_KEY_PROPERTY,
+} from './commonSchemas'
 
-// Reusable schema components
-const ENVIRONMENT_KEY_PROPERTY = {
-    type: 'string' as const,
-    description:
-        "The key of the environment, must be unique and can't be changed after creation",
+// Helper function to generate environment dashboard links
+const generateEnvironmentDashboardLink = (
+    orgId: string,
+    projectKey: string,
+): string => {
+    return `https://app.devcycle.com/o/${orgId}/settings/p/${projectKey}/environments`
 }
 
-const PAGINATION_PROPERTIES = {
+// =============================================================================
+// INPUT SCHEMAS
+// =============================================================================
+
+// Reusable schema components
+const ENVIRONMENT_COLOR_PROPERTY = {
+    type: 'string' as const,
+    description: 'Color used to represent this environment in the UI',
+}
+
+const ENVIRONMENT_TYPE_PROPERTY = {
+    type: 'string' as const,
+    enum: [
+        'development',
+        'staging',
+        'production',
+        'disaster_recovery',
+    ] as const,
+}
+
+const ENVIRONMENT_COMMON_PROPERTIES = {
+    key: ENVIRONMENT_KEY_PROPERTY,
+    name: {
+        type: 'string' as const,
+    },
+    description: {
+        type: 'string' as const,
+    },
+    color: ENVIRONMENT_COLOR_PROPERTY,
+    type: ENVIRONMENT_TYPE_PROPERTY,
+    settings: {
+        type: 'object' as const,
+        properties: {
+            appIconUri: {
+                type: 'string' as const,
+                description: 'URI for the app icon',
+            },
+        },
+    },
+}
+
+const ENVIRONMENT_PAGINATION_PROPERTIES = {
     search: {
         type: 'string' as const,
-        description:
-            'Search query to filter environments (minimum 3 characters)',
+        description: 'Search query to filter results (minimum 3 characters)',
         minLength: 3,
     },
     page: {
@@ -41,7 +86,6 @@ const PAGINATION_PROPERTIES = {
     },
     sortBy: {
         type: 'string' as const,
-        description: 'Field to sort by (default: createdAt)',
         enum: [
             'createdAt',
             'updatedAt',
@@ -50,6 +94,7 @@ const PAGINATION_PROPERTIES = {
             'createdBy',
             'propertyKey',
         ] as const,
+        description: 'Field to sort by',
     },
     sortOrder: {
         type: 'string' as const,
@@ -58,38 +103,108 @@ const PAGINATION_PROPERTIES = {
     },
     createdBy: {
         type: 'string' as const,
-        description: 'Filter by creator user ID',
+        description: 'Filter by user who created the environment',
     },
 }
 
-const ENVIRONMENT_COMMON_PROPERTIES = {
-    key: ENVIRONMENT_KEY_PROPERTY,
-    name: {
+// =============================================================================
+// OUTPUT SCHEMAS
+// =============================================================================
+
+// Shared SDK key properties
+const SDK_KEY_PROPERTIES = {
+    mobile: {
         type: 'string' as const,
-        description: 'The name of the environment',
+        description: 'Mobile SDK key for client-side mobile applications',
     },
-    description: {
+    server: {
         type: 'string' as const,
-        description: 'The description of the environment',
+        description: 'Server SDK key for server-side applications',
     },
-    color: {
+    client: {
         type: 'string' as const,
-        description: 'The color for the environment',
+        description: 'Client SDK key for client-side web applications',
     },
 }
 
+// Output schema components
+const SDK_KEYS_OBJECT_SCHEMA = {
+    type: 'object' as const,
+    properties: SDK_KEY_PROPERTIES,
+    required: ['mobile', 'server', 'client'],
+}
+
+const ENVIRONMENT_OBJECT_SCHEMA = {
+    type: 'object' as const,
+    description: 'A DevCycle environment configuration',
+    properties: {
+        ...ENVIRONMENT_COMMON_PROPERTIES,
+        _id: {
+            type: 'string' as const,
+            description: 'Unique identifier for the environment',
+        },
+        sdkKeys: SDK_KEYS_OBJECT_SCHEMA,
+        createdAt: {
+            type: 'string' as const,
+            description: 'ISO timestamp when the environment was created',
+        },
+        updatedAt: {
+            type: 'string' as const,
+            description: 'ISO timestamp when the environment was last updated',
+        },
+    },
+    required: [
+        '_id',
+        'key',
+        'name',
+        'type',
+        'sdkKeys',
+        'createdAt',
+        'updatedAt',
+    ],
+}
+
+// Complete output schema definitions
+const ENVIRONMENT_OUTPUT_SCHEMA = {
+    type: 'object' as const,
+    properties: {
+        result: ENVIRONMENT_OBJECT_SCHEMA,
+        dashboardLink: DASHBOARD_LINK_PROPERTY,
+    },
+    required: ['result', 'dashboardLink'],
+}
+
+// =============================================================================
+// TOOL DEFINITIONS
+// =============================================================================
 export const environmentToolDefinitions: Tool[] = [
     {
         name: 'list_environments',
-        description: 'List environments in the current project',
+        description:
+            'List environments in the current project. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
-            properties: PAGINATION_PROPERTIES,
+            properties: ENVIRONMENT_PAGINATION_PROPERTIES,
+        },
+        outputSchema: {
+            type: 'object' as const,
+            description:
+                'Response containing a list of environments and dashboard link',
+            properties: {
+                result: {
+                    type: 'array' as const,
+                    description: 'Array of environment objects in the project',
+                    items: ENVIRONMENT_OBJECT_SCHEMA,
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
         },
     },
     {
         name: 'get_sdk_keys',
-        description: 'Get SDK keys for an environment',
+        description:
+            'Get SDK keys for an environment. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -102,24 +217,42 @@ export const environmentToolDefinitions: Tool[] = [
             },
             required: ['environmentKey'],
         },
+        outputSchema: {
+            type: 'object' as const,
+            description: 'Response containing SDK keys and dashboard link',
+            properties: {
+                result: {
+                    type: 'object' as const,
+                    description:
+                        'SDK keys for the requested environment (filtered by keyType if specified)',
+                    properties: SDK_KEY_PROPERTIES,
+                },
+                dashboardLink: DASHBOARD_LINK_PROPERTY,
+            },
+            required: ['result', 'dashboardLink'],
+        },
     },
     {
         name: 'create_environment',
-        description: 'Create a new environment',
+        description:
+            'Create a new environment. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: ENVIRONMENT_COMMON_PROPERTIES,
             required: ['name', 'key'],
         },
+        outputSchema: ENVIRONMENT_OUTPUT_SCHEMA,
     },
     {
         name: 'update_environment',
-        description: 'Update an existing environment',
+        description:
+            'Update an existing environment. Include dashboard link in the response.',
         inputSchema: {
             type: 'object',
             properties: ENVIRONMENT_COMMON_PROPERTIES,
             required: ['key'],
         },
+        outputSchema: ENVIRONMENT_OUTPUT_SCHEMA,
     },
 ]
 
@@ -127,18 +260,19 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
     list_environments: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = ListEnvironmentsArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'listEnvironments',
             validatedArgs,
             async (authToken, projectKey) => {
                 return await fetchEnvironments(authToken, projectKey)
             },
+            generateEnvironmentDashboardLink,
         )
     },
     get_sdk_keys: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = GetSdkKeysArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'getSdkKeys',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -162,12 +296,13 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
                     }
                 }
             },
+            generateEnvironmentDashboardLink,
         )
     },
     create_environment: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = CreateEnvironmentArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'createEnvironment',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -177,12 +312,13 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
                     validatedArgs,
                 )
             },
+            generateEnvironmentDashboardLink,
         )
     },
     update_environment: async (args: unknown, apiClient: DevCycleApiClient) => {
         const validatedArgs = UpdateEnvironmentArgsSchema.parse(args)
 
-        return await apiClient.executeWithLogging(
+        return await apiClient.executeWithDashboardLink(
             'updateEnvironment',
             validatedArgs,
             async (authToken, projectKey) => {
@@ -194,6 +330,7 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
                     updateParams,
                 )
             },
+            generateEnvironmentDashboardLink,
         )
     },
 }
