@@ -12,7 +12,7 @@ export const setDVCReferrer = (
     version: string,
     caller = 'cli',
 ): void => {
-    axiosClient.defaults.headers.common['dvc-referrer'] = 'cli'
+    axiosClient.defaults.headers.common['dvc-referrer'] = caller
 
     // Ensure we have valid values before stringifying
     const metadata = {

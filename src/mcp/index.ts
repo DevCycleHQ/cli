@@ -5,6 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { DevCycleMCPServer } from './server'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import { setMCPHeaders } from './utils/headers'
 
 // Get version for MCP server
 function getVersion(): string {
@@ -46,10 +47,16 @@ if (args.includes('--help') || args.includes('-h')) {
 }
 
 async function main() {
+    const version = getVersion()
+
+    // Set up MCP-specific headers for all API requests
+    // This ensures that requests from the MCP server are properly identified
+    setMCPHeaders(version)
+
     const server = new Server(
         {
             name: 'devcycle',
-            version: getVersion(),
+            version,
         },
         {
             capabilities: {
