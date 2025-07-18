@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient } from '../utils/api'
+import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchEnvironments,
     fetchEnvironmentByKey,
@@ -264,7 +264,10 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
             'listEnvironments',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await fetchEnvironments(authToken, projectKey)
+                return await handleZodiosValidationErrors(
+                    () => fetchEnvironments(authToken, projectKey),
+                    'listEnvironments',
+                )
             },
             generateEnvironmentDashboardLink,
         )
@@ -276,10 +279,14 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
             'getSdkKeys',
             validatedArgs,
             async (authToken, projectKey) => {
-                const environment = await fetchEnvironmentByKey(
-                    authToken,
-                    projectKey,
-                    validatedArgs.environmentKey,
+                const environment = await handleZodiosValidationErrors(
+                    () =>
+                        fetchEnvironmentByKey(
+                            authToken,
+                            projectKey,
+                            validatedArgs.environmentKey,
+                        ),
+                    'fetchEnvironmentByKey',
                 )
 
                 const sdkKeys = environment.sdkKeys
@@ -306,10 +313,10 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
             'createEnvironment',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await createEnvironment(
-                    authToken,
-                    projectKey,
-                    validatedArgs,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        createEnvironment(authToken, projectKey, validatedArgs),
+                    'createEnvironment',
                 )
             },
             generateEnvironmentDashboardLink,
@@ -323,11 +330,15 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
             validatedArgs,
             async (authToken, projectKey) => {
                 const { key, ...updateParams } = validatedArgs
-                return await updateEnvironment(
-                    authToken,
-                    projectKey,
-                    key,
-                    updateParams,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        updateEnvironment(
+                            authToken,
+                            projectKey,
+                            key,
+                            updateParams,
+                        ),
+                    'updateEnvironment',
                 )
             },
             generateEnvironmentDashboardLink,

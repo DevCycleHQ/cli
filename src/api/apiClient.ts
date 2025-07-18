@@ -109,10 +109,18 @@ export const errorMap = (issue: ZodIssueOptionalMessage, ctx: ErrorMapCtx) => {
     }
 }
 
-export const apiClient = createApiClient(BASE_URL, {
+// TLDR: the inferred TS schema was too big, so this is a workaround to fix it.
+// Create intermediate type alias to break complex type inference
+const _createApiClient = createApiClient
+type ApiClientType = ReturnType<typeof _createApiClient>
+
+// Create the actual instance with explicit type annotation
+const apiClient: ApiClientType = _createApiClient(BASE_URL, {
     axiosInstance: axiosClient,
     validate: 'request',
-})
+}) as ApiClientType
+
+export { apiClient }
 export default apiClient
 
 export const v2ApiClient = createV2ApiClient(BASE_URL)

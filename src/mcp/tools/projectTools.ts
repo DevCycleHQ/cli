@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient } from '../utils/api'
+import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchProjects,
     fetchProject,
@@ -209,7 +209,10 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             validatedArgs,
             async (authToken) => {
                 // projectKey not used for listing all projects
-                return await fetchProjects(authToken, validatedArgs)
+                return await handleZodiosValidationErrors(
+                    () => fetchProjects(authToken, validatedArgs),
+                    'fetchProjects',
+                )
             },
             generateOrganizationSettingsLink,
         )
@@ -222,7 +225,10 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             'getCurrentProject',
             null,
             async (authToken, projectKey) => {
-                return await fetchProject(authToken, projectKey)
+                return await handleZodiosValidationErrors(
+                    () => fetchProject(authToken, projectKey),
+                    'fetchProject',
+                )
             },
             generateProjectDashboardLink,
         )
@@ -235,7 +241,10 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             validatedArgs,
             async (authToken) => {
                 // projectKey not used for creating projects
-                return await createProject(authToken, validatedArgs)
+                return await handleZodiosValidationErrors(
+                    () => createProject(authToken, validatedArgs),
+                    'createProject',
+                )
             },
             generateProjectDashboardLink,
         )
@@ -249,7 +258,10 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             validatedArgs,
             async (authToken) => {
                 // projectKey not used - we use the key from validated args
-                return await updateProject(authToken, key, updateParams)
+                return await handleZodiosValidationErrors(
+                    () => updateProject(authToken, key, updateParams),
+                    'updateProject',
+                )
             },
             generateEditProjectLink,
         )

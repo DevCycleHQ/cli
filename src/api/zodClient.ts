@@ -202,8 +202,16 @@ const UpdateEnvironmentDto = z
 const GenerateSdkTokensDto = z
     .object({ client: z.boolean(), server: z.boolean(), mobile: z.boolean() })
     .partial()
-const AllFilter = z.object({ type: z.literal('all').default('all') })
-const OptInFilter = z.object({ type: z.literal('optIn').default('optIn') })
+const AllFilter = z.object({
+    type: z.literal('all').default('all'),
+    _audiences: z.array(z.string()).optional(),
+    values: z.array(z.string()).optional(),
+})
+const OptInFilter = z.object({
+    type: z.literal('optIn').default('optIn'),
+    _audiences: z.array(z.string()).optional(),
+    values: z.array(z.string()).optional(),
+})
 const UserFilter = z.object({
     subType: z.enum(['user_id', 'email', 'platform', 'deviceModel']),
     comparator: z.enum([
@@ -219,6 +227,7 @@ const UserFilter = z.object({
         '!endWith',
     ]),
     values: z.array(z.string()).optional(),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
 })
 const UserCountryFilter = z.object({
@@ -236,17 +245,20 @@ const UserCountryFilter = z.object({
         '!endWith',
     ]),
     values: z.array(z.string()),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
 })
 const UserAppVersionFilter = z.object({
     comparator: z.enum(['=', '!=', '>', '>=', '<', '<=', 'exist', '!exist']),
     values: z.array(z.string()).optional(),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
     subType: z.literal('appVersion').default('appVersion'),
 })
 const UserPlatformVersionFilter = z.object({
     comparator: z.enum(['=', '!=', '>', '>=', '<', '<=', 'exist', '!exist']),
     values: z.array(z.string()).optional(),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
     subType: z.literal('platformVersion').default('platformVersion'),
 })
@@ -270,6 +282,7 @@ const UserCustomFilter = z.object({
     dataKey: z.string().min(1),
     dataKeyType: z.enum(['String', 'Boolean', 'Number']),
     values: z.array(z.union([z.boolean(), z.string(), z.number()])).optional(),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
     subType: z.literal('customData').default('customData'),
 })
@@ -590,8 +603,10 @@ const Target = z.object({
     _id: z.string(),
     name: z.string().optional(),
     audience: TargetAudience,
+    filters: z.array(z.any()).optional(),
     rollout: Rollout.nullable().optional(),
     distribution: z.array(TargetDistribution),
+    bucketingKey: z.string().optional(),
 })
 const FeatureConfig = z.object({
     _feature: z.string(),
@@ -602,6 +617,7 @@ const FeatureConfig = z.object({
     updatedAt: z.string().datetime(),
     targets: z.array(Target),
     readonly: z.boolean(),
+    hasStaticConfig: z.boolean().optional(),
 })
 const UpdateTargetDto = z.object({
     _id: z.string().optional(),
