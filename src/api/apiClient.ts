@@ -3,11 +3,6 @@ import { BASE_URL } from './common'
 import { createApiClient, createV2ApiClient } from './zodClient'
 import { ZodIssueCode, ZodIssueOptionalMessage, ErrorMapCtx } from 'zod'
 
-// Advanced TypeScript technique: Counter reset to handle complex types
-// This creates a type alias that breaks TypeScript's recursion counter
-type DeepTypeAlias<T> = T extends infer U ? U : never
-type ResetCounter<T> = T & {}
-
 export const axiosClient = axios.create({
     baseURL: BASE_URL,
 })
@@ -114,6 +109,7 @@ export const errorMap = (issue: ZodIssueOptionalMessage, ctx: ErrorMapCtx) => {
     }
 }
 
+// TLDR: the inferred TS schema was too big, so this is a workaround to fix it.
 // Create intermediate type alias to break complex type inference
 const _createApiClient = createApiClient
 type ApiClientType = ReturnType<typeof _createApiClient>
