@@ -28,20 +28,41 @@ import {
     selfTargetingToolHandlers,
 } from './tools/selfTargetingTools'
 
+// Environment variable to control output schema inclusion
+const ENABLE_OUTPUT_SCHEMAS = process.env.ENABLE_OUTPUT_SCHEMAS === 'true'
+if (ENABLE_OUTPUT_SCHEMAS) {
+    console.error('DevCycle MCP Server - Output Schemas: ENABLED')
+}
+
+const ENABLE_DVC_MCP_DEBUG = process.env.ENABLE_DVC_MCP_DEBUG === 'true'
+
 // Tool handler function type
 export type ToolHandler = (
     args: unknown,
     apiClient: DevCycleApiClient,
 ) => Promise<any>
 
+// Function to conditionally remove outputSchema from tool definitions
+const processToolDefinitions = (tools: Tool[]): Tool[] => {
+    if (ENABLE_OUTPUT_SCHEMAS) {
+        return tools
+    }
+
+    // Remove outputSchema from all tools when disabled
+    return tools.map((tool) => {
+        const { outputSchema, ...toolWithoutSchema } = tool
+        return toolWithoutSchema
+    })
+}
+
 // Combine all tool definitions
-const allToolDefinitions: Tool[] = [
+const allToolDefinitions: Tool[] = processToolDefinitions([
     ...featureToolDefinitions,
     ...environmentToolDefinitions,
     ...projectToolDefinitions,
     ...variableToolDefinitions,
     ...selfTargetingToolDefinitions,
-]
+])
 
 // Combine all tool handlers
 const allToolHandlers: Record<string, ToolHandler> = {
@@ -241,7 +262,36 @@ export class DevCycleMCPServer {
                     }
 
                     const result = await handler(args, this.apiClient)
-                    return {
+
+                    // Return structured content only if output schemas are enabled
+                    if (ENABLE_OUTPUT_SCHEMAS) {
+                        // Check if tool has output schema
+                        const toolDef = allToolDefinitions.find(
+                            (tool) => tool.name === name,
+                        )
+
+                        if (toolDef?.outputSchema) {
+                            // For tools with output schemas, return structured JSON content
+                            const mcpResult = {
+                                content: [
+                                    {
+                                        type: 'json',
+                                        json: result,
+                                    },
+                                ],
+                            }
+                            if (ENABLE_DVC_MCP_DEBUG) {
+                                console.error(
+                                    `MCP ${name} structured JSON result:`,
+                                    JSON.stringify(mcpResult, null, 2),
+                                )
+                            }
+                            return mcpResult
+                        }
+                    }
+
+                    // Default: return as text content (for disabled schemas or tools without schemas)
+                    const mcpResult = {
                         content: [
                             {
                                 type: 'text',
@@ -249,6 +299,13 @@ export class DevCycleMCPServer {
                             },
                         ],
                     }
+                    if (ENABLE_DVC_MCP_DEBUG) {
+                        console.error(
+                            `MCP ${name} text result:`,
+                            JSON.stringify(mcpResult, null, 2),
+                        )
+                    }
+                    return mcpResult
                 } catch (error) {
                     return this.handleToolError(error, name)
                 }

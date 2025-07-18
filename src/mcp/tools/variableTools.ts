@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient } from '../utils/api'
+import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchVariables,
     createVariable,
@@ -296,10 +296,9 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             'listVariables',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await fetchVariables(
-                    authToken,
-                    projectKey,
-                    validatedArgs,
+                return await handleZodiosValidationErrors(
+                    () => fetchVariables(authToken, projectKey, validatedArgs),
+                    'fetchVariables',
                 )
             },
             generateVariablesDashboardLink,
@@ -312,10 +311,9 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             'createVariable',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await createVariable(
-                    authToken,
-                    projectKey,
-                    validatedArgs,
+                return await handleZodiosValidationErrors(
+                    () => createVariable(authToken, projectKey, validatedArgs),
+                    'createVariable',
                 )
             },
             generateVariablesDashboardLink,
@@ -330,11 +328,10 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             async (authToken, projectKey) => {
                 const { key, ...updateData } = validatedArgs
 
-                return await updateVariable(
-                    authToken,
-                    projectKey,
-                    key,
-                    updateData,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        updateVariable(authToken, projectKey, key, updateData),
+                    'updateVariable',
                 )
             },
             generateVariablesDashboardLink,
@@ -347,7 +344,15 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             'deleteVariable',
             validatedArgs,
             async (authToken, projectKey) => {
-                await deleteVariable(authToken, projectKey, validatedArgs.key)
+                await handleZodiosValidationErrors(
+                    () =>
+                        deleteVariable(
+                            authToken,
+                            projectKey,
+                            validatedArgs.key,
+                        ),
+                    'deleteVariable',
+                )
                 return {
                     message: `Variable '${validatedArgs.key}' deleted successfully`,
                 }
