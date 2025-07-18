@@ -4,7 +4,12 @@ import {
     apiClient as apiV1Client,
     axiosClient,
 } from './apiClient'
-import { CreateFeatureParams, Feature, UpdateFeatureParams } from './schemas'
+import {
+    CreateFeatureParams,
+    Feature,
+    UpdateFeatureParams,
+    UpdateFeatureStatusParams,
+} from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
 
@@ -14,11 +19,21 @@ export const fetchFeatures = async (
     token: string,
     project_id: string,
     queries: {
-        feature?: string
         page?: number
         perPage?: number
+        sortBy?:
+            | 'createdAt'
+            | 'updatedAt'
+            | 'name'
+            | 'key'
+            | 'createdBy'
+            | 'propertyKey'
+        sortOrder?: 'asc' | 'desc'
         search?: string
-        staleness?: string
+        staleness?: 'all' | 'unused' | 'released' | 'unmodified' | 'notStale'
+        createdBy?: string
+        type?: 'release' | 'experiment' | 'permission' | 'ops'
+        status?: 'active' | 'complete' | 'archived'
     } = {},
 ): Promise<Feature[]> => {
     const response = await apiClient.get(FEATURE_URL, {
@@ -81,6 +96,22 @@ export const updateFeature = async (
             feature: feature_id,
         },
     })
+}
+
+export const updateFeatureStatus = async (
+    token: string,
+    project_id: string,
+    feature_id: string,
+    params: UpdateFeatureStatusParams,
+): Promise<Feature> => {
+    const response = await axiosClient.patch(
+        `/v1/projects/${project_id}/features/${feature_id}/status`,
+        params,
+        {
+            headers: buildHeaders(token),
+        },
+    )
+    return response.data
 }
 
 export const deleteFeature = async (
@@ -155,4 +186,87 @@ const generatePaginatedFeatureUrl = (
     status: string,
 ): string => {
     return `/v1/projects/${project_id}/features?perPage=${perPage}&page=${page}&status=${status}`
+}
+
+export const getFeatureAuditLogHistory = async (
+    token: string,
+    projectKey: string,
+    featureKey: string,
+    daysBack = 30,
+): Promise<{
+    timeline: Array<{
+        id: string
+        timestamp: string
+        action: string
+        actor: {
+            name: string
+            email?: string
+        }
+        resource: {
+            type: string
+            name: string
+            key: string
+        }
+        changes: Array<{
+            field: string
+            oldValue: unknown
+            newValue: unknown
+        }>
+        environment?: string
+    }>
+}> => {
+    try {
+        // Calculate the date threshold
+        const sinceDate = new Date()
+        sinceDate.setDate(sinceDate.getDate() - daysBack)
+        const startDate = sinceDate.toISOString()
+
+        const params = {
+            startDate,
+            perPage: 100,
+            page: 1,
+        }
+        console.error(`feature history params: ${JSON.stringify(params)}`)
+
+        // Use the audit log API to get feature history
+        const response = await axiosClient.get(
+            `/v1/projects/${projectKey}/features/${featureKey}/audit`,
+            {
+                headers: buildHeaders(token),
+                params,
+            },
+        )
+        console.error(
+            `feature history response: ${JSON.stringify(response.data)}`,
+        )
+
+        const auditLogs = response.data || []
+
+        // Transform audit log entries to timeline format
+        const timeline = auditLogs.map((entry: any) => ({
+            id: entry._id || entry.id,
+            timestamp: entry.createdAt || entry.timestamp,
+            action: entry.action || 'unknown',
+            actor: {
+                name: entry.user?.name || entry.actor?.name || 'Unknown',
+                email: entry.user?.email || entry.actor?.email,
+            },
+            resource: {
+                type: entry.resourceType || 'feature',
+                name: entry.resourceName || featureKey,
+                key: entry.resourceKey || featureKey,
+            },
+            changes: entry.changes || [],
+            environment: entry.environment?.key || entry.environmentKey,
+        }))
+
+        return { timeline }
+    } catch (error) {
+        // If audit log API fails, return empty result
+        console.warn(
+            'Failed to fetch feature history from audit log:',
+            error instanceof Error ? error.message : 'Unknown error',
+        )
+        return { timeline: [] }
+    }
 }
