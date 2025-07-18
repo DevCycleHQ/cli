@@ -1,5 +1,57 @@
 import { DevCycleAuth } from './auth'
 
+/**
+ * Utility function to handle Zodios validation errors by extracting response data
+ * when HTTP call succeeds (200 OK) but schema validation fails
+ */
+export async function handleZodiosValidationErrors<T>(
+    apiCall: () => Promise<T>,
+    operationName?: string,
+): Promise<T> {
+    try {
+        return await apiCall()
+    } catch (error) {
+        // Check if this is a Zodios validation error with successful HTTP response
+        if (
+            error instanceof Error &&
+            error.message.includes('Zodios: Invalid response') &&
+            error.message.includes('status: 200 OK')
+        ) {
+            if (operationName) {
+                console.error(
+                    `MCP ${operationName}: Zodios validation failed but HTTP 200 OK - extracting response data`,
+                )
+            }
+
+            // Extract response data from error object using common patterns
+            const errorAny = error as any
+            const responseData =
+                errorAny.data || // Zodios primary location
+                errorAny.response?.data || // Axios standard location
+                errorAny.cause?.data || // Alternative nested location
+                null
+
+            if (responseData) {
+                if (operationName) {
+                    console.error(
+                        `Successfully extracted response data for ${operationName}`,
+                    )
+                }
+                return responseData
+            }
+
+            if (operationName) {
+                console.error(
+                    `Could not extract response data from Zodios error for ${operationName}`,
+                )
+            }
+        }
+
+        // Re-throw the original error if we can't extract data
+        throw error
+    }
+}
+
 function getErrorMessage(error: unknown): string {
     if (error instanceof Error && error.message) {
         return error.message
@@ -51,13 +103,7 @@ export class DevCycleApiClient {
 
             const authToken = this.auth.getAuthToken()
             const projectKey = requiresProject ? this.auth.getProjectKey() : ''
-
-            const result = await operation(authToken, projectKey)
-            console.error(
-                `MCP ${operationName} result:`,
-                JSON.stringify(result, null, 2),
-            )
-            return result
+            return await operation(authToken, projectKey)
         } catch (error) {
             console.error(
                 `MCP ${operationName} error:`,
