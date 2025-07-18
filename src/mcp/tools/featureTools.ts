@@ -44,6 +44,7 @@ import {
     VARIATION_KEY_PROPERTY,
     TARGET_AUDIENCE_PROPERTY,
 } from './commonSchemas'
+import { handleZodiosValidationErrors } from '../utils/api'
 
 // Helper function to generate feature dashboard links
 const generateFeaturesDashboardLink = (
@@ -778,7 +779,10 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'listFeatures',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await fetchFeatures(authToken, projectKey, validatedArgs)
+                return await handleZodiosValidationErrors(
+                    () => fetchFeatures(authToken, projectKey, validatedArgs),
+                    'listFeatures',
+                )
             },
             generateFeaturesDashboardLink,
         )
@@ -806,7 +810,10 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { interactive, ...featureData } = validatedArgs
 
-                return await createFeature(authToken, projectKey, featureData)
+                return await handleZodiosValidationErrors(
+                    () => createFeature(authToken, projectKey, featureData),
+                    'createFeature',
+                )
             },
             (orgId, projectKey, result) =>
                 generateFeatureDashboardLink(
@@ -826,11 +833,9 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             async (authToken, projectKey) => {
                 const { key, ...updateData } = validatedArgs
 
-                return await updateFeature(
-                    authToken,
-                    projectKey,
-                    key,
-                    updateData,
+                return await handleZodiosValidationErrors(
+                    () => updateFeature(authToken, projectKey, key, updateData),
+                    'updateFeature',
                 )
             },
             (orgId, projectKey, result) =>
@@ -854,11 +859,15 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             async (authToken, projectKey) => {
                 const { key, ...statusData } = validatedArgs
 
-                return await updateFeatureStatus(
-                    authToken,
-                    projectKey,
-                    key,
-                    statusData,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        updateFeatureStatus(
+                            authToken,
+                            projectKey,
+                            key,
+                            statusData,
+                        ),
+                    'updateFeatureStatus',
                 )
             },
             (orgId, projectKey, result) =>
@@ -877,7 +886,11 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'deleteFeature',
             validatedArgs,
             async (authToken, projectKey) => {
-                await deleteFeature(authToken, projectKey, validatedArgs.key)
+                await handleZodiosValidationErrors(
+                    () =>
+                        deleteFeature(authToken, projectKey, validatedArgs.key),
+                    'deleteFeature',
+                )
                 return {
                     message: `Feature '${validatedArgs.key}' deleted successfully`,
                 }
@@ -895,10 +908,14 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'fetchFeatureVariations',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await fetchVariations(
-                    authToken,
-                    projectKey,
-                    validatedArgs.feature_key,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        fetchVariations(
+                            authToken,
+                            projectKey,
+                            validatedArgs.feature_key,
+                        ),
+                    'fetchVariations',
                 )
             },
             (orgId, projectKey) =>
@@ -922,11 +939,15 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             async (authToken, projectKey) => {
                 const { feature_key, ...variationData } = validatedArgs
 
-                return await createVariation(
-                    authToken,
-                    projectKey,
-                    feature_key,
-                    variationData,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        createVariation(
+                            authToken,
+                            projectKey,
+                            feature_key,
+                            variationData,
+                        ),
+                    'createVariation',
                 )
             },
             (orgId, projectKey, result) =>
@@ -951,12 +972,16 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 const { feature_key, variation_key, ...variationData } =
                     validatedArgs
 
-                return await updateVariation(
-                    authToken,
-                    projectKey,
-                    feature_key,
-                    variation_key,
-                    variationData,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        updateVariation(
+                            authToken,
+                            projectKey,
+                            feature_key,
+                            variation_key,
+                            variationData,
+                        ),
+                    'updateVariation',
                 )
             },
             (orgId, projectKey, result) =>
@@ -978,11 +1003,15 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'enableTargeting',
             validatedArgs,
             async (authToken, projectKey) => {
-                await enableTargeting(
-                    authToken,
-                    projectKey,
-                    validatedArgs.feature_key,
-                    validatedArgs.environment_key,
+                await handleZodiosValidationErrors(
+                    () =>
+                        enableTargeting(
+                            authToken,
+                            projectKey,
+                            validatedArgs.feature_key,
+                            validatedArgs.environment_key,
+                        ),
+                    'enableTargeting',
                 )
                 return {
                     message: `Targeting enabled for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
@@ -1007,11 +1036,15 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'disableTargeting',
             validatedArgs,
             async (authToken, projectKey) => {
-                await disableTargeting(
-                    authToken,
-                    projectKey,
-                    validatedArgs.feature_key,
-                    validatedArgs.environment_key,
+                await handleZodiosValidationErrors(
+                    () =>
+                        disableTargeting(
+                            authToken,
+                            projectKey,
+                            validatedArgs.feature_key,
+                            validatedArgs.environment_key,
+                        ),
+                    'disableTargeting',
                 )
                 return {
                     message: `Targeting disabled for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
@@ -1036,11 +1069,15 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'listFeatureTargeting',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await fetchTargetingForFeature(
-                    authToken,
-                    projectKey,
-                    validatedArgs.feature_key,
-                    validatedArgs.environment_key,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        fetchTargetingForFeature(
+                            authToken,
+                            projectKey,
+                            validatedArgs.feature_key,
+                            validatedArgs.environment_key,
+                        ),
+                    'fetchTargetingForFeature',
                 )
             },
             (orgId, projectKey) =>
@@ -1065,12 +1102,16 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 const { feature_key, environment_key, ...configData } =
                     validatedArgs
 
-                return await updateFeatureConfigForEnvironment(
-                    authToken,
-                    projectKey,
-                    feature_key,
-                    environment_key,
-                    configData,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        updateFeatureConfigForEnvironment(
+                            authToken,
+                            projectKey,
+                            feature_key,
+                            environment_key,
+                            configData,
+                        ),
+                    'updateFeatureConfigForEnvironment',
                 )
             },
             (orgId, projectKey) =>
@@ -1092,11 +1133,15 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             'getFeatureAuditLogHistory',
             validatedArgs,
             async (authToken, projectKey) => {
-                return await getFeatureAuditLogHistory(
-                    authToken,
-                    projectKey,
-                    validatedArgs.feature_key,
-                    validatedArgs.days_back || 30,
+                return await handleZodiosValidationErrors(
+                    () =>
+                        getFeatureAuditLogHistory(
+                            authToken,
+                            projectKey,
+                            validatedArgs.feature_key,
+                            validatedArgs.days_back || 30,
+                        ),
+                    'getFeatureAuditLogHistory',
                 )
             },
             (orgId, projectKey) =>
