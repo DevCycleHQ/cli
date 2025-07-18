@@ -1,4 +1,5 @@
 import { DevCycleAuth } from './auth'
+import { setMCPToolCommand } from './headers'
 
 /**
  * Utility function to handle Zodios validation errors by extracting response data
@@ -100,6 +101,9 @@ export class DevCycleApiClient {
             if (requiresProject) {
                 this.auth.requireProject()
             }
+
+            // Set the specific MCP tool command in headers before making API calls
+            setMCPToolCommand(operationName)
 
             const authToken = this.auth.getAuthToken()
             const projectKey = requiresProject ? this.auth.getProjectKey() : ''
