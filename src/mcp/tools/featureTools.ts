@@ -1138,8 +1138,8 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                         getFeatureAuditLogHistory(
                             authToken,
                             projectKey,
-                            validatedArgs.featureKey,
-                            validatedArgs.daysBack || 30,
+                            validatedArgs.feature_key,
+                            validatedArgs.days_back || 30,
                         ),
                     'getFeatureAuditLogHistory',
                 )
@@ -1148,7 +1148,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
-                    validatedArgs.featureKey,
+                    validatedArgs.feature_key,
                     'audit-log',
                 ),
         )

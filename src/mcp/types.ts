@@ -184,8 +184,8 @@ export const UpdateFeatureTargetingArgsSchema =
     })
 
 export const GetFeatureAuditLogHistoryArgsSchema = z.object({
-    featureKey: z.string(),
-    daysBack: z.number().min(1).max(365).default(30).optional(),
+    feature_key: z.string(),
+    days_back: z.number().min(1).max(365).default(30).optional(),
 })
 
 // Base evaluation query schema (matches API camelCase naming)
