@@ -184,6 +184,31 @@ export const UpdateFeatureTargetingArgsSchema =
     })
 
 export const GetFeatureAuditLogHistoryArgsSchema = z.object({
-    feature_key: z.string(),
-    days_back: z.number().min(1).max(365).default(30).optional(),
+    featureKey: z.string(),
+    daysBack: z.number().min(1).max(365).default(30).optional(),
 })
+
+// Base evaluation query schema (matches API camelCase naming)
+const BaseEvaluationQuerySchema = z.object({
+    startDate: z.number().optional(),
+    endDate: z.number().optional(),
+    environment: z.string().optional(),
+    period: z.enum(['day', 'hour', 'month']).optional(),
+    sdkType: z.enum(['client', 'server', 'mobile', 'api']).optional(),
+})
+
+// MCP argument schemas (using camelCase to match API)
+export const GetFeatureTotalEvaluationsArgsSchema =
+    BaseEvaluationQuerySchema.extend({
+        featureKey: z.string(),
+        platform: z.string().optional(),
+        variable: z.string().optional(),
+    })
+
+export const GetProjectTotalEvaluationsArgsSchema = BaseEvaluationQuerySchema
+
+// API query schemas (same as MCP args since we use camelCase throughout)
+export const FeatureTotalEvaluationsQuerySchema =
+    GetFeatureTotalEvaluationsArgsSchema.omit({ featureKey: true })
+export const ProjectTotalEvaluationsQuerySchema =
+    GetProjectTotalEvaluationsArgsSchema
