@@ -27,6 +27,10 @@ import {
     selfTargetingToolDefinitions,
     selfTargetingToolHandlers,
 } from './tools/selfTargetingTools'
+import {
+    resultsToolDefinitions,
+    resultsToolHandlers,
+} from './tools/resultsTools'
 
 // Environment variable to control output schema inclusion
 const ENABLE_OUTPUT_SCHEMAS = process.env.ENABLE_OUTPUT_SCHEMAS === 'true'
@@ -62,6 +66,7 @@ const allToolDefinitions: Tool[] = processToolDefinitions([
     ...projectToolDefinitions,
     ...variableToolDefinitions,
     ...selfTargetingToolDefinitions,
+    ...resultsToolDefinitions,
 ])
 
 // Combine all tool handlers
@@ -71,6 +76,7 @@ const allToolHandlers: Record<string, ToolHandler> = {
     ...projectToolHandlers,
     ...variableToolHandlers,
     ...selfTargetingToolHandlers,
+    ...resultsToolHandlers,
 }
 
 export class DevCycleMCPServer {
