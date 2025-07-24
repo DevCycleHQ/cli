@@ -346,3 +346,72 @@ export const TARGET_AUDIENCE_PROPERTY = {
     },
     required: ['filters'] as const,
 }
+
+// =============================================================================
+// RESULTS AND ANALYTICS PROPERTIES
+// =============================================================================
+
+export const EVALUATION_QUERY_PROPERTIES = {
+    startDate: {
+        type: 'number' as const,
+        description: 'Start date as Unix timestamp (milliseconds since epoch)',
+    },
+    endDate: {
+        type: 'number' as const,
+        description: 'End date as Unix timestamp (milliseconds since epoch)',
+    },
+    platform: {
+        type: 'string' as const,
+        description: 'Platform filter for evaluation results',
+    },
+    variable: {
+        type: 'string' as const,
+        description: 'Variable key filter for evaluation results',
+    },
+    environment: {
+        type: 'string' as const,
+        description: 'Environment key to filter results',
+    },
+    period: {
+        type: 'string' as const,
+        enum: ['day', 'hour', 'month'] as const,
+        description: 'Time aggregation period for results',
+    },
+    sdkType: {
+        type: 'string' as const,
+        enum: ['client', 'server', 'mobile', 'api'] as const,
+        description: 'Filter by SDK type',
+    },
+}
+
+export const EVALUATION_DATA_POINT_SCHEMA = {
+    type: 'object' as const,
+    properties: {
+        date: {
+            type: 'string' as const,
+            format: 'date-time' as const,
+            description: 'ISO timestamp for this data point',
+        },
+        values: {
+            type: 'object' as const,
+            description: 'Evaluation values for this time period',
+        },
+    },
+    required: ['date', 'values'] as const,
+}
+
+export const PROJECT_DATA_POINT_SCHEMA = {
+    type: 'object' as const,
+    properties: {
+        date: {
+            type: 'string' as const,
+            format: 'date-time' as const,
+            description: 'ISO timestamp for this data point',
+        },
+        value: {
+            type: 'number' as const,
+            description: 'Total evaluations in this time period',
+        },
+    },
+    required: ['date', 'value'] as const,
+}
