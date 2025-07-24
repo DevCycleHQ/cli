@@ -56,6 +56,12 @@ export const PROJECT_KEY_PROPERTY = {
         'The project key (unique, immutable, max 100 characters, pattern: ^[a-z0-9-_.]+$)',
 }
 
+export const CUSTOM_PROPERTY_KEY_PROPERTY = {
+    type: 'string' as const,
+    description:
+        'The custom property key (unique, immutable, max 100 characters, pattern: ^[a-z0-9-_.]+$)',
+}
+
 // Filter type definitions based on DevCycle API swagger schemas
 
 export const ALL_FILTER_SCHEMA = {
