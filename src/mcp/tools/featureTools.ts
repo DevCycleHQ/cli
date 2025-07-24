@@ -290,6 +290,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'list_features',
         description:
             'List features in the current project. Include dashboard link in the response.',
+        annotations: {
+            title: 'List Feature Flags',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: FEATURE_PAGINATION_PROPERTIES,
@@ -311,6 +315,9 @@ export const featureToolDefinitions: Tool[] = [
         name: 'create_feature',
         description:
             'Create a new feature flag. Include dashboard link in the response.',
+        annotations: {
+            title: 'Create Feature Flag',
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -368,6 +375,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'update_feature',
         description:
             'Update an existing feature flag. ⚠️ IMPORTANT: Changes to feature flags may affect production environments. Always confirm with the user before making changes to features that are active in production. Include dashboard link in the response.',
+        annotations: {
+            title: 'Update Feature Flag',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -411,6 +422,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'update_feature_status',
         description:
             'Update the status of an existing feature flag. ⚠️ IMPORTANT: Changes to feature status may affect production environments. Always confirm with the user before making changes to features that are active in production. Include dashboard link in the response.',
+        annotations: {
+            title: 'Update Feature Flag Status',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -437,6 +452,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'delete_feature',
         description:
             'Delete an existing feature flag. ⚠️ CRITICAL: Deleting a feature flag will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any feature flag. Include dashboard link in the response.',
+        annotations: {
+            title: 'Delete Feature Flag',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -460,6 +479,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'fetch_feature_variations',
         description:
             'Get a list of variations for a feature. Include dashboard link in the response.',
+        annotations: {
+            title: 'Get Feature Variations',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -484,6 +507,9 @@ export const featureToolDefinitions: Tool[] = [
         name: 'create_feature_variation',
         description:
             'Create a new variation within a feature. Include dashboard link in the response.',
+        annotations: {
+            title: 'Create Feature Variation',
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -512,6 +538,9 @@ export const featureToolDefinitions: Tool[] = [
         name: 'update_feature_variation',
         description:
             'Update an existing variation by key. Include dashboard link in the response.',
+        annotations: {
+            title: 'Update Feature Variation',
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -540,6 +569,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'enable_feature_targeting',
         description:
             'Enable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
+        annotations: {
+            title: 'Enable Feature Targeting',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -561,6 +594,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'disable_feature_targeting',
         description:
             'Disable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
+        annotations: {
+            title: 'Disable Feature Targeting',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -582,6 +619,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'list_feature_targeting',
         description:
             'List feature configurations (targeting rules) for a feature. Include dashboard link in the response.',
+        annotations: {
+            title: 'List Feature Targeting Rules',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -606,6 +647,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'update_feature_targeting',
         description:
             'Update feature configuration (targeting rules) for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
+        annotations: {
+            title: 'Update Feature Targeting Rules',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -740,6 +785,10 @@ export const featureToolDefinitions: Tool[] = [
         name: 'get_feature_audit_log_history',
         description:
             'Get timeline of feature flag changes from DevCycle audit log. Include dashboard link in the response.',
+        annotations: {
+            title: 'Get Feature Audit Log History',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
