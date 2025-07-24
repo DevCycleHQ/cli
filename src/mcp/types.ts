@@ -212,3 +212,36 @@ export const FeatureTotalEvaluationsQuerySchema =
     GetFeatureTotalEvaluationsArgsSchema.omit({ featureKey: true })
 export const ProjectTotalEvaluationsQuerySchema =
     GetProjectTotalEvaluationsArgsSchema
+
+export const ListCustomPropertiesArgsSchema = z.object({
+    page: z.number().min(1).default(1).optional(),
+    perPage: z.number().min(1).max(1000).default(100).optional(),
+    sortBy: z
+        .enum([
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ])
+        .default('createdAt')
+        .optional(),
+    sortOrder: z.enum(['asc', 'desc']).default('desc').optional(),
+    search: z.string().min(3).optional(),
+    createdBy: z.string().optional(),
+})
+
+export const UpsertCustomPropertyArgsSchema = schemas.CreateCustomPropertyDto
+
+export const UpdateCustomPropertyArgsSchema =
+    schemas.UpdateCustomPropertyDto.extend({
+        key: z
+            .string()
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/), // Make key required for identifying the custom property
+    })
+
+export const DeleteCustomPropertyArgsSchema = z.object({
+    key: z.string(),
+})
