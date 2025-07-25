@@ -1,5 +1,6 @@
 import { DevCycleAuth } from './auth'
 import { setMCPToolCommand } from './headers'
+import { IDevCycleApiClient } from '../api/interface'
 
 /**
  * Utility function to handle Zodios validation errors by extracting response data
@@ -79,7 +80,7 @@ function ensureError(error: unknown): Error {
     return new Error(String(error))
 }
 
-export class DevCycleApiClient {
+export class DevCycleApiClient implements IDevCycleApiClient {
     constructor(private auth: DevCycleAuth) {}
 
     /**

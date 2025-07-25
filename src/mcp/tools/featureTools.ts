@@ -1,5 +1,4 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient } from '../utils/api'
 import {
     fetchFeatures,
     createFeature,
@@ -822,13 +821,13 @@ export const featureToolDefinitions: Tool[] = [
 ]
 
 export const featureToolHandlers: Record<string, ToolHandler> = {
-    list_features: async (args: unknown, apiClient: DevCycleApiClient) => {
+    list_features: async (args: unknown, apiClient) => {
         const validatedArgs = ListFeaturesArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'listFeatures',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => fetchFeatures(authToken, projectKey, validatedArgs),
                     'listFeatures',
@@ -837,13 +836,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             generateFeaturesDashboardLink,
         )
     },
-    create_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
+    create_feature: async (args: unknown, apiClient) => {
         const validatedArgs = CreateFeatureArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'createFeature',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 if (validatedArgs.interactive) {
                     throw new Error(
                         'Interactive mode not yet supported in MCP. Please provide explicit parameters: key, name, description, type',
@@ -865,7 +864,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'createFeature',
                 )
             },
-            (orgId, projectKey, result) =>
+            (orgId: string, projectKey: string, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -874,13 +873,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    update_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
+    update_feature: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateFeatureArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'updateFeature',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { key, ...updateData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -888,7 +887,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'updateFeature',
                 )
             },
-            (orgId, projectKey, result) =>
+            (orgId: string, projectKey: string, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -897,16 +896,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    update_feature_status: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    update_feature_status: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateFeatureStatusArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'updateFeatureStatus',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { key, ...statusData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -920,7 +916,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'updateFeatureStatus',
                 )
             },
-            (orgId, projectKey, result) =>
+            (orgId: string, projectKey: string, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -929,13 +925,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    delete_feature: async (args: unknown, apiClient: DevCycleApiClient) => {
+    delete_feature: async (args: unknown, apiClient) => {
         const validatedArgs = DeleteFeatureArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'deleteFeature',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 await handleZodiosValidationErrors(
                     () =>
                         deleteFeature(authToken, projectKey, validatedArgs.key),
@@ -948,16 +944,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
             generateFeaturesDashboardLink,
         )
     },
-    fetch_feature_variations: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    fetch_feature_variations: async (args: unknown, apiClient) => {
         const validatedArgs = ListVariationsArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'fetchFeatureVariations',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () =>
                         fetchVariations(
@@ -968,7 +961,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'fetchVariations',
                 )
             },
-            (orgId, projectKey) =>
+            (orgId: string, projectKey: string) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -977,16 +970,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    create_feature_variation: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    create_feature_variation: async (args: unknown, apiClient) => {
         const validatedArgs = CreateVariationArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'createFeatureVariation',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { feature_key, ...variationData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -1000,7 +990,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'createVariation',
                 )
             },
-            (orgId, projectKey, result) =>
+            (orgId: string, projectKey: string, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1009,16 +999,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    update_feature_variation: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    update_feature_variation: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateVariationArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'updateFeatureVariation',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { feature_key, variation_key, ...variationData } =
                     validatedArgs
 
@@ -1034,7 +1021,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'updateVariation',
                 )
             },
-            (orgId, projectKey, result) =>
+            (orgId: string, projectKey: string, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1043,16 +1030,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    enable_feature_targeting: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    enable_feature_targeting: async (args: unknown, apiClient) => {
         const validatedArgs = EnableTargetingArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'enableTargeting',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 await handleZodiosValidationErrors(
                     () =>
                         enableTargeting(
@@ -1067,7 +1051,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     message: `Targeting enabled for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
                 }
             },
-            (orgId, projectKey) =>
+            (orgId: string, projectKey: string) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1076,16 +1060,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    disable_feature_targeting: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    disable_feature_targeting: async (args: unknown, apiClient) => {
         const validatedArgs = DisableTargetingArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'disableTargeting',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 await handleZodiosValidationErrors(
                     () =>
                         disableTargeting(
@@ -1100,7 +1081,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     message: `Targeting disabled for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
                 }
             },
-            (orgId, projectKey) =>
+            (orgId: string, projectKey: string) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1109,16 +1090,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    list_feature_targeting: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    list_feature_targeting: async (args: unknown, apiClient) => {
         const validatedArgs = ListFeatureTargetingArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'listFeatureTargeting',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () =>
                         fetchTargetingForFeature(
@@ -1130,7 +1108,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'fetchTargetingForFeature',
                 )
             },
-            (orgId, projectKey) =>
+            (orgId: string, projectKey: string) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1139,16 +1117,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    update_feature_targeting: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    update_feature_targeting: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateFeatureTargetingArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'updateFeatureTargeting',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { feature_key, environment_key, ...configData } =
                     validatedArgs
 
@@ -1164,7 +1139,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'updateFeatureConfigForEnvironment',
                 )
             },
-            (orgId, projectKey) =>
+            (orgId: string, projectKey: string) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1173,16 +1148,13 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    get_feature_audit_log_history: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    get_feature_audit_log_history: async (args: unknown, apiClient) => {
         const validatedArgs = GetFeatureAuditLogHistoryArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'getFeatureAuditLogHistory',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () =>
                         getFeatureAuditLogHistory(
@@ -1194,7 +1166,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'getFeatureAuditLogHistory',
                 )
             },
-            (orgId, projectKey) =>
+            (orgId: string, projectKey: string) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
