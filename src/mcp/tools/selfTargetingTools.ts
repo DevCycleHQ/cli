@@ -152,7 +152,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
         description:
             'Set a self-targeting override for a feature variation. ⚠️ IMPORTANT: Always confirm with the user before setting overrides for production environments (environments where type = "production"). Include dashboard link in the response.',
         annotations: {
-            title: 'Set Self-Targeting Override',
+            title: 'Set Self-Targeting Override For Feature/Environment',
         },
         inputSchema: {
             type: 'object',
@@ -173,7 +173,7 @@ export const selfTargetingToolDefinitions: Tool[] = [
         description:
             'Clear self-targeting overrides for a specific feature/environment. ⚠️ IMPORTANT: Always confirm with the user before clearing overrides for production environments (environments where type = "production"). Include dashboard link in the response.',
         annotations: {
-            title: 'Clear Feature Self-Targeting Overrides',
+            title: 'Clear Self-Targeting Override For Feature/Environment',
         },
         inputSchema: {
             type: 'object',

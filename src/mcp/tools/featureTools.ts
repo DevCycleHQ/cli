@@ -537,9 +537,10 @@ export const featureToolDefinitions: Tool[] = [
     {
         name: 'update_feature_variation',
         description:
-            'Update an existing variation by key. Include dashboard link in the response.',
+            'Update an existing variation by key. ⚠️ WARNING: Updating a feature variation may affect production environments. Include dashboard link in the response.',
         annotations: {
             title: 'Update Feature Variation',
+            destructiveHint: true,
         },
         inputSchema: {
             type: 'object',
