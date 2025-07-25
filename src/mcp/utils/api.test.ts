@@ -32,10 +32,21 @@ describe('DevCycleApiClient', () => {
         it('should extract data from Zodios validation errors with 200 OK response', async () => {
             const mockResponseData = { id: '123', name: 'Test Feature' }
 
-            const zodiosError = new Error(
+            // Create a proper mock Zodios error with data property
+            class ZodiosValidationError extends Error {
+                constructor(
+                    message: string,
+                    public data: any,
+                ) {
+                    super(message)
+                    this.name = 'ZodiosValidationError'
+                }
+            }
+
+            const zodiosError = new ZodiosValidationError(
                 'Zodios: Invalid response - status: 200 OK',
+                mockResponseData,
             )
-            ;(zodiosError as any).data = mockResponseData
 
             const apiCall = sinon.stub().rejects(zodiosError)
 
@@ -104,9 +115,7 @@ describe('DevCycleApiClient', () => {
                 )
                 assert.fail('Expected function to throw')
             } catch (error) {
-                expect((error as Error).message).to.equal(
-                    'Authentication failed',
-                )
+                expect((error as Error).message).to.equal('Authentication failed')
                 sinon.assert.notCalled(mockOperation)
             }
         })
