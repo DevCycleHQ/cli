@@ -115,7 +115,9 @@ describe('DevCycleApiClient', () => {
                 )
                 assert.fail('Expected function to throw')
             } catch (error) {
-                expect((error as Error).message).to.equal('Authentication failed')
+                expect((error as Error).message).to.equal(
+                    'Authentication failed',
+                )
                 sinon.assert.notCalled(mockOperation)
             }
         })
