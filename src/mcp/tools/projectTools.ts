@@ -149,6 +149,10 @@ export const projectToolDefinitions: Tool[] = [
         name: 'list_projects',
         description:
             'List all projects in the current organization. Include dashboard link in the response.',
+        annotations: {
+            title: 'List Projects',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: PROJECT_PAGINATION_PROPERTIES,
@@ -170,6 +174,10 @@ export const projectToolDefinitions: Tool[] = [
         name: 'get_current_project',
         description:
             'Get the currently selected project. Include dashboard link in the response.',
+        annotations: {
+            title: 'Get Current Project',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {},
@@ -180,6 +188,9 @@ export const projectToolDefinitions: Tool[] = [
         name: 'create_project',
         description:
             'Create a new project. Include dashboard link in the response.',
+        annotations: {
+            title: 'Create Project',
+        },
         inputSchema: {
             type: 'object',
             properties: PROJECT_COMMON_PROPERTIES,
@@ -191,6 +202,9 @@ export const projectToolDefinitions: Tool[] = [
         name: 'update_project',
         description:
             'Update an existing project. Include dashboard link in the response.',
+        annotations: {
+            title: 'Update Project',
+        },
         inputSchema: {
             type: 'object',
             properties: PROJECT_COMMON_PROPERTIES,

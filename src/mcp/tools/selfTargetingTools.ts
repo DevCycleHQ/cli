@@ -96,6 +96,10 @@ export const selfTargetingToolDefinitions: Tool[] = [
         name: 'get_self_targeting_identity',
         description:
             'Get current DevCycle identity for self-targeting. Include dashboard link in the response.',
+        annotations: {
+            title: 'Get Self-Targeting Identity',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {},
@@ -106,6 +110,9 @@ export const selfTargetingToolDefinitions: Tool[] = [
         name: 'update_self_targeting_identity',
         description:
             'Update DevCycle identity for self-targeting and overrides. Include dashboard link in the response.',
+        annotations: {
+            title: 'Update Self-Targeting Identity',
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -119,6 +126,10 @@ export const selfTargetingToolDefinitions: Tool[] = [
         name: 'list_self_targeting_overrides',
         description:
             'List all self-targeting overrides for the current project. Include dashboard link in the response.',
+        annotations: {
+            title: 'List Self-Targeting Overrides',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {},
@@ -140,6 +151,9 @@ export const selfTargetingToolDefinitions: Tool[] = [
         name: 'set_self_targeting_override',
         description:
             'Set a self-targeting override for a feature variation. ⚠️ IMPORTANT: Always confirm with the user before setting overrides for production environments (environments where type = "production"). Include dashboard link in the response.',
+        annotations: {
+            title: 'Set Self-Targeting Override For Feature/Environment',
+        },
         inputSchema: {
             type: 'object',
             properties: OVERRIDE_COMMON_PROPERTIES,
@@ -158,6 +172,9 @@ export const selfTargetingToolDefinitions: Tool[] = [
         name: 'clear_feature_self_targeting_overrides',
         description:
             'Clear self-targeting overrides for a specific feature/environment. ⚠️ IMPORTANT: Always confirm with the user before clearing overrides for production environments (environments where type = "production"). Include dashboard link in the response.',
+        annotations: {
+            title: 'Clear Self-Targeting Override For Feature/Environment',
+        },
         inputSchema: {
             type: 'object',
             properties: {
@@ -179,6 +196,10 @@ export const selfTargetingToolDefinitions: Tool[] = [
         name: 'clear_all_self_targeting_overrides',
         description:
             'Clear all self-targeting overrides for the current project. ⚠️ IMPORTANT: Always confirm with the user before clearing all overrides as it can clear production environments (environments where type = "production"). Include dashboard link in the response.',
+        annotations: {
+            title: 'Clear All Self-Targeting Overrides',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {},

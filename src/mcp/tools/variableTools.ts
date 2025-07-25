@@ -213,6 +213,10 @@ export const variableToolDefinitions: Tool[] = [
         name: 'list_variables',
         description:
             'List variables in the current project. Include dashboard link in the response.',
+        annotations: {
+            title: 'List Variables',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: VARIABLE_PAGINATION_PROPERTIES,
@@ -234,6 +238,9 @@ export const variableToolDefinitions: Tool[] = [
         name: 'create_variable',
         description:
             'Create a new variable. Include dashboard link in the response.',
+        annotations: {
+            title: 'Create Variable',
+        },
         inputSchema: {
             type: 'object',
             properties: VARIABLE_COMMON_PROPERTIES,
@@ -252,6 +259,10 @@ export const variableToolDefinitions: Tool[] = [
         name: 'update_variable',
         description:
             'Update an existing variable. ⚠️ IMPORTANT: Variable changes can affect feature flags in production environments. Always confirm with the user before updating variables for features that are active in production. Include dashboard link in the response.',
+        annotations: {
+            title: 'Update Variable',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: UPDATE_VARIABLE_PROPERTIES,
@@ -270,6 +281,10 @@ export const variableToolDefinitions: Tool[] = [
         name: 'delete_variable',
         description:
             'Delete a variable. ⚠️ CRITICAL: Deleting a variable will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any variable. Include dashboard link in the response.',
+        annotations: {
+            title: 'Delete Variable',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
