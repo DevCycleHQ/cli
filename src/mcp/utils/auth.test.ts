@@ -9,6 +9,7 @@ describe('DevCycleAuth', () => {
     let devCycleAuth: DevCycleAuth
     let apiAuthStub: sinon.SinonStubbedInstance<ApiAuth>
     let originalEnv: NodeJS.ProcessEnv
+    let loadConfigStub: sinon.SinonStub
 
     beforeEach(() => {
         // Save and clear environment
@@ -20,19 +21,31 @@ describe('DevCycleAuth', () => {
         delete process.env.DVC_CLIENT_SECRET
         delete process.env.DVC_PROJECT_KEY
 
-        // Mock ApiAuth
+        // Create stubbed ApiAuth instance
         apiAuthStub = sinon.createStubInstance(ApiAuth)
-        sinon.stub(ApiAuth.prototype, 'getToken').resolves('mock-auth-token')
+        apiAuthStub.getToken.resolves('mock-auth-token')
 
-        devCycleAuth = new DevCycleAuth()
+        // Create DevCycleAuth with injected mock
+        devCycleAuth = new DevCycleAuth(apiAuthStub)
 
-        // Replace the private apiAuth instance with our stub
-        ;(devCycleAuth as any).apiAuth = apiAuthStub
+        // Stub the protected loadConfig method to simulate loading from environment
+        loadConfigStub = sinon
+            .stub(devCycleAuth as any, 'loadConfig')
+            .callsFake(async function (this: DevCycleAuth) {
+                // Simulate the environment variable loading logic
+                const projectKey =
+                    process.env.DEVCYCLE_PROJECT_KEY ||
+                    process.env.DVC_PROJECT_KEY ||
+                    ''
+                ;(this as any)._projectKey = projectKey
+                ;(this as any)._orgId = '' // Default empty org ID for tests
+            })
     })
 
     afterEach(() => {
         // Restore original environment
         process.env = originalEnv
+        // Sinon automatically restores all stubs
         sinon.restore()
     })
 
@@ -89,11 +102,12 @@ describe('DevCycleAuth', () => {
 
             apiAuthStub.getToken.resolves('valid-token')
 
-            // Mock the loadConfig method to ensure no project is loaded from config files
-            const originalLoadConfig = (devCycleAuth as any).loadConfig
-            ;(devCycleAuth as any).loadConfig = async () => {
-                // Don't set any project key or org ID
-            }
+            // Override the loadConfig stub for this test to not set any project configuration
+            loadConfigStub.callsFake(async function (this: DevCycleAuth) {
+                // Don't set any project key or org ID to simulate missing project config
+                ;(this as any)._projectKey = ''
+                ;(this as any)._orgId = ''
+            })
 
             try {
                 await devCycleAuth.initialize()
@@ -111,9 +125,6 @@ describe('DevCycleAuth', () => {
                 expect((error as Error).message).to.contain(
                     '.devcycle/config.yml',
                 )
-            } finally {
-                // Restore original method
-                ;(devCycleAuth as any).loadConfig = originalLoadConfig
             }
         })
     })

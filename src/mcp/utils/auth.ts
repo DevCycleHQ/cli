@@ -13,7 +13,7 @@ export class DevCycleAuth {
     private _projectKey = ''
     private _orgId = ''
 
-    constructor() {
+    constructor(apiAuth?: ApiAuth) {
         this.authPath = path.join(
             os.homedir(),
             '.config',
@@ -23,7 +23,8 @@ export class DevCycleAuth {
         this.cacheDir = path.join(os.homedir(), '.config', 'devcycle', 'cache')
         this.writer = new Writer()
         this.writer.headless = true
-        this.apiAuth = new ApiAuth(this.authPath, this.cacheDir, this.writer)
+        this.apiAuth =
+            apiAuth || new ApiAuth(this.authPath, this.cacheDir, this.writer)
     }
 
     async initialize(): Promise<void> {
@@ -111,7 +112,7 @@ export class DevCycleAuth {
         }
     }
 
-    private async loadConfig(): Promise<void> {
+    protected async loadConfig(): Promise<void> {
         // Try to load project from environment variables first
         this._projectKey =
             process.env.DEVCYCLE_PROJECT_KEY ||
