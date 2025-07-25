@@ -164,6 +164,10 @@ export class DevCycleMCPServer {
                 lowerMessage.includes('forbidden'):
                 return 'PERMISSION_ERROR'
 
+            case lowerMessage.includes('project') &&
+                lowerMessage.includes('not found'):
+                return 'PROJECT_ERROR'
+
             case lowerMessage.includes('404') ||
                 lowerMessage.includes('not found'):
                 return 'RESOURCE_NOT_FOUND'
@@ -179,10 +183,6 @@ export class DevCycleMCPServer {
             case lowerMessage.includes('enotfound') ||
                 lowerMessage.includes('network'):
                 return 'NETWORK_ERROR'
-
-            case lowerMessage.includes('project') &&
-                lowerMessage.includes('not found'):
-                return 'PROJECT_ERROR'
 
             default:
                 return 'UNKNOWN_ERROR'
