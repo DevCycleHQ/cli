@@ -2,6 +2,8 @@ import { expect } from '@oclif/test'
 import { MCPToolRegistry } from './registry'
 import { IDevCycleApiClient } from '../api/interface'
 import { registerProjectTools } from './projectTools'
+import { registerVariableTools } from './variableTools'
+import { registerEnvironmentTools } from './environmentTools'
 
 // Mock API client for testing
 class MockApiClient implements IDevCycleApiClient {
@@ -41,12 +43,33 @@ describe('MCPToolRegistry', () => {
         expect(registry.size()).to.equal(0)
 
         registerProjectTools(registry)
-
         expect(registry.size()).to.equal(4)
         expect(registry.has('list_projects')).to.be.true
         expect(registry.has('get_current_project')).to.be.true
         expect(registry.has('create_project')).to.be.true
         expect(registry.has('update_project')).to.be.true
+
+        // Test variable tools registration (Phase 1.3)
+        registry.clear()
+        expect(registry.size()).to.equal(0)
+
+        registerVariableTools(registry)
+        expect(registry.size()).to.equal(4)
+        expect(registry.has('list_variables')).to.be.true
+        expect(registry.has('create_variable')).to.be.true
+        expect(registry.has('update_variable')).to.be.true
+        expect(registry.has('delete_variable')).to.be.true
+
+        // Test environment tools registration (Phase 1.3)
+        registry.clear()
+        expect(registry.size()).to.equal(0)
+
+        registerEnvironmentTools(registry)
+        expect(registry.size()).to.equal(4)
+        expect(registry.has('list_environments')).to.be.true
+        expect(registry.has('get_sdk_keys')).to.be.true
+        expect(registry.has('create_environment')).to.be.true
+        expect(registry.has('update_environment')).to.be.true
     })
 
     it('should retrieve all registered tools', () => {

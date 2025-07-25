@@ -14,6 +14,7 @@ import {
 import { DASHBOARD_LINK_PROPERTY, PROJECT_KEY_PROPERTY } from './commonSchemas'
 import { MCPToolRegistry, MCPToolDefinition } from './registry'
 import { IDevCycleApiClient } from '../api/interface'
+import { ToolHandler } from '../server'
 
 // Helper functions to generate project dashboard links
 const generateProjectDashboardLink = (
@@ -151,142 +152,27 @@ const PROJECT_OUTPUT_SCHEMA = {
  * Register all project tools with the provided registry
  */
 export function registerProjectTools(registry: MCPToolRegistry): void {
-    // List Projects Tool
-    registry.register({
-        name: 'list_projects',
-        description:
-            'List all projects in the current organization. Include dashboard link in the response.',
-        inputSchema: {
-            type: 'object',
-            properties: PROJECT_PAGINATION_PROPERTIES,
-        },
-        outputSchema: {
-            type: 'object' as const,
-            properties: {
-                result: {
-                    type: 'array' as const,
-                    description: 'Array of project objects in the organization',
-                    items: PROJECT_OBJECT_SCHEMA,
-                },
-                dashboardLink: DASHBOARD_LINK_PROPERTY,
+    // Combine the legacy tool definitions with their handlers to create full MCPToolDefinition objects
+    const toolDefinitions: MCPToolDefinition[] = projectToolDefinitions.map(
+        (toolDef) => ({
+            name: toolDef.name,
+            description: toolDef.description || '',
+            inputSchema: toolDef.inputSchema,
+            outputSchema: toolDef.outputSchema,
+            handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
+                // Adapt the legacy handler to work with the interface
+                const legacyHandler = projectToolHandlers[toolDef.name]
+                return await legacyHandler(args, apiClient as any)
             },
-            required: ['result', 'dashboardLink'],
-        },
-        handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
-            const validatedArgs = ListProjectsArgsSchema.parse(args)
+        }),
+    )
 
-            return await apiClient.executeWithDashboardLink(
-                'listProjects',
-                validatedArgs,
-                async (authToken) => {
-                    // projectKey not used for listing all projects
-                    return await handleZodiosValidationErrors(
-                        () => fetchProjects(authToken, validatedArgs),
-                        'fetchProjects',
-                    )
-                },
-                generateOrganizationSettingsLink,
-            )
-        },
-    })
-
-    // Get Current Project Tool
-    registry.register({
-        name: 'get_current_project',
-        description:
-            'Get the currently selected project. Include dashboard link in the response.',
-        inputSchema: {
-            type: 'object',
-            properties: {
-                random_string: {
-                    type: 'string',
-                    description: 'Dummy parameter for no-parameter tools',
-                },
-            },
-            required: ['random_string'],
-        },
-        outputSchema: PROJECT_OUTPUT_SCHEMA,
-        handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
-            return await apiClient.executeWithDashboardLink(
-                'getCurrentProject',
-                null,
-                async (authToken, projectKey) => {
-                    return await handleZodiosValidationErrors(
-                        () => fetchProject(authToken, projectKey),
-                        'fetchProject',
-                    )
-                },
-                generateProjectDashboardLink,
-            )
-        },
-    })
-
-    // Create Project Tool
-    registry.register({
-        name: 'create_project',
-        description:
-            'Create a new project. Include dashboard link in the response.',
-        inputSchema: {
-            type: 'object',
-            properties: PROJECT_COMMON_PROPERTIES,
-            required: ['name', 'key'],
-        },
-        outputSchema: PROJECT_OUTPUT_SCHEMA,
-        handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
-            const validatedArgs = CreateProjectArgsSchema.parse(args)
-
-            return await apiClient.executeWithDashboardLink(
-                'createProject',
-                validatedArgs,
-                async (authToken) => {
-                    // projectKey not used for creating projects
-                    return await handleZodiosValidationErrors(
-                        () => createProject(authToken, validatedArgs),
-                        'createProject',
-                    )
-                },
-                generateProjectDashboardLink,
-            )
-        },
-    })
-
-    // Update Project Tool
-    registry.register({
-        name: 'update_project',
-        description:
-            'Update an existing project. Include dashboard link in the response.',
-        inputSchema: {
-            type: 'object',
-            properties: PROJECT_COMMON_PROPERTIES,
-            required: ['key'],
-        },
-        outputSchema: PROJECT_OUTPUT_SCHEMA,
-        handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
-            const validatedArgs = UpdateProjectArgsSchema.parse(args)
-            const { key, ...updateParams } = validatedArgs
-
-            return await apiClient.executeWithDashboardLink(
-                'updateProject',
-                validatedArgs,
-                async (authToken) => {
-                    // projectKey not used - we use the key from validated args
-                    return await handleZodiosValidationErrors(
-                        () => updateProject(authToken, key, updateParams),
-                        'updateProject',
-                    )
-                },
-                generateEditProjectLink,
-            )
-        },
-    })
+    registry.registerMany(toolDefinitions)
 }
 
 // =============================================================================
-// LEGACY EXPORTS FOR BACKWARD COMPATIBILITY
+// TOOL DEFINITIONS
 // =============================================================================
-
-// These exports maintain backward compatibility with the existing server.ts
-// They will be removed once the server is updated to use the registry pattern
 
 export const projectToolDefinitions: Tool[] = [
     {
@@ -365,17 +251,14 @@ export const projectToolDefinitions: Tool[] = [
 ]
 
 // Legacy handlers for backward compatibility
-import { ToolHandler } from '../server'
-import { DevCycleApiClient } from '../utils/api'
-
 export const projectToolHandlers: Record<string, ToolHandler> = {
-    list_projects: async (args: unknown, apiClient: DevCycleApiClient) => {
+    list_projects: async (args: unknown, apiClient) => {
         const validatedArgs = ListProjectsArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'listProjects',
             validatedArgs,
-            async (authToken) => {
+            async (authToken: string) => {
                 // projectKey not used for listing all projects
                 return await handleZodiosValidationErrors(
                     () => fetchProjects(authToken, validatedArgs),
@@ -385,14 +268,11 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             generateOrganizationSettingsLink,
         )
     },
-    get_current_project: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    get_current_project: async (args: unknown, apiClient) => {
         return await apiClient.executeWithDashboardLink(
             'getCurrentProject',
             null,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => fetchProject(authToken, projectKey),
                     'fetchProject',
@@ -401,13 +281,13 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             generateProjectDashboardLink,
         )
     },
-    create_project: async (args: unknown, apiClient: DevCycleApiClient) => {
+    create_project: async (args: unknown, apiClient) => {
         const validatedArgs = CreateProjectArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'createProject',
             validatedArgs,
-            async (authToken) => {
+            async (authToken: string) => {
                 // projectKey not used for creating projects
                 return await handleZodiosValidationErrors(
                     () => createProject(authToken, validatedArgs),
@@ -417,14 +297,14 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             generateProjectDashboardLink,
         )
     },
-    update_project: async (args: unknown, apiClient: DevCycleApiClient) => {
+    update_project: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateProjectArgsSchema.parse(args)
         const { key, ...updateParams } = validatedArgs
 
         return await apiClient.executeWithDashboardLink(
             'updateProject',
             validatedArgs,
-            async (authToken) => {
+            async (authToken: string) => {
                 // projectKey not used - we use the key from validated args
                 return await handleZodiosValidationErrors(
                     () => updateProject(authToken, key, updateParams),

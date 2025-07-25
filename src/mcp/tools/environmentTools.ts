@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
+import { handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchEnvironments,
     fetchEnvironmentByKey,
@@ -12,11 +12,14 @@ import {
     CreateEnvironmentArgsSchema,
     UpdateEnvironmentArgsSchema,
 } from '../types'
-import { ToolHandler } from '../server'
 import {
     DASHBOARD_LINK_PROPERTY,
     ENVIRONMENT_KEY_PROPERTY,
 } from './commonSchemas'
+import { MCPToolRegistry, MCPToolDefinition } from './registry'
+import { IDevCycleApiClient } from '../api/interface'
+import { ToolHandler } from '../server'
+import { DevCycleApiClient } from '../utils/api'
 
 // Helper function to generate environment dashboard links
 const generateEnvironmentDashboardLink = (
@@ -175,8 +178,35 @@ const ENVIRONMENT_OUTPUT_SCHEMA = {
 }
 
 // =============================================================================
+// TOOL REGISTRATION
+// =============================================================================
+
+/**
+ * Register all environment tools with the provided registry
+ */
+export function registerEnvironmentTools(registry: MCPToolRegistry): void {
+    // Combine the legacy tool definitions with their handlers to create full MCPToolDefinition objects
+    const toolDefinitions: MCPToolDefinition[] = environmentToolDefinitions.map(
+        (toolDef) => ({
+            name: toolDef.name,
+            description: toolDef.description || '',
+            inputSchema: toolDef.inputSchema,
+            outputSchema: toolDef.outputSchema,
+            handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
+                // Adapt the legacy handler to work with the interface
+                const legacyHandler = environmentToolHandlers[toolDef.name]
+                return await legacyHandler(args, apiClient as any)
+            },
+        }),
+    )
+
+    registry.registerMany(toolDefinitions)
+}
+
+// =============================================================================
 // TOOL DEFINITIONS
 // =============================================================================
+
 export const environmentToolDefinitions: Tool[] = [
     {
         name: 'list_environments',
@@ -270,14 +300,15 @@ export const environmentToolDefinitions: Tool[] = [
     },
 ]
 
+// Legacy handlers for backward compatibility
 export const environmentToolHandlers: Record<string, ToolHandler> = {
-    list_environments: async (args: unknown, apiClient: DevCycleApiClient) => {
+    list_environments: async (args: unknown, apiClient) => {
         const validatedArgs = ListEnvironmentsArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'listEnvironments',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => fetchEnvironments(authToken, projectKey),
                     'listEnvironments',
@@ -286,13 +317,13 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
             generateEnvironmentDashboardLink,
         )
     },
-    get_sdk_keys: async (args: unknown, apiClient: DevCycleApiClient) => {
+    get_sdk_keys: async (args: unknown, apiClient) => {
         const validatedArgs = GetSdkKeysArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'getSdkKeys',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const environment = await handleZodiosValidationErrors(
                     () =>
                         fetchEnvironmentByKey(
@@ -320,13 +351,13 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
             generateEnvironmentDashboardLink,
         )
     },
-    create_environment: async (args: unknown, apiClient: DevCycleApiClient) => {
+    create_environment: async (args: unknown, apiClient) => {
         const validatedArgs = CreateEnvironmentArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'createEnvironment',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () =>
                         createEnvironment(authToken, projectKey, validatedArgs),
@@ -336,13 +367,13 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
             generateEnvironmentDashboardLink,
         )
     },
-    update_environment: async (args: unknown, apiClient: DevCycleApiClient) => {
+    update_environment: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateEnvironmentArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'updateEnvironment',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { key, ...updateParams } = validatedArgs
                 return await handleZodiosValidationErrors(
                     () =>
