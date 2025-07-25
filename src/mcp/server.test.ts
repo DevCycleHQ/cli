@@ -15,7 +15,6 @@ describe('DevCycleMCPServer', () => {
     let mcpServer: DevCycleMCPServer
     let authStub: sinon.SinonStubbedInstance<DevCycleAuth>
     let apiClientStub: sinon.SinonStubbedInstance<DevCycleApiClient>
-    let setRequestHandlerStub: sinon.SinonStub
 
     beforeEach(() => {
         // Mock the MCP Server
@@ -24,21 +23,22 @@ describe('DevCycleMCPServer', () => {
             onerror: undefined,
         } as any
 
-        setRequestHandlerStub = server.setRequestHandler as sinon.SinonStub
-
         // Create stubs for dependencies
         authStub = sinon.createStubInstance(DevCycleAuth)
         apiClientStub = sinon.createStubInstance(DevCycleApiClient)
 
-        // Stub the constructors
-        sinon.stub(DevCycleAuth.prototype, 'initialize').resolves()
-        sinon.stub(DevCycleApiClient.prototype, 'executeWithDashboardLink')
-
         mcpServer = new DevCycleMCPServer(server)
 
-        // Replace the private instances with our stubs
-        ;(mcpServer as any).auth = authStub
-        ;(mcpServer as any).apiClient = apiClientStub
+        // Inject stubs into the private properties for testing
+        // Note: This is a test-only workaround for dependency injection
+        Object.defineProperty(mcpServer, 'auth', {
+            value: authStub,
+            writable: true,
+        })
+        Object.defineProperty(mcpServer, 'apiClient', {
+            value: apiClientStub,
+            writable: true,
+        })
     })
 
     afterEach(() => {
@@ -52,7 +52,9 @@ describe('DevCycleMCPServer', () => {
             await mcpServer.initialize()
 
             sinon.assert.calledOnce(authStub.initialize)
-            sinon.assert.calledTwice(setRequestHandlerStub) // ListTools and CallTool
+            sinon.assert.calledTwice(
+                server.setRequestHandler as sinon.SinonStub,
+            ) // ListTools and CallTool
         })
 
         it('should fail gracefully with missing auth credentials', async () => {
@@ -109,7 +111,7 @@ describe('DevCycleMCPServer', () => {
 
         it('should register ListTools handler', () => {
             sinon.assert.calledWith(
-                setRequestHandlerStub,
+                server.setRequestHandler as sinon.SinonStub,
                 ListToolsRequestSchema,
                 sinon.match.func,
             )
@@ -117,13 +119,15 @@ describe('DevCycleMCPServer', () => {
 
         it('should register CallTool handler', () => {
             sinon.assert.calledWith(
-                setRequestHandlerStub,
+                server.setRequestHandler as sinon.SinonStub,
                 CallToolRequestSchema,
                 sinon.match.func,
             )
         })
 
         it('should return all tool definitions when listing tools', async () => {
+            const setRequestHandlerStub =
+                server.setRequestHandler as sinon.SinonStub
             const listToolsHandler = setRequestHandlerStub
                 .getCalls()
                 .find((call) => call.args[0] === ListToolsRequestSchema)
@@ -146,6 +150,8 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should handle unknown tool requests', async () => {
+            const setRequestHandlerStub =
+                server.setRequestHandler as sinon.SinonStub
             const callToolHandler = setRequestHandlerStub
                 .getCalls()
                 .find((call) => call.args[0] === CallToolRequestSchema)?.args[1]
@@ -354,6 +360,8 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should execute valid tool requests successfully', async () => {
+            const setRequestHandlerStub =
+                server.setRequestHandler as sinon.SinonStub
             const callToolHandler = setRequestHandlerStub
                 .getCalls()
                 .find((call) => call.args[0] === CallToolRequestSchema)?.args[1]
