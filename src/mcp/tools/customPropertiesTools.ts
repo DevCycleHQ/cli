@@ -208,6 +208,10 @@ export const customPropertiesToolDefinitions: Tool[] = [
         name: 'list_custom_properties',
         description:
             'List custom properties in the current project. Include dashboard link in the response.',
+        annotations: {
+            title: 'List Custom Properties',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: CUSTOM_PROPERTY_PAGINATION_PROPERTIES,
@@ -230,6 +234,9 @@ export const customPropertiesToolDefinitions: Tool[] = [
         name: 'create_custom_property',
         description:
             'Create a new custom property. Include dashboard link in the response.',
+        annotations: {
+            title: 'Create Custom Property',
+        },
         inputSchema: {
             type: 'object',
             properties: CUSTOM_PROPERTY_COMMON_PROPERTIES,
@@ -248,6 +255,10 @@ export const customPropertiesToolDefinitions: Tool[] = [
         name: 'update_custom_property',
         description:
             'Update an existing custom property. ⚠️ IMPORTANT: Custom property changes can affect feature flags in production environments. Always confirm with the user before updating custom properties for features that are active in production. Include dashboard link in the response.',
+        annotations: {
+            title: 'Update Custom Property',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: CUSTOM_PROPERTY_COMMON_PROPERTIES,
@@ -266,6 +277,10 @@ export const customPropertiesToolDefinitions: Tool[] = [
         name: 'delete_custom_property',
         description:
             'Delete a custom property. ⚠️ CRITICAL: Deleting a custom property will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any custom property. Include dashboard link in the response.',
+        annotations: {
+            title: 'Delete Custom Property',
+            destructiveHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: {
