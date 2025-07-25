@@ -1,5 +1,5 @@
-import { plainToClass } from 'class-transformer'
-import { GetProjectsParams, fetchProjects } from '../../api/projects'
+import { fetchProjects } from '../../api/projects'
+import { schemas } from '../../api/zodClient'
 import GetCommand from '../getCommand'
 
 export default class DetailedProjects extends GetCommand {
@@ -15,7 +15,7 @@ export default class DetailedProjects extends GetCommand {
         const { flags } = await this.parse(DetailedProjects)
         const { sortBy, sortOrder } = flags
 
-        const params = plainToClass(GetProjectsParams, { sortBy, sortOrder })
+        const params = schemas.GetProjectsParams.parse({ sortBy, sortOrder })
 
         const projects = await fetchProjects(this.authToken, params)
         return this.writer.showResults(

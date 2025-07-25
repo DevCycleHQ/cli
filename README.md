@@ -8,6 +8,7 @@ Major features include:
 - Detect and list DevCycle Variable usages in your codebase
 - Manage your Self-Targeting Overrides to quickly switch between Variable values
 - Generate type definitions for type-safe usage of DevCycle (Typescript only)
+- MCP (Model Context Protocol) server for AI-powered feature flag management with Cursor and Claude
 
 The CLI can be customized in several ways using command-line args or by creating a [configuration file](#repo-configuration).
 
@@ -20,6 +21,9 @@ The CLI can be customized in several ways using command-line args or by creating
 * [Authentication](#authentication)
 * [Usage](#usage)
 * [Command Topics](#command-topics)
+* [MCP Server for AI Assistants](#mcp-server-for-ai-assistants)
+* [This installs both 'dvc' CLI and 'dvc-mcp' server](#this-installs-both-dvc-cli-and-dvc-mcp-server)
+* [Access via: npx dvc-mcp](#access-via-npx-dvc-mcp)
 * [Repo Configuration](#repo-configuration)
 <!-- tocstop -->
 # Setup
@@ -108,7 +112,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/5.21.1 linux-x64 node-v22.12.0
+@devcycle/cli/5.21.1 darwin-arm64 node-v22.12.0
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -142,6 +146,103 @@ USAGE
 * [`dvc variations`](docs/variations.md) - Create a new Variation for an existing Feature.
 
 <!-- commandsstop -->
+
+# MCP Server for AI Assistants
+
+The DevCycle CLI includes an MCP (Model Context Protocol) server that enables AI coding assistants like Cursor and Claude to manage feature flags directly. This allows you to create, update, and manage feature flags without leaving your coding environment.
+
+## Installation
+
+### Option 1: Global Installation (Recommended)
+```bash
+npm install -g @devcycle/cli
+# This installs both 'dvc' CLI and 'dvc-mcp' server
+```
+
+### Option 2: Project-Specific Installation
+```bash
+npm install --save-dev @devcycle/cli
+# Access via: npx dvc-mcp
+```
+
+### Verify Installation
+```bash
+dvc-mcp --version  # Should display the DevCycle CLI version
+dvc --version      # Verify CLI is also installed
+```
+
+## Configuration
+
+### For Cursor
+Add to `.cursor/mcp_settings.json`:
+```json
+{
+  "mcpServers": {
+    "devcycle": {
+      "command": "dvc-mcp"
+    }
+  }
+}
+```
+
+### For Claude Desktop
+Add to your Claude configuration file:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "devcycle": {
+      "command": "dvc-mcp"
+    }
+  }
+}
+```
+
+### For Project-Specific Installation
+If you installed locally, update the command path:
+```json
+{
+  "mcpServers": {
+    "devcycle": {
+      "command": "npx",
+      "args": ["dvc-mcp"]
+    }
+  }
+}
+```
+
+## Authentication
+
+The MCP server uses the same authentication as the CLI:
+
+1. **Authenticate with DevCycle:**
+   ```bash
+   dvc login sso
+   ```
+
+2. **Select your project:**
+   ```bash
+   dvc projects select
+   ```
+
+3. **Verify setup:**
+   ```bash
+   dvc status
+   ```
+
+Your AI assistant can now manage feature flags on your behalf.
+
+## Troubleshooting
+
+- **Command not found:** Ensure the CLI is installed globally or use `npx dvc-mcp`
+- **Authentication errors:** Run `dvc login sso` to re-authenticate
+- **No project selected:** Run `dvc projects select` to choose a project
+- **Permission issues:** On Unix systems, you may need to restart your terminal after global installation
+
+For detailed documentation and advanced usage, see [docs/mcp.md](docs/mcp.md).
 
 # Repo Configuration
 The following commands can only be run from the root of a configured repository

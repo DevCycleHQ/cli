@@ -43,6 +43,10 @@ const comparatorMap = {
     '>=': 'is greater than or equal to',
     '<': 'is less than',
     '<=': 'is less than or equal to',
+    endWith: 'ends with',
+    '!endWith': 'does not end with',
+    startWith: 'starts with',
+    '!startWith': 'does not start with',
 }
 
 export const renderTargetingTree = (
