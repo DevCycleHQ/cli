@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
+import { handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchVariables,
     createVariable,
@@ -12,12 +12,15 @@ import {
     UpdateVariableArgsSchema,
     DeleteVariableArgsSchema,
 } from '../types'
-import { ToolHandler } from '../server'
 import {
     DASHBOARD_LINK_PROPERTY,
     MESSAGE_RESPONSE_SCHEMA,
     VARIABLE_KEY_PROPERTY,
 } from './commonSchemas'
+import { MCPToolRegistry, MCPToolDefinition } from './registry'
+import { IDevCycleApiClient } from '../api/interface'
+import { ToolHandler } from '../server'
+import { DevCycleApiClient } from '../utils/api'
 
 // Helper function to generate variable dashboard links
 const generateVariablesDashboardLink = (
@@ -205,6 +208,32 @@ const VARIABLE_OBJECT_SCHEMA = {
 }
 
 // =============================================================================
+// TOOL REGISTRATION
+// =============================================================================
+
+/**
+ * Register all variable tools with the provided registry
+ */
+export function registerVariableTools(registry: MCPToolRegistry): void {
+    // Combine the legacy tool definitions with their handlers to create full MCPToolDefinition objects
+    const toolDefinitions: MCPToolDefinition[] = variableToolDefinitions.map(
+        (toolDef) => ({
+            name: toolDef.name,
+            description: toolDef.description || '',
+            inputSchema: toolDef.inputSchema,
+            outputSchema: toolDef.outputSchema,
+            handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
+                // Adapt the legacy handler to work with the interface
+                const legacyHandler = variableToolHandlers[toolDef.name]
+                return await legacyHandler(args, apiClient as any)
+            },
+        }),
+    )
+
+    registry.registerMany(toolDefinitions)
+}
+
+// =============================================================================
 // TOOL DEFINITIONS
 // =============================================================================
 
@@ -303,14 +332,15 @@ export const variableToolDefinitions: Tool[] = [
     },
 ]
 
+// Legacy handlers for backward compatibility
 export const variableToolHandlers: Record<string, ToolHandler> = {
-    list_variables: async (args: unknown, apiClient: DevCycleApiClient) => {
+    list_variables: async (args: unknown, apiClient) => {
         const validatedArgs = ListVariablesArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'listVariables',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => fetchVariables(authToken, projectKey, validatedArgs),
                     'fetchVariables',
@@ -319,13 +349,13 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             generateVariablesDashboardLink,
         )
     },
-    create_variable: async (args: unknown, apiClient: DevCycleApiClient) => {
+    create_variable: async (args: unknown, apiClient) => {
         const validatedArgs = CreateVariableArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'createVariable',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => createVariable(authToken, projectKey, validatedArgs),
                     'createVariable',
@@ -334,13 +364,13 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             generateVariablesDashboardLink,
         )
     },
-    update_variable: async (args: unknown, apiClient: DevCycleApiClient) => {
+    update_variable: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateVariableArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'updateVariable',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { key, ...updateData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -352,13 +382,13 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
             generateVariablesDashboardLink,
         )
     },
-    delete_variable: async (args: unknown, apiClient: DevCycleApiClient) => {
+    delete_variable: async (args: unknown, apiClient) => {
         const validatedArgs = DeleteVariableArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'deleteVariable',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 await handleZodiosValidationErrors(
                     () =>
                         deleteVariable(

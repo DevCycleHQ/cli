@@ -7,11 +7,11 @@
 
 import { MCPToolRegistry } from './registry'
 import { registerProjectTools } from './projectTools'
+import { registerVariableTools } from './variableTools'
+import { registerEnvironmentTools } from './environmentTools'
 
 // TODO: Add imports for other tool modules as they get refactored
 // import { registerFeatureTools } from './featureTools'
-// import { registerVariableTools } from './variableTools'
-// import { registerEnvironmentTools } from './environmentTools'
 // import { registerSelfTargetingTools } from './selfTargetingTools'
 // import { registerResultsTools } from './resultsTools'
 // import { registerCustomPropertiesTools } from './customPropertiesTools'
@@ -24,10 +24,14 @@ export function registerAllTools(registry: MCPToolRegistry): void {
     // Register project tools (already refactored)
     registerProjectTools(registry)
 
+    // Register variable tools (refactored in Phase 1.3)
+    registerVariableTools(registry)
+
+    // Register environment tools (refactored in Phase 1.3)
+    registerEnvironmentTools(registry)
+
     // TODO: Add other tool registrations as they get refactored
     // registerFeatureTools(registry)
-    // registerVariableTools(registry)
-    // registerEnvironmentTools(registry)
     // registerSelfTargetingTools(registry)
     // registerResultsTools(registry)
     // registerCustomPropertiesTools(registry)
