@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
+import { handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchProjects,
     fetchProject,
@@ -11,8 +11,8 @@ import {
     CreateProjectArgsSchema,
     UpdateProjectArgsSchema,
 } from '../types'
-import { ToolHandler } from '../server'
 import { DASHBOARD_LINK_PROPERTY, PROJECT_KEY_PROPERTY } from './commonSchemas'
+import { ToolHandler } from '../server'
 
 // Helper functions to generate project dashboard links
 const generateProjectDashboardLink = (
@@ -99,32 +99,34 @@ const PROJECT_PAGINATION_PROPERTIES = {
 
 const PROJECT_OBJECT_SCHEMA = {
     type: 'object' as const,
-    description: 'A DevCycle project configuration',
+    description: 'Project object details',
     properties: {
         _id: {
             type: 'string' as const,
-            description: 'Unique identifier for the project',
+            description: 'Project MongoDB ID',
         },
         key: PROJECT_KEY_PROPERTY,
         name: {
             type: 'string' as const,
-            description: 'Display name of the project',
+            description: 'Project name',
         },
         description: {
             type: 'string' as const,
-            description: 'Optional description of the project',
+            description: 'Project description',
         },
         color: {
             type: 'string' as const,
-            description: 'Color used to represent this project in the UI',
+            description: 'Project color (hex format)',
         },
         createdAt: {
             type: 'string' as const,
-            description: 'ISO timestamp when the project was created',
+            format: 'date-time',
+            description: 'Project creation timestamp',
         },
         updatedAt: {
             type: 'string' as const,
-            description: 'ISO timestamp when the project was last updated',
+            format: 'date-time',
+            description: 'Project last update timestamp',
         },
     },
     required: ['_id', 'key', 'name', 'createdAt', 'updatedAt'],
@@ -180,7 +182,13 @@ export const projectToolDefinitions: Tool[] = [
         },
         inputSchema: {
             type: 'object',
-            properties: {},
+            properties: {
+                random_string: {
+                    type: 'string',
+                    description: 'Dummy parameter for no-parameter tools',
+                },
+            },
+            required: ['random_string'],
         },
         outputSchema: PROJECT_OUTPUT_SCHEMA,
     },
@@ -214,14 +222,15 @@ export const projectToolDefinitions: Tool[] = [
     },
 ]
 
+// Legacy handlers for backward compatibility
 export const projectToolHandlers: Record<string, ToolHandler> = {
-    list_projects: async (args: unknown, apiClient: DevCycleApiClient) => {
+    list_projects: async (args: unknown, apiClient) => {
         const validatedArgs = ListProjectsArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'listProjects',
             validatedArgs,
-            async (authToken) => {
+            async (authToken: string) => {
                 // projectKey not used for listing all projects
                 return await handleZodiosValidationErrors(
                     () => fetchProjects(authToken, validatedArgs),
@@ -231,14 +240,11 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             generateOrganizationSettingsLink,
         )
     },
-    get_current_project: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    get_current_project: async (args: unknown, apiClient) => {
         return await apiClient.executeWithDashboardLink(
             'getCurrentProject',
             null,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => fetchProject(authToken, projectKey),
                     'fetchProject',
@@ -247,13 +253,13 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             generateProjectDashboardLink,
         )
     },
-    create_project: async (args: unknown, apiClient: DevCycleApiClient) => {
+    create_project: async (args: unknown, apiClient) => {
         const validatedArgs = CreateProjectArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'createProject',
             validatedArgs,
-            async (authToken) => {
+            async (authToken: string) => {
                 // projectKey not used for creating projects
                 return await handleZodiosValidationErrors(
                     () => createProject(authToken, validatedArgs),
@@ -263,14 +269,14 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
             generateProjectDashboardLink,
         )
     },
-    update_project: async (args: unknown, apiClient: DevCycleApiClient) => {
+    update_project: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateProjectArgsSchema.parse(args)
         const { key, ...updateParams } = validatedArgs
 
         return await apiClient.executeWithDashboardLink(
             'updateProject',
             validatedArgs,
-            async (authToken) => {
+            async (authToken: string) => {
                 // projectKey not used - we use the key from validated args
                 return await handleZodiosValidationErrors(
                     () => updateProject(authToken, key, updateParams),
