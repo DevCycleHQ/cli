@@ -16,8 +16,7 @@ import {
     DASHBOARD_LINK_PROPERTY,
     ENVIRONMENT_KEY_PROPERTY,
 } from './commonSchemas'
-import { MCPToolRegistry, MCPToolDefinition } from './registry'
-import { IDevCycleApiClient } from '../api/interface'
+
 import { ToolHandler } from '../server'
 import { DevCycleApiClient } from '../utils/api'
 
@@ -175,32 +174,6 @@ const ENVIRONMENT_OUTPUT_SCHEMA = {
         dashboardLink: DASHBOARD_LINK_PROPERTY,
     },
     required: ['result', 'dashboardLink'],
-}
-
-// =============================================================================
-// TOOL REGISTRATION
-// =============================================================================
-
-/**
- * Register all environment tools with the provided registry
- */
-export function registerEnvironmentTools(registry: MCPToolRegistry): void {
-    // Combine the legacy tool definitions with their handlers to create full MCPToolDefinition objects
-    const toolDefinitions: MCPToolDefinition[] = environmentToolDefinitions.map(
-        (toolDef) => ({
-            name: toolDef.name,
-            description: toolDef.description || '',
-            inputSchema: toolDef.inputSchema,
-            outputSchema: toolDef.outputSchema,
-            handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
-                // Adapt the legacy handler to work with the interface
-                const legacyHandler = environmentToolHandlers[toolDef.name]
-                return await legacyHandler(args, apiClient as any)
-            },
-        }),
-    )
-
-    registry.registerMany(toolDefinitions)
 }
 
 // =============================================================================

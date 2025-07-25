@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
+import { handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchCustomProperties,
     createCustomProperty,
@@ -12,12 +12,13 @@ import {
     UpdateCustomPropertyArgsSchema,
     DeleteCustomPropertyArgsSchema,
 } from '../types'
-import { ToolHandler } from '../server'
 import {
     DASHBOARD_LINK_PROPERTY,
     MESSAGE_RESPONSE_SCHEMA,
     CUSTOM_PROPERTY_KEY_PROPERTY,
 } from './commonSchemas'
+
+import { ToolHandler } from '../server'
 
 // Helper function to generate custom properties dashboard links
 const generateCustomPropertiesDashboardLink = (
@@ -300,16 +301,13 @@ export const customPropertiesToolDefinitions: Tool[] = [
 ]
 
 export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
-    list_custom_properties: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    list_custom_properties: async (args: unknown, apiClient) => {
         const validatedArgs = ListCustomPropertiesArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'listCustomProperties',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => fetchCustomProperties(authToken, projectKey),
                     'fetchCustomProperties',
@@ -318,16 +316,13 @@ export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
             generateCustomPropertiesDashboardLink,
         )
     },
-    create_custom_property: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    create_custom_property: async (args: unknown, apiClient) => {
         const validatedArgs = UpsertCustomPropertyArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'createCustomProperty',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () =>
                         createCustomProperty(
@@ -341,16 +336,13 @@ export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
             generateCustomPropertiesDashboardLink,
         )
     },
-    update_custom_property: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    update_custom_property: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateCustomPropertyArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'updateCustomProperty',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { key, ...updateData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -367,16 +359,13 @@ export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
             generateCustomPropertiesDashboardLink,
         )
     },
-    delete_custom_property: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    delete_custom_property: async (args: unknown, apiClient) => {
         const validatedArgs = DeleteCustomPropertyArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'deleteCustomProperty',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 await handleZodiosValidationErrors(
                     () =>
                         deleteCustomProperty(

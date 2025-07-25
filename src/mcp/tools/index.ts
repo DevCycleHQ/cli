@@ -5,36 +5,101 @@
  * and maintains backward compatibility with the existing server implementation.
  */
 
-import { MCPToolRegistry } from './registry'
-import { registerProjectTools } from './projectTools'
-import { registerVariableTools } from './variableTools'
-import { registerEnvironmentTools } from './environmentTools'
+import { Tool } from '@modelcontextprotocol/sdk/types.js'
+import { MCPToolRegistry, MCPToolDefinition } from './registry'
+import { ToolHandler } from '../server'
+import { IDevCycleApiClient } from '../api/interface'
+import { DevCycleApiClient } from '../utils/api'
 
-// TODO: Add imports for other tool modules as they get refactored
-// import { registerFeatureTools } from './featureTools'
-// import { registerSelfTargetingTools } from './selfTargetingTools'
-// import { registerResultsTools } from './resultsTools'
-// import { registerCustomPropertiesTools } from './customPropertiesTools'
+// Import all tool definitions and handlers
+import { projectToolDefinitions, projectToolHandlers } from './projectTools'
+import { variableToolDefinitions, variableToolHandlers } from './variableTools'
+import {
+    environmentToolDefinitions,
+    environmentToolHandlers,
+} from './environmentTools'
+import { featureToolDefinitions, featureToolHandlers } from './featureTools'
+import {
+    selfTargetingToolDefinitions,
+    selfTargetingToolHandlers,
+} from './selfTargetingTools'
+import { resultsToolDefinitions, resultsToolHandlers } from './resultsTools'
+import {
+    customPropertiesToolDefinitions,
+    customPropertiesToolHandlers,
+} from './customPropertiesTools'
+
+/**
+ * Type guard to ensure the API client is a DevCycleApiClient instance
+ */
+function isDevCycleApiClient(
+    apiClient: IDevCycleApiClient,
+): apiClient is DevCycleApiClient {
+    return apiClient instanceof DevCycleApiClient
+}
+
+/**
+ * Generic helper to convert legacy tool definitions and handlers to MCPToolDefinitions
+ */
+function createToolDefinitions(
+    toolDefinitions: Tool[],
+    toolHandlers: Record<string, ToolHandler>,
+): MCPToolDefinition[] {
+    return toolDefinitions.map((toolDef) => ({
+        name: toolDef.name,
+        description: toolDef.description || '',
+        inputSchema: toolDef.inputSchema,
+        outputSchema: toolDef.outputSchema,
+        handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
+            // Ensure the API client is the expected concrete type
+            if (!isDevCycleApiClient(apiClient)) {
+                throw new Error(
+                    `Expected DevCycleApiClient instance for tool ${toolDef.name}`,
+                )
+            }
+
+            const legacyHandler = toolHandlers[toolDef.name]
+            return await legacyHandler(args, apiClient)
+        },
+    }))
+}
 
 /**
  * Register all MCP tools with the provided registry
  * This is the main function that should be called by MCP server implementations
  */
 export function registerAllTools(registry: MCPToolRegistry): void {
-    // Register project tools (already refactored)
-    registerProjectTools(registry)
-
-    // Register variable tools (refactored in Phase 1.3)
-    registerVariableTools(registry)
-
-    // Register environment tools (refactored in Phase 1.3)
-    registerEnvironmentTools(registry)
-
-    // TODO: Add other tool registrations as they get refactored
-    // registerFeatureTools(registry)
-    // registerSelfTargetingTools(registry)
-    // registerResultsTools(registry)
-    // registerCustomPropertiesTools(registry)
+    // Register all tools using the generic helper
+    registry.registerMany(
+        createToolDefinitions(projectToolDefinitions, projectToolHandlers),
+    )
+    registry.registerMany(
+        createToolDefinitions(variableToolDefinitions, variableToolHandlers),
+    )
+    registry.registerMany(
+        createToolDefinitions(
+            environmentToolDefinitions,
+            environmentToolHandlers,
+        ),
+    )
+    registry.registerMany(
+        createToolDefinitions(featureToolDefinitions, featureToolHandlers),
+    )
+    registry.registerMany(
+        createToolDefinitions(
+            selfTargetingToolDefinitions,
+            selfTargetingToolHandlers,
+        ),
+    )
+    registry.registerMany(
+        createToolDefinitions(resultsToolDefinitions, resultsToolHandlers),
+    )
+    registry.registerMany(
+        createToolDefinitions(
+            customPropertiesToolDefinitions,
+            customPropertiesToolHandlers,
+        ),
+    )
 }
 
 /**
