@@ -17,8 +17,6 @@ import {
     MESSAGE_RESPONSE_SCHEMA,
     VARIABLE_KEY_PROPERTY,
 } from './commonSchemas'
-import { MCPToolRegistry, MCPToolDefinition } from './registry'
-import { IDevCycleApiClient } from '../api/interface'
 import { ToolHandler } from '../server'
 import { DevCycleApiClient } from '../utils/api'
 
@@ -205,32 +203,6 @@ const VARIABLE_OBJECT_SCHEMA = {
         },
     },
     required: ['_id', 'key', 'name', 'type', 'createdAt', 'updatedAt'],
-}
-
-// =============================================================================
-// TOOL REGISTRATION
-// =============================================================================
-
-/**
- * Register all variable tools with the provided registry
- */
-export function registerVariableTools(registry: MCPToolRegistry): void {
-    // Combine the legacy tool definitions with their handlers to create full MCPToolDefinition objects
-    const toolDefinitions: MCPToolDefinition[] = variableToolDefinitions.map(
-        (toolDef) => ({
-            name: toolDef.name,
-            description: toolDef.description || '',
-            inputSchema: toolDef.inputSchema,
-            outputSchema: toolDef.outputSchema,
-            handler: async (args: unknown, apiClient: IDevCycleApiClient) => {
-                // Adapt the legacy handler to work with the interface
-                const legacyHandler = variableToolHandlers[toolDef.name]
-                return await legacyHandler(args, apiClient as any)
-            },
-        }),
-    )
-
-    registry.registerMany(toolDefinitions)
 }
 
 // =============================================================================

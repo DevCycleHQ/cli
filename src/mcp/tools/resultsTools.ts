@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
+import { handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchFeatureTotalEvaluations,
     fetchProjectTotalEvaluations,
@@ -10,7 +10,6 @@ import {
     FeatureTotalEvaluationsQuerySchema,
     ProjectTotalEvaluationsQuerySchema,
 } from '../types'
-import { ToolHandler } from '../server'
 import {
     DASHBOARD_LINK_PROPERTY,
     FEATURE_KEY_PROPERTY,
@@ -18,6 +17,8 @@ import {
     EVALUATION_DATA_POINT_SCHEMA,
     PROJECT_DATA_POINT_SCHEMA,
 } from './commonSchemas'
+
+import { ToolHandler } from '../server'
 
 // Helper functions to generate dashboard links
 const generateFeatureAnalyticsDashboardLink = (
@@ -145,16 +146,13 @@ export const resultsToolDefinitions: Tool[] = [
 ]
 
 export const resultsToolHandlers: Record<string, ToolHandler> = {
-    get_feature_total_evaluations: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    get_feature_total_evaluations: async (args: unknown, apiClient) => {
         const validatedArgs = GetFeatureTotalEvaluationsArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'getFeatureTotalEvaluations',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 const { featureKey, ...apiQueries } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -176,16 +174,13 @@ export const resultsToolHandlers: Record<string, ToolHandler> = {
                 ),
         )
     },
-    get_project_total_evaluations: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    get_project_total_evaluations: async (args: unknown, apiClient) => {
         const validatedArgs = GetProjectTotalEvaluationsArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'getProjectTotalEvaluations',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () =>
                         fetchProjectTotalEvaluations(

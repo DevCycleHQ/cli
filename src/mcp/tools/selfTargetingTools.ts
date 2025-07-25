@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
+import { handleZodiosValidationErrors } from '../utils/api'
 import { fetchUserProfile, updateUserProfile } from '../../api/userProfile'
 import {
     fetchProjectOverridesForUser,
@@ -12,7 +12,6 @@ import {
     SetSelfTargetingOverrideArgsSchema,
     ClearSelfTargetingOverridesArgsSchema,
 } from '../types'
-import { ToolHandler } from '../server'
 import {
     DASHBOARD_LINK_PROPERTY,
     MESSAGE_RESPONSE_SCHEMA,
@@ -20,6 +19,7 @@ import {
     ENVIRONMENT_KEY_PROPERTY,
     VARIATION_KEY_PROPERTY,
 } from './commonSchemas'
+import { ToolHandler } from '../server'
 
 // Helper functions to generate dashboard links
 const generateSelfTargetingDashboardLink = (orgId: string): string => {
@@ -216,14 +216,11 @@ export const selfTargetingToolDefinitions: Tool[] = [
 ]
 
 export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
-    get_self_targeting_identity: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    get_self_targeting_identity: async (args: unknown, apiClient) => {
         return await apiClient.executeWithDashboardLink(
             'getSelfTargetingIdentity',
             null,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => fetchUserProfile(authToken, projectKey),
                     'fetchUserProfile',
@@ -232,16 +229,13 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
             generateSelfTargetingDashboardLink,
         )
     },
-    update_self_targeting_identity: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    update_self_targeting_identity: async (args: unknown, apiClient) => {
         const validatedArgs = UpdateSelfTargetingIdentityArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'updateSelfTargetingIdentity',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () =>
                         updateUserProfile(authToken, projectKey, {
@@ -253,14 +247,11 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
             generateSelfTargetingDashboardLink,
         )
     },
-    list_self_targeting_overrides: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    list_self_targeting_overrides: async (args: unknown, apiClient) => {
         return await apiClient.executeWithDashboardLink(
             'listSelfTargetingOverrides',
             null,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () => fetchProjectOverridesForUser(authToken, projectKey),
                     'fetchProjectOverridesForUser',
@@ -269,16 +260,13 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
             generateSelfTargetingDashboardLink,
         )
     },
-    set_self_targeting_override: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    set_self_targeting_override: async (args: unknown, apiClient) => {
         const validatedArgs = SetSelfTargetingOverrideArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'setSelfTargetingOverride',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 return await handleZodiosValidationErrors(
                     () =>
                         updateOverride(
@@ -298,14 +286,14 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
     },
     clear_feature_self_targeting_overrides: async (
         args: unknown,
-        apiClient: DevCycleApiClient,
+        apiClient,
     ) => {
         const validatedArgs = ClearSelfTargetingOverridesArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
             'clearFeatureSelfTargetingOverrides',
             validatedArgs,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 await handleZodiosValidationErrors(
                     () =>
                         deleteFeatureOverrides(
@@ -324,14 +312,11 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
             generateSelfTargetingDashboardLink,
         )
     },
-    clear_all_self_targeting_overrides: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
+    clear_all_self_targeting_overrides: async (args: unknown, apiClient) => {
         return await apiClient.executeWithDashboardLink(
             'clearAllSelfTargetingOverrides',
             null,
-            async (authToken, projectKey) => {
+            async (authToken: string, projectKey: string) => {
                 await handleZodiosValidationErrors(
                     () => deleteAllProjectOverrides(authToken, projectKey),
                     'deleteAllProjectOverrides',
