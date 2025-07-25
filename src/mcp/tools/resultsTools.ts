@@ -117,6 +117,10 @@ export const resultsToolDefinitions: Tool[] = [
         name: 'get_feature_total_evaluations',
         description:
             'Get total variable evaluations per time period for a specific feature. Include dashboard link in the response.',
+        annotations: {
+            title: 'Get Feature Total Evaluations',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: FEATURE_EVALUATION_QUERY_PROPERTIES,
@@ -128,6 +132,10 @@ export const resultsToolDefinitions: Tool[] = [
         name: 'get_project_total_evaluations',
         description:
             'Get total variable evaluations per time period for the entire project. Include dashboard link in the response.',
+        annotations: {
+            title: 'Get Project Total Evaluations',
+            readOnlyHint: true,
+        },
         inputSchema: {
             type: 'object',
             properties: PROJECT_EVALUATION_QUERY_PROPERTIES,
