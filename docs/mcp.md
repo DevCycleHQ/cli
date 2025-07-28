@@ -13,7 +13,9 @@ The DevCycle MCP (Model Context Protocol) Server enables AI coding assistants li
   - [Variable Management](#variable-management)
   - [Environment Management](#environment-management)
   - [Project Management](#project-management)
+  - [Custom Properties Management](#custom-properties-management)
   - [Self-Targeting & Overrides](#self-targeting--overrides)
+  - [Results & Analytics](#results--analytics)
 - [Error Handling](#error-handling)
 - [Usage Examples](#usage-examples)
 - [Best Practices](#best-practices)
@@ -151,11 +153,12 @@ Create a new variation within a feature.
 - `variables` (optional): Variable values for this variation
 
 #### `update_feature_variation`
-Update an existing variation.
+Update an existing variation by key. ⚠️ WARNING: Updating a feature variation may affect production environments.
 
 **Parameters:**
 - `feature_key`: Feature key
 - `variation_key`: Variation to update
+- `_id` (optional): MongoDB ID for the variation
 - `key` (optional): New variation key
 - `name` (optional): New variation name
 - `variables` (optional): Updated variable values
@@ -297,6 +300,45 @@ Create a new project.
 - `name`: Project name
 - `description` (optional): Project description
 
+### Custom Properties Management
+
+#### `list_custom_properties`
+List custom properties in the current project.
+
+**Parameters:**
+- `search` (optional): Search query to filter custom properties (min 3 chars)
+- `page` (optional): Page number (default: 1)
+- `perPage` (optional): Items per page (default: 100, max: 1000)
+- `sortBy` (optional): Sort field (`createdAt`, `updatedAt`, `name`, `key`, `createdBy`, `propertyKey`)
+- `sortOrder` (optional): Sort order (`asc`, `desc`)
+- `createdBy` (optional): Filter by creator
+
+#### `create_custom_property`
+Create a new custom property.
+
+**Parameters:**
+- `key`: Unique property key (pattern: `^[a-z0-9-_.]+$`)
+- `name`: Property name (max 100 chars)
+- `type`: Property type (`String`, `Boolean`, `Number`)
+- `propertyKey`: Property key used to identify the custom property in user data
+- `schema` (optional): Schema definition with validation rules
+
+#### `update_custom_property` ⚠️
+Update an existing custom property.
+
+**Parameters:**
+- `key`: Property key to update
+- `name` (optional): New name
+- `type` (optional): New type
+- `propertyKey` (optional): New property key
+- `schema` (optional): New schema definition
+
+#### `delete_custom_property` ⚠️⚠️
+Delete a custom property from ALL environments.
+
+**Parameters:**
+- `key`: Property key to delete
+
 ### Self-Targeting & Overrides
 
 #### `get_self_targeting_identity`
@@ -335,6 +377,33 @@ Clear all overrides for the current project.
 
 **Parameters:** None
 
+### Results & Analytics
+
+#### `get_feature_total_evaluations`
+Get total variable evaluations per time period for a specific feature.
+
+**Parameters:**
+- `featureKey`: Feature key
+- `startDate` (optional): Start date as Unix timestamp (milliseconds since epoch)
+- `endDate` (optional): End date as Unix timestamp (milliseconds since epoch)
+- `platform` (optional): Platform filter for evaluation results
+- `variable` (optional): Variable key filter for evaluation results
+- `environment` (optional): Environment key to filter results
+- `period` (optional): Time aggregation period (`day`, `hour`, `month`)
+- `sdkType` (optional): Filter by SDK type (`client`, `server`, `mobile`, `api`)
+
+#### `get_project_total_evaluations`
+Get total variable evaluations per time period for the entire project.
+
+**Parameters:**
+- `startDate` (optional): Start date as Unix timestamp (milliseconds since epoch)
+- `endDate` (optional): End date as Unix timestamp (milliseconds since epoch)
+- `platform` (optional): Platform filter for evaluation results
+- `variable` (optional): Variable key filter for evaluation results
+- `environment` (optional): Environment key to filter results
+- `period` (optional): Time aggregation period (`day`, `hour`, `month`)
+- `sdkType` (optional): Filter by SDK type (`client`, `server`, `mobile`, `api`)
+
 ## Error Handling
 
 The MCP server returns structured error responses:
@@ -366,6 +435,26 @@ The AI assistant will use:
 1. `create_feature` to create the feature
 2. `create_feature_variation` to add variations
 3. `enable_feature_targeting` to activate in development
+
+### Managing Custom Properties
+
+```
+Create a custom property for user subscription tier with allowed values
+```
+
+The AI assistant will use:
+1. `create_custom_property` with enum schema for allowed values
+2. Configure the property with appropriate validation
+
+### Viewing Analytics
+
+```
+Show me the evaluation metrics for the checkout_flow feature over the last week
+```
+
+The AI assistant will use:
+1. `get_feature_total_evaluations` with appropriate date range
+2. Display the evaluation data grouped by time period
 
 ### Managing Overrides for Testing
 
