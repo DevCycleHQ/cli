@@ -285,12 +285,9 @@ export class WorkerApiClient implements IDevCycleApiClient {
     // Try from JWT claims first - this allows user-specific project context
     if (this.props.claims?.project_key) {
       return this.props.claims.project_key as string;
-    }
-    // Fall back to environment variable for single-project deployments
-    if (this.env.DEFAULT_PROJECT_KEY) {
-      return this.env.DEFAULT_PROJECT_KEY;
-    }
-    throw new Error("No project key found in claims or environment");
+          }
+      
+      throw new Error("No project key found in claims");
   }
   
   private getOrgId(): string {

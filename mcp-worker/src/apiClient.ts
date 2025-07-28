@@ -1,5 +1,5 @@
 import type { UserProps, Env, DevCycleJWTClaims } from './types'
-import { IDevCycleApiClient } from '../api/interface'
+import { IDevCycleApiClient } from '../../dist/mcp/api/interface'
 
 /**
  * Worker-specific API client implementation that uses OAuth tokens from JWT claims
@@ -109,14 +109,9 @@ export class WorkerApiClient implements IDevCycleApiClient {
             return claims.project_key
         }
 
-        // Fall back to environment variable for single-project deployments
-        if (this.env.DEFAULT_PROJECT_KEY) {
-            return this.env.DEFAULT_PROJECT_KEY
-        }
-
         throw new Error(
-            'No project key found in JWT claims or environment variables. ' +
-                'Either set DEFAULT_PROJECT_KEY in worker environment or include project_key in JWT claims.',
+            'No project key found in JWT claims. ' +
+                'Include project_key in JWT claims.',
         )
     }
 

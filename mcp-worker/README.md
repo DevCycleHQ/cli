@@ -49,7 +49,6 @@ wrangler secret put AUTH0_CLIENT_SECRET
 
 Edit `wrangler.toml` to set:
 - `AUTH0_DOMAIN`: Your Auth0 domain
-- `DEFAULT_PROJECT_KEY`: (Optional) Default DevCycle project
 - Other environment variables as needed
 
 ## Development
@@ -147,7 +146,6 @@ Set in `wrangler.toml` under `[vars]`:
 - `AUTH0_DOMAIN`: Auth0 domain
 - `AUTH0_AUDIENCE`: Auth0 API audience
 - `AUTH0_SCOPE`: OAuth scopes
-- `DEFAULT_PROJECT_KEY`: Default project for single-project deployments
 
 ### Secrets
 

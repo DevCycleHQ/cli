@@ -1,13 +1,14 @@
-import type {
-    TokenExchangeCallbackOptions,
-    TokenExchangeCallbackResult,
-    AuthorizeParams,
-    CallbackParams,
-    ConsentParams,
-} from '@cloudflare/workers-oauth-provider'
 import * as oauth from 'oauth4webapi'
 import { Hono } from 'hono'
 import type { UserProps, Env, DevCycleJWTClaims } from './types'
+
+// Define OAuth parameter types locally since they're not exported correctly
+type AuthorizeParams = Record<string, any>
+type CallbackParams = Record<string, any>
+type ConsentParams = Record<string, any>
+
+// OAuth callback function type
+type TokenExchangeCallbackFunction = (options: any) => Promise<any>
 
 /**
  * Get OIDC configuration for Auth0
@@ -59,14 +60,14 @@ function parseJWT(token: string): DevCycleJWTClaims {
  * Handles the token exchange process for OAuth authentication with DevCycle/Auth0.
  * This function processes both authorization code and refresh token flows.
  */
-export async function tokenExchangeCallback(
-    options: TokenExchangeCallbackOptions<Env>,
-): Promise<TokenExchangeCallbackResult<UserProps> | void> {
-    const { grantType, env } = options
+export const tokenExchangeCallback: TokenExchangeCallbackFunction = async (
+    options: any,
+) => {
+    const { grantType, env, props } = options
 
     // During the Authorization Code Exchange, preserve token TTL from Auth0
     if (grantType === 'authorization_code') {
-        const idToken = options.props.tokenSet.idToken
+        const idToken = props?.tokenSet?.idToken
         if (!idToken) {
             throw new Error('No ID token received from Auth0')
         }
@@ -82,13 +83,13 @@ export async function tokenExchangeCallback(
         }
 
         return {
-            accessTokenTTL: options.props.tokenSet.accessTokenTTL,
+            accessTokenTTL: props.tokenSet.accessTokenTTL,
             newProps: {
                 claims,
                 tokenSet: {
-                    accessToken: options.props.tokenSet.accessToken,
-                    idToken: options.props.tokenSet.idToken,
-                    refreshToken: options.props.tokenSet.refreshToken || '',
+                    accessToken: props.tokenSet.accessToken,
+                    idToken: props.tokenSet.idToken,
+                    refreshToken: props.tokenSet.refreshToken || '',
                 },
             } as UserProps,
         }
@@ -96,7 +97,7 @@ export async function tokenExchangeCallback(
 
     // Handle refresh token flow
     if (grantType === 'refresh_token') {
-        const auth0RefreshToken = options.props.tokenSet.refreshToken
+        const auth0RefreshToken = props?.tokenSet?.refreshToken
         if (!auth0RefreshToken) {
             throw new Error('No Auth0 refresh token found')
         }
@@ -126,7 +127,7 @@ export async function tokenExchangeCallback(
             claims = parseJWT(refreshTokenResponse.id_token)
         } else {
             // Fall back to existing claims if no new ID token
-            claims = options.props.claims as DevCycleJWTClaims
+            claims = props.claims as DevCycleJWTClaims
         }
 
         // Return updated token set and claims
@@ -137,8 +138,7 @@ export async function tokenExchangeCallback(
                 tokenSet: {
                     accessToken: refreshTokenResponse.access_token,
                     idToken:
-                        refreshTokenResponse.id_token ||
-                        options.props.tokenSet.idToken,
+                        refreshTokenResponse.id_token || props.tokenSet.idToken,
                     refreshToken:
                         refreshTokenResponse.refresh_token || auth0RefreshToken,
                 },
@@ -225,7 +225,6 @@ export function createAuthApp(): Hono<{ Bindings: Env }> {
             version: '1.0.0',
             auth0Domain: c.env.AUTH0_DOMAIN,
             apiBaseUrl: c.env.API_BASE_URL || 'https://api.devcycle.com',
-            hasDefaultProject: !!c.env.DEFAULT_PROJECT_KEY,
         })
     })
 
