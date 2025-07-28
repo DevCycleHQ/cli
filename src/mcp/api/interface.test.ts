@@ -147,7 +147,7 @@ describe('API Interface Abstraction', () => {
 
             const mockOperation = async (
                 authToken: string,
-                projectKey: string,
+                projectKey: string | undefined,
             ) => {
                 expect(authToken).to.equal('worker-token')
                 expect(projectKey).to.equal('worker-project')
@@ -224,10 +224,13 @@ describe('API Interface Abstraction', () => {
             )
             const client = new WorkerDevCycleApiClient(authContext)
 
-            const mockOperation = async () => ({ featureKey: 'test-feature' })
+            const mockOperation = async (
+                authToken: string,
+                projectKey: string | undefined,
+            ) => ({ featureKey: 'test-feature' })
             const dashboardLink = (
                 orgId: string,
-                projectKey: string,
+                projectKey: string | undefined,
                 result: any,
             ) =>
                 `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features/${result.featureKey}`

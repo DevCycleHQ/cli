@@ -9,6 +9,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
     constructor(
         private props: UserProps,
         private env: Env,
+        private storage?: DurableObjectStorage,
     ) {}
 
     /**
@@ -17,11 +18,14 @@ export class WorkerApiClient implements IDevCycleApiClient {
     async executeWithLogging<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
         requiresProject: boolean = true,
     ): Promise<T> {
         const authToken = this.getAuthToken()
-        const projectKey = this.getProjectKey()
+        const projectKey = await this.getProjectKey()
 
         if (requiresProject && !projectKey) {
             throw new Error('No project key found')
@@ -35,7 +39,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
         })
 
         try {
-            const result = await operation(authToken, projectKey || '')
+            const result = await operation(authToken, projectKey)
             console.log(`Worker MCP ${operationName} completed successfully`)
             return result
         } catch (error) {
@@ -55,11 +59,18 @@ export class WorkerApiClient implements IDevCycleApiClient {
     async executeWithDashboardLink<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
-        dashboardLink: (orgId: string, projectKey: string, result: T) => string,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
+        dashboardLink: (
+            orgId: string,
+            projectKey: string | undefined,
+            result: T,
+        ) => string,
     ): Promise<{ result: T; dashboardLink: string }> {
         const authToken = this.getAuthToken()
-        const projectKey = this.getProjectKey()
+        const projectKey = await this.getProjectKey()
         const orgId = this.getOrgId()
 
         console.log(`Worker MCP ${operationName} (with dashboard link):`, {
@@ -103,18 +114,56 @@ export class WorkerApiClient implements IDevCycleApiClient {
     }
 
     /**
-     * Get the project key from JWT claims or environment variables
+     * Get the project key from Durable Object storage first, then fall back to JWT claims
      */
-    private getProjectKey(): string | undefined {
-        const claims = this.props.claims as DevCycleJWTClaims
+    private async getProjectKey(): Promise<string | undefined> {
+        // Priority 1: Check Durable Object storage for selected project
+        if (this.storage) {
+            try {
+                const selectedProjectKey =
+                    await this.storage.get('selectedProjectKey')
+                if (selectedProjectKey) {
+                    return selectedProjectKey as string
+                }
+            } catch (error) {
+                console.warn(
+                    'Failed to get selected project from storage:',
+                    error,
+                )
+            }
+        }
 
+        // Priority 2: Fall back to JWT claims
+        const claims = this.props.claims as DevCycleJWTClaims
         return claims?.project_key
+    }
+
+    /**
+     * Set the selected project (stored in Durable Object)
+     */
+    async setSelectedProject(projectKey: string): Promise<void> {
+        if (!this.storage) {
+            throw new Error('Storage not available for project selection')
+        }
+        await this.storage.put('selectedProjectKey', projectKey)
+    }
+
+    /**
+     * Check if user has a project key available (from storage or JWT claims)
+     */
+    public async hasProjectKey(): Promise<boolean> {
+        try {
+            const projectKey = await this.getProjectKey()
+            return !!projectKey
+        } catch {
+            return false
+        }
     }
 
     /**
      * Get the organization ID from JWT claims
      */
-    private getOrgId(): string {
+    public getOrgId(): string {
         const claims = this.props.claims as DevCycleJWTClaims
 
         if (claims?.org_id) {
@@ -127,7 +176,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
     /**
      * Get the user ID from JWT claims (for logging purposes)
      */
-    private getUserId(): string {
+    public getUserId(): string {
         const claims = this.props.claims as DevCycleJWTClaims
         return claims?.sub || claims?.email || 'unknown'
     }
@@ -135,9 +184,9 @@ export class WorkerApiClient implements IDevCycleApiClient {
     /**
      * Check if the user has access to the required project
      */
-    public hasProjectAccess(projectKey?: string): boolean {
+    public async hasProjectAccess(projectKey?: string): Promise<boolean> {
         try {
-            const userProjectKey = this.getProjectKey()
+            const userProjectKey = await this.getProjectKey()
             return !projectKey || userProjectKey === projectKey
         } catch {
             return false
@@ -147,11 +196,11 @@ export class WorkerApiClient implements IDevCycleApiClient {
     /**
      * Get user context information for debugging
      */
-    public getUserContext() {
+    public async getUserContext() {
         const claims = this.props.claims as DevCycleJWTClaims
         let projectKey: string | undefined
         try {
-            projectKey = this.getProjectKey()
+            projectKey = await this.getProjectKey()
         } catch {
             projectKey = undefined
         }

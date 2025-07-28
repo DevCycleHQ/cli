@@ -1,16 +1,60 @@
 import { expect } from '@oclif/test'
 import { MCPToolRegistry } from './registry'
 import { IDevCycleApiClient } from '../api/interface'
-import { registerProjectTools } from './projectTools'
-import { registerVariableTools } from './variableTools'
-import { registerEnvironmentTools } from './environmentTools'
+import { projectToolDefinitions, projectToolHandlers } from './projectTools'
+import { variableToolDefinitions, variableToolHandlers } from './variableTools'
+import {
+    environmentToolDefinitions,
+    environmentToolHandlers,
+} from './environmentTools'
+
+// Helper function to create tool definitions from definitions and handlers
+function createToolDefinitions(
+    toolDefinitions: any[],
+    toolHandlers: Record<string, any>,
+) {
+    return toolDefinitions.map((toolDef) => ({
+        name: toolDef.name,
+        description: toolDef.description,
+        inputSchema: toolDef.inputSchema,
+        handler: async (args: any, apiClient: any) => {
+            const legacyHandler = toolHandlers[toolDef.name]
+            return await legacyHandler(args, apiClient)
+        },
+    }))
+}
+
+// Helper functions to register different tool types
+function registerProjectTools(registry: MCPToolRegistry): void {
+    registry.registerMany(
+        createToolDefinitions(projectToolDefinitions, projectToolHandlers),
+    )
+}
+
+function registerVariableTools(registry: MCPToolRegistry): void {
+    registry.registerMany(
+        createToolDefinitions(variableToolDefinitions, variableToolHandlers),
+    )
+}
+
+function registerEnvironmentTools(registry: MCPToolRegistry): void {
+    registry.registerMany(
+        createToolDefinitions(
+            environmentToolDefinitions,
+            environmentToolHandlers,
+        ),
+    )
+}
 
 // Mock API client for testing
 class MockApiClient implements IDevCycleApiClient {
     async executeWithLogging<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
         requiresProject = true,
     ): Promise<T> {
         // Mock implementation - just return a test result
@@ -20,8 +64,15 @@ class MockApiClient implements IDevCycleApiClient {
     async executeWithDashboardLink<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
-        dashboardLink: (orgId: string, projectKey: string, result: T) => string,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
+        dashboardLink: (
+            orgId: string,
+            projectKey: string | undefined,
+            result: T,
+        ) => string,
     ): Promise<{ result: T; dashboardLink: string }> {
         // Mock implementation
         const result = await operation('test-token', 'test-project')

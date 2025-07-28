@@ -51,6 +51,19 @@ export interface IDevCycleApiClient {
             result: T,
         ) => string,
     ): Promise<{ result: T; dashboardLink: string }>
+
+    /**
+     * Set the selected project (Worker implementation only)
+     * This method is used by project selection tools to persist user's project choice
+     * @param projectKey - The project key to select
+     */
+    setSelectedProject?(projectKey: string): Promise<void>
+
+    /**
+     * Check if a project key is currently available
+     * @returns True if a project key is available from any source
+     */
+    hasProjectKey?(): Promise<boolean>
 }
 
 /**
