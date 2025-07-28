@@ -81,6 +81,7 @@ export class MCPToolRegistry {
         if (!tool) {
             throw new Error(`Unknown tool: ${name}`)
         }
+        console.error('Executing tool:', name)
         return await tool.handler(args, client)
     }
 

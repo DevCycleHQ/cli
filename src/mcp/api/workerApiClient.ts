@@ -14,7 +14,10 @@ export class WorkerDevCycleApiClient implements IDevCycleApiClient {
     async executeWithLogging<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
         requiresProject = true,
     ): Promise<T> {
         // TODO: Implement Worker-specific logging that works in Cloudflare environment
@@ -23,9 +26,10 @@ export class WorkerDevCycleApiClient implements IDevCycleApiClient {
         this.validateAuth(requiresProject)
 
         const authToken = this.authContext.getAuthToken()
-        const projectKey = requiresProject
-            ? this.authContext.getProjectKey()
-            : ''
+        const projectKey =
+            requiresProject && this.authContext.hasProject()
+                ? this.authContext.getProjectKey()
+                : undefined
 
         try {
             return await operation(authToken, projectKey)
@@ -39,8 +43,15 @@ export class WorkerDevCycleApiClient implements IDevCycleApiClient {
     async executeWithDashboardLink<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
-        dashboardLink: (orgId: string, projectKey: string, result: T) => string,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
+        dashboardLink: (
+            orgId: string,
+            projectKey: string | undefined,
+            result: T,
+        ) => string,
     ): Promise<{ result: T; dashboardLink: string }> {
         const result = await this.executeWithLogging(
             operationName,
@@ -49,7 +60,9 @@ export class WorkerDevCycleApiClient implements IDevCycleApiClient {
         )
 
         const organizationId = this.authContext.getOrgId()
-        const projectKey = this.authContext.getProjectKey()
+        const projectKey = this.authContext.hasProject()
+            ? this.authContext.getProjectKey()
+            : undefined
         const link = dashboardLink(organizationId, projectKey, result)
 
         return {

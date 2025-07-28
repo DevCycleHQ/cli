@@ -6,6 +6,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
+import { IDevCycleApiClient } from './api/interface'
 import Writer from '../ui/writer'
 import {
     featureToolDefinitions,
@@ -43,7 +44,7 @@ const ENABLE_DVC_MCP_DEBUG = process.env.ENABLE_DVC_MCP_DEBUG === 'true'
 // Tool handler function type
 export type ToolHandler = (
     args: unknown,
-    apiClient: DevCycleApiClient,
+    apiClient: IDevCycleApiClient,
 ) => Promise<any>
 
 // Function to conditionally remove outputSchema from tool definitions

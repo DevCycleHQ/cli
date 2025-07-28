@@ -220,7 +220,10 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'getSelfTargetingIdentity',
             null,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error('Project key is required for this operation');
+                }
                 return await handleZodiosValidationErrors(
                     () => fetchUserProfile(authToken, projectKey),
                     'fetchUserProfile',
@@ -235,7 +238,10 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'updateSelfTargetingIdentity',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error('Project key is required for this operation');
+                }
                 return await handleZodiosValidationErrors(
                     () =>
                         updateUserProfile(authToken, projectKey, {
@@ -251,7 +257,10 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'listSelfTargetingOverrides',
             null,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error('Project key is required for this operation');
+                }
                 return await handleZodiosValidationErrors(
                     () => fetchProjectOverridesForUser(authToken, projectKey),
                     'fetchProjectOverridesForUser',
@@ -266,7 +275,10 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'setSelfTargetingOverride',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error('Project key is required for this operation');
+                }
                 return await handleZodiosValidationErrors(
                     () =>
                         updateOverride(
@@ -293,7 +305,10 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'clearFeatureSelfTargetingOverrides',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error('Project key is required for this operation');
+                }
                 await handleZodiosValidationErrors(
                     () =>
                         deleteFeatureOverrides(
@@ -316,7 +331,10 @@ export const selfTargetingToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'clearAllSelfTargetingOverrides',
             null,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error('Project key is required for this operation');
+                }
                 await handleZodiosValidationErrors(
                     () => deleteAllProjectOverrides(authToken, projectKey),
                     'deleteAllProjectOverrides',

@@ -48,17 +48,23 @@ import { handleZodiosValidationErrors } from '../utils/api'
 // Helper function to generate feature dashboard links
 const generateFeaturesDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
 ): string => {
+    if (!projectKey) {
+        throw new Error('Project key is required for features dashboard link')
+    }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features`
 }
 
 const generateFeatureDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
     featureKey: string,
     page: 'overview' | 'manage-feature' | 'audit-log' = 'overview',
 ): string => {
+    if (!projectKey) {
+        throw new Error('Project key is required for feature dashboard link')
+    }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features/${featureKey}/${page}`
 }
 
@@ -827,7 +833,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'listFeatures',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () => fetchFeatures(authToken, projectKey, validatedArgs),
                     'listFeatures',
@@ -842,7 +853,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'createFeature',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 if (validatedArgs.interactive) {
                     throw new Error(
                         'Interactive mode not yet supported in MCP. Please provide explicit parameters: key, name, description, type',
@@ -864,7 +880,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'createFeature',
                 )
             },
-            (orgId: string, projectKey: string, result: any) =>
+            (orgId: string, projectKey: string | undefined, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -879,7 +895,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'updateFeature',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 const { key, ...updateData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -887,7 +908,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'updateFeature',
                 )
             },
-            (orgId: string, projectKey: string, result: any) =>
+            (orgId: string, projectKey: string | undefined, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -902,7 +923,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'updateFeatureStatus',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 const { key, ...statusData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -916,7 +942,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'updateFeatureStatus',
                 )
             },
-            (orgId: string, projectKey: string, result: any) =>
+            (orgId: string, projectKey: string | undefined, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -931,7 +957,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'deleteFeature',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 await handleZodiosValidationErrors(
                     () =>
                         deleteFeature(authToken, projectKey, validatedArgs.key),
@@ -950,7 +981,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'fetchFeatureVariations',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () =>
                         fetchVariations(
@@ -961,7 +997,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'fetchVariations',
                 )
             },
-            (orgId: string, projectKey: string) =>
+            (orgId: string, projectKey: string | undefined) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -976,7 +1012,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'createFeatureVariation',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 const { feature_key, ...variationData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -990,7 +1031,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'createVariation',
                 )
             },
-            (orgId: string, projectKey: string, result: any) =>
+            (orgId: string, projectKey: string | undefined, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1005,7 +1046,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'updateFeatureVariation',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 const { feature_key, variation_key, ...variationData } =
                     validatedArgs
 
@@ -1021,7 +1067,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'updateVariation',
                 )
             },
-            (orgId: string, projectKey: string, result: any) =>
+            (orgId: string, projectKey: string | undefined, result: any) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1036,7 +1082,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'enableTargeting',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 await handleZodiosValidationErrors(
                     () =>
                         enableTargeting(
@@ -1051,7 +1102,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     message: `Targeting enabled for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
                 }
             },
-            (orgId: string, projectKey: string) =>
+            (orgId: string, projectKey: string | undefined) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1066,7 +1117,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'disableTargeting',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 await handleZodiosValidationErrors(
                     () =>
                         disableTargeting(
@@ -1081,7 +1137,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     message: `Targeting disabled for feature '${validatedArgs.feature_key}' in environment '${validatedArgs.environment_key}'`,
                 }
             },
-            (orgId: string, projectKey: string) =>
+            (orgId: string, projectKey: string | undefined) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1096,7 +1152,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'listFeatureTargeting',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () =>
                         fetchTargetingForFeature(
@@ -1108,7 +1169,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'fetchTargetingForFeature',
                 )
             },
-            (orgId: string, projectKey: string) =>
+            (orgId: string, projectKey: string | undefined) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1123,7 +1184,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'updateFeatureTargeting',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 const { feature_key, environment_key, ...configData } =
                     validatedArgs
 
@@ -1139,7 +1205,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'updateFeatureConfigForEnvironment',
                 )
             },
-            (orgId: string, projectKey: string) =>
+            (orgId: string, projectKey: string | undefined) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,
@@ -1154,7 +1220,12 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'getFeatureAuditLogHistory',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () =>
                         getFeatureAuditLogHistory(
@@ -1166,7 +1237,7 @@ export const featureToolHandlers: Record<string, ToolHandler> = {
                     'getFeatureAuditLogHistory',
                 )
             },
-            (orgId: string, projectKey: string) =>
+            (orgId: string, projectKey: string | undefined) =>
                 generateFeatureDashboardLink(
                     orgId,
                     projectKey,

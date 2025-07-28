@@ -23,16 +23,22 @@ import { ToolHandler } from '../server'
 // Helper functions to generate dashboard links
 const generateFeatureAnalyticsDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
     featureKey: string,
 ): string => {
+    if (!projectKey) {
+        throw new Error('Project key is required for feature analytics dashboard link')
+    }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features/${featureKey}/analytics`
 }
 
 const generateProjectAnalyticsDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
 ): string => {
+    if (!projectKey) {
+        throw new Error('Project key is required for project analytics dashboard link')
+    }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/analytics`
 }
 
@@ -152,7 +158,10 @@ export const resultsToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'getFeatureTotalEvaluations',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error('Project key is required for this operation');
+                }
                 const { featureKey, ...apiQueries } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -180,7 +189,10 @@ export const resultsToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'getProjectTotalEvaluations',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error('Project key is required for this operation');
+                }
                 return await handleZodiosValidationErrors(
                     () =>
                         fetchProjectTotalEvaluations(

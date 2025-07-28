@@ -23,8 +23,13 @@ import { ToolHandler } from '../server'
 // Helper function to generate custom properties dashboard links
 const generateCustomPropertiesDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
 ): string => {
+    if (!projectKey) {
+        throw new Error(
+            'Project key is required for custom properties dashboard link',
+        )
+    }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/custom-properties`
 }
 
@@ -307,7 +312,12 @@ export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'listCustomProperties',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for listing custom properties',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () => fetchCustomProperties(authToken, projectKey),
                     'fetchCustomProperties',
@@ -322,7 +332,12 @@ export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'createCustomProperty',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for creating custom properties',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () =>
                         createCustomProperty(
@@ -342,7 +357,12 @@ export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'updateCustomProperty',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for updating custom properties',
+                    )
+                }
                 const { key, ...updateData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -365,7 +385,12 @@ export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'deleteCustomProperty',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for deleting custom properties',
+                    )
+                }
                 await handleZodiosValidationErrors(
                     () =>
                         deleteCustomProperty(

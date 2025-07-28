@@ -17,8 +17,11 @@ import { ToolHandler } from '../server'
 // Helper functions to generate project dashboard links
 const generateProjectDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
 ): string => {
+    if (!projectKey) {
+        throw new Error('Project key is required for project dashboard link')
+    }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}`
 }
 
@@ -26,7 +29,10 @@ const generateOrganizationSettingsLink = (orgId: string): string => {
     return `https://app.devcycle.com/o/${orgId}/settings`
 }
 
-const generateEditProjectLink = (orgId: string, projectKey: string): string => {
+const generateEditProjectLink = (
+    orgId: string,
+    projectKey: string | undefined,
+): string => {
     return `https://app.devcycle.com/o/${orgId}/settings/projects/${projectKey}/edit`
 }
 
@@ -225,6 +231,7 @@ export const projectToolDefinitions: Tool[] = [
 // Legacy handlers for backward compatibility
 export const projectToolHandlers: Record<string, ToolHandler> = {
     list_projects: async (args: unknown, apiClient) => {
+        console.error('list_projects tool called with args:', args)
         const validatedArgs = ListProjectsArgsSchema.parse(args)
 
         return await apiClient.executeWithDashboardLink(
@@ -244,7 +251,12 @@ export const projectToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'getCurrentProject',
             null,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for getting current project',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () => fetchProject(authToken, projectKey),
                     'fetchProject',

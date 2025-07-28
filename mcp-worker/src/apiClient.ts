@@ -21,7 +21,11 @@ export class WorkerApiClient implements IDevCycleApiClient {
         requiresProject: boolean = true,
     ): Promise<T> {
         const authToken = this.getAuthToken()
-        const projectKey = requiresProject ? this.getProjectKey() : ''
+        const projectKey = this.getProjectKey()
+
+        if (requiresProject && !projectKey) {
+            throw new Error('No project key found')
+        }
 
         console.log(`Worker MCP ${operationName}:`, {
             args,
@@ -31,7 +35,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
         })
 
         try {
-            const result = await operation(authToken, projectKey)
+            const result = await operation(authToken, projectKey || '')
             console.log(`Worker MCP ${operationName} completed successfully`)
             return result
         } catch (error) {
@@ -101,18 +105,10 @@ export class WorkerApiClient implements IDevCycleApiClient {
     /**
      * Get the project key from JWT claims or environment variables
      */
-    private getProjectKey(): string {
+    private getProjectKey(): string | undefined {
         const claims = this.props.claims as DevCycleJWTClaims
 
-        // Try from JWT claims first - this allows user-specific project context
-        if (claims?.project_key) {
-            return claims.project_key
-        }
-
-        throw new Error(
-            'No project key found in JWT claims. ' +
-                'Include project_key in JWT claims.',
-        )
+        return claims?.project_key
     }
 
     /**
@@ -153,10 +149,18 @@ export class WorkerApiClient implements IDevCycleApiClient {
      */
     public getUserContext() {
         const claims = this.props.claims as DevCycleJWTClaims
+        let projectKey: string | undefined
+        try {
+            projectKey = this.getProjectKey()
+        } catch {
+            projectKey = undefined
+        }
+        console.log('User context:', claims)
+
         return {
             userId: this.getUserId(),
             orgId: this.getOrgId(),
-            projectKey: this.getProjectKey(),
+            projectKey: projectKey,
             email: claims?.email,
             name: claims?.name,
             hasAccessToken: !!this.props.tokenSet?.accessToken,

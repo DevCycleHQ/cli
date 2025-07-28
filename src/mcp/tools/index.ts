@@ -30,12 +30,17 @@ import {
 } from './customPropertiesTools'
 
 /**
- * Type guard to ensure the API client is a DevCycleApiClient instance
+ * Type guard to ensure the API client implements IDevCycleApiClient interface
+ * Accepts both DevCycleApiClient (CLI) and WorkerApiClient (Worker) implementations
  */
 function isDevCycleApiClient(
     apiClient: IDevCycleApiClient,
-): apiClient is DevCycleApiClient {
-    return apiClient instanceof DevCycleApiClient
+): apiClient is IDevCycleApiClient {
+    return (
+        apiClient &&
+        typeof apiClient.executeWithLogging === 'function' &&
+        typeof apiClient.executeWithDashboardLink === 'function'
+    )
 }
 
 /**
