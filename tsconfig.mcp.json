@@ -1,0 +1,20 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist/mcp-shared",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true
+    },
+    "include": [
+        "src/mcp/tools/**/*",
+        "src/mcp/api/interface.ts",
+        "src/mcp/worker/**/*",
+        "src/api/**/*"
+    ],
+    "exclude": [
+        "src/mcp/worker/**/*",
+        "**/*.test.ts",
+        "test/**/*"
+    ]
+} 

@@ -1,0 +1,45 @@
+# Cloudflare Worker configuration for DevCycle MCP Server
+name = "devcycle-mcp-server"
+main = "src/index.ts"
+compatibility_date = "2025-03-10"
+compatibility_flags = ["nodejs_compat"]
+
+# Durable Objects configuration
+[[migrations]]
+new_sqlite_classes = ["DevCycleMCP"]
+tag = "v1"
+
+[[durable_objects.bindings]]
+class_name = "DevCycleMCP"
+name = "MCP_OBJECT"
+
+# KV namespace for OAuth session storage
+[[kv_namespaces]]
+binding = "OAUTH_KV"
+id = "YOUR_KV_NAMESPACE_ID" # Replace with actual KV namespace ID
+
+# Environment variables
+[vars]
+NODE_ENV = "production"
+API_BASE_URL = "https://api.devcycle.com"
+AUTH0_DOMAIN = "auth.devcycle.com"
+AUTH0_AUDIENCE = "https://api.devcycle.com/"
+AUTH0_SCOPE = "openid profile email offline_access"
+# DEFAULT_PROJECT_KEY = ""  # Optional: Set a default project for single-project deployments
+
+# Secrets (set via: wrangler secret put <SECRET_NAME>)
+# AUTH0_CLIENT_ID
+# AUTH0_CLIENT_SECRET
+
+# AI binding for future features
+[ai]
+binding = "AI"
+
+# Observability
+[observability]
+enabled = true
+
+# Development configuration
+[dev]
+port = 8787
+local_protocol = "http"
