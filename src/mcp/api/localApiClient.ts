@@ -59,7 +59,10 @@ export class LocalDevCycleApiClient implements IDevCycleApiClient {
     async executeWithLogging<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
         requiresProject = true,
     ): Promise<T> {
         return await this.apiClient.executeWithLogging(
@@ -73,8 +76,15 @@ export class LocalDevCycleApiClient implements IDevCycleApiClient {
     async executeWithDashboardLink<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
-        dashboardLink: (orgId: string, projectKey: string, result: T) => string,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
+        dashboardLink: (
+            orgId: string,
+            projectKey: string | undefined,
+            result: T,
+        ) => string,
     ): Promise<{ result: T; dashboardLink: string }> {
         return await this.apiClient.executeWithDashboardLink(
             operationName,

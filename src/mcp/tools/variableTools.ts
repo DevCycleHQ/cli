@@ -23,8 +23,11 @@ import { DevCycleApiClient } from '../utils/api'
 // Helper function to generate variable dashboard links
 const generateVariablesDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
 ): string => {
+    if (!projectKey) {
+        throw new Error('Project key is required for variables dashboard link')
+    }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/variables`
 }
 
@@ -312,7 +315,12 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'listVariables',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () => fetchVariables(authToken, projectKey, validatedArgs),
                     'fetchVariables',
@@ -327,7 +335,12 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'createVariable',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () => createVariable(authToken, projectKey, validatedArgs),
                     'createVariable',
@@ -342,7 +355,12 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'updateVariable',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 const { key, ...updateData } = validatedArgs
 
                 return await handleZodiosValidationErrors(
@@ -360,7 +378,12 @@ export const variableToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'deleteVariable',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for this operation',
+                    )
+                }
                 await handleZodiosValidationErrors(
                     () =>
                         deleteVariable(

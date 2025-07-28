@@ -71,12 +71,8 @@ export class DevCycleMCP extends McpAgent<
                                         serverInfo: {
                                             name: 'DevCycle CLI MCP Server',
                                             version: '1.0.0',
-                                            environment:
-                                                this.env.NODE_ENV ||
-                                                'production',
-                                            apiBaseUrl:
-                                                this.env.API_BASE_URL ||
-                                                'https://api.devcycle.com',
+                                            environment: this.env.NODE_ENV,
+                                            apiBaseUrl: this.env.API_BASE_URL,
                                         },
                                     },
                                     null,

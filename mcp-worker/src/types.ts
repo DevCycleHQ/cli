@@ -10,6 +10,7 @@ export type UserProps = {
     /** OAuth token set for API authentication */
     tokenSet: {
         accessToken: string
+        accessTokenTTL: number
         idToken: string
         refreshToken: string
     }
@@ -51,14 +52,4 @@ export interface DevCycleJWTClaims extends JWTPayload {
     email?: string
     /** User's name */
     name?: string
-    /** Auth0 subject identifier */
-    sub?: string
-    /** Audience */
-    aud?: string | string[]
-    /** Issuer */
-    iss?: string
-    /** Expiration time */
-    exp?: number
-    /** Issued at time */
-    iat?: number
 }

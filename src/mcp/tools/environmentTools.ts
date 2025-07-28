@@ -23,8 +23,13 @@ import { DevCycleApiClient } from '../utils/api'
 // Helper function to generate environment dashboard links
 const generateEnvironmentDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
 ): string => {
+    if (!projectKey) {
+        throw new Error(
+            'Project key is required for environment dashboard link',
+        )
+    }
     return `https://app.devcycle.com/o/${orgId}/settings/p/${projectKey}/environments`
 }
 
@@ -281,7 +286,12 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'listEnvironments',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for listing environments',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () => fetchEnvironments(authToken, projectKey),
                     'listEnvironments',
@@ -296,7 +306,12 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'getSdkKeys',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for getting SDK keys',
+                    )
+                }
                 const environment = await handleZodiosValidationErrors(
                     () =>
                         fetchEnvironmentByKey(
@@ -330,7 +345,12 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'createEnvironment',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for creating environments',
+                    )
+                }
                 return await handleZodiosValidationErrors(
                     () =>
                         createEnvironment(authToken, projectKey, validatedArgs),
@@ -346,7 +366,12 @@ export const environmentToolHandlers: Record<string, ToolHandler> = {
         return await apiClient.executeWithDashboardLink(
             'updateEnvironment',
             validatedArgs,
-            async (authToken: string, projectKey: string) => {
+            async (authToken: string, projectKey: string | undefined) => {
+                if (!projectKey) {
+                    throw new Error(
+                        'Project key is required for updating environments',
+                    )
+                }
                 const { key, ...updateParams } = validatedArgs
                 return await handleZodiosValidationErrors(
                     () =>

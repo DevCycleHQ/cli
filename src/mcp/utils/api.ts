@@ -89,7 +89,10 @@ export class DevCycleApiClient implements IDevCycleApiClient {
     public async executeWithLogging<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
         requiresProject = true,
     ): Promise<T> {
         console.error(
@@ -107,7 +110,9 @@ export class DevCycleApiClient implements IDevCycleApiClient {
             setMCPToolCommand(operationName)
 
             const authToken = this.auth.getAuthToken()
-            const projectKey = requiresProject ? this.auth.getProjectKey() : ''
+            const projectKey = requiresProject
+                ? this.auth.getProjectKey()
+                : undefined
             return await operation(authToken, projectKey)
         } catch (error) {
             console.error(
@@ -124,8 +129,15 @@ export class DevCycleApiClient implements IDevCycleApiClient {
     public async executeWithDashboardLink<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
-        dashboardLink: (orgId: string, projectKey: string, result: T) => string,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
+        dashboardLink: (
+            orgId: string,
+            projectKey: string | undefined,
+            result: T,
+        ) => string,
     ): Promise<{ result: T; dashboardLink: string }> {
         const result = await this.executeWithLogging(
             operationName,

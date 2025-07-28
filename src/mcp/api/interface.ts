@@ -24,7 +24,10 @@ export interface IDevCycleApiClient {
     executeWithLogging<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
         requiresProject?: boolean,
     ): Promise<T>
 
@@ -38,8 +41,15 @@ export interface IDevCycleApiClient {
     executeWithDashboardLink<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
-        dashboardLink: (orgId: string, projectKey: string, result: T) => string,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
+        dashboardLink: (
+            orgId: string,
+            projectKey: string | undefined,
+            result: T,
+        ) => string,
     ): Promise<{ result: T; dashboardLink: string }>
 }
 
@@ -132,6 +142,6 @@ export type ApiResult<T> =
  */
 export type DashboardLinkGenerator<T = any> = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
     result: T,
 ) => string
