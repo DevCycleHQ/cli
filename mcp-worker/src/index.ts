@@ -3,7 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
 import { createAuthApp, tokenExchangeCallback } from './auth'
 import { WorkerApiClient } from './apiClient'
-import { MCPToolRegistry, registerAllTools } from '../../dist/mcp/tools'
+import { MCPToolRegistry, registerAllTools } from '../../src/mcp/tools'
 import type { UserProps, Env } from './types'
 
 /**
@@ -18,7 +18,6 @@ export class DevCycleMCP extends McpAgent<
     Record<string, never>,
     UserProps
 > {
-    // The MCP server instance that handles protocol communication
     server = new McpServer({
         name: 'DevCycle CLI MCP Server',
         version: '1.0.0',
@@ -51,7 +50,7 @@ export class DevCycleMCP extends McpAgent<
             this.registry.getToolNames(),
         )
 
-        // Add a debug tool to inspect user context
+        // Useful for debugging. This will show the current user's claims and the Auth0 tokens.
         this.server.tool(
             'whoami',
             'Get the current DevCycle user details and context',
@@ -68,6 +67,7 @@ export class DevCycleMCP extends McpAgent<
                                         message:
                                             'DevCycle MCP Server - User Context',
                                         context: userContext,
+                                        props: this.props, // Include full props for debugging like the example
                                         serverInfo: {
                                             name: 'DevCycle CLI MCP Server',
                                             version: '1.0.0',
@@ -100,7 +100,7 @@ export class DevCycleMCP extends McpAgent<
 
         // Dynamically create MCP protocol handlers for each registered tool
         for (const tool of this.registry.getAll()) {
-            // @ts-expect-error - MCP SDK type compatibility issues with tool registration
+            // @ts-expect-error MCP SDK type compatibility issues with tool registration
             this.server.tool(
                 tool.name,
                 tool.description,
@@ -167,7 +167,7 @@ export class DevCycleMCP extends McpAgent<
                             content: [
                                 {
                                     type: 'text',
-                                    text: `Error executing ${tool.name}: ${errorMessage}`,
+                                    text: `The call to ${tool.name} failed: ${errorMessage}`,
                                 },
                             ],
                         }
@@ -207,35 +207,16 @@ export class DevCycleMCP extends McpAgent<
     }
 }
 
-/**
- * Create and configure the main Cloudflare Worker export
- *
- * This sets up the OAuth Provider with the MCP server mounted on the /sse endpoint
- * and includes all the necessary authentication and routing handlers.
- */
-function createWorker() {
-    // Initialize the Hono app with OAuth routes
-    const authApp = createAuthApp()
+// Initialize the Hono app with non-OAuth routes only
+// Let the OAuth Provider handle OAuth routes (/authorize, /callback, etc.) automatically
+const app = createAuthApp()
 
-    // Create the OAuth Provider with MCP server integration
-    return new OAuthProvider({
-        // Mount the MCP server on the /sse endpoint for Server-Sent Events communication
-        apiHandler: DevCycleMCP.mount('/sse') as any,
-        apiRoute: '/sse',
-
-        // OAuth endpoint configuration
-        authorizeEndpoint: '/authorize',
-        clientRegistrationEndpoint: '/signup',
-        tokenEndpoint: '/token',
-
-        // Auth app handles all OAuth-related routes
-        // @ts-expect-error - Type compatibility with OAuth provider
-        defaultHandler: authApp,
-
-        // Token exchange callback for handling OAuth token flows
-        tokenExchangeCallback,
-    })
-}
-
-// Export the configured Worker
-export default createWorker()
+export default new OAuthProvider({
+    apiHandler: DevCycleMCP.mount('/sse'),
+    apiRoute: '/sse',
+    authorizeEndpoint: '/authorize',
+    clientRegistrationEndpoint: '/signup',
+    defaultHandler: app as any,
+    tokenEndpoint: '/token',
+    tokenExchangeCallback,
+})

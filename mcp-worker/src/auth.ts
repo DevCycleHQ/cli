@@ -1,103 +1,357 @@
-import * as oauth from 'oauth4webapi'
+import { env } from 'cloudflare:workers'
 import { Hono } from 'hono'
+import { getCookie, setCookie } from 'hono/cookie'
+import * as oauth from 'oauth4webapi'
 import type { UserProps, Env, DevCycleJWTClaims } from './types'
+import { OAuthHelpers } from '@cloudflare/workers-oauth-provider'
+import type {
+    AuthRequest,
+    TokenExchangeCallbackOptions,
+    TokenExchangeCallbackResult,
+} from '@cloudflare/workers-oauth-provider'
+import { renderConsentScreen } from './consentScreen'
 
-// Define OAuth parameter types locally since they're not exported correctly
-type AuthorizeParams = Record<string, any>
-type CallbackParams = Record<string, any>
-type ConsentParams = Record<string, any>
+type Auth0AuthRequest = {
+    mcpAuthRequest: AuthRequest
+    codeVerifier: string
+    codeChallenge: string
+    nonce: string
+    transactionState: string
+    consentToken: string
+}
 
-// OAuth callback function type
-type TokenExchangeCallbackFunction = (options: any) => Promise<any>
-
-/**
- * Get OIDC configuration for Auth0
- */
-async function getOidcConfig(options: {
+export async function getOidcConfig({
+    issuer,
+    client_id,
+    client_secret,
+}: {
+    issuer: string
     client_id: string
     client_secret: string
-    issuer: string
 }) {
-    const as = await oauth
-        .discoveryRequest(new URL(options.issuer))
-        .then((response) =>
-            oauth.processDiscoveryResponse(new URL(options.issuer), response),
-        )
-
-    const client: oauth.Client = {
-        client_id: options.client_id,
-        token_endpoint_auth_method: 'client_secret_basic',
+    // Validate required parameters
+    if (!issuer) {
+        throw new Error('AUTH0_DOMAIN is required but not set')
+    }
+    if (!client_id) {
+        throw new Error('AUTH0_CLIENT_ID is required but not set')
+    }
+    if (!client_secret) {
+        throw new Error('AUTH0_CLIENT_SECRET is required but not set')
     }
 
-    const clientAuth = oauth.ClientSecretBasic(options.client_secret)
-
+    const response = await oauth.discoveryRequest(new URL(issuer), {
+        algorithm: 'oidc',
+    })
+    console.log('Auth0 Discovery Response:', JSON.stringify(response))
+    const as = await oauth.processDiscoveryResponse(new URL(issuer), response)
+    const client: oauth.Client = { client_id }
+    const clientAuth = oauth.ClientSecretPost(client_secret)
     return { as, client, clientAuth }
 }
 
 /**
- * Parse JWT token to extract claims
+ * OAuth Authorization Endpoint
+ *
+ * This route initiates the Authorization Code Flow when a user wants to log in.
+ * It creates a random state parameter to prevent CSRF attacks and stores the
+ * original request information in a state-specific cookie for later retrieval.
+ * Then it shows a consent screen before redirecting to Auth0.
  */
-function parseJWT(token: string): DevCycleJWTClaims {
-    try {
-        const parts = token.split('.')
-        if (parts.length !== 3) {
-            throw new Error('Invalid JWT format')
+export async function authorize(
+    c: any & { env: Env & { OAUTH_PROVIDER: OAuthHelpers } },
+) {
+    const mcpClientAuthRequest = await c.env.OAUTH_PROVIDER.parseAuthRequest(
+        c.req.raw,
+    )
+    if (!mcpClientAuthRequest.clientId) {
+        return c.text('Invalid request', 400)
+    }
+
+    const client = await c.env.OAUTH_PROVIDER.lookupClient(
+        mcpClientAuthRequest.clientId,
+    )
+    if (!client) {
+        return c.text('Invalid client', 400)
+    }
+
+    // Generate all that is needed for the Auth0 auth request
+    const codeVerifier = oauth.generateRandomCodeVerifier()
+    const transactionState = oauth.generateRandomState()
+    const consentToken = oauth.generateRandomState() // For CSRF protection on consent form
+
+    // We will persist everything in a cookie.
+    const auth0AuthRequest: Auth0AuthRequest = {
+        codeChallenge: await oauth.calculatePKCECodeChallenge(codeVerifier),
+        codeVerifier,
+        consentToken,
+        mcpAuthRequest: mcpClientAuthRequest,
+        nonce: oauth.generateRandomNonce(),
+        transactionState,
+    }
+
+    // Store the auth request in a transaction-specific cookie
+    const cookieName = `auth0_req_${transactionState}`
+    setCookie(c, cookieName, btoa(JSON.stringify(auth0AuthRequest)), {
+        httpOnly: true,
+        maxAge: 60 * 60 * 1, // 1 hour
+        path: '/',
+        sameSite: c.env.NODE_ENV !== 'development' ? 'none' : 'lax',
+        secure: c.env.NODE_ENV !== 'development',
+    })
+
+    // Extract client information for the consent screen
+    const clientName = client.clientName || client.clientId
+    const clientLogo = client.logoUri || '' // No default logo
+    const clientUri = client.clientUri || '#'
+    const requestedScopes = (c.env.AUTH0_SCOPE || '').split(' ')
+
+    // Render the consent screen with CSRF protection
+    return c.html(
+        renderConsentScreen({
+            clientLogo,
+            clientName,
+            clientUri,
+            consentToken,
+            redirectUri: mcpClientAuthRequest.redirectUri,
+            requestedScopes,
+            transactionState,
+        }),
+    )
+}
+
+/**
+ * Consent Confirmation Endpoint
+ *
+ * This route handles the consent confirmation before redirecting to Auth0
+ */
+export async function confirmConsent(c: any) {
+    // Get form data
+    const formData = await c.req.formData()
+    console.log('Confirming consent')
+    console.log(JSON.stringify(formData))
+
+    const transactionState = formData.get('transaction_state') as string
+    const consentToken = formData.get('consent_token') as string
+    const consentAction = formData.get('consent_action') as string
+
+    // Validate the transaction state
+    if (!transactionState) {
+        return c.text('Invalid transaction state', 400)
+    }
+
+    // Get the transaction-specific cookie
+    const cookieName = `auth0_req_${transactionState}`
+    const auth0AuthRequestCookie = getCookie(c, cookieName)
+    if (!auth0AuthRequestCookie) {
+        return c.text('Invalid or expired transaction', 400)
+    }
+
+    // Parse the Auth0 auth request from the cookie
+    console.log(
+        'Auth0 Authorization Server - Transaction State Cookie:',
+        auth0AuthRequestCookie,
+    )
+    const auth0AuthRequest = JSON.parse(
+        atob(auth0AuthRequestCookie),
+    ) as Auth0AuthRequest
+
+    // Validate the CSRF token
+    if (auth0AuthRequest.consentToken !== consentToken) {
+        return c.text('Invalid consent token', 403)
+    }
+
+    // Handle user denial
+    if (consentAction !== 'approve') {
+        // Parse the MCP client auth request to get the original redirect URI
+        const redirectUri = new URL(auth0AuthRequest.mcpAuthRequest.redirectUri)
+
+        // Add error parameters to the redirect URI
+        redirectUri.searchParams.set('error', 'access_denied')
+        redirectUri.searchParams.set(
+            'error_description',
+            'User denied the request',
+        )
+        if (auth0AuthRequest.mcpAuthRequest.state) {
+            redirectUri.searchParams.set(
+                'state',
+                auth0AuthRequest.mcpAuthRequest.state,
+            )
         }
 
-        const payload = parts[1]
-        const decoded = JSON.parse(
-            atob(payload.replace(/-/g, '+').replace(/_/g, '/')),
-        )
-        return decoded as DevCycleJWTClaims
-    } catch (error) {
-        throw new Error(`Failed to parse JWT: ${error}`)
+        // Clear the transaction cookie
+        setCookie(c, cookieName, '', {
+            maxAge: 0,
+            path: '/',
+        })
+
+        return c.redirect(redirectUri.toString())
     }
+
+    const { as } = await getOidcConfig({
+        client_id: c.env.AUTH0_CLIENT_ID,
+        client_secret: c.env.AUTH0_CLIENT_SECRET,
+        issuer: `https://${c.env.AUTH0_DOMAIN}/`,
+    })
+
+    console.log(
+        'Auth0 Authorization Server - Discovery Information:',
+        JSON.stringify(as),
+    )
+
+    // Redirect to Auth0's authorization endpoint
+    const authorizationUrl = new URL(as.authorization_endpoint!)
+    authorizationUrl.searchParams.set('client_id', c.env.AUTH0_CLIENT_ID)
+    authorizationUrl.searchParams.set(
+        'redirect_uri',
+        new URL('/callback', c.req.url).href,
+    )
+    authorizationUrl.searchParams.set('response_type', 'code')
+    authorizationUrl.searchParams.set('audience', c.env.AUTH0_AUDIENCE)
+    authorizationUrl.searchParams.set('scope', c.env.AUTH0_SCOPE)
+    authorizationUrl.searchParams.set(
+        'code_challenge',
+        auth0AuthRequest.codeChallenge,
+    )
+    authorizationUrl.searchParams.set('code_challenge_method', 'S256')
+    authorizationUrl.searchParams.set('nonce', auth0AuthRequest.nonce)
+    authorizationUrl.searchParams.set('state', transactionState)
+
+    return c.redirect(authorizationUrl.href)
+}
+
+/**
+ * OAuth Callback Endpoint
+ *
+ * This route handles the callback from Auth0 after user authentication.
+ * It exchanges the authorization code for tokens and completes the
+ * authorization process.
+ */
+export async function callback(
+    c: any & { env: Env & { OAUTH_PROVIDER: OAuthHelpers } },
+) {
+    // Parse the state parameter to extract transaction state and Auth0 state
+    const stateParam = c.req.query('state') as string
+    if (!stateParam) {
+        return c.text('Invalid state parameter', 400)
+    }
+
+    // Parse the Auth0 auth request from the transaction-specific cookie
+    const cookieName = `auth0_req_${stateParam}`
+    const auth0AuthRequestCookie = getCookie(c, cookieName)
+    if (!auth0AuthRequestCookie) {
+        return c.text('Invalid transaction state or session expired', 400)
+    }
+
+    const auth0AuthRequest = JSON.parse(
+        atob(auth0AuthRequestCookie),
+    ) as Auth0AuthRequest
+
+    // Clear the transaction cookie as it's no longer needed
+    setCookie(c, cookieName, '', {
+        maxAge: 0,
+        path: '/',
+    })
+
+    console.log(
+        'Auth0 Authorization Server - Transaction State:',
+        auth0AuthRequest,
+    )
+
+    const { as, client, clientAuth } = await getOidcConfig({
+        client_id: c.env.AUTH0_CLIENT_ID,
+        client_secret: c.env.AUTH0_CLIENT_SECRET,
+        issuer: `https://${c.env.AUTH0_DOMAIN}/`,
+    })
+
+    console.log(
+        'Auth0 Authorization Server - Discovery Information:',
+        JSON.stringify(as),
+        JSON.stringify(clientAuth),
+    )
+
+    // Perform the Code Exchange
+    const params = oauth.validateAuthResponse(
+        as,
+        client,
+        new URL(c.req.url),
+        auth0AuthRequest.transactionState,
+    )
+
+    console.log('Response parameters from Auth0:', params)
+
+    const response = await oauth.authorizationCodeGrantRequest(
+        as,
+        client,
+        clientAuth,
+        params,
+        new URL('/callback', c.req.url).href,
+        auth0AuthRequest.codeVerifier,
+    )
+
+    console.log('Response from Auth0 callback:', response)
+
+    // Process the response
+    const result = await oauth.processAuthorizationCodeResponse(
+        as,
+        client,
+        response,
+        {
+            expectedNonce: auth0AuthRequest.nonce,
+            requireIdToken: true,
+        },
+    )
+
+    // Get the claims from the id_token
+    const claims = oauth.getValidatedIdTokenClaims(result)
+    if (!claims) {
+        return c.text('Received invalid id_token from Auth0', 400)
+    }
+
+    // Complete the authorization
+    const { redirectTo } = await c.env.OAUTH_PROVIDER.completeAuthorization({
+        metadata: {
+            label: claims.name || claims.email || claims.sub,
+        },
+        props: {
+            claims: claims,
+            tokenSet: {
+                accessToken: result.access_token,
+                accessTokenTTL: result.expires_in,
+                idToken: result.id_token,
+                refreshToken: result.refresh_token,
+            },
+        } as UserProps,
+        request: auth0AuthRequest.mcpAuthRequest,
+        scope: auth0AuthRequest.mcpAuthRequest.scope,
+        userId: claims.sub!,
+    })
+
+    return Response.redirect(redirectTo)
 }
 
 /**
  * Token Exchange Callback
  *
- * Handles the token exchange process for OAuth authentication with DevCycle/Auth0.
- * This function processes both authorization code and refresh token flows.
+ * This function handles the token exchange callback for the CloudflareOAuth Provider
+ * and allows us to then interact with the Upstream IdP (your Auth0 tenant)
  */
-export const tokenExchangeCallback: TokenExchangeCallbackFunction = async (
-    options: any,
-) => {
-    const { grantType, env, props } = options
-
-    // During the Authorization Code Exchange, preserve token TTL from Auth0
-    if (grantType === 'authorization_code') {
-        const idToken = props?.tokenSet?.idToken
-        if (!idToken) {
-            throw new Error('No ID token received from Auth0')
-        }
-
-        // Extract claims from the ID token
-        const claims = parseJWT(idToken)
-
-        // Validate that we have the necessary DevCycle context
-        if (!claims.org_id) {
-            throw new Error(
-                'DevCycle organization ID not found in token claims',
-            )
-        }
-
+export async function tokenExchangeCallback(
+    options: TokenExchangeCallbackOptions,
+): Promise<TokenExchangeCallbackResult> {
+    // During the Authorization Code Exchange, we want to make sure that the Access Token issued
+    // by the MCP Server has the same TTL as the one issued by Auth0.
+    if (options.grantType === 'authorization_code') {
         return {
-            accessTokenTTL: props.tokenSet.accessTokenTTL,
+            accessTokenTTL: options.props.tokenSet.accessTokenTTL,
             newProps: {
-                claims,
-                tokenSet: {
-                    accessToken: props.tokenSet.accessToken,
-                    idToken: props.tokenSet.idToken,
-                    refreshToken: props.tokenSet.refreshToken || '',
-                },
-            } as UserProps,
+                ...options.props,
+            },
         }
     }
 
-    // Handle refresh token flow
-    if (grantType === 'refresh_token') {
-        const auth0RefreshToken = props?.tokenSet?.refreshToken
+    if (options.grantType === 'refresh_token') {
+        const auth0RefreshToken = options.props.tokenSet.refreshToken
         if (!auth0RefreshToken) {
             throw new Error('No Auth0 refresh token found')
         }
@@ -108,115 +362,67 @@ export const tokenExchangeCallback: TokenExchangeCallbackFunction = async (
             issuer: `https://${env.AUTH0_DOMAIN}/`,
         })
 
-        // Perform the refresh token exchange with Auth0
+        // Perform the refresh token exchange with Auth0.
         const response = await oauth.refreshTokenGrantRequest(
             as,
             client,
             clientAuth,
             auth0RefreshToken,
         )
+
         const refreshTokenResponse = await oauth.processRefreshTokenResponse(
             as,
             client,
             response,
         )
 
-        // Extract claims from the new ID token
-        let claims: DevCycleJWTClaims
-        if (refreshTokenResponse.id_token) {
-            claims = parseJWT(refreshTokenResponse.id_token)
-        } else {
-            // Fall back to existing claims if no new ID token
-            claims = props.claims as DevCycleJWTClaims
+        // Get the claims from the id_token
+        const claims = oauth.getValidatedIdTokenClaims(refreshTokenResponse)
+        if (!claims) {
+            throw new Error('Received invalid id_token from Auth0')
         }
 
-        // Return updated token set and claims
+        // Store the new token set and claims.
         return {
             accessTokenTTL: refreshTokenResponse.expires_in,
             newProps: {
-                claims,
+                ...options.props,
+                claims: claims,
                 tokenSet: {
                     accessToken: refreshTokenResponse.access_token,
-                    idToken:
-                        refreshTokenResponse.id_token || props.tokenSet.idToken,
+                    accessTokenTTL: refreshTokenResponse.expires_in,
+                    idToken: refreshTokenResponse.id_token,
                     refreshToken:
                         refreshTokenResponse.refresh_token || auth0RefreshToken,
                 },
-            } as UserProps,
+            },
         }
     }
 
-    // For other grant types, no special handling needed
-    return undefined
+    throw new Error(`Unsupported grant type: ${options.grantType}`)
 }
 
 /**
- * Authorization endpoint handler
- * Initiates the OAuth flow with DevCycle/Auth0
+ * Create the Hono app with OAuth and utility routes
  */
-export async function authorize(c: any): Promise<Response> {
-    const params = c.req.query() as AuthorizeParams
+export function createAuthApp(): Hono<{
+    Bindings: Env & { OAUTH_PROVIDER: OAuthHelpers }
+}> {
+    const app = new Hono<{ Bindings: Env & { OAUTH_PROVIDER: OAuthHelpers } }>()
 
-    // Add DevCycle-specific scopes if not already present
-    const defaultScopes = ['openid', 'profile', 'email', 'offline_access']
-    const requestedScopes = params.scope?.split(' ') || []
-    const allScopes = [...new Set([...defaultScopes, ...requestedScopes])]
-
-    // Forward to the OAuth provider with enhanced scopes
-    return c.env.OAUTH_PROVIDER.authorize({
-        ...params,
-        scope: allScopes.join(' '),
-    })
-}
-
-/**
- * OAuth callback handler
- * Processes the callback from Auth0 after user authentication
- */
-export async function callback(c: any): Promise<Response> {
-    const params = c.req.query() as CallbackParams
-    return c.env.OAUTH_PROVIDER.callback(params)
-}
-
-/**
- * Consent confirmation handler
- * Handles user consent for the OAuth flow
- */
-export async function confirmConsent(c: any): Promise<Response> {
-    const formData = await c.req.formData()
-    const params = Object.fromEntries(formData.entries()) as ConsentParams
-    return c.env.OAUTH_PROVIDER.confirmConsent(params)
-}
-
-/**
- * Health check endpoint
- */
-export function healthCheck() {
-    return new Response(
-        JSON.stringify({
-            status: 'ok',
-            service: 'DevCycle MCP Server',
-            timestamp: new Date().toISOString(),
-        }),
-        {
-            headers: { 'Content-Type': 'application/json' },
-        },
-    )
-}
-
-/**
- * Create the Hono app with OAuth routes
- */
-export function createAuthApp(): Hono<{ Bindings: Env }> {
-    const app = new Hono<{ Bindings: Env }>()
-
-    // OAuth flow endpoints
+    // OAuth routes - these are required for the OAuth flow
     app.get('/authorize', authorize)
     app.post('/authorize/consent', confirmConsent)
     app.get('/callback', callback)
 
     // Health check
-    app.get('/health', () => healthCheck())
+    app.get('/health', (c) => {
+        return c.json({
+            status: 'ok',
+            service: 'DevCycle MCP Server',
+            timestamp: new Date().toISOString(),
+        })
+    })
 
     // Info endpoint for debugging
     app.get('/info', (c) => {

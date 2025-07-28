@@ -1,7 +1,7 @@
 # Cloudflare Worker configuration for DevCycle MCP Server
 name = "devcycle-mcp-server"
 main = "src/index.ts"
-compatibility_date = "2025-03-10"
+compatibility_date = "2025-06-28"
 compatibility_flags = ["nodejs_compat"]
 
 # Durable Objects configuration
@@ -16,7 +16,7 @@ name = "MCP_OBJECT"
 # KV namespace for OAuth session storage
 [[kv_namespaces]]
 binding = "OAUTH_KV"
-id = "YOUR_KV_NAMESPACE_ID" # Replace with actual KV namespace ID
+id = "511f2abf74904876ba3e4627154f4d86"
 
 # Environment variables
 [vars]
