@@ -124,7 +124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/workers-types@npm:^4.20250311.0":
+"@cloudflare/workers-types@npm:^4.20250311.0, @cloudflare/workers-types@npm:^4.20250726.0":
   version: 4.20250726.0
   resolution: "@cloudflare/workers-types@npm:4.20250726.0"
   checksum: 10c0/91c708039cf51bbf6d46b1052508c3c308c425b624281fbd26152e967bcff6d92b9946621fea1fcf0538188d96c0280754b5bb1ca1f003675adb8a4f4b7e44de
@@ -145,13 +145,14 @@ __metadata:
   resolution: "@devcycle/mcp-worker@workspace:."
   dependencies:
     "@cloudflare/workers-oauth-provider": "npm:^0.0.5"
+    "@cloudflare/workers-types": "npm:^4.20250726.0"
     "@modelcontextprotocol/sdk": "npm:^1.15.0"
-    "@types/node": "npm:^24.0.10"
+    "@types/node": "npm:^18.19.68"
     agents: "npm:^0.0.100"
     hono: "npm:^4.8.4"
     jose: "npm:^6.0.11"
     oauth4webapi: "npm:^3.5.5"
-    typescript: "npm:^5.8.3"
+    typescript: "npm:^5.7.2"
     wrangler: "npm:^4.22.0"
     zod: "npm:^3.24.2"
   languageName: unknown
@@ -667,12 +668,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^24.0.10":
-  version: 24.1.0
-  resolution: "@types/node@npm:24.1.0"
+"@types/node@npm:^18.19.68":
+  version: 18.19.120
+  resolution: "@types/node@npm:18.19.120"
   dependencies:
-    undici-types: "npm:~7.8.0"
-  checksum: 10c0/6c4686bc144f6ce7bffd4cadc3e1196e2217c1da4c639c637213719c8a3ee58b6c596b994befcbffeacd9d9eb0c3bff6529d2bc27da5d1cb9d58b1da0056f9f4
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/fc436b93a3c9367b69d11a1c5d70cc923df6ea60141dd508ce2a248160c3bf8a04c658548a59df8ab9148b68bd58954fb603917baab3e2bc9da567f655534e5a
   languageName: node
   linkType: hard
 
@@ -2563,7 +2564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.8.3":
+"typescript@npm:^5.7.2":
   version: 5.8.3
   resolution: "typescript@npm:5.8.3"
   bin:
@@ -2573,7 +2574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.7.2#optional!builtin<compat/typescript>":
   version: 5.8.3
   resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
   bin:
@@ -2590,10 +2591,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~7.8.0":
-  version: 7.8.0
-  resolution: "undici-types@npm:7.8.0"
-  checksum: 10c0/9d9d246d1dc32f318d46116efe3cfca5a72d4f16828febc1918d94e58f6ffcf39c158aa28bf5b4fc52f410446bc7858f35151367bd7a49f21746cab6497b709b
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: 10c0/bb673d7876c2d411b6eb6c560e0c571eef4a01c1c19925175d16e3a30c4c428181fb8d7ae802a261f283e4166a0ac435e2f505743aa9e45d893f9a3df017b501
   languageName: node
   linkType: hard
 

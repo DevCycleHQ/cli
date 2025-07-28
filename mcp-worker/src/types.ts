@@ -24,7 +24,6 @@ export interface Env {
 
     // DevCycle API configuration
     API_BASE_URL?: string
-    DEFAULT_PROJECT_KEY?: string
 
     // Auth0 configuration
     AUTH0_DOMAIN: string
