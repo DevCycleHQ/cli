@@ -1,170 +1,136 @@
 # DevCycle MCP Abstractions Summary
 
-This document provides a quick reference of all recommended MCP abstractions for the DevCycle MCP server based on the CLI codebase analysis.
+This document provides a quick reference of all MCP abstractions for the DevCycle MCP server - both implemented and planned features.
 
-## MCP Tools
+## Currently Implemented MCP Tools
 
 ### 1. Feature Management
-
 - `list_features` - List all features with search/pagination
-- `get_feature` - Get detailed feature information  
 - `create_feature` - Create new feature flag
 - `update_feature` - Update existing feature
-- `delete_feature` - Delete a feature
+- `update_feature_status` - Update feature status (active/complete/archived)
+- `delete_feature` - Delete a feature ⚠️
+- `fetch_feature_variations` - Get variations for a feature
+- `create_feature_variation` - Create new variation
+- `update_feature_variation` - Update variation properties ⚠️
+- `get_feature_audit_log_history` - Get timeline of feature changes
 
 ### 2. Variable Management
-
 - `list_variables` - List all variables
-- `get_variable` - Get variable details
 - `create_variable` - Create new variable
-- `update_variable` - Update variable properties
-- `delete_variable` - Delete a variable
+- `update_variable` - Update variable properties ⚠️
+- `delete_variable` - Delete a variable ⚠️
 
-### 3. Variation Management
-
-- `list_variations` - List variations for a feature
-- `create_variation` - Create new variation
-- `update_variation` - Update variation properties
-- `get_variation` - Get specific variation details
-
-### 4. Targeting Management
-
-- `get_targeting_rules` - Get targeting for feature/environment
-- `enable_targeting` - Enable targeting for environment
-- `disable_targeting` - Disable targeting for environment
-- `create_targeting_rule` - Create new targeting rule
-- `update_targeting` - Update targeting rules
-- `get_audiences` - List reusable audience definitions
-- `validate_targeting_rule` - Validate targeting before applying
-
-### 5. Code Analysis
-
-- `analyze_variable_usage` - Comprehensive usage scanning with language detection
-- `generate_usage_report` - Format usage analysis for documentation
-- `cleanup_variable` - Replace variable with static value
-- `analyze_pr_changes` - Analyze feature flag changes in PR
-- `get_feature_history` - Git history of feature flag usage
-- `find_unknown_variables` - Identify undefined variables in code
-
-### 6. Environment Management
-
+### 3. Environment Management
 - `list_environments` - List project environments
-- `get_environment` - Get environment details
+- `get_sdk_keys` - Retrieve SDK keys for environment
 - `create_environment` - Create new environment
 - `update_environment` - Update environment settings
-- `clone_environment` - Clone environment configuration
-- `get_sdk_keys` - Retrieve SDK keys for environment
 
-### 7. Project & Organization
+### 4. Project & Organization
+- `list_projects` - List all projects in organization
+- `get_current_project` - Get currently selected project
+- `create_project` - Create new project
+- `update_project` - Update project settings
 
-- `list_projects` - List available projects
-- `get_current_project` - Get current project
-- `select_project` - Switch projects
-- `list_organizations` - List available organizations
-- `select_organization` - Switch organizations
+### 5. Custom Properties Management
+- `list_custom_properties` - List custom properties
+- `create_custom_property` - Create new custom property
+- `update_custom_property` - Update custom property ⚠️
+- `delete_custom_property` - Delete custom property ⚠️
 
-### 8. Override Management
+### 6. Targeting Management
+- `enable_feature_targeting` - Enable targeting for environment ⚠️
+- `disable_feature_targeting` - Disable targeting for environment ⚠️
+- `list_feature_targeting` - Get targeting rules for feature
+- `update_feature_targeting` - Update targeting rules ⚠️
 
-- `list_overrides` - List current overrides
-- `set_override` - Set self-targeting override
-- `clear_overrides` - Clear overrides
-- `get_override` - Get specific override details
+### 7. Self-Targeting & Override Management
+- `get_self_targeting_identity` - Get current DevCycle identity
+- `update_self_targeting_identity` - Update identity for testing
+- `list_self_targeting_overrides` - List current overrides
+- `set_self_targeting_override` - Set override for testing ⚠️
+- `clear_feature_self_targeting_overrides` - Clear specific overrides ⚠️
+- `clear_all_self_targeting_overrides` - Clear all overrides
 
-### 9. Identity Management
+### 8. Results & Analytics
+- `get_feature_total_evaluations` - Get feature evaluation metrics
+- `get_project_total_evaluations` - Get project-wide evaluation metrics
 
-- `get_identity` - Get current DevCycle identity
-- `update_identity` - Update identity for testing
+⚠️ = Requires confirmation for production environments
 
-### 10. Type Generation
+## Planned Features (Not Yet Implemented)
 
-- `generate_typescript_types` - Generate TypeScript definitions
-
-### 11. Analytics
-
-- `get_feature_usage_metrics` - Usage statistics
-- `get_variation_distribution` - Variation serve distribution
-
-## MCP Resources
-
-### 1. Configuration
-
+### MCP Resources (Read-only data access)
 - `devcycle://config/repo` - Repository configuration
 - `devcycle://config/auth` - Auth status
-
-### 2. Project Data
-
 - `devcycle://project/features` - All features
 - `devcycle://project/variables` - All variables
 - `devcycle://project/environments` - All environments
-
-### 3. Analysis
-
 - `devcycle://analysis/usages` - Latest usage scan
 - `devcycle://analysis/types` - Generated types
 - `devcycle://analysis/unknown-variables` - Undefined variables
-- `devcycle://analysis/parser-patterns` - Active regex patterns
-- `devcycle://analysis/variable-aliases` - Variable mappings
-
-### 4. Targeting
-
 - `devcycle://targeting/rules/{feature}` - Feature targeting rules
-- `devcycle://targeting/active-rules` - All active rules
-
-### 5. Overrides
-
 - `devcycle://overrides/current` - Active overrides
-- `devcycle://overrides/available` - Available features
-
-### 6. Environment
-
 - `devcycle://environments/sdk-keys` - All SDK keys
-- `devcycle://environments/comparison` - Environment diff
 
-### 7. Git Integration
+### MCP Prompts (Guided workflows)
+- `create_feature_flag` - Guided feature creation
+- `setup_targeting` - Configure targeting rules
+- `implement_feature_flag` - Generate implementation code
+- `analyze_feature_usage` - Comprehensive usage analysis
+- `setup_testing_overrides` - QA testing configuration
 
+### Code Analysis Tools
+- `analyze_variable_usage` - Comprehensive usage scanning
+- `cleanup_variable` - Replace variable with static value
+- `find_unknown_variables` - Identify undefined variables
+- `get_feature_history` - Git history of feature flag usage
+
+### Type Generation
+- `generate_typescript_types` - Generate TypeScript definitions
+
+### Advanced Targeting
+- `get_audiences` - List reusable audience definitions
+- `validate_targeting_rule` - Validate targeting before applying
+- `create_targeting_rule` - Create new targeting rule (beyond basic enable/disable)
+
+### Environment Management (Advanced)
+- `clone_environment` - Clone environment configuration
+
+### Advanced Analytics
+- `get_variation_distribution` - Variation serve distribution
+- `get_feature_usage_metrics` - Detailed usage statistics
+
+### Git Integration
+- `analyze_pr_changes` - Analyze feature flag changes in PR
 - `devcycle://git/feature-changes` - Recent changes
 - `devcycle://git/pr-analysis` - PR flag analysis
 
-## MCP Prompts
+## Implementation Status
 
-### 1. Feature Management
+### ✅ Implemented
+- Core CRUD operations for features, variables, environments, projects
+- Basic targeting enable/disable
+- Self-targeting and override management
+- Basic analytics (evaluation counts)
+- Custom properties management
 
-- `create_feature_flag` - Guided feature creation
-- `setup_targeting` - Configure targeting rules
-- `plan_progressive_rollout` - Phased rollout strategy
-- `create_killswitch` - Emergency rollback setup
+### 🚧 In Progress
+- None currently
 
-### 2. Code Integration
+### 📋 Planned
+- MCP Resources for read-only data access
+- MCP Prompts for guided workflows
+- Code analysis and usage scanning
+- Type generation
+- Advanced targeting with audience management
+- Git integration and PR analysis
+- Advanced analytics and metrics
 
-- `implement_feature_flag` - Generate implementation code
-- `cleanup_removed_flags` - Safe flag removal
-- `refactor_flag_usage` - Best practices refactoring
+## Notes
 
-### 3. Analysis & Review
-
-- `analyze_feature_usage` - Comprehensive usage analysis
-- `review_pr_flags` - PR review checklist
-- `find_stale_flags` - Identify removable flags
-
-### 4. Testing
-
-- `setup_testing_overrides` - QA testing configuration
-- `create_test_matrix` - Test case generation
-
-### 5. Documentation
-
-- `document_feature_flags` - Auto-generate docs
-- `create_flag_runbook` - Operational procedures
-
-### 6. Migration
-
-- `migrate_feature_flags` - Project/environment migration
-
-## Priority Implementation Order
-
-1. **Core CRUD Tools** - Direct CLI command mappings
-2. **Code Analysis Tools** - Leverage existing parsers
-3. **Targeting & Overrides** - Essential for testing
-4. **Resources** - Read-only data access
-5. **Prompts** - AI-guided workflows
-6. **Advanced Analytics** - Usage metrics and insights
+1. The current implementation focuses on direct API operations that modify DevCycle configuration
+2. Code analysis features from the CLI (usages, cleanup, diff) are not yet exposed via MCP
+3. MCP Resources and Prompts are part of the MCP specification but not yet implemented
+4. All destructive operations include warnings and require user confirmation
