@@ -4,6 +4,10 @@ import { McpAgent } from 'agents/mcp'
 import { createAuthApp, tokenExchangeCallback } from './auth'
 import { WorkerApiClient } from './apiClient'
 import { MCPToolRegistry, registerAllTools } from '../../src/mcp/tools'
+import {
+    projectSelectionToolDefinitions,
+    projectSelectionToolHandlers,
+} from './projectSelectionTools'
 import type { UserProps, Env } from './types'
 
 /**
@@ -33,17 +37,38 @@ export class DevCycleMCP extends McpAgent<
      * Initialize the MCP server with tools and handlers
      */
     async init() {
+        // Initialize the Worker-specific API client with OAuth tokens and Durable Object storage
+        this.apiClient = new WorkerApiClient(
+            this.props,
+            this.env,
+            this.state.storage,
+        )
+
         console.log('Initializing DevCycle MCP Worker', {
-            userId: this.getUserId(),
-            orgId: this.getOrgId(),
-            hasProject: this.hasProjectKey(),
+            userId: this.apiClient.getUserId(),
+            orgId: this.apiClient.getOrgId(),
+            hasProject: await this.apiClient.hasProjectKey(),
         })
 
-        // Initialize the Worker-specific API client with OAuth tokens
-        this.apiClient = new WorkerApiClient(this.props, this.env)
-
-        // Register all tools from the shared registry
+        // Register all shared tools from the shared registry
         registerAllTools(this.registry)
+
+        // Register Worker-specific project selection tools
+        const projectSelectionTools = projectSelectionToolDefinitions.map(
+            (toolDef) => ({
+                name: toolDef.name,
+                description: toolDef.description || '',
+                inputSchema: toolDef.inputSchema,
+                outputSchema: toolDef.outputSchema,
+                handler: async (args: unknown, apiClient: any) => {
+                    const legacyHandler =
+                        projectSelectionToolHandlers[toolDef.name]
+                    return await legacyHandler(args, apiClient)
+                },
+            }),
+        )
+
+        this.registry.registerMany(projectSelectionTools)
 
         console.log(
             `Registered ${this.registry.size()} MCP tools:`,
@@ -57,7 +82,7 @@ export class DevCycleMCP extends McpAgent<
             {},
             async () => {
                 try {
-                    const userContext = this.apiClient.getUserContext()
+                    const userContext = await this.apiClient.getUserContext()
                     return {
                         content: [
                             {
@@ -105,7 +130,7 @@ export class DevCycleMCP extends McpAgent<
                     try {
                         console.log(`Executing tool: ${tool.name}`, {
                             args,
-                            userId: this.getUserId(),
+                            userId: this.apiClient.getUserId(),
                         })
 
                         // Execute tool with Worker-specific API client that uses OAuth tokens
@@ -136,6 +161,8 @@ export class DevCycleMCP extends McpAgent<
                             responseText = JSON.stringify(result, null, 2)
                         }
 
+                        console.log(`Tool ${tool.name} completed successfully`)
+
                         return {
                             content: [
                                 {
@@ -145,25 +172,31 @@ export class DevCycleMCP extends McpAgent<
                             ],
                         }
                     } catch (error) {
-                        console.error(`Tool execution error: ${tool.name}`, {
+                        console.error(`Tool ${tool.name} error:`, {
                             error:
                                 error instanceof Error
                                     ? error.message
                                     : String(error),
                             args,
-                            userId: this.getUserId(),
+                            userId: this.apiClient.getUserId(),
                         })
 
-                        // Standardized error handling across all tools
-                        const errorMessage =
-                            error instanceof Error
-                                ? error.message
-                                : String(error)
                         return {
                             content: [
                                 {
                                     type: 'text',
-                                    text: `The call to ${tool.name} failed: ${errorMessage}`,
+                                    text: JSON.stringify(
+                                        {
+                                            error:
+                                                error instanceof Error
+                                                    ? error.message
+                                                    : String(error),
+                                            tool: tool.name,
+                                            args,
+                                        },
+                                        null,
+                                        2,
+                                    ),
                                 },
                             ],
                         }
@@ -173,33 +206,6 @@ export class DevCycleMCP extends McpAgent<
         }
 
         console.log('DevCycle MCP Worker initialization completed')
-    }
-
-    /**
-     * Get user ID from claims for logging
-     */
-    private getUserId(): string {
-        const claims = this.props.claims as any
-        return claims?.sub || claims?.email || 'unknown'
-    }
-
-    /**
-     * Get organization ID from claims
-     */
-    private getOrgId(): string {
-        return (this.props.claims as any)?.org_id || 'unknown'
-    }
-
-    /**
-     * Check if user has project key available
-     */
-    private hasProjectKey(): boolean {
-        try {
-            this.apiClient.getUserContext()
-            return true
-        } catch {
-            return false
-        }
     }
 }
 
