@@ -1,0 +1,30 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "types": [
+            "@cloudflare/workers-types",
+            "node"
+        ],
+        "lib": ["ES2022"],
+        "module": "ESNext",
+        "target": "ES2022",
+        "moduleResolution": "bundler",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "declaration": false,
+        "declarationMap": false,
+        "sourceMap": true
+    },
+    "include": [
+        "src/**/*",
+        "../src/mcp/worker/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+} 

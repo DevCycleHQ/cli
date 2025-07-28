@@ -128,8 +128,12 @@
         }
     },
     "scripts": {
-        "build": "shx rm -rf dist && tsc -b && oclif manifest",
+        "build": "shx rm -rf dist && tsc -b && oclif manifest && oclif readme --multi",
+        "build:mcp-shared": "tsc --project tsconfig.mcp.json",
         "build:tar": "oclif pack tarballs",
+        "build:worker": "cd mcp-worker && yarn build",
+        "deploy:worker": "cd mcp-worker && yarn deploy",
+        "dev:worker": "cd mcp-worker && yarn dev",
         "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
         "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
         "lint": "eslint . --config eslint.config.mjs",
