@@ -1,8 +1,8 @@
-import { env } from 'cloudflare:workers'
+// Import removed - using env parameter instead
 import { Hono } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 import * as oauth from 'oauth4webapi'
-import type { UserProps, Env, DevCycleJWTClaims } from './types'
+import type { UserProps } from './types'
 import { OAuthHelpers } from '@cloudflare/workers-oauth-provider'
 import type {
     AuthRequest,
@@ -327,7 +327,7 @@ export async function callback(
         userId: claims.sub!,
     })
 
-    return Response.redirect(redirectTo)
+    return Response.redirect(redirectTo, 302)
 }
 
 /**
@@ -336,70 +336,70 @@ export async function callback(
  * This function handles the token exchange callback for the CloudflareOAuth Provider
  * and allows us to then interact with the Upstream IdP (your Auth0 tenant)
  */
-export async function tokenExchangeCallback(
-    options: TokenExchangeCallbackOptions,
-): Promise<TokenExchangeCallbackResult> {
-    // During the Authorization Code Exchange, we want to make sure that the Access Token issued
-    // by the MCP Server has the same TTL as the one issued by Auth0.
-    if (options.grantType === 'authorization_code') {
-        return {
-            accessTokenTTL: options.props.tokenSet.accessTokenTTL,
-            newProps: {
-                ...options.props,
-            },
-        }
-    }
-
-    if (options.grantType === 'refresh_token') {
-        const auth0RefreshToken = options.props.tokenSet.refreshToken
-        if (!auth0RefreshToken) {
-            throw new Error('No Auth0 refresh token found')
-        }
-
-        const { as, client, clientAuth } = await getOidcConfig({
-            client_id: env.AUTH0_CLIENT_ID,
-            client_secret: env.AUTH0_CLIENT_SECRET,
-            issuer: `https://${env.AUTH0_DOMAIN}/`,
-        })
-
-        // Perform the refresh token exchange with Auth0.
-        const response = await oauth.refreshTokenGrantRequest(
-            as,
-            client,
-            clientAuth,
-            auth0RefreshToken,
-        )
-
-        const refreshTokenResponse = await oauth.processRefreshTokenResponse(
-            as,
-            client,
-            response,
-        )
-
-        // Get the claims from the id_token
-        const claims = oauth.getValidatedIdTokenClaims(refreshTokenResponse)
-        if (!claims) {
-            throw new Error('Received invalid id_token from Auth0')
-        }
-
-        // Store the new token set and claims.
-        return {
-            accessTokenTTL: refreshTokenResponse.expires_in,
-            newProps: {
-                ...options.props,
-                claims: claims,
-                tokenSet: {
-                    accessToken: refreshTokenResponse.access_token,
-                    accessTokenTTL: refreshTokenResponse.expires_in,
-                    idToken: refreshTokenResponse.id_token,
-                    refreshToken:
-                        refreshTokenResponse.refresh_token || auth0RefreshToken,
+export function createTokenExchangeCallback(env: Env) {
+    return async function tokenExchangeCallback(
+        options: TokenExchangeCallbackOptions,
+    ): Promise<TokenExchangeCallbackResult> {
+        // During the Authorization Code Exchange, we want to make sure that the Access Token issued
+        // by the MCP Server has the same TTL as the one issued by Auth0.
+        if (options.grantType === 'authorization_code') {
+            return {
+                accessTokenTTL: options.props.tokenSet.accessTokenTTL,
+                newProps: {
+                    ...options.props,
                 },
-            },
+            }
         }
-    }
 
-    throw new Error(`Unsupported grant type: ${options.grantType}`)
+        if (options.grantType === 'refresh_token') {
+            const auth0RefreshToken = options.props.tokenSet.refreshToken
+            if (!auth0RefreshToken) {
+                throw new Error('No Auth0 refresh token found')
+            }
+
+            const { as, client, clientAuth } = await getOidcConfig({
+                client_id: env.AUTH0_CLIENT_ID,
+                client_secret: env.AUTH0_CLIENT_SECRET,
+                issuer: `https://${env.AUTH0_DOMAIN}/`,
+            })
+
+            // Perform the refresh token exchange with Auth0.
+            const response = await oauth.refreshTokenGrantRequest(
+                as,
+                client,
+                clientAuth,
+                auth0RefreshToken,
+            )
+
+            const refreshTokenResponse =
+                await oauth.processRefreshTokenResponse(as, client, response)
+
+            // Get the claims from the id_token
+            const claims = oauth.getValidatedIdTokenClaims(refreshTokenResponse)
+            if (!claims) {
+                throw new Error('Received invalid id_token from Auth0')
+            }
+
+            // Store the new token set and claims.
+            return {
+                accessTokenTTL: refreshTokenResponse.expires_in,
+                newProps: {
+                    ...options.props,
+                    claims: claims,
+                    tokenSet: {
+                        accessToken: refreshTokenResponse.access_token,
+                        accessTokenTTL: refreshTokenResponse.expires_in,
+                        idToken: refreshTokenResponse.id_token,
+                        refreshToken:
+                            refreshTokenResponse.refresh_token ||
+                            auth0RefreshToken,
+                    },
+                },
+            }
+        }
+
+        throw new Error(`Unsupported grant type: ${options.grantType}`)
+    }
 }
 
 /**

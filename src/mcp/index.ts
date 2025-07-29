@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { DevCycleMCPServer } from './server'
 import { readFileSync } from 'fs'
@@ -53,23 +53,16 @@ async function main() {
     // This ensures that requests from the MCP server are properly identified
     setMCPHeaders(version)
 
-    const server = new Server(
-        {
-            name: 'devcycle',
-            version,
-        },
-        {
-            capabilities: {
-                tools: {},
-            },
-        },
-    )
+    const mcpServer = new McpServer({
+        name: 'DevCycle MCP Local Server',
+        version,
+    })
 
-    const mcpServer = new DevCycleMCPServer(server)
-    await mcpServer.initialize()
+    const dvcMCPServer = new DevCycleMCPServer(mcpServer)
+    await dvcMCPServer.initialize()
 
     const transport = new StdioServerTransport()
-    await server.connect(transport)
+    await mcpServer.connect(transport)
 
     console.error('DevCycle MCP server running on stdio')
 }

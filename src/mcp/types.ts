@@ -65,15 +65,63 @@ export const DeleteFeatureArgsSchema = z.object({
     key: z.string(),
 })
 
-export const ListProjectsArgsSchema = schemas.GetProjectsParams
+export const ListProjectsArgsSchema = z.object({
+    page: schemas.GetProjectsParams.shape.page.describe(
+        'Page number for pagination',
+    ),
+    perPage: schemas.GetProjectsParams.shape.perPage.describe(
+        'Number of items per page (1-1000)',
+    ),
+    sortBy: schemas.GetProjectsParams.shape.sortBy.describe(
+        'Field to sort projects by',
+    ),
+    sortOrder: schemas.GetProjectsParams.shape.sortOrder.describe(
+        'Sort order (ascending or descending)',
+    ),
+    search: schemas.GetProjectsParams.shape.search.describe(
+        'Search term to filter projects by name or key',
+    ),
+    createdBy: schemas.GetProjectsParams.shape.createdBy.describe(
+        'Filter projects by creator user ID',
+    ),
+})
 
-export const CreateProjectArgsSchema = schemas.CreateProjectDto
+export const CreateProjectArgsSchema = z.object({
+    name: schemas.CreateProjectDto.shape.name.describe(
+        'Project name (max 100 characters)',
+    ),
+    key: schemas.CreateProjectDto.shape.key.describe(
+        'Unique project key (lowercase letters, numbers, dots, dashes, underscores only)',
+    ),
+    description: schemas.CreateProjectDto.shape.description.describe(
+        'Project description (max 1000 characters)',
+    ),
+    color: schemas.CreateProjectDto.shape.color.describe(
+        'Project color in hex format (e.g., #FF0000)',
+    ),
+    settings: schemas.CreateProjectDto.shape.settings.describe(
+        'Project settings configuration',
+    ),
+})
 
-export const UpdateProjectArgsSchema = schemas.UpdateProjectDto.extend({
+export const UpdateProjectArgsSchema = z.object({
     key: z
         .string()
         .max(100)
-        .regex(/^[a-z0-9-_.]+$/), // Make key required for identifying the project
+        .regex(/^[a-z0-9-_.]+$/)
+        .describe('Project key to identify which project to update'), // Make key required for identifying the project
+    name: schemas.UpdateProjectDto.shape.name.describe(
+        'Updated project name (max 100 characters)',
+    ),
+    description: schemas.UpdateProjectDto.shape.description.describe(
+        'Updated project description (max 1000 characters)',
+    ),
+    color: schemas.UpdateProjectDto.shape.color.describe(
+        'Updated project color in hex format (e.g., #FF0000)',
+    ),
+    settings: schemas.UpdateProjectDto.shape.settings.describe(
+        'Updated project settings configuration',
+    ),
 })
 
 export const ListEnvironmentsArgsSchema = z.object({

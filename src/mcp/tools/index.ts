@@ -9,10 +9,8 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js'
 import { MCPToolRegistry, MCPToolDefinition } from './registry'
 import { ToolHandler } from '../server'
 import { IDevCycleApiClient } from '../api/interface'
-import { DevCycleApiClient } from '../utils/api'
 
 // Import all tool definitions and handlers
-import { projectToolDefinitions, projectToolHandlers } from './projectTools'
 import { variableToolDefinitions, variableToolHandlers } from './variableTools'
 import {
     environmentToolDefinitions,
@@ -75,9 +73,6 @@ function createToolDefinitions(
  */
 export function registerAllTools(registry: MCPToolRegistry): void {
     // Register all tools using the generic helper
-    registry.registerMany(
-        createToolDefinitions(projectToolDefinitions, projectToolHandlers),
-    )
     registry.registerMany(
         createToolDefinitions(variableToolDefinitions, variableToolHandlers),
     )

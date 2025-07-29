@@ -16,29 +16,7 @@ export type UserProps = {
     }
 }
 
-/**
- * Cloudflare Worker environment bindings
- */
-export interface Env {
-    // OAuth Provider KV namespace for storing session data
-    OAUTH_KV: KVNamespace
-
-    // DevCycle API configuration
-    API_BASE_URL?: string
-
-    // Auth0 configuration
-    AUTH0_DOMAIN: string
-    AUTH0_CLIENT_ID: string
-    AUTH0_CLIENT_SECRET: string
-    AUTH0_AUDIENCE?: string
-    AUTH0_SCOPE?: string
-
-    // Worker configuration
-    NODE_ENV?: string
-
-    // AI binding (if needed for future features)
-    AI?: any
-}
+// Env interface is now generated in worker-configuration.d.ts
 
 /**
  * Extended JWT claims that may contain DevCycle-specific information

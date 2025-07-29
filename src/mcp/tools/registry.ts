@@ -19,6 +19,8 @@ export interface MCPToolDefinition {
     inputSchema: any
     /** Optional JSON schema for output validation */
     outputSchema?: any
+    /** Optional annotations for additional tool metadata */
+    annotations?: any
     /** Tool handler function */
     handler: (args: unknown, client: IDevCycleApiClient) => Promise<any>
 }

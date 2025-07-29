@@ -1,5 +1,13 @@
-import type { UserProps, Env, DevCycleJWTClaims } from './types'
+import type { UserProps, DevCycleJWTClaims } from './types'
 import { IDevCycleApiClient } from '../../dist/mcp/api/interface'
+
+/**
+ * Interface for state management - allows McpAgent or other state managers
+ */
+interface IStateManager {
+    state?: { selectedProjectKey?: string }
+    setState(newState: { selectedProjectKey?: string }): void
+}
 
 /**
  * Worker-specific API client implementation that uses OAuth tokens from JWT claims
@@ -9,7 +17,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
     constructor(
         private props: UserProps,
         private env: Env,
-        private storage?: DurableObjectStorage,
+        private stateManager?: IStateManager,
     ) {}
 
     /**
@@ -114,23 +122,16 @@ export class WorkerApiClient implements IDevCycleApiClient {
     }
 
     /**
-     * Get the project key from Durable Object storage first, then fall back to JWT claims
+     * Get the project key from McpAgent state first, then fall back to JWT claims
      */
     private async getProjectKey(): Promise<string | undefined> {
-        // Priority 1: Check Durable Object storage for selected project
-        if (this.storage) {
-            try {
-                const selectedProjectKey =
-                    await this.storage.get('selectedProjectKey')
-                if (selectedProjectKey) {
-                    return selectedProjectKey as string
-                }
-            } catch (error) {
-                console.warn(
-                    'Failed to get selected project from storage:',
-                    error,
-                )
+        // Priority 1: Check McpAgent state for selected project (if available)
+        try {
+            if (this.stateManager?.state?.selectedProjectKey) {
+                return this.stateManager.state.selectedProjectKey
             }
+        } catch (error) {
+            console.warn('Failed to access state during getProjectKey:', error)
         }
 
         // Priority 2: Fall back to JWT claims
@@ -139,13 +140,20 @@ export class WorkerApiClient implements IDevCycleApiClient {
     }
 
     /**
-     * Set the selected project (stored in Durable Object)
+     * Set the selected project (stored in McpAgent state)
      */
     async setSelectedProject(projectKey: string): Promise<void> {
-        if (!this.storage) {
-            throw new Error('Storage not available for project selection')
+        if (!this.stateManager) {
+            throw new Error(
+                'Project selection not available - state management not initialized',
+            )
         }
-        await this.storage.put('selectedProjectKey', projectKey)
+
+        // Merge with existing state to preserve other state properties
+        this.stateManager.setState({
+            ...(this.stateManager.state || {}),
+            selectedProjectKey: projectKey,
+        })
     }
 
     /**

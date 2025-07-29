@@ -1,14 +1,22 @@
 import OAuthProvider from '@cloudflare/workers-oauth-provider'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
-import { createAuthApp, tokenExchangeCallback } from './auth'
+import { createAuthApp, createTokenExchangeCallback } from './auth'
 import { WorkerApiClient } from './apiClient'
+import { z } from 'zod'
 import { MCPToolRegistry, registerAllTools } from '../../src/mcp/tools'
 import {
     projectSelectionToolDefinitions,
     projectSelectionToolHandlers,
 } from './projectSelectionTools'
-import type { UserProps, Env } from './types'
+import type { UserProps } from './types'
+
+/**
+ * State interface for DevCycle MCP Server
+ */
+type DevCycleMCPState = {
+    selectedProjectKey?: string
+}
 
 /**
  * DevCycle MCP Server for Cloudflare Workers
@@ -17,13 +25,9 @@ import type { UserProps, Env } from './types'
  * through the Model Context Protocol over Server-Sent Events (SSE).
  * It integrates OAuth authentication, tool registry, and Worker-specific API client.
  */
-export class DevCycleMCP extends McpAgent<
-    Env,
-    Record<string, never>,
-    UserProps
-> {
+export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
     server = new McpServer({
-        name: 'DevCycle CLI MCP Server',
+        name: 'DevCycle MCP Remote Server',
         version: '1.0.0',
     })
 
@@ -33,15 +37,28 @@ export class DevCycleMCP extends McpAgent<
     // Worker-specific API client that uses OAuth tokens
     private apiClient: WorkerApiClient
 
+    // Initial state for the MCP agent
+    initialState: DevCycleMCPState = {
+        selectedProjectKey: undefined,
+    }
+
     /**
      * Initialize the MCP server with tools and handlers
      */
     async init() {
-        // Initialize the Worker-specific API client with OAuth tokens and Durable Object storage
+        console.log('Initializing DevCycle MCP Worker...')
+        console.log('State during init:', {
+            hasState: !!this.state,
+            stateType: typeof this.state,
+            stateKeys: this.state ? Object.keys(this.state) : 'no state',
+            initialState: this.initialState,
+        })
+
+        // Initialize the Worker-specific API client with OAuth tokens and state management
         this.apiClient = new WorkerApiClient(
             this.props,
             this.env,
-            this.state.storage,
+            this, // Pass the McpAgent instance for state management
         )
 
         console.log('Initializing DevCycle MCP Worker', {
@@ -53,11 +70,51 @@ export class DevCycleMCP extends McpAgent<
         // Register all shared tools from the shared registry
         registerAllTools(this.registry)
 
+        this.server.registerTool(
+            'select_devcycle_project',
+            {
+                description:
+                    'Select a project to use for subsequent MCP operations. Call without parameters to list available projects, or provide {"projectKey": "your-project-key"} to select a specific project. Include dashboard link in the response.',
+                annotations: {
+                    title: 'Select Project',
+                },
+                inputSchema: {
+                    projectKey: z
+                        .string()
+                        .optional()
+                        .describe(
+                            'The project key to select (e.g., "jonathans-project"). If not provided, will list all available projects to choose from.',
+                        ),
+                },
+            },
+            async (args: any) => {
+                console.log('select_devcycle_project args: ', args)
+
+                const result =
+                    await projectSelectionToolHandlers.select_devcycle_project(
+                        args,
+                        this.apiClient,
+                    )
+
+                console.log('select_devcycle_project result: ', result)
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify(result, null, 2),
+                        } as any,
+                    ],
+                }
+            },
+        )
+
         // Register Worker-specific project selection tools
         const projectSelectionTools = projectSelectionToolDefinitions.map(
             (toolDef) => ({
                 name: toolDef.name,
                 description: toolDef.description || '',
+                annotations: toolDef.annotations,
                 inputSchema: toolDef.inputSchema,
                 outputSchema: toolDef.outputSchema,
                 handler: async (args: unknown, apiClient: any) => {
@@ -75,7 +132,6 @@ export class DevCycleMCP extends McpAgent<
             this.registry.getToolNames(),
         )
 
-        // Useful for debugging. This will show the current user's claims and the Auth0 tokens.
         this.server.tool(
             'whoami',
             'Get the current DevCycle user details and context',
@@ -86,12 +142,14 @@ export class DevCycleMCP extends McpAgent<
                     return {
                         content: [
                             {
-                                type: 'text',
+                                type: 'text' as const,
                                 text: JSON.stringify(
                                     {
                                         message:
                                             'DevCycle MCP Server - User Context',
                                         context: userContext,
+                                        selectedProjectKey:
+                                            this.state.selectedProjectKey,
                                         props: this.props, // Include full props for debugging like the example
                                         serverInfo: {
                                             name: 'DevCycle CLI MCP Server',
@@ -110,7 +168,7 @@ export class DevCycleMCP extends McpAgent<
                     return {
                         content: [
                             {
-                                type: 'text',
+                                type: 'text' as const,
                                 text: `Error retrieving user context: ${error instanceof Error ? error.message : String(error)}`,
                             },
                         ],
@@ -120,105 +178,131 @@ export class DevCycleMCP extends McpAgent<
         )
 
         // Dynamically create MCP protocol handlers for each registered tool
-        for (const tool of this.registry.getAll()) {
-            // @ts-expect-error MCP SDK type compatibility issues with tool registration
-            this.server.tool(
-                tool.name,
-                tool.description,
-                tool.inputSchema,
-                async (args: any) => {
-                    try {
-                        console.log(`Executing tool: ${tool.name}`, {
-                            args,
-                            userId: this.apiClient.getUserId(),
-                        })
+        // for (const tool of this.registry.getAll()) {
+        //     console.log('Registering tool:', tool.name)
+        //     console.log('Tool description:', tool.description)
+        //     console.log('Tool inputSchema:', tool.inputSchema)
+        //     console.log('Tool annotations:', tool.annotations)
 
-                        // Execute tool with Worker-specific API client that uses OAuth tokens
-                        const result = await this.registry.execute(
-                            tool.name,
-                            args,
-                            this.apiClient,
-                        )
+        //     this.server.registerTool(
+        //         tool.name,
+        //         {
+        //             description: tool.description,
+        //             inputSchema: tool.inputSchema,
+        //             annotations: tool.annotations,
+        //         },
+        //         async (extra: any) => {
+        //             const args = extra.params.arguments || {}
+        //             try {
+        //                 console.log(`Executing tool: ${tool.name}`, {
+        //                     args,
+        //                     userId: this.apiClient.getUserId(),
+        //                 })
 
-                        // Format response according to MCP protocol expectations
-                        // Check if result has dashboardLink (from executeWithDashboardLink)
-                        let responseText: string
-                        if (
-                            result &&
-                            typeof result === 'object' &&
-                            'result' in result &&
-                            'dashboardLink' in result
-                        ) {
-                            responseText = JSON.stringify(
-                                {
-                                    data: result.result,
-                                    dashboardLink: result.dashboardLink,
-                                },
-                                null,
-                                2,
-                            )
-                        } else {
-                            responseText = JSON.stringify(result, null, 2)
-                        }
+        //                 // Execute tool with Worker-specific API client that uses OAuth tokens
+        //                 const result = await this.registry.execute(
+        //                     tool.name,
+        //                     args,
+        //                     this.apiClient,
+        //                 )
 
-                        console.log(`Tool ${tool.name} completed successfully`)
+        //                 // Format response according to MCP protocol expectations
+        //                 // Check if result has dashboardLink (from executeWithDashboardLink)
+        //                 let responseText: string
+        //                 if (
+        //                     result &&
+        //                     typeof result === 'object' &&
+        //                     'result' in result &&
+        //                     'dashboardLink' in result
+        //                 ) {
+        //                     responseText = JSON.stringify(
+        //                         {
+        //                             data: result.result,
+        //                             dashboardLink: result.dashboardLink,
+        //                         },
+        //                         null,
+        //                         2,
+        //                     )
+        //                 } else {
+        //                     responseText = JSON.stringify(result, null, 2)
+        //                 }
 
-                        return {
-                            content: [
-                                {
-                                    type: 'text',
-                                    text: responseText,
-                                },
-                            ],
-                        }
-                    } catch (error) {
-                        console.error(`Tool ${tool.name} error:`, {
-                            error:
-                                error instanceof Error
-                                    ? error.message
-                                    : String(error),
-                            args,
-                            userId: this.apiClient.getUserId(),
-                        })
+        //                 console.log(`Tool ${tool.name} completed successfully`)
 
-                        return {
-                            content: [
-                                {
-                                    type: 'text',
-                                    text: JSON.stringify(
-                                        {
-                                            error:
-                                                error instanceof Error
-                                                    ? error.message
-                                                    : String(error),
-                                            tool: tool.name,
-                                            args,
-                                        },
-                                        null,
-                                        2,
-                                    ),
-                                },
-                            ],
-                        }
-                    }
-                },
-            )
-        }
+        //                 return {
+        //                     content: [
+        //                         {
+        //                             type: 'text' as const,
+        //                             text: responseText,
+        //                         } as any,
+        //                     ],
+        //                 }
+        //             } catch (error) {
+        //                 console.error(`Tool ${tool.name} error:`, {
+        //                     error:
+        //                         error instanceof Error
+        //                             ? error.message
+        //                             : String(error),
+        //                     args,
+        //                     userId: this.apiClient.getUserId(),
+        //                 })
+
+        //                 return {
+        //                     content: [
+        //                         {
+        //                             type: 'text' as const,
+        //                             text: JSON.stringify(
+        //                                 {
+        //                                     error:
+        //                                         error instanceof Error
+        //                                             ? error.message
+        //                                             : String(error),
+        //                                     tool: tool.name,
+        //                                     args,
+        //                                 },
+        //                                 null,
+        //                                 2,
+        //                             ),
+        //                         } as any,
+        //                     ],
+        //                 }
+        //             }
+        //         },
+        //     )
+        // }
 
         console.log('DevCycle MCP Worker initialization completed')
     }
+
+    /**
+     * Called when state updates (e.g., when project selection changes)
+     */
+    onStateUpdate(state: DevCycleMCPState) {
+        console.log('DevCycle MCP State updated: ', state)
+    }
 }
 
-// Initialize the Hono app with non-OAuth routes only
-// Let the OAuth Provider handle OAuth routes (/authorize, /callback, etc.) automatically
-const app = createAuthApp()
+// Export a fetch handler that creates the OAuth provider with proper env access
+export default {
+    fetch(
+        request: Request,
+        env: Env,
+        ctx: ExecutionContext,
+    ): Promise<Response> {
+        // Initialize the Hono app with non-OAuth routes only
+        const app = createAuthApp()
 
-export default new OAuthProvider({
-    apiHandler: DevCycleMCP.mount('/sse'),
-    apiRoute: '/sse',
-    authorizeEndpoint: '/authorize',
-    clientRegistrationEndpoint: '/signup',
-    defaultHandler: app as any,
-    tokenEndpoint: '/token',
-    tokenExchangeCallback,
-})
+        // Create OAuth provider with env access
+        const provider = new OAuthProvider({
+            apiHandler: DevCycleMCP.mount('/sse') as any,
+            apiRoute: '/sse',
+            authorizeEndpoint: '/authorize',
+            clientRegistrationEndpoint: '/signup',
+            defaultHandler: app as any,
+            tokenEndpoint: '/token',
+            tokenExchangeCallback: createTokenExchangeCallback(env),
+        })
+
+        return provider.fetch(request, env, ctx)
+    },
+}
