@@ -1,9 +1,5 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
-import {
-    CallToolRequestSchema,
-    ListToolsRequestSchema,
-    Tool,
-} from '@modelcontextprotocol/sdk/types.js'
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { Tool, ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
 import { IDevCycleApiClient } from './api/interface'
@@ -17,10 +13,6 @@ import {
     environmentToolHandlers,
 } from './tools/environmentTools'
 import {
-    projectToolDefinitions,
-    projectToolHandlers,
-} from './tools/projectTools'
-import {
     variableToolDefinitions,
     variableToolHandlers,
 } from './tools/variableTools'
@@ -32,6 +24,7 @@ import {
     resultsToolDefinitions,
     resultsToolHandlers,
 } from './tools/resultsTools'
+import { registerProjectTools } from './tools/projectTools'
 
 // Environment variable to control output schema inclusion
 const ENABLE_OUTPUT_SCHEMAS = process.env.ENABLE_OUTPUT_SCHEMAS === 'true'
@@ -39,13 +32,25 @@ if (ENABLE_OUTPUT_SCHEMAS) {
     console.error('DevCycle MCP Server - Output Schemas: ENABLED')
 }
 
-const ENABLE_DVC_MCP_DEBUG = process.env.ENABLE_DVC_MCP_DEBUG === 'true'
-
 // Tool handler function type
 export type ToolHandler = (
     args: unknown,
     apiClient: IDevCycleApiClient,
 ) => Promise<any>
+
+// Type for the server instance with our helper method
+export type DevCycleMCPServerInstance = {
+    registerToolWithErrorHandling: (
+        name: string,
+        config: {
+            description: string
+            annotations?: any
+            inputSchema?: any
+            outputSchema?: any
+        },
+        handler: (args: any) => Promise<any>,
+    ) => void
+}
 
 // Function to conditionally remove outputSchema from tool definitions
 const processToolDefinitions = (tools: Tool[]): Tool[] => {
@@ -60,32 +65,12 @@ const processToolDefinitions = (tools: Tool[]): Tool[] => {
     })
 }
 
-// Combine all tool definitions
-const allToolDefinitions: Tool[] = processToolDefinitions([
-    ...featureToolDefinitions,
-    ...environmentToolDefinitions,
-    ...projectToolDefinitions,
-    ...variableToolDefinitions,
-    ...selfTargetingToolDefinitions,
-    ...resultsToolDefinitions,
-])
-
-// Combine all tool handlers
-const allToolHandlers: Record<string, ToolHandler> = {
-    ...featureToolHandlers,
-    ...environmentToolHandlers,
-    ...projectToolHandlers,
-    ...variableToolHandlers,
-    ...selfTargetingToolHandlers,
-    ...resultsToolHandlers,
-}
-
 export class DevCycleMCPServer {
     private auth: DevCycleAuth
     private apiClient: DevCycleApiClient
     private writer: Writer
 
-    constructor(private server: Server) {
+    constructor(private server: McpServer) {
         this.writer = new Writer()
         this.writer.headless = true // Always headless for MCP
         this.auth = new DevCycleAuth()
@@ -96,7 +81,6 @@ export class DevCycleMCPServer {
         try {
             await this.setupAuth()
             this.setupToolHandlers()
-            this.setupErrorHandling()
         } catch (error) {
             console.error('Failed to initialize MCP server:', error)
             throw error
@@ -110,6 +94,35 @@ export class DevCycleMCPServer {
             console.error('Failed to initialize authentication:', error)
             throw error
         }
+    }
+
+    // Helper method to register tools with automatic error handling
+    registerToolWithErrorHandling(
+        name: string,
+        config: {
+            description: string
+            inputSchema?: any
+            outputSchema?: any
+            annotations?: ToolAnnotations
+        },
+        handler: (args: any) => Promise<any>,
+    ) {
+        this.server.registerTool(name, config, async (args: any) => {
+            try {
+                const result = await handler(args)
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify(result, null, 2),
+                        },
+                    ],
+                } as any
+            } catch (error) {
+                return this.handleToolError(error, name)
+            }
+        })
     }
 
     private handleToolError(error: unknown, toolName: string) {
@@ -253,76 +266,59 @@ export class DevCycleMCPServer {
     }
 
     private setupToolHandlers() {
-        this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
-            tools: allToolDefinitions,
-        }))
+        // Register project tools using the new direct registration pattern
+        registerProjectTools(this, this.apiClient)
 
-        this.server.setRequestHandler(
-            CallToolRequestSchema,
-            async (request) => {
-                const { name, arguments: args } = request.params
+        // TODO: Other tool modules will be migrated to the new pattern
+        // For now, we'll keep them in the legacy registry approach
 
-                try {
-                    const handler = allToolHandlers[name]
-                    if (!handler) {
-                        throw new Error(`Unknown tool: ${name}`)
-                    }
+        // Register remaining tools using the old pattern temporarily
+        const legacyToolDefinitions: Tool[] = processToolDefinitions([
+            ...featureToolDefinitions,
+            ...environmentToolDefinitions,
+            ...variableToolDefinitions,
+            ...selfTargetingToolDefinitions,
+            ...resultsToolDefinitions,
+        ])
 
+        const legacyToolHandlers: Record<string, ToolHandler> = {
+            ...featureToolHandlers,
+            ...environmentToolHandlers,
+            ...variableToolHandlers,
+            ...selfTargetingToolHandlers,
+            ...resultsToolHandlers,
+        }
+
+        // Register legacy tools individually using the new API
+        for (const toolDef of legacyToolDefinitions) {
+            const handler = legacyToolHandlers[toolDef.name]
+            if (!handler) {
+                console.error(`No handler found for tool: ${toolDef.name}`)
+                continue
+            }
+
+            this.server.registerTool(
+                toolDef.name,
+                {
+                    description: toolDef.description,
+                    annotations: toolDef.annotations,
+                    // Convert JSON schema to empty object for now (we'll update this when migrating each tool)
+                    inputSchema: {},
+                    outputSchema: toolDef.outputSchema ? {} : undefined,
+                },
+                async (args: any) => {
                     const result = await handler(args, this.apiClient)
 
-                    // Return structured content only if output schemas are enabled
-                    if (ENABLE_OUTPUT_SCHEMAS) {
-                        // Check if tool has output schema
-                        const toolDef = allToolDefinitions.find(
-                            (tool) => tool.name === name,
-                        )
-
-                        if (toolDef?.outputSchema) {
-                            // For tools with output schemas, return structured JSON content
-                            const mcpResult = {
-                                content: [
-                                    {
-                                        type: 'json',
-                                        json: result,
-                                    },
-                                ],
-                            }
-                            if (ENABLE_DVC_MCP_DEBUG) {
-                                console.error(
-                                    `MCP ${name} structured JSON result:`,
-                                    JSON.stringify(mcpResult, null, 2),
-                                )
-                            }
-                            return mcpResult
-                        }
-                    }
-
-                    // Default: return as text content (for disabled schemas or tools without schemas)
-                    const mcpResult = {
+                    return {
                         content: [
                             {
-                                type: 'text',
+                                type: 'text' as const,
                                 text: JSON.stringify(result, null, 2),
                             },
                         ],
                     }
-                    if (ENABLE_DVC_MCP_DEBUG) {
-                        console.error(
-                            `MCP ${name} text result:`,
-                            JSON.stringify(mcpResult, null, 2),
-                        )
-                    }
-                    return mcpResult
-                } catch (error) {
-                    return this.handleToolError(error, name)
-                }
-            },
-        )
-    }
-
-    private setupErrorHandling() {
-        this.server.onerror = (error: Error) => {
-            console.error('MCP Server Error:', error)
+                },
+            )
         }
     }
 }

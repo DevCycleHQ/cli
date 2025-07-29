@@ -124,7 +124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/workers-types@npm:^4.20250311.0, @cloudflare/workers-types@npm:^4.20250726.0":
+"@cloudflare/workers-types@npm:^4.20250311.0":
   version: 4.20250726.0
   resolution: "@cloudflare/workers-types@npm:4.20250726.0"
   checksum: 10c0/91c708039cf51bbf6d46b1052508c3c308c425b624281fbd26152e967bcff6d92b9946621fea1fcf0538188d96c0280754b5bb1ca1f003675adb8a4f4b7e44de
@@ -145,7 +145,6 @@ __metadata:
   resolution: "@devcycle/mcp-worker@workspace:."
   dependencies:
     "@cloudflare/workers-oauth-provider": "npm:^0.0.5"
-    "@cloudflare/workers-types": "npm:^4.20250726.0"
     "@modelcontextprotocol/sdk": "npm:^1.15.0"
     "@types/node": "npm:^18.19.68"
     agents: "npm:^0.0.100"

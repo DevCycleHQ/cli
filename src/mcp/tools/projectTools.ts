@@ -1,4 +1,4 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js'
+import { z } from 'zod'
 import { handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchProjects,
@@ -11,8 +11,8 @@ import {
     CreateProjectArgsSchema,
     UpdateProjectArgsSchema,
 } from '../types'
-import { DASHBOARD_LINK_PROPERTY, PROJECT_KEY_PROPERTY } from './commonSchemas'
-import { ToolHandler } from '../server'
+import { IDevCycleApiClient } from '../api/interface'
+import { DevCycleMCPServerInstance } from '../server'
 
 // Helper functions to generate project dashboard links
 const generateProjectDashboardLink = (
@@ -36,266 +36,155 @@ const generateEditProjectLink = (
     return `https://app.devcycle.com/o/${orgId}/settings/projects/${projectKey}/edit`
 }
 
-// =============================================================================
-// INPUT SCHEMAS
-// =============================================================================
-
-const PROJECT_COMMON_PROPERTIES = {
-    name: {
-        type: 'string' as const,
-        description: 'Project name',
-    },
-    description: {
-        type: 'string' as const,
-        description: 'Project description',
-    },
-    key: PROJECT_KEY_PROPERTY,
-    color: {
-        type: 'string' as const,
-        description: 'Project color (hex format)',
-    },
+// Individual handler functions
+export async function listProjectsHandler(
+    args: z.infer<typeof ListProjectsArgsSchema>,
+    apiClient: IDevCycleApiClient,
+) {
+    return await apiClient.executeWithDashboardLink(
+        'listProjects',
+        args,
+        async (authToken: string) => {
+            return await handleZodiosValidationErrors(
+                () => fetchProjects(authToken, args),
+                'fetchProjects',
+            )
+        },
+        generateOrganizationSettingsLink,
+    )
 }
 
-const PROJECT_PAGINATION_PROPERTIES = {
-    page: {
-        type: 'number' as const,
-        description: 'Page number',
-        minimum: 1,
-        default: 1,
-    },
-    perPage: {
-        type: 'number' as const,
-        description: 'Items per page',
-        minimum: 1,
-        maximum: 1000,
-        default: 100,
-    },
-    sortBy: {
-        type: 'string' as const,
-        description: 'Sort field',
-        enum: [
-            'createdAt',
-            'updatedAt',
-            'name',
-            'key',
-            'createdBy',
-            'propertyKey',
-        ],
-        default: 'createdAt',
-    },
-    sortOrder: {
-        type: 'string' as const,
-        description: 'Sort order',
-        enum: ['asc', 'desc'],
-        default: 'desc',
-    },
-    search: {
-        type: 'string' as const,
-        description: 'Search query to filter results',
-    },
-    createdBy: {
-        type: 'string' as const,
-        description: 'Filter by creator',
-    },
+export async function getCurrentProjectHandler(apiClient: IDevCycleApiClient) {
+    return await apiClient.executeWithDashboardLink(
+        'getCurrentProject',
+        null,
+        async (authToken: string, projectKey: string | undefined) => {
+            if (!projectKey) {
+                throw new Error(
+                    'Project key is required for getting current project',
+                )
+            }
+            return await handleZodiosValidationErrors(
+                () => fetchProject(authToken, projectKey),
+                'fetchProject',
+            )
+        },
+        generateProjectDashboardLink,
+    )
 }
 
-// =============================================================================
-// OUTPUT SCHEMAS
-// =============================================================================
-
-const PROJECT_OBJECT_SCHEMA = {
-    type: 'object' as const,
-    description: 'Project object details',
-    properties: {
-        _id: {
-            type: 'string' as const,
-            description: 'Project MongoDB ID',
+export async function createProjectHandler(
+    args: z.infer<typeof CreateProjectArgsSchema>,
+    apiClient: IDevCycleApiClient,
+) {
+    return await apiClient.executeWithDashboardLink(
+        'createProject',
+        args,
+        async (authToken: string) => {
+            return await handleZodiosValidationErrors(
+                () => createProject(authToken, args),
+                'createProject',
+            )
         },
-        key: PROJECT_KEY_PROPERTY,
-        name: {
-            type: 'string' as const,
-            description: 'Project name',
-        },
-        description: {
-            type: 'string' as const,
-            description: 'Project description',
-        },
-        color: {
-            type: 'string' as const,
-            description: 'Project color (hex format)',
-        },
-        createdAt: {
-            type: 'string' as const,
-            format: 'date-time',
-            description: 'Project creation timestamp',
-        },
-        updatedAt: {
-            type: 'string' as const,
-            format: 'date-time',
-            description: 'Project last update timestamp',
-        },
-    },
-    required: ['_id', 'key', 'name', 'createdAt', 'updatedAt'],
+        generateProjectDashboardLink,
+    )
 }
 
-// Complete output schema definitions
-const PROJECT_OUTPUT_SCHEMA = {
-    type: 'object' as const,
-    properties: {
-        result: PROJECT_OBJECT_SCHEMA,
-        dashboardLink: DASHBOARD_LINK_PROPERTY,
-    },
-    required: ['result', 'dashboardLink'],
+export async function updateProjectHandler(
+    args: z.infer<typeof UpdateProjectArgsSchema>,
+    apiClient: IDevCycleApiClient,
+) {
+    const { key, ...updateParams } = args
+
+    return await apiClient.executeWithDashboardLink(
+        'updateProject',
+        args,
+        async (authToken: string) => {
+            return await handleZodiosValidationErrors(
+                () => updateProject(authToken, key, updateParams),
+                'updateProject',
+            )
+        },
+        generateEditProjectLink,
+    )
 }
 
-// =============================================================================
-// TOOL DEFINITIONS
-// =============================================================================
+/**
+ * Register project tools with the MCP server using the new direct registration pattern
+ */
+export function registerProjectTools(
+    serverInstance: DevCycleMCPServerInstance,
+    apiClient: IDevCycleApiClient,
+): void {
+    // List Projects
+    serverInstance.registerToolWithErrorHandling(
+        'list_projects',
+        {
+            description:
+                'List all projects in the current organization. Include dashboard link in the response.',
+            annotations: {
+                title: 'List Projects',
+                readOnlyHint: true,
+            },
+            inputSchema: ListProjectsArgsSchema.shape,
+        },
+        async (args: any) => {
+            const validatedArgs = ListProjectsArgsSchema.parse(args)
 
-export const projectToolDefinitions: Tool[] = [
-    {
-        name: 'list_projects',
-        description:
-            'List all projects in the current organization. Include dashboard link in the response.',
-        annotations: {
-            title: 'List Projects',
-            readOnlyHint: true,
+            return await listProjectsHandler(validatedArgs, apiClient)
         },
-        inputSchema: {
-            type: 'object',
-            properties: PROJECT_PAGINATION_PROPERTIES,
-        },
-        outputSchema: {
-            type: 'object' as const,
-            properties: {
-                result: {
-                    type: 'array' as const,
-                    description: 'Array of project objects in the organization',
-                    items: PROJECT_OBJECT_SCHEMA,
-                },
-                dashboardLink: DASHBOARD_LINK_PROPERTY,
-            },
-            required: ['result', 'dashboardLink'],
-        },
-    },
-    {
-        name: 'get_current_project',
-        description:
-            'Get the currently selected project. Include dashboard link in the response.',
-        annotations: {
-            title: 'Get Current Project',
-            readOnlyHint: true,
-        },
-        inputSchema: {
-            type: 'object',
-            properties: {
-                random_string: {
-                    type: 'string',
-                    description: 'Dummy parameter for no-parameter tools',
-                },
-            },
-            required: ['random_string'],
-        },
-        outputSchema: PROJECT_OUTPUT_SCHEMA,
-    },
-    {
-        name: 'create_project',
-        description:
-            'Create a new project. Include dashboard link in the response.',
-        annotations: {
-            title: 'Create Project',
-        },
-        inputSchema: {
-            type: 'object',
-            properties: PROJECT_COMMON_PROPERTIES,
-            required: ['name', 'key'],
-        },
-        outputSchema: PROJECT_OUTPUT_SCHEMA,
-    },
-    {
-        name: 'update_project',
-        description:
-            'Update an existing project. Include dashboard link in the response.',
-        annotations: {
-            title: 'Update Project',
-        },
-        inputSchema: {
-            type: 'object',
-            properties: PROJECT_COMMON_PROPERTIES,
-            required: ['key'],
-        },
-        outputSchema: PROJECT_OUTPUT_SCHEMA,
-    },
-]
+    )
 
-// Legacy handlers for backward compatibility
-export const projectToolHandlers: Record<string, ToolHandler> = {
-    list_projects: async (args: unknown, apiClient) => {
-        console.error('list_projects tool called with args:', args)
-        const validatedArgs = ListProjectsArgsSchema.parse(args)
+    // Get Current Project (no parameters needed)
+    serverInstance.registerToolWithErrorHandling(
+        'get_current_project',
+        {
+            description:
+                'Get the currently selected project. Include dashboard link in the response.',
+            annotations: {
+                title: 'Get Current Project',
+                readOnlyHint: true,
+            },
+            inputSchema: {}, // No parameters needed
+        },
+        async () => {
+            return await getCurrentProjectHandler(apiClient)
+        },
+    )
 
-        return await apiClient.executeWithDashboardLink(
-            'listProjects',
-            validatedArgs,
-            async (authToken: string) => {
-                // projectKey not used for listing all projects
-                return await handleZodiosValidationErrors(
-                    () => fetchProjects(authToken, validatedArgs),
-                    'fetchProjects',
-                )
+    // Create Project
+    serverInstance.registerToolWithErrorHandling(
+        'create_project',
+        {
+            description:
+                'Create a new project. Include dashboard link in the response.',
+            annotations: {
+                title: 'Create Project',
             },
-            generateOrganizationSettingsLink,
-        )
-    },
-    get_current_project: async (args: unknown, apiClient) => {
-        return await apiClient.executeWithDashboardLink(
-            'getCurrentProject',
-            null,
-            async (authToken: string, projectKey: string | undefined) => {
-                if (!projectKey) {
-                    throw new Error(
-                        'Project key is required for getting current project',
-                    )
-                }
-                return await handleZodiosValidationErrors(
-                    () => fetchProject(authToken, projectKey),
-                    'fetchProject',
-                )
-            },
-            generateProjectDashboardLink,
-        )
-    },
-    create_project: async (args: unknown, apiClient) => {
-        const validatedArgs = CreateProjectArgsSchema.parse(args)
+            inputSchema: CreateProjectArgsSchema.shape,
+        },
+        async (args: any) => {
+            const validatedArgs = CreateProjectArgsSchema.parse(args)
 
-        return await apiClient.executeWithDashboardLink(
-            'createProject',
-            validatedArgs,
-            async (authToken: string) => {
-                // projectKey not used for creating projects
-                return await handleZodiosValidationErrors(
-                    () => createProject(authToken, validatedArgs),
-                    'createProject',
-                )
-            },
-            generateProjectDashboardLink,
-        )
-    },
-    update_project: async (args: unknown, apiClient) => {
-        const validatedArgs = UpdateProjectArgsSchema.parse(args)
-        const { key, ...updateParams } = validatedArgs
+            return await createProjectHandler(validatedArgs, apiClient)
+        },
+    )
 
-        return await apiClient.executeWithDashboardLink(
-            'updateProject',
-            validatedArgs,
-            async (authToken: string) => {
-                // projectKey not used - we use the key from validated args
-                return await handleZodiosValidationErrors(
-                    () => updateProject(authToken, key, updateParams),
-                    'updateProject',
-                )
+    // Update Project
+    serverInstance.registerToolWithErrorHandling(
+        'update_project',
+        {
+            description:
+                'Update an existing project. Include dashboard link in the response.',
+            annotations: {
+                title: 'Update Project',
             },
-            generateEditProjectLink,
-        )
-    },
+            inputSchema: UpdateProjectArgsSchema.shape,
+        },
+        async (args: any) => {
+            const validatedArgs = UpdateProjectArgsSchema.parse(args)
+
+            return await updateProjectHandler(validatedArgs, apiClient)
+        },
+    )
 }

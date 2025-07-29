@@ -4,7 +4,6 @@
         "outDir": "./dist",
         "rootDir": "../",
         "types": [
-            "@cloudflare/workers-types",
             "node"
         ],
         "lib": ["ES2022"],
@@ -21,7 +20,8 @@
     },
     "include": [
         "src/**/*",
-        "../src/mcp/**/*"
+        "../src/mcp/**/*",
+        "worker-configuration.d.ts"
     ],
     "exclude": [
         "node_modules",

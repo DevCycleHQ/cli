@@ -1,10 +1,8 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
+import { z } from 'zod'
 import { handleZodiosValidationErrors } from '../../src/mcp/utils/api'
 import { fetchProjects, fetchProject } from '../../src/api/projects'
-import {
-    DASHBOARD_LINK_PROPERTY,
-    PROJECT_KEY_PROPERTY,
-} from '../../src/mcp/tools/commonSchemas'
+// Removed commonSchemas imports - using explicit inline schemas for better MCP compatibility
 import { ToolHandler } from '../../src/mcp/server'
 
 // Helper functions to generate dashboard links
@@ -30,17 +28,17 @@ export const projectSelectionToolDefinitions: Tool[] = [
     {
         name: 'select_devcycle_project',
         description:
-            'Select a project to use for subsequent MCP operations. If no project_key is provided, lists all available projects. Include dashboard link in the response.',
+            'Select a project to use for subsequent MCP operations. Call without parameters to list available projects, or provide {"projectKey": "your-project-key"} to select a specific project. Include dashboard link in the response.',
         annotations: {
             title: 'Select Project',
         },
         inputSchema: {
             type: 'object',
             properties: {
-                project_key: {
-                    ...PROJECT_KEY_PROPERTY,
-                    description:
-                        'The project key to select. If not provided, will list all available projects to choose from.',
+                projectKey: {
+                    type: 'string',
+                    // description:
+                    //     'The project key to select (e.g., "jonathans-project"). If not provided, will list all available projects to choose from.',
                 },
             },
         },
@@ -54,7 +52,10 @@ export const projectSelectionToolDefinitions: Tool[] = [
                             type: 'object',
                             description: 'The selected project details',
                             properties: {
-                                key: PROJECT_KEY_PROPERTY,
+                                key: {
+                                    type: 'string',
+                                    description: 'The project key',
+                                },
                                 name: {
                                     type: 'string',
                                     description: 'Project name',
@@ -72,7 +73,10 @@ export const projectSelectionToolDefinitions: Tool[] = [
                             items: {
                                 type: 'object',
                                 properties: {
-                                    key: PROJECT_KEY_PROPERTY,
+                                    key: {
+                                        type: 'string',
+                                        description: 'The project key',
+                                    },
                                     name: {
                                         type: 'string',
                                         description: 'Project name',
@@ -90,7 +94,12 @@ export const projectSelectionToolDefinitions: Tool[] = [
                         },
                     },
                 },
-                dashboardLink: DASHBOARD_LINK_PROPERTY,
+                dashboardLink: {
+                    type: 'string',
+                    format: 'uri',
+                    description:
+                        'URL to view and manage resources in the DevCycle dashboard',
+                },
             },
             required: ['result', 'dashboardLink'],
         },
@@ -98,15 +107,26 @@ export const projectSelectionToolDefinitions: Tool[] = [
 ]
 
 // =============================================================================
+// VALIDATION SCHEMAS
+// =============================================================================
+
+const SelectProjectArgsSchema = z.object({
+    projectKey: z.string().optional(),
+})
+
+// =============================================================================
 // TOOL HANDLERS
 // =============================================================================
 
 export const projectSelectionToolHandlers: Record<string, ToolHandler> = {
     select_devcycle_project: async (args: unknown, apiClient) => {
-        const validatedArgs = args as { project_key?: string }
+        const validatedArgs = SelectProjectArgsSchema.parse(args)
+        console.log('select_devcycle_project validatedArgs: ', validatedArgs)
 
         // If no project key provided, list available projects
-        const projectKey = validatedArgs.project_key
+        const projectKey = validatedArgs.projectKey
+        console.log('select_devcycle_project projectKey: ', projectKey)
+
         if (!projectKey) {
             return await apiClient.executeWithDashboardLink(
                 'listProjectsForSelection',
@@ -149,13 +169,7 @@ export const projectSelectionToolHandlers: Record<string, ToolHandler> = {
                 )
 
                 // Set the selected project in storage
-                if (apiClient.setSelectedProject) {
-                    await apiClient.setSelectedProject(projectKey)
-                } else {
-                    throw new Error(
-                        'Project selection not supported in this environment',
-                    )
-                }
+                await apiClient.setSelectedProject!(projectKey)
 
                 return {
                     selectedProject: {
@@ -167,7 +181,7 @@ export const projectSelectionToolHandlers: Record<string, ToolHandler> = {
                 }
             },
             (orgId: string) =>
-                generateProjectDashboardLink(orgId, validatedArgs.project_key),
+                generateProjectDashboardLink(orgId, validatedArgs.projectKey),
         )
     },
 }
