@@ -44,7 +44,9 @@ const generateFeaturesDashboardLink = (
     projectKey: string | undefined,
 ): string => {
     if (!projectKey) {
-        throw new Error('Project key is required for features dashboard link')
+        throw new Error(
+            'Project key is required for features dashboard link. Please select a project using the select_devcycle_project tool first.',
+        )
     }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features`
 }
@@ -56,7 +58,9 @@ const generateFeatureDashboardLink = (
     page: 'overview' | 'manage-feature' | 'audit-log' = 'overview',
 ): string => {
     if (!projectKey) {
-        throw new Error('Project key is required for feature dashboard link')
+        throw new Error(
+            'Project key is required for feature dashboard link. Please select a project using the select_devcycle_project tool first.',
+        )
     }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features/${featureKey}/${page}`
 }
@@ -71,7 +75,9 @@ export async function listFeaturesHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () => fetchFeatures(authToken, projectKey, args),
@@ -95,7 +101,9 @@ export async function createFeatureHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () => createFeature(authToken, projectKey, args),
@@ -123,7 +131,9 @@ export async function updateFeatureHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () => updateFeature(authToken, projectKey, key, updateData),
@@ -151,7 +161,9 @@ export async function updateFeatureStatusHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -178,7 +190,9 @@ export async function deleteFeatureHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             await handleZodiosValidationErrors(
                 () => deleteFeature(authToken, projectKey, args.key),
@@ -201,7 +215,9 @@ export async function fetchFeatureVariationsHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () => fetchVariations(authToken, projectKey, args.feature_key),
@@ -229,7 +245,9 @@ export async function createFeatureVariationHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -263,7 +281,9 @@ export async function updateFeatureVariationHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -296,7 +316,9 @@ export async function enableFeatureTargetingHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             await handleZodiosValidationErrors(
                 () =>
@@ -331,7 +353,9 @@ export async function disableFeatureTargetingHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             await handleZodiosValidationErrors(
                 () =>
@@ -366,7 +390,9 @@ export async function listFeatureTargetingHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -400,7 +426,9 @@ export async function updateFeatureTargetingHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -433,7 +461,9 @@ export async function getFeatureAuditLogHistoryHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () =>

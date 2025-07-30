@@ -19,7 +19,7 @@ const generateFeatureAnalyticsDashboardLink = (
 ): string => {
     if (!projectKey) {
         throw new Error(
-            'Project key is required for feature analytics dashboard link',
+            'Project key is required for feature analytics dashboard link. Please select a project using the select_devcycle_project tool first.',
         )
     }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features/${featureKey}/analytics`
@@ -31,7 +31,7 @@ const generateProjectAnalyticsDashboardLink = (
 ): string => {
     if (!projectKey) {
         throw new Error(
-            'Project key is required for project analytics dashboard link',
+            'Project key is required for project analytics dashboard link. Please select a project using the select_devcycle_project tool first.',
         )
     }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/analytics`
@@ -47,7 +47,9 @@ export async function getFeatureTotalEvaluationsHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             const { featureKey, ...apiQueries } = args
 
@@ -80,7 +82,9 @@ export async function getProjectTotalEvaluationsHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () => fetchProjectTotalEvaluations(authToken, projectKey, args),

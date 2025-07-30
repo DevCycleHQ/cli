@@ -206,18 +206,10 @@ export class WorkerApiClient implements IDevCycleApiClient {
      */
     public async getUserContext() {
         const claims = this.props.claims as DevCycleJWTClaims
-        let projectKey: string | undefined
-        try {
-            projectKey = await this.getProjectKey()
-        } catch {
-            projectKey = undefined
-        }
-        console.log('User context:', claims)
 
         return {
             userId: this.getUserId(),
             orgId: this.getOrgId(),
-            projectKey: projectKey,
             email: claims?.email,
             name: claims?.name,
             hasAccessToken: !!this.props.tokenSet?.accessToken,

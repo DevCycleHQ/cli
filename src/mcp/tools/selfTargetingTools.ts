@@ -29,7 +29,9 @@ export async function getSelfTargetingIdentityHandler(
         null,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () => fetchUserProfile(authToken, projectKey),
@@ -49,7 +51,9 @@ export async function updateSelfTargetingIdentityHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -71,7 +75,9 @@ export async function listSelfTargetingOverridesHandler(
         null,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () => fetchProjectOverridesForUser(authToken, projectKey),
@@ -91,7 +97,9 @@ export async function setSelfTargetingOverrideHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -115,7 +123,9 @@ export async function clearFeatureSelfTargetingOverridesHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             await handleZodiosValidationErrors(
                 () =>
@@ -144,7 +154,9 @@ export async function clearAllSelfTargetingOverridesHandler(
         null,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for this operation')
+                throw new Error(
+                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             await handleZodiosValidationErrors(
                 () => deleteAllProjectOverrides(authToken, projectKey),
