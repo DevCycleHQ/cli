@@ -3,7 +3,6 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
 import { createAuthApp, createTokenExchangeCallback } from './auth'
 import { WorkerApiClient } from './apiClient'
-import { z } from 'zod'
 
 // Import register functions from the modernized CLI modules
 import { registerProjectTools } from '../../src/mcp/tools/projectTools'
@@ -52,14 +51,6 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
      * Initialize the MCP server with tools and handlers
      */
     async init() {
-        console.log('Initializing DevCycle MCP Worker...')
-        console.log('State during init:', {
-            hasState: !!this.state,
-            stateType: typeof this.state,
-            stateKeys: this.state ? Object.keys(this.state) : 'no state',
-            initialState: this.initialState,
-        })
-
         // Initialize the Worker-specific API client with OAuth tokens and state management
         this.apiClient = new WorkerApiClient(
             this.props,
@@ -141,48 +132,6 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
         // Register worker-specific project selection tools using the modern pattern
         registerProjectSelectionTools(serverAdapter, this.apiClient)
 
-        console.log('✅ All CLI tools registered successfully in worker')
-
-        // Project selection tools are now registered via registerProjectSelectionTools() above
-
-        this.server.tool(
-            'whoami',
-            'Get the current DevCycle user details and context',
-            {},
-            async () => {
-                try {
-                    const userContext = await this.apiClient.getUserContext()
-                    return {
-                        content: [
-                            {
-                                type: 'text' as const,
-                                text: JSON.stringify(
-                                    {
-                                        message:
-                                            'DevCycle MCP Server - User Context',
-                                        context: userContext,
-                                        selectedProjectKey:
-                                            this.state.selectedProjectKey,
-                                    },
-                                    null,
-                                    2,
-                                ),
-                            },
-                        ],
-                    }
-                } catch (error) {
-                    return {
-                        content: [
-                            {
-                                type: 'text' as const,
-                                text: `Error retrieving user context: ${error instanceof Error ? error.message : String(error)}`,
-                            },
-                        ],
-                    }
-                }
-            },
-        )
-
         console.log('✅ DevCycle MCP Worker initialization completed')
     }
 
@@ -206,12 +155,17 @@ export default {
 
         // Create OAuth provider with env access
         const provider = new OAuthProvider({
-            apiHandler: DevCycleMCP.mount('/sse') as any,
-            apiRoute: '/sse',
-            authorizeEndpoint: '/authorize',
-            clientRegistrationEndpoint: '/signup',
-            defaultHandler: app as any,
-            tokenEndpoint: '/token',
+            apiHandlers: {
+                // @ts-expect-error - type errors with the OAuthProvider
+                '/sse': DevCycleMCP.serveSSE('/sse'),
+                // @ts-expect-error - type errors with the OAuthProvider
+                '/mcp': DevCycleMCP.serve('/mcp'),
+            },
+            // @ts-expect-error - type erorrs with the OAuthProvider
+            defaultHandler: app,
+            authorizeEndpoint: '/oauth/authorize',
+            tokenEndpoint: '/oauth/token',
+            clientRegistrationEndpoint: '/oauth/register',
             tokenExchangeCallback: createTokenExchangeCallback(env),
         })
 

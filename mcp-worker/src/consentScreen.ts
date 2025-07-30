@@ -156,7 +156,7 @@ export function renderConsentScreen({
                         </p>
                     </div>
 
-                    <form method="POST" action="/authorize/consent">
+                    <form method="POST" action="/oauth/authorize/consent">
                         <input
                             type="hidden"
                             name="transaction_state"

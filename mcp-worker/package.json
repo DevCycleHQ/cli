@@ -23,5 +23,6 @@
         "@types/node": "^18.19.68",
         "typescript": "^5.7.2",
         "wrangler": "^4.22.0"
-    }
+    },
+    "packageManager": "yarn@4.9.2"
 }
