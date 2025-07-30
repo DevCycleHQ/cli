@@ -116,7 +116,6 @@ export function registerProjectTools(
     serverInstance: DevCycleMCPServerInstance,
     apiClient: IDevCycleApiClient,
 ): void {
-    // List Projects
     serverInstance.registerToolWithErrorHandling(
         'list_projects',
         {
@@ -135,7 +134,6 @@ export function registerProjectTools(
         },
     )
 
-    // Get Current Project (no parameters needed)
     serverInstance.registerToolWithErrorHandling(
         'get_current_project',
         {
@@ -152,7 +150,6 @@ export function registerProjectTools(
         },
     )
 
-    // Create Project
     serverInstance.registerToolWithErrorHandling(
         'create_project',
         {
@@ -170,7 +167,6 @@ export function registerProjectTools(
         },
     )
 
-    // Update Project
     serverInstance.registerToolWithErrorHandling(
         'update_project',
         {
