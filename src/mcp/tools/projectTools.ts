@@ -20,7 +20,9 @@ const generateProjectDashboardLink = (
     projectKey: string | undefined,
 ): string => {
     if (!projectKey) {
-        throw new Error('Project key is required for project dashboard link')
+        throw new Error(
+            'Project key is required for project dashboard link. Please select a project using the select_devcycle_project tool first.',
+        )
     }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}`
 }
@@ -61,7 +63,7 @@ export async function getCurrentProjectHandler(apiClient: IDevCycleApiClient) {
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for getting current project',
+                    'Project key is required for getting current project. Please select a project using the select_devcycle_project tool first.',
                 )
             }
             return await handleZodiosValidationErrors(

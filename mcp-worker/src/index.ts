@@ -163,13 +163,6 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
                                         context: userContext,
                                         selectedProjectKey:
                                             this.state.selectedProjectKey,
-                                        props: this.props, // Include full props for debugging like the example
-                                        serverInfo: {
-                                            name: 'DevCycle CLI MCP Server',
-                                            version: '1.0.0',
-                                            environment: this.env.NODE_ENV,
-                                            apiBaseUrl: this.env.API_BASE_URL,
-                                        },
                                     },
                                     null,
                                     2,
@@ -191,9 +184,6 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
         )
 
         console.log('✅ DevCycle MCP Worker initialization completed')
-        console.log(
-            '📊 Total registered tools: 37 CLI tools + 1 project selection tool + 1 whoami tool',
-        )
     }
 
     /**

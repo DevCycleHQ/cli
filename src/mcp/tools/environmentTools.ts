@@ -22,7 +22,7 @@ const generateEnvironmentDashboardLink = (
 ): string => {
     if (!projectKey) {
         throw new Error(
-            'Project key is required for environment dashboard link',
+            'Project key is required for environment dashboard link. Please select a project using the select_devcycle_project tool first.',
         )
     }
     return `https://app.devcycle.com/o/${orgId}/settings/p/${projectKey}/environments`
@@ -39,7 +39,7 @@ export async function listEnvironmentsHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for listing environments',
+                    'Project key is required for listing environments. Please select a project using the select_devcycle_project tool first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -60,7 +60,9 @@ export async function getSdkKeysHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error('Project key is required for getting SDK keys')
+                throw new Error(
+                    'Project key is required for getting SDK keys. Please select a project using the select_devcycle_project tool first.',
+                )
             }
             const environment = await handleZodiosValidationErrors(
                 () =>
@@ -100,7 +102,7 @@ export async function createEnvironmentHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for creating environments',
+                    'Project key is required for creating environments. Please select a project using the select_devcycle_project tool first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -124,7 +126,7 @@ export async function updateEnvironmentHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for updating environments',
+                    'Project key is required for updating environments. Please select a project using the select_devcycle_project tool first.',
                 )
             }
             return await handleZodiosValidationErrors(

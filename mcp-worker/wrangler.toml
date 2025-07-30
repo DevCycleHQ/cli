@@ -4,6 +4,11 @@ main = "src/index.ts"
 compatibility_date = "2025-06-28"
 compatibility_flags = ["nodejs_compat"]
 
+# Production route
+[[routes]]
+pattern = "mcp.devcycle.com/*"
+zone_name = "devcycle.com"
+
 # Durable Objects configuration
 [[migrations]]
 new_sqlite_classes = ["DevCycleMCP"]
