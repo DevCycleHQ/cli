@@ -204,7 +204,7 @@ export async function confirmConsent(c: any) {
     authorizationUrl.searchParams.set('client_id', c.env.AUTH0_CLIENT_ID)
     authorizationUrl.searchParams.set(
         'redirect_uri',
-        new URL('/callback', c.req.url).href,
+        new URL('/oauth/callback', c.req.url).href,
     )
     authorizationUrl.searchParams.set('response_type', 'code')
     authorizationUrl.searchParams.set('audience', c.env.AUTH0_AUDIENCE)
@@ -285,7 +285,7 @@ export async function callback(
         client,
         clientAuth,
         params,
-        new URL('/callback', c.req.url).href,
+        new URL('/oauth/callback', c.req.url).href,
         auth0AuthRequest.codeVerifier,
     )
 
@@ -411,9 +411,9 @@ export function createAuthApp(): Hono<{
     const app = new Hono<{ Bindings: Env & { OAUTH_PROVIDER: OAuthHelpers } }>()
 
     // OAuth routes - these are required for the OAuth flow
-    app.get('/authorize', authorize)
-    app.post('/authorize/consent', confirmConsent)
-    app.get('/callback', callback)
+    app.get('/oauth/authorize', authorize)
+    app.post('/oauth/authorize/consent', confirmConsent)
+    app.get('/oauth/callback', callback)
 
     // Health check
     app.get('/health', (c) => {
