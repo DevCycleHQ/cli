@@ -4,27 +4,13 @@ import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
 import { IDevCycleApiClient } from './api/interface'
 import Writer from '../ui/writer'
-import {
-    featureToolDefinitions,
-    featureToolHandlers,
-} from './tools/featureTools'
-import {
-    environmentToolDefinitions,
-    environmentToolHandlers,
-} from './tools/environmentTools'
-import {
-    variableToolDefinitions,
-    variableToolHandlers,
-} from './tools/variableTools'
-import {
-    selfTargetingToolDefinitions,
-    selfTargetingToolHandlers,
-} from './tools/selfTargetingTools'
-import {
-    resultsToolDefinitions,
-    resultsToolHandlers,
-} from './tools/resultsTools'
+import { registerFeatureTools } from './tools/featureTools'
+import { registerEnvironmentTools } from './tools/environmentTools'
+import { registerVariableTools } from './tools/variableTools'
+import { registerSelfTargetingTools } from './tools/selfTargetingTools'
+import { registerResultsTools } from './tools/resultsTools'
 import { registerProjectTools } from './tools/projectTools'
+import { registerCustomPropertiesTools } from './tools/customPropertiesTools'
 
 // Environment variable to control output schema inclusion
 const ENABLE_OUTPUT_SCHEMAS = process.env.ENABLE_OUTPUT_SCHEMAS === 'true'
@@ -268,57 +254,11 @@ export class DevCycleMCPServer {
     private setupToolHandlers() {
         // Register project tools using the new direct registration pattern
         registerProjectTools(this, this.apiClient)
-
-        // TODO: Other tool modules will be migrated to the new pattern
-        // For now, we'll keep them in the legacy registry approach
-
-        // Register remaining tools using the old pattern temporarily
-        const legacyToolDefinitions: Tool[] = processToolDefinitions([
-            ...featureToolDefinitions,
-            ...environmentToolDefinitions,
-            ...variableToolDefinitions,
-            ...selfTargetingToolDefinitions,
-            ...resultsToolDefinitions,
-        ])
-
-        const legacyToolHandlers: Record<string, ToolHandler> = {
-            ...featureToolHandlers,
-            ...environmentToolHandlers,
-            ...variableToolHandlers,
-            ...selfTargetingToolHandlers,
-            ...resultsToolHandlers,
-        }
-
-        // Register legacy tools individually using the new API
-        for (const toolDef of legacyToolDefinitions) {
-            const handler = legacyToolHandlers[toolDef.name]
-            if (!handler) {
-                console.error(`No handler found for tool: ${toolDef.name}`)
-                continue
-            }
-
-            this.server.registerTool(
-                toolDef.name,
-                {
-                    description: toolDef.description,
-                    annotations: toolDef.annotations,
-                    // Convert JSON schema to empty object for now (we'll update this when migrating each tool)
-                    inputSchema: {},
-                    outputSchema: toolDef.outputSchema ? {} : undefined,
-                },
-                async (args: any) => {
-                    const result = await handler(args, this.apiClient)
-
-                    return {
-                        content: [
-                            {
-                                type: 'text' as const,
-                                text: JSON.stringify(result, null, 2),
-                            },
-                        ],
-                    }
-                },
-            )
-        }
+        registerCustomPropertiesTools(this, this.apiClient)
+        registerEnvironmentTools(this, this.apiClient)
+        registerFeatureTools(this, this.apiClient)
+        registerResultsTools(this, this.apiClient)
+        registerSelfTargetingTools(this, this.apiClient)
+        registerVariableTools(this, this.apiClient)
     }
 }

@@ -4,11 +4,20 @@ import { McpAgent } from 'agents/mcp'
 import { createAuthApp, createTokenExchangeCallback } from './auth'
 import { WorkerApiClient } from './apiClient'
 import { z } from 'zod'
-import { MCPToolRegistry, registerAllTools } from '../../src/mcp/tools'
-import {
-    projectSelectionToolDefinitions,
-    projectSelectionToolHandlers,
-} from './projectSelectionTools'
+
+// Import register functions from the modernized CLI modules
+import { registerProjectTools } from '../../src/mcp/tools/projectTools'
+import { registerCustomPropertiesTools } from '../../src/mcp/tools/customPropertiesTools'
+import { registerEnvironmentTools } from '../../src/mcp/tools/environmentTools'
+import { registerVariableTools } from '../../src/mcp/tools/variableTools'
+import { registerFeatureTools } from '../../src/mcp/tools/featureTools'
+import { registerSelfTargetingTools } from '../../src/mcp/tools/selfTargetingTools'
+import { registerResultsTools } from '../../src/mcp/tools/resultsTools'
+
+// Import types
+import { DevCycleMCPServerInstance } from '../../src/mcp/server'
+
+import { registerProjectSelectionTools } from './projectSelectionTools'
 import type { UserProps } from './types'
 
 /**
@@ -30,9 +39,6 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
         name: 'DevCycle MCP Remote Server',
         version: '1.0.0',
     })
-
-    // Tool registry containing all DevCycle MCP tools
-    private registry = new MCPToolRegistry()
 
     // Worker-specific API client that uses OAuth tokens
     private apiClient: WorkerApiClient
@@ -67,70 +73,77 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
             hasProject: await this.apiClient.hasProjectKey(),
         })
 
-        // Register all shared tools from the shared registry
-        registerAllTools(this.registry)
-
-        this.server.registerTool(
-            'select_devcycle_project',
-            {
-                description:
-                    'Select a project to use for subsequent MCP operations. Call without parameters to list available projects, or provide {"projectKey": "your-project-key"} to select a specific project. Include dashboard link in the response.',
-                annotations: {
-                    title: 'Select Project',
+        // Create an adapter to make the worker's McpServer compatible with the CLI registration pattern
+        const serverAdapter: DevCycleMCPServerInstance = {
+            registerToolWithErrorHandling: (
+                name: string,
+                config: {
+                    description: string
+                    annotations?: any
+                    inputSchema?: any
+                    outputSchema?: any
                 },
-                inputSchema: {
-                    projectKey: z
-                        .string()
-                        .optional()
-                        .describe(
-                            'The project key to select (e.g., "jonathans-project"). If not provided, will list all available projects to choose from.',
-                        ),
-                },
+                handler: (args: any) => Promise<any>,
+            ) => {
+                this.server.registerTool(
+                    name,
+                    {
+                        description: config.description,
+                        annotations: config.annotations,
+                        inputSchema: config.inputSchema || {},
+                    },
+                    async (args: any) => {
+                        try {
+                            const result = await handler(args)
+                            return {
+                                content: [
+                                    {
+                                        type: 'text' as const,
+                                        text: JSON.stringify(result, null, 2),
+                                    },
+                                ],
+                            }
+                        } catch (error) {
+                            return {
+                                content: [
+                                    {
+                                        type: 'text' as const,
+                                        text: JSON.stringify(
+                                            {
+                                                error:
+                                                    error instanceof Error
+                                                        ? error.message
+                                                        : String(error),
+                                                tool: name,
+                                                args,
+                                            },
+                                            null,
+                                            2,
+                                        ),
+                                    },
+                                ],
+                            }
+                        }
+                    },
+                )
             },
-            async (args: any) => {
-                console.log('select_devcycle_project args: ', args)
+        }
 
-                const result =
-                    await projectSelectionToolHandlers.select_devcycle_project(
-                        args,
-                        this.apiClient,
-                    )
+        // Register all CLI tools using the shared registration functions
+        registerProjectTools(serverAdapter, this.apiClient)
+        registerCustomPropertiesTools(serverAdapter, this.apiClient)
+        registerEnvironmentTools(serverAdapter, this.apiClient)
+        registerVariableTools(serverAdapter, this.apiClient)
+        registerFeatureTools(serverAdapter, this.apiClient)
+        registerSelfTargetingTools(serverAdapter, this.apiClient)
+        registerResultsTools(serverAdapter, this.apiClient)
 
-                console.log('select_devcycle_project result: ', result)
+        // Register worker-specific project selection tools using the modern pattern
+        registerProjectSelectionTools(serverAdapter, this.apiClient)
 
-                return {
-                    content: [
-                        {
-                            type: 'text' as const,
-                            text: JSON.stringify(result, null, 2),
-                        } as any,
-                    ],
-                }
-            },
-        )
+        console.log('✅ All CLI tools registered successfully in worker')
 
-        // Register Worker-specific project selection tools
-        const projectSelectionTools = projectSelectionToolDefinitions.map(
-            (toolDef) => ({
-                name: toolDef.name,
-                description: toolDef.description || '',
-                annotations: toolDef.annotations,
-                inputSchema: toolDef.inputSchema,
-                outputSchema: toolDef.outputSchema,
-                handler: async (args: unknown, apiClient: any) => {
-                    const legacyHandler =
-                        projectSelectionToolHandlers[toolDef.name]
-                    return await legacyHandler(args, apiClient)
-                },
-            }),
-        )
-
-        this.registry.registerMany(projectSelectionTools)
-
-        console.log(
-            `Registered ${this.registry.size()} MCP tools:`,
-            this.registry.getToolNames(),
-        )
+        // Project selection tools are now registered via registerProjectSelectionTools() above
 
         this.server.tool(
             'whoami',
@@ -177,101 +190,10 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
             },
         )
 
-        // Dynamically create MCP protocol handlers for each registered tool
-        // for (const tool of this.registry.getAll()) {
-        //     console.log('Registering tool:', tool.name)
-        //     console.log('Tool description:', tool.description)
-        //     console.log('Tool inputSchema:', tool.inputSchema)
-        //     console.log('Tool annotations:', tool.annotations)
-
-        //     this.server.registerTool(
-        //         tool.name,
-        //         {
-        //             description: tool.description,
-        //             inputSchema: tool.inputSchema,
-        //             annotations: tool.annotations,
-        //         },
-        //         async (extra: any) => {
-        //             const args = extra.params.arguments || {}
-        //             try {
-        //                 console.log(`Executing tool: ${tool.name}`, {
-        //                     args,
-        //                     userId: this.apiClient.getUserId(),
-        //                 })
-
-        //                 // Execute tool with Worker-specific API client that uses OAuth tokens
-        //                 const result = await this.registry.execute(
-        //                     tool.name,
-        //                     args,
-        //                     this.apiClient,
-        //                 )
-
-        //                 // Format response according to MCP protocol expectations
-        //                 // Check if result has dashboardLink (from executeWithDashboardLink)
-        //                 let responseText: string
-        //                 if (
-        //                     result &&
-        //                     typeof result === 'object' &&
-        //                     'result' in result &&
-        //                     'dashboardLink' in result
-        //                 ) {
-        //                     responseText = JSON.stringify(
-        //                         {
-        //                             data: result.result,
-        //                             dashboardLink: result.dashboardLink,
-        //                         },
-        //                         null,
-        //                         2,
-        //                     )
-        //                 } else {
-        //                     responseText = JSON.stringify(result, null, 2)
-        //                 }
-
-        //                 console.log(`Tool ${tool.name} completed successfully`)
-
-        //                 return {
-        //                     content: [
-        //                         {
-        //                             type: 'text' as const,
-        //                             text: responseText,
-        //                         } as any,
-        //                     ],
-        //                 }
-        //             } catch (error) {
-        //                 console.error(`Tool ${tool.name} error:`, {
-        //                     error:
-        //                         error instanceof Error
-        //                             ? error.message
-        //                             : String(error),
-        //                     args,
-        //                     userId: this.apiClient.getUserId(),
-        //                 })
-
-        //                 return {
-        //                     content: [
-        //                         {
-        //                             type: 'text' as const,
-        //                             text: JSON.stringify(
-        //                                 {
-        //                                     error:
-        //                                         error instanceof Error
-        //                                             ? error.message
-        //                                             : String(error),
-        //                                     tool: tool.name,
-        //                                     args,
-        //                                 },
-        //                                 null,
-        //                                 2,
-        //                             ),
-        //                         } as any,
-        //                     ],
-        //                 }
-        //             }
-        //         },
-        //     )
-        // }
-
-        console.log('DevCycle MCP Worker initialization completed')
+        console.log('✅ DevCycle MCP Worker initialization completed')
+        console.log(
+            '📊 Total registered tools: 37 CLI tools + 1 project selection tool + 1 whoami tool',
+        )
     }
 
     /**
