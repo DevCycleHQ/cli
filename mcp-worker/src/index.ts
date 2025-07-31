@@ -15,6 +15,7 @@ import { registerResultsTools } from '../../src/mcp/tools/resultsTools'
 
 // Import types
 import { DevCycleMCPServerInstance } from '../../src/mcp/server'
+import { handleToolError } from '../../src/mcp/utils/errorHandling'
 
 import { registerProjectSelectionTools } from './projectSelectionTools'
 import type { UserProps } from './types'
@@ -95,25 +96,7 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
                                 ],
                             }
                         } catch (error) {
-                            return {
-                                content: [
-                                    {
-                                        type: 'text' as const,
-                                        text: JSON.stringify(
-                                            {
-                                                error:
-                                                    error instanceof Error
-                                                        ? error.message
-                                                        : String(error),
-                                                tool: name,
-                                                args,
-                                            },
-                                            null,
-                                            2,
-                                        ),
-                                    },
-                                ],
-                            }
+                            return handleToolError(error, name)
                         }
                     },
                 )
