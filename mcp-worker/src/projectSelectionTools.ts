@@ -11,7 +11,7 @@ const generateProjectDashboardLink = (
 ): string => {
     if (!projectKey) {
         throw new Error(
-            'Project key is required for project dashboard link. Please select a project using the select_devcycle_project tool first.',
+            'Project key is required for project dashboard link. Please select a project using the select_project tool first.',
         )
     }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}`
@@ -42,11 +42,11 @@ export async function selectDevCycleProjectHandler(
     args: z.infer<typeof SelectProjectArgsSchema>,
     apiClient: IDevCycleApiClient,
 ) {
-    console.log('select_devcycle_project validatedArgs: ', args)
+    console.log('select_project validatedArgs: ', args)
 
     // If no project key provided, list available projects
     const projectKey = args.projectKey
-    console.log('select_devcycle_project projectKey: ', projectKey)
+    console.log('select_project projectKey: ', projectKey)
 
     if (!projectKey) {
         return await apiClient.executeWithDashboardLink(
@@ -113,7 +113,7 @@ export function registerProjectSelectionTools(
     apiClient: IDevCycleApiClient,
 ): void {
     serverInstance.registerToolWithErrorHandling(
-        'select_devcycle_project',
+        'select_project',
         {
             description:
                 'Select a project to use for subsequent MCP operations. Call without parameters to list available projects, or provide {"projectKey": "your-project-key"} to select a specific project. Include dashboard link in the response.',
@@ -127,35 +127,4 @@ export function registerProjectSelectionTools(
             return await selectDevCycleProjectHandler(validatedArgs, apiClient)
         },
     )
-}
-
-// =============================================================================
-// LEGACY EXPORTS FOR BACKWARD COMPATIBILITY
-// =============================================================================
-
-// Keep these exports for the current worker implementation
-export const projectSelectionToolDefinitions = [
-    {
-        name: 'select_devcycle_project',
-        description:
-            'Select a project to use for subsequent MCP operations. Call without parameters to list available projects, or provide {"projectKey": "your-project-key"} to select a specific project. Include dashboard link in the response.',
-        annotations: {
-            title: 'Select Project',
-        },
-        inputSchema: {
-            type: 'object',
-            properties: {
-                projectKey: {
-                    type: 'string',
-                },
-            },
-        },
-    },
-]
-
-export const projectSelectionToolHandlers = {
-    select_devcycle_project: async (args: unknown, apiClient: any) => {
-        const validatedArgs = SelectProjectArgsSchema.parse(args)
-        return await selectDevCycleProjectHandler(validatedArgs, apiClient)
-    },
 }

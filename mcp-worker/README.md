@@ -122,7 +122,7 @@ Users should add this to their Claude Desktop config (`~/Library/Application Sup
 1. User adds the configuration above
 2. Restarts Claude Desktop
 3. On first connection, they'll be redirected to authenticate
-4. After auth, they need to select a project with `select_devcycle_project`
+4. After auth, they need to select a project with `select_project`
 5. They can then use all DevCycle tools
 
 ## Deployment
@@ -165,7 +165,7 @@ All standard DevCycle CLI MCP tools are available through the Worker:
 
 #### Project Management
 
-- `select_devcycle_project` - Select active project for subsequent operations
+- `select_project` - Select active project for subsequent operations
 - `list_projects` - List all projects in organization
 - `get_current_project` - Get currently selected project
 
@@ -179,6 +179,10 @@ All standard DevCycle CLI MCP tools are available through the Worker:
 - `fetch_feature_variations` - Get feature variations
 - `create_feature_variation` - Add new variation
 - `update_feature_variation` - Update variation
+- `enable_feature_targeting` - Enable feature targeting for feature
+- `disable_feature_targeting` - Disable feature targeting
+- `list_feature_targeting` - View feature targeting rules
+- `update_feature_targeting` - Update feature targeting configuration
 
 #### Variable Management
 
@@ -194,14 +198,11 @@ All standard DevCycle CLI MCP tools are available through the Worker:
 
 #### Targeting & Overrides
 
-- `enable_feature_targeting` - Enable targeting for feature
-- `disable_feature_targeting` - Disable targeting
-- `list_feature_targeting` - View targeting rules
-- `update_feature_targeting` - Update targeting configuration
+- `get_self_targeting_identity` - Get current identity for testing
+- `update_self_targeting_identity` - Set identity for testing
 - `list_self_targeting_overrides` - List overrides
 - `set_self_targeting_override` - Set override
-- `clear_feature_self_targeting_overrides` - Clear overrides
-- `update_self_targeting_identity` - Set identity for testing
+- `clear_feature_self_targeting_overrides` - Clear specific overrides
 
 #### Analytics
 

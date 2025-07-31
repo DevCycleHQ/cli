@@ -30,7 +30,7 @@ export async function getSelfTargetingIdentityHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for this operation. Please select a project using the selecting a project first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -52,7 +52,7 @@ export async function updateSelfTargetingIdentityHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for this operation. Please select a project using the selecting a project first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -76,7 +76,7 @@ export async function listSelfTargetingOverridesHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for this operation. Please select a project using the selecting a project first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -98,7 +98,7 @@ export async function setSelfTargetingOverrideHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for this operation. Please select a project using the selecting a project first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -124,7 +124,7 @@ export async function clearFeatureSelfTargetingOverridesHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for this operation. Please select a project using the selecting a project first.',
                 )
             }
             await handleZodiosValidationErrors(
@@ -155,7 +155,7 @@ export async function clearAllSelfTargetingOverridesHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for this operation. Please select a project using the selecting a project first.',
                 )
             }
             await handleZodiosValidationErrors(
@@ -266,19 +266,20 @@ export function registerSelfTargetingTools(
         },
     )
 
-    serverInstance.registerToolWithErrorHandling(
-        'clear_all_self_targeting_overrides',
-        {
-            description:
-                'Clear all self-targeting overrides for the current project. ⚠️ IMPORTANT: Always confirm with the user before clearing all overrides as it can clear production environments (environments where type = "production"). Include dashboard link in the response.',
-            annotations: {
-                title: 'Clear All Self-Targeting Overrides',
-                destructiveHint: true,
-            },
-            inputSchema: {}, // No parameters needed
-        },
-        async () => {
-            return await clearAllSelfTargetingOverridesHandler(apiClient)
-        },
-    )
+    // DISABLED: Clear all self-targeting overrides tool
+    // serverInstance.registerToolWithErrorHandling(
+    //     'clear_all_self_targeting_overrides',
+    //     {
+    //         description:
+    //             'Clear all self-targeting overrides for the current project. ⚠️ IMPORTANT: Always confirm with the user before clearing all overrides as it can clear production environments (environments where type = "production"). Include dashboard link in the response.',
+    //         annotations: {
+    //             title: 'Clear All Self-Targeting Overrides',
+    //             destructiveHint: true,
+    //         },
+    //         inputSchema: {}, // No parameters needed
+    //     },
+    //     async () => {
+    //         return await clearAllSelfTargetingOverridesHandler(apiClient)
+    //     },
+    // )
 }

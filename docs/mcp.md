@@ -117,7 +117,7 @@ dvc projects select
 The remote MCP server uses OAuth 2.0 authentication:
 - Users authenticate through DevCycle's Auth0 tenant
 - No API keys or local credentials needed
-- Project selection is handled through the `select_devcycle_project` tool
+- Project selection is handled through the `select_project` tool
 
 ## Available Tools
 
@@ -355,10 +355,7 @@ Clear overrides for a specific feature/environment.
 - `feature_key`: Feature key
 - `environment_key`: Environment key
 
-#### `clear_all_self_targeting_overrides` ⚠️
-Clear all overrides for the current project.
 
-**Parameters:** None
 
 ### Results & Analytics
 

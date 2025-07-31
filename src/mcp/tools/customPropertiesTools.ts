@@ -22,7 +22,7 @@ const generateCustomPropertiesDashboardLink = (
 ): string => {
     if (!projectKey) {
         throw new Error(
-            'Project key is required for custom properties dashboard link. Please select a project using the select_devcycle_project tool first.',
+            'Project key is required for custom properties dashboard link. Please select a project first.',
         )
     }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/custom-properties`
@@ -39,7 +39,7 @@ export async function listCustomPropertiesHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for listing custom properties. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for listing custom properties. Please select a project first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -61,7 +61,7 @@ export async function createCustomPropertyHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for creating custom properties. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for creating custom properties. Please select a project first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -83,7 +83,7 @@ export async function updateCustomPropertyHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for updating custom properties. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for updating custom properties. Please select a project first.',
                 )
             }
             const { key, ...updateData } = args
@@ -113,7 +113,7 @@ export async function deleteCustomPropertyHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for deleting custom properties. Please select a project using the select_devcycle_project tool first.',
+                    'Project key is required for deleting custom properties. Please select a project first.',
                 )
             }
             await handleZodiosValidationErrors(
