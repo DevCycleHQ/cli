@@ -30,7 +30,7 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             git diff --name-only HEAD^ HEAD > changed_files.txt
-            if grep -q "^mcp-worker/" changed_files.txt || grep -q "worker-deploy.yml" changed_files.txt; then
+            if grep -q "^mcp-worker/" changed_files.txt || grep -q "^src/mcp/" changed_files.txt || grep -q "worker-deploy.yml" changed_files.txt; then
               echo "changed=true" >> $GITHUB_OUTPUT
             else
               echo "changed=false" >> $GITHUB_OUTPUT
@@ -49,7 +49,7 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: 22.12
+          node-version: 22
           cache: 'yarn'
 
       - name: Install dependencies
@@ -70,6 +70,3 @@ jobs:
           secrets: |
             AUTH0_CLIENT_ID
             AUTH0_CLIENT_SECRET
-        env:
-          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
