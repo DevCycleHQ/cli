@@ -87,30 +87,7 @@ For local testing with Claude Desktop, configure:
       "command": "npx",
       "args": [
         "mcp-remote",
-        "http://localhost:8787/sse"
-      ]
-    }
-  }
-}
-```
-
-For production testing, use `https://mcp.devcycle.com/sse`.
-
-## End User Setup
-
-### Claude Desktop Configuration
-
-Users should add this to their Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
-
-```json
-{
-  "mcpServers": {
-    "devcycle": {
-      "command": "npx",
-      "args": [
-        "mcp-client-cli",
-        "sse",
-        "https://mcp.devcycle.com/sse"
+        "http://localhost:8787/mcp"
       ]
     }
   }

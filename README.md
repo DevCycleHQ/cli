@@ -1,9 +1,10 @@
-DevCycle CLI
-=================
+DevCycle CLI & MCP Server
+=========================
 
-DevCycle CLI for interacting with DevCycle features from the command line.
+This repository contains the DevCycle CLI for managing feature flags from the command line, plus an MCP (Model Context Protocol) server that enables AI coding assistants to interact with DevCycle.
 
 Major features include:
+
 - Fully manage your Features, Variables, Variations and Targeting Rules from the command line
 - Detect and list DevCycle Variable usages in your codebase
 - Manage your Self-Targeting Overrides to quickly switch between Variable values
@@ -17,34 +18,84 @@ The CLI can be customized in several ways using command-line args or by creating
 [![License](https://img.shields.io/npm/l/@devcycle/cli.svg)](https://github.com/DevCycleHQ/cli/blob/main/package.json)
 
 <!-- toc -->
-* [Setup](#setup)
-* [Authentication](#authentication)
-* [Usage](#usage)
-* [Command Topics](#command-topics)
-* [MCP Server for AI Assistants](#mcp-server-for-ai-assistants)
-* [This installs both 'dvc' CLI and 'dvc-mcp' server](#this-installs-both-dvc-cli-and-dvc-mcp-server)
-* [Access via: npx dvc-mcp](#access-via-npx-dvc-mcp)
-* [Repo Configuration](#repo-configuration)
+- [MCP Server for AI Assistants](#mcp-server-for-ai-assistants)
+- [CLI Documentation](#cli-documentation)
+- [Setup](#setup)
+- [Authentication](#authentication)
+- [Usage](#usage)
+- [Command Topics](#command-topics)
+- [Repo Configuration](#repo-configuration)
 <!-- tocstop -->
-# Setup
 
-## Install the CLI
+## MCP Server for AI Assistants
+
+The DevCycle MCP (Model Context Protocol) server enables AI coding assistants like Cursor and Claude to manage feature flags directly from your development environment. DevCycle offers a hosted MCP server that requires no local installation.
+
+### Quick Setup (No Installation Required)
+
+1. **Configure your AI assistant to use the hosted MCP server:**
+
+   - **Cursor**: Add to `.cursor/mcp_settings.json`:
+
+     ```json
+     {
+       "mcpServers": {
+         "devcycle": {
+           "url": "https://mcp.devcycle.com/mcp"
+         }
+       }
+     }
+     ```
+
+   - **Claude Desktop**: Add to your Claude config file:
+
+     ```json
+     {
+       "mcpServers": {
+         "devcycle": {
+           "command": "npx",
+           "args": [
+             "mcp-remote",
+             "https://mcp.devcycle.com/mcp"
+           ]
+         }
+       }
+     }
+     ```
+
+2. **That's it!** The server will guide you through OAuth authentication when you first use it.
+
+Your AI assistant can now create, update, and manage feature flags on your behalf.
+
+For local installation options, detailed configuration, available tools, and advanced usage, see the [complete MCP documentation](docs/mcp.md).
+
+## CLI Documentation
+
+## Setup
+
+### Install the CLI
+
 Using NPM
+
 ```sh-session
 $ npm install -g @devcycle/cli
 ```
+
 Or alternatively, using homebrew
 
 ```sh-session
 $ brew tap devcyclehq/cli
 $ brew install devcycle
 ```
-# Authentication
+
+## Authentication
+
 Many of the CLI commands require DevCycle API authorization. There are several ways to provide these credentials.
 
-## Using Access Tokens (preferred)
+### Using Access Tokens (preferred)
 
-### Login Command
+#### Login Command
+
 By using the [`login sso` command](docs/login.md#dvc-login-sso), the CLI will retrieve and store an access token, which is valid for 24 hours.
 
 The [`login again` command](docs/login.md#dvc-login-again) can be used to retrieve a new access token using the saved project and organization without prompting for them.
@@ -55,12 +106,14 @@ To switch organizations once logged in, the [`organizations select` command](doc
 
 If executing the CLI in a containerized environment, please ensure one of the following PORTs can be accessed via Port Forwarding: 2194 (default), 2195, 2196 or 8080. This will allow the authentication process to complete and set the access token appropriately.
 
-### Repo Init Command
+#### Repo Init Command
+
 The [`repo init` command](docs/repo.md#dvc-repo-init) behaves in the same way as `login sso`, but creates a [repo configuration file](#repo-configuration) and stores the project and organization choices there instead.
 
-## Using Client Credentials
+### Using Client Credentials
 
-### Client Credentials in Auth File
+#### Client Credentials in Auth File
+
 Use the [`dvc status` command](docs/status.md#dvc-status) to find the configuration file location for your platform. The credentials can be stored in the file pointed to by the Auth config path. Create the file if it does not exist, with the following contents.
 
 ```yaml
@@ -75,7 +128,7 @@ The default location is based on the [oclif configDir](https://oclif.io/docs/con
 
 If you intend to run the CLI using options that override config file locations, the [`dvc status` command](docs/status.md#dvc-status) command can be run with those options to confirm that the file locations are as expected.
 
-## Project Selection
+### Project Selection
 
 You also need to specify the default project ID for the CLI to use.
 
@@ -83,7 +136,8 @@ If there is a repo configuration file, the [`dvc diff`](docs/diff.md) and [`dvc 
 
 Otherwise, this is chosen during login or set using the [project select command](docs/projects.md#dvc-projects-select)
 
-## Environment Variables
+### Environment Variables
+
 Set the following environment variables:
 
 ```sh-session
@@ -92,7 +146,7 @@ $ export DEVCYCLE_CLIENT_SECRET=<your client secret>
 $ export DEVCYCLE_PROJECT_KEY=<your project key>
 ```
 
-## Command-Line Arguments
+### Command-Line Arguments
 
 The CLI can be run with the following arguments:
 
@@ -100,11 +154,11 @@ The CLI can be run with the following arguments:
 $ dvc --client-id=<your client id> --client-secret=<your client secret> --project=<your project key>
 ```
 
-## Github Action
+### Github Action
 
 The Devcycle Github actions are configured with auth information through the `project-key`, `client-id` and `client-secret` configuration parameters. This is passed to the CLI via command line arguments.
 
-# Usage
+## Usage
 
 <!-- usage -->
 ```sh-session
@@ -121,130 +175,33 @@ USAGE
 <!-- usagestop -->
 
 <!-- commands -->
-# Command Topics
+## Command Topics
 
-* [`dvc alias`](docs/alias.md) - Manage repository variable aliases.
-* [`dvc autocomplete`](docs/autocomplete.md) - display autocomplete installation instructions
-* [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
-* [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
-* [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
-* [`dvc features`](docs/features.md) - Create, view, or modify Features with the Management API.
-* [`dvc generate`](docs/generate.md) - Generate Devcycle related files.
-* [`dvc help`](docs/help.md) - Display help for dvc.
-* [`dvc identity`](docs/identity.md) - View or manage your DevCycle Identity.
-* [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the Management API.
-* [`dvc login`](docs/login.md) - Log in to DevCycle.
-* [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
-* [`dvc organizations`](docs/organizations.md) - List or switch organizations.
-* [`dvc overrides`](docs/overrides.md) - Create, view, or modify Overrides for a Project with the Management API.
-* [`dvc projects`](docs/projects.md) - Create, or view Projects with the Management API.
-* [`dvc repo`](docs/repo.md) - Manage repository configuration.
-* [`dvc status`](docs/status.md) - Check CLI status.
-* [`dvc targeting`](docs/targeting.md) - Create, view, or modify Targeting Rules for a Feature with the Management API.
-* [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
-* [`dvc variables`](docs/variables.md) - Create, view, or modify Variables with the Management API.
-* [`dvc variations`](docs/variations.md) - Create a new Variation for an existing Feature.
+- [`dvc alias`](docs/alias.md) - Manage repository variable aliases.
+- [`dvc autocomplete`](docs/autocomplete.md) - display autocomplete installation instructions
+- [`dvc cleanup`](docs/cleanup.md) - Replace a DevCycle variable with a static value in the current version of your code. Currently only JavaScript is supported.
+- [`dvc diff`](docs/diff.md) - Print a diff of DevCycle variable usage between two versions of your code.
+- [`dvc environments`](docs/environments.md) - Create a new Environment for an existing Feature.
+- [`dvc features`](docs/features.md) - Create, view, or modify Features with the Management API.
+- [`dvc generate`](docs/generate.md) - Generate Devcycle related files.
+- [`dvc help`](docs/help.md) - Display help for dvc.
+- [`dvc identity`](docs/identity.md) - View or manage your DevCycle Identity.
+- [`dvc keys`](docs/keys.md) - Retrieve SDK keys from the Management API.
+- [`dvc login`](docs/login.md) - Log in to DevCycle.
+- [`dvc logout`](docs/logout.md) - Discards any auth configuration that has been stored in the auth configuration file.
+- [`dvc organizations`](docs/organizations.md) - List or switch organizations.
+- [`dvc overrides`](docs/overrides.md) - Create, view, or modify Overrides for a Project with the Management API.
+- [`dvc projects`](docs/projects.md) - Create, or view Projects with the Management API.
+- [`dvc repo`](docs/repo.md) - Manage repository configuration.
+- [`dvc status`](docs/status.md) - Check CLI status.
+- [`dvc targeting`](docs/targeting.md) - Create, view, or modify Targeting Rules for a Feature with the Management API.
+- [`dvc usages`](docs/usages.md) - Print all DevCycle variable usages in the current version of your code.
+- [`dvc variables`](docs/variables.md) - Create, view, or modify Variables with the Management API.
+- [`dvc variations`](docs/variations.md) - Create a new Variation for an existing Feature.
 
 <!-- commandsstop -->
+## Repo Configuration
 
-# MCP Server for AI Assistants
-
-The DevCycle CLI includes an MCP (Model Context Protocol) server that enables AI coding assistants like Cursor and Claude to manage feature flags directly. This allows you to create, update, and manage feature flags without leaving your coding environment.
-
-## Installation
-
-### Option 1: Global Installation (Recommended)
-```bash
-npm install -g @devcycle/cli
-# This installs both 'dvc' CLI and 'dvc-mcp' server
-```
-
-### Option 2: Project-Specific Installation
-```bash
-npm install --save-dev @devcycle/cli
-# Access via: npx dvc-mcp
-```
-
-### Verify Installation
-```bash
-dvc-mcp --version  # Should display the DevCycle CLI version
-dvc --version      # Verify CLI is also installed
-```
-
-## Configuration
-
-### For Cursor
-Add to `.cursor/mcp_settings.json`:
-```json
-{
-  "mcpServers": {
-    "devcycle": {
-      "command": "dvc-mcp"
-    }
-  }
-}
-```
-
-### For Claude Desktop
-Add to your Claude configuration file:
-
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`  
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-
-```json
-{
-  "mcpServers": {
-    "devcycle": {
-      "command": "dvc-mcp"
-    }
-  }
-}
-```
-
-### For Project-Specific Installation
-If you installed locally, update the command path:
-```json
-{
-  "mcpServers": {
-    "devcycle": {
-      "command": "npx",
-      "args": ["dvc-mcp"]
-    }
-  }
-}
-```
-
-## Authentication
-
-The MCP server uses the same authentication as the CLI:
-
-1. **Authenticate with DevCycle:**
-   ```bash
-   dvc login sso
-   ```
-
-2. **Select your project:**
-   ```bash
-   dvc projects select
-   ```
-
-3. **Verify setup:**
-   ```bash
-   dvc status
-   ```
-
-Your AI assistant can now manage feature flags on your behalf.
-
-## Troubleshooting
-
-- **Command not found:** Ensure the CLI is installed globally or use `npx dvc-mcp`
-- **Authentication errors:** Run `dvc login sso` to re-authenticate
-- **No project selected:** Run `dvc projects select` to choose a project
-- **Permission issues:** On Unix systems, you may need to restart your terminal after global installation
-
-For detailed documentation and advanced usage, see [docs/mcp.md](docs/mcp.md).
-
-# Repo Configuration
 The following commands can only be run from the root of a configured repository
 
 - [`dvc diff`](docs/diff.md)
@@ -288,10 +245,11 @@ codeInsights:
     - "dist/*"
 ```
 
-## Match Patterns
-When identifying variable usages in the code, the CLI will identify DevCycle SDK methods by default. To capture 
-other usages you may define match patterns. Match patterns are defined by file extension, and each pattern should 
-contain exactly one capture group which matches the key of the variable. Make sure the captured value contains the 
+### Match Patterns
+
+When identifying variable usages in the code, the CLI will identify DevCycle SDK methods by default. To capture
+other usages you may define match patterns. Match patterns are defined by file extension, and each pattern should
+contain exactly one capture group which matches the key of the variable. Make sure the captured value contains the
 entire key parameter (including quotes, if applicable).
 
 Match patterns can be defined in the configuration file, for example:
@@ -312,11 +270,13 @@ codeInsights:
 ```
 
 Match patterns can also be passed directly to relevant commands using the `--match-pattern` flag:
-```
+
+```bash
 dvc usages --match-pattern ts="customVariableGetter\(\s*[\"']([^\"']*)[\"']" js="customVariableGetter\(\s*[\"']([^\"']*)[\"']"
 ```
 
 When testing your regex the `--show-regex` flag can be helpful. This will print all patterns used to find matches in your codebase.
-```
+
+```bash
 dvc usages --show-regex
 ```

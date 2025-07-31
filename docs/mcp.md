@@ -28,7 +28,7 @@ Both implementations share the same underlying tools, schemas, and utilities, en
 
 ## Installation & Setup
 
-## Local MCP Server
+### Local MCP Server
 
 ### Prerequisites
 
@@ -51,6 +51,7 @@ For Cursor (`.cursor/mcp_settings.json`):
 ```
 
 For Claude Desktop:
+
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
@@ -70,16 +71,28 @@ The remote MCP server provides OAuth-based authentication and requires no local 
 
 ### Remote Configuration
 
+For Cursor (`.cursor/mcp_settings.json`):
+
+```json
+{
+  "mcpServers": {
+    "devcycle": {
+      "url": "https://mcp.devcycle.com/mcp"
+    }
+  }
+}
+```
+
 For Claude Desktop:
+
 ```json
 {
   "mcpServers": {
     "devcycle": {
       "command": "npx",
       "args": [
-        "mcp-client-cli",
-        "sse",
-        "https://mcp.devcycle.com/sse"
+        "mcp-remote",
+        "https://mcp.devcycle.com/mcp"
       ]
     }
   }
@@ -90,7 +103,7 @@ For more details about the remote MCP implementation, see the [MCP Worker README
 
 ## Authentication
 
-### Local MCP Server
+### Local MCP Server Authentication
 
 The local MCP server supports two authentication methods:
 
@@ -112,9 +125,10 @@ dvc login sso
 dvc projects select
 ```
 
-### Remote MCP Server
+### Remote MCP Server Authentication
 
 The remote MCP server uses OAuth 2.0 authentication:
+
 - Users authenticate through DevCycle's Auth0 tenant
 - No API keys or local credentials needed
 - Project selection is handled through the `select_project` tool
@@ -131,17 +145,21 @@ All tools listed below are available in both the local and remote MCP implementa
 ### Feature Management
 
 #### `list_features`
+
 List all features in the current project with optional search and pagination.
 
 **Parameters:**
+
 - `search` (optional): Search query to filter features
 - `page` (optional): Page number (default: 1)
 - `per_page` (optional): Items per page (default: 100, max: 1000)
 
 #### `create_feature` ⚠️
+
 Create a new feature flag.
 
 **Parameters:**
+
 - `key`: Unique feature key (pattern: `^[a-z0-9-_.]+$`)
 - `name`: Human-readable name (max 100 chars)
 - `description` (optional): Feature description (max 1000 chars)
@@ -152,9 +170,11 @@ Create a new feature flag.
 - `sdkVisibility` (optional): SDK visibility settings
 
 #### `update_feature` ⚠️
+
 Update an existing feature flag.
 
 **Parameters:**
+
 - `key`: Feature key to update
 - `name` (optional): New name
 - `description` (optional): New description
@@ -163,38 +183,48 @@ Update an existing feature flag.
 - `variations` (optional): Updated variations
 
 #### `update_feature_status` ⚠️
+
 Update the status of a feature flag.
 
 **Parameters:**
+
 - `key`: Feature key
 - `status`: New status (`active`, `complete`, `archived`)
 - `staticVariation` (optional): Variation to serve if status is `complete`
 
 #### `delete_feature` ⚠️⚠️
+
 Delete a feature flag from ALL environments.
 
 **Parameters:**
+
 - `key`: Feature key to delete
 
 #### `fetch_feature_variations`
+
 Get all variations for a feature.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 
 #### `create_feature_variation`
+
 Create a new variation within a feature.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 - `key`: Unique variation key
 - `name`: Variation name
 - `variables` (optional): Variable values for this variation
 
 #### `update_feature_variation`
+
 Update an existing variation by key. ⚠️ WARNING: Updating a feature variation may affect production environments.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 - `variation_key`: Variation to update
 - `_id` (optional): MongoDB ID for the variation
@@ -203,33 +233,41 @@ Update an existing variation by key. ⚠️ WARNING: Updating a feature variatio
 - `variables` (optional): Updated variable values
 
 #### `set_feature_targeting` ⚠️
+
 Set targeting status (enable or disable) for a feature in an environment.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 - `environment_key`: Environment key
 - `enabled`: Boolean - true to enable targeting, false to disable
 
 #### `list_feature_targeting`
+
 List targeting rules for a feature.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 - `environment_key` (optional): Specific environment (returns all if omitted)
 
 #### `update_feature_targeting` ⚠️
+
 Update targeting rules for a feature in an environment.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 - `environment_key`: Environment key
 - `status` (optional): Targeting status (`active`, `inactive`, `archived`)
 - `targets` (optional): Array of targeting rules with audience filters and distributions
 
 #### `get_feature_audit_log_history`
+
 Get feature flag audit log history from DevCycle. Returns audit log entities matching the DevCycle API schema with date, a0_user, and changes fields.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 - `page` (optional): Page number for pagination (default: 1)
 - `perPage` (optional): Number of items per page (default: 100, max: 1000)
@@ -244,17 +282,21 @@ Get feature flag audit log history from DevCycle. Returns audit log entities mat
 ### Variable Management
 
 #### `list_variables`
+
 List all variables in the current project.
 
 **Parameters:**
+
 - `search` (optional): Search query
 - `page` (optional): Page number
 - `per_page` (optional): Items per page
 
 #### `create_variable` ⚠️
+
 Create a new variable.
 
 **Parameters:**
+
 - `key`: Unique variable key (pattern: `^[a-z0-9-_.]+$`)
 - `type`: Variable type (`String`, `Boolean`, `Number`, `JSON`)
 - `name` (optional): Variable name
@@ -264,9 +306,11 @@ Create a new variable.
 - `validationSchema` (optional): Validation rules
 
 #### `update_variable` ⚠️
+
 Update an existing variable.
 
 **Parameters:**
+
 - `key`: Variable key to update
 - `name` (optional): New name
 - `description` (optional): New description
@@ -274,17 +318,21 @@ Update an existing variable.
 - `validationSchema` (optional): New validation rules
 
 #### `delete_variable` ⚠️⚠️
+
 Delete a variable from ALL environments.
 
 **Parameters:**
+
 - `key`: Variable key to delete
 
 ### Environment Management
 
 #### `list_environments`
+
 List all environments in the current project.
 
 **Parameters:**
+
 - `search` (optional): Search query (min 3 chars)
 - `page` (optional): Page number
 - `perPage` (optional): Items per page
@@ -292,18 +340,22 @@ List all environments in the current project.
 - `sortOrder` (optional): Sort order (`asc`, `desc`)
 
 #### `get_sdk_keys`
+
 Get SDK keys for an environment.
 
 **Parameters:**
+
 - `environmentKey`: Environment key
 - `keyType` (optional): Specific key type (`mobile`, `server`, `client`)
 
 ### Project Management
 
 #### `list_projects`
+
 List all projects in the organization.
 
 **Parameters:**
+
 - `search` (optional): Search query
 - `page` (optional): Page number (default: 1)
 - `perPage` (optional): Items per page (default: 100, max: 1000)
@@ -312,6 +364,7 @@ List all projects in the organization.
 - `createdBy` (optional): Filter by creator user ID
 
 #### `get_current_project`
+
 Get details of the currently selected project.
 
 **Parameters:** None
@@ -319,44 +372,52 @@ Get details of the currently selected project.
 ### Self-Targeting & Overrides
 
 #### `get_self_targeting_identity`
+
 Get current DevCycle identity for self-targeting.
 
 **Parameters:** None
 
 #### `update_self_targeting_identity`
+
 Update DevCycle identity for testing.
 
 **Parameters:**
+
 - `dvc_user_id`: DevCycle User ID (use empty string to clear)
 
 #### `list_self_targeting_overrides`
+
 List all active overrides for the current project.
 
 **Parameters:** None
 
 #### `set_self_targeting_override` ⚠️
+
 Set an override to test a specific variation.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 - `environment_key`: Environment key
 - `variation_key`: Variation to serve
 
 #### `clear_feature_self_targeting_overrides` ⚠️
+
 Clear overrides for a specific feature/environment.
 
 **Parameters:**
+
 - `feature_key`: Feature key
 - `environment_key`: Environment key
-
-
 
 ### Results & Analytics
 
 #### `get_feature_total_evaluations`
+
 Get total variable evaluations per time period for a specific feature.
 
 **Parameters:**
+
 - `featureKey`: Feature key
 - `startDate` (optional): Start date as Unix timestamp (milliseconds since epoch)
 - `endDate` (optional): End date as Unix timestamp (milliseconds since epoch)
@@ -367,9 +428,11 @@ Get total variable evaluations per time period for a specific feature.
 - `sdkType` (optional): Filter by SDK type (`client`, `server`, `mobile`, `api`)
 
 #### `get_project_total_evaluations`
+
 Get total variable evaluations per time period for the entire project.
 
 **Parameters:**
+
 - `startDate` (optional): Start date as Unix timestamp (milliseconds since epoch)
 - `endDate` (optional): End date as Unix timestamp (milliseconds since epoch)
 - `platform` (optional): Platform filter for evaluation results
@@ -392,6 +455,7 @@ The MCP server returns structured error responses:
 ```
 
 Common error scenarios:
+
 - Authentication failures: Check credentials and project configuration
 - API rate limits: Implement retry logic in your automation
 - Validation errors: Ensure parameters meet requirements (patterns, lengths, etc.)
@@ -406,6 +470,7 @@ Create a feature flag for the new checkout flow with variations for A/B testing
 ```
 
 The AI assistant will use:
+
 1. `create_feature` to create the feature
 2. `create_feature_variation` to add variations
 3. `enable_feature_targeting` to activate in development
@@ -417,6 +482,7 @@ Show me the evaluation metrics for the checkout_flow feature over the last week
 ```
 
 The AI assistant will use:
+
 1. `get_feature_total_evaluations` with appropriate date range
 2. Display the evaluation data grouped by time period
 
@@ -427,6 +493,7 @@ Set up my identity to test the premium user experience
 ```
 
 The AI assistant will use:
+
 1. `update_self_targeting_identity` to set your user ID
 2. `set_self_targeting_override` to force specific variations
 
@@ -437,6 +504,7 @@ Show me the recent changes to the checkout_flow feature
 ```
 
 The AI assistant will use:
+
 1. `get_feature_audit_log_history` to retrieve change history
 2. `list_feature_targeting` to show current configuration
 
@@ -445,6 +513,7 @@ The AI assistant will use:
 ### 1. Production Safety
 
 Tools marked with ⚠️ can affect production environments. The AI will confirm before:
+
 - Creating or updating features/variables
 - Enabling/disabling targeting
 - Setting overrides in production
@@ -479,12 +548,14 @@ Tools marked with ⚠️⚠️ are destructive and require extra confirmation.
 ## Architecture & Implementation
 
 Both the local and remote MCP servers share:
+
 - **Common Tools**: All tool implementations in `src/mcp/tools/`
 - **Schemas & Validation**: Shared Zod schemas for input/output validation
 - **API Clients**: Both implement the `IDevCycleApiClient` interface
 - **Error Handling**: Consistent error messages and handling across implementations
 
 Key differences:
+
 - **Authentication**: Local uses API keys/CLI auth, Remote uses OAuth 2.0
 - **Transport**: Local uses stdio, Remote uses SSE/HTTP
 - **State Storage**: Local uses file system, Remote uses Durable Objects
@@ -528,5 +599,6 @@ For local testing, update your AI assistant configuration to point to the local 
 ### Debug Logging
 
 The MCP server logs all operations to stderr, which can be viewed in:
+
 - Cursor: Developer Tools console
 - Claude Desktop: Log files in the application support directory
