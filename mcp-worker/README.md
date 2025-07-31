@@ -1,82 +1,89 @@
-# DevCycle MCP Cloudflare Worker
+# DevCycle MCP Cloudflare Worker - Internal Documentation
 
-This package contains the Cloudflare Worker implementation of the DevCycle MCP (Model Context Protocol) server. It provides the same DevCycle feature flag management tools as the local CLI but runs as a remote service accessible via SSE (Server-Sent Events).
+This package contains the DevCycle MCP (Model Context Protocol) server implementation that runs on Cloudflare Workers. It provides the same feature flag management tools as the local CLI MCP server but runs as a hosted service accessible via SSE (Server-Sent Events) at `mcp.devcycle.com`.
+
+## Overview for DevCycle Team
+
+This Worker enables DevCycle users to manage feature flags through AI assistants like Claude. It's a hosted alternative to the local CLI MCP server, providing:
+
+- **OAuth-based authentication** instead of API keys
+- **Zero installation** for end users (just config)
+- **Automatic updates** when we ship new features
+- **Better security** through user-scoped tokens
+
+**Production URL**: `https://mcp.devcycle.com`  
+**Staging URL**: `https://devcycle-mcp-server-staging.devcycle.workers.dev`
 
 ## Architecture
 
-- **Authentication**: OAuth integration with DevCycle/Auth0
-- **Transport**: Server-Sent Events (SSE) via MCP protocol
-- **Tools**: All DevCycle CLI MCP tools (features, variables, environments, etc.)
-- **State**: Durable Objects for session management
+- **Base Class**: Extends `McpAgent` from the `agents` package for MCP protocol handling
+- **Main Class**: `DevCycleMCP` - Manages tool registration and state
+- **Authentication**: OAuth 2.0 flow with Auth0 integration and consent screen
+- **Transport**: Both SSE (`/sse`) and standard HTTP (`/mcp`) endpoints for MCP protocol  
+- **API Client**: `WorkerApiClient` - OAuth-based API client with state management
+- **State Management**: Durable Objects for session and project selection persistence
+- **Tool Registration**: Shared tools from CLI with Worker-specific adaptations
 
-## Prerequisites
+## Production Configuration
 
-1. **Cloudflare Account**: You need a Cloudflare account with Workers enabled
-2. **Wrangler CLI**: Install the Cloudflare Workers CLI tool
+The MCP Worker is deployed to Cloudflare Workers on the `devcycle.com` zone at `mcp.devcycle.com`.
+
+### Infrastructure
+
+- **Worker Name**: `devcycle-mcp-server`
+- **Production URL**: `https://mcp.devcycle.com`
+- **Zone**: `devcycle.com`
+- **Route Pattern**: `mcp.devcycle.com/*`
+
+### Storage
+
+- **KV Namespace**: `OAUTH_KV` - Stores OAuth session data
+- **Durable Objects**: `DevCycleMCP` class - Maintains per-session state including project selection
+
+### Secrets (Configured in Cloudflare Dashboard)
+
+- `AUTH0_CLIENT_ID`: DevCycle's Auth0 application client ID
+- `AUTH0_CLIENT_SECRET`: DevCycle's Auth0 application client secret
+
+## Local Development
+
+### Prerequisites
+
+- Node.js and Yarn installed
+- Access to DevCycle's Cloudflare account
+- Wrangler CLI: `npm install -g wrangler`
+
+### Running Locally
+
+1. Install dependencies:
+
    ```bash
-   npm install -g wrangler
+   yarn install
    ```
-3. **DevCycle Auth0 App**: Configure OAuth application credentials
 
-## Setup
+2. Start the development server:
 
-### 1. Install Dependencies
+   ```bash
+   yarn dev
+   ```
 
-```bash
-yarn install
-```
+This starts the Worker at `http://localhost:8787` with the following endpoints:
 
-### 2. Configure Environment
-
-Create a KV namespace for OAuth session storage:
-
-```bash
-wrangler kv:namespace create OAUTH_KV
-```
-
-Update `wrangler.toml` with the returned namespace ID.
-
-### 3. Set Secrets
-
-Configure your Auth0 credentials as Worker secrets:
-
-```bash
-wrangler secret put AUTH0_CLIENT_ID
-wrangler secret put AUTH0_CLIENT_SECRET
-```
-
-### 4. Update Configuration
-
-Edit `wrangler.toml` to set:
-- `AUTH0_DOMAIN`: Your Auth0 domain
-- Other environment variables as needed
-
-## Development
-
-### Local Development
-
-Start the development server:
-
-```bash
-yarn dev
-```
-
-This will start the Worker at `http://localhost:8787` with:
 - `/sse` - MCP Server-Sent Events endpoint
-- `/authorize` - OAuth authorization endpoint
-- `/callback` - OAuth callback endpoint
+- `/mcp` - Standard HTTP MCP endpoint (request/response)
+- `/oauth/authorize` - OAuth authorization endpoint  
+- `/oauth/callback` - OAuth callback endpoint
+- `/oauth/consent` - Consent confirmation endpoint
 - `/health` - Health check endpoint
 
-### Testing with MCP Clients
+### Testing the Worker
 
-#### Claude Desktop
-
-Add to your Claude Desktop configuration:
+For local testing with Claude Desktop, configure:
 
 ```json
 {
   "mcpServers": {
-    "devcycle": {
+    "devcycle-local": {
       "command": "npx",
       "args": [
         "mcp-remote",
@@ -87,133 +94,128 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-#### AI Playground
+For production testing, use `https://mcp.devcycle.com/sse`.
 
-Use the remote MCP connection with your Worker URL.
+## End User Setup
+
+### Claude Desktop Configuration
+
+Users should add this to their Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "devcycle": {
+      "command": "npx",
+      "args": [
+        "mcp-client-cli",
+        "sse",
+        "https://mcp.devcycle.com/sse"
+      ]
+    }
+  }
+}
+```
+
+### User Onboarding Flow
+
+1. User adds the configuration above
+2. Restarts Claude Desktop
+3. On first connection, they'll be redirected to authenticate
+4. After auth, they need to select a project with `select_devcycle_project`
+5. They can then use all DevCycle tools
 
 ## Deployment
 
 ### Production Deployment
 
-Deploy to Cloudflare Workers:
+The production worker is deployed via:
 
 ```bash
 yarn deploy
 ```
 
-### Environment-Specific Deployments
+This deploys to the `devcycle-mcp-server` worker with route `mcp.devcycle.com/*`.
 
-For different environments, you can override the worker name:
+**Important**: Production deployments should be done through the CI/CD pipeline, not manually.
 
-```bash
-wrangler deploy --name devcycle-mcp-server-staging
-```
-
-## Usage
+## How It Works
 
 ### Authentication Flow
 
-1. User connects to the MCP server via supported client
-2. Client is redirected to OAuth authorization endpoint
-3. User authenticates with DevCycle/Auth0
-4. JWT claims contain user context (org_id, project_key, etc.)
-5. MCP tools use OAuth tokens for DevCycle API calls
+The Worker uses OAuth 2.0 flow integrated with DevCycle's Auth0 tenant:
+
+1. **Initial Connection**: AI client (Claude, Cursor, etc.) connects to the MCP server via SSE or HTTP
+2. **Consent Screen**: Users see a DevCycle-branded consent screen showing:
+   - DevCycle logo and branding
+   - Requested permissions (profile, email, API access)
+   - Option to approve or deny access
+3. **Auth0 Authentication**: Users authenticate via DevCycle's Auth0 tenant
+4. **Token Exchange**: Worker exchanges authorization code for OAuth tokens
+5. **JWT Claims**: The ID token contains DevCycle-specific claims:
+   - `org_id`: User's DevCycle organization ID
+   - `project_key`: Default project (if user has one configured)
+   - `email`: User's email address
+   - `name`: User's display name
+6. **API Access**: MCP Worker uses the access token for DevCycle API calls on behalf of the user
 
 ### Available Tools
 
-All DevCycle CLI MCP tools are available:
+All standard DevCycle CLI MCP tools are available through the Worker:
 
-- **Features**: List, create, update, delete feature flags
-- **Variables**: Manage feature variables
-- **Environments**: List and manage environments
-- **Targeting**: Configure feature targeting rules
-- **Overrides**: Manage self-targeting overrides
-- **Projects**: List and select projects
-- **Results**: View feature analytics
+#### Project Management
 
-### Debug Tools
+- `select_devcycle_project` - Select active project for subsequent operations
+- `list_projects` - List all projects in organization
+- `get_current_project` - Get currently selected project
+- `create_project` - Create new project
+- `update_project` - Update project settings
 
-- `whoami` - Get current user context and authentication status
+#### Feature Management
 
-## Configuration
+- `list_features` - List features with filtering
+- `create_feature` - Create new feature flag
+- `update_feature` - Update feature configuration
+- `update_feature_status` - Change feature status
+- `delete_feature` - Delete feature flag
+- `fetch_feature_variations` - Get feature variations
+- `create_feature_variation` - Add new variation
+- `update_feature_variation` - Update variation
 
-### Environment Variables
+#### Variable Management
 
-Set in `wrangler.toml` under `[vars]`:
+- `list_variables` - List variables with filtering
+- `create_variable` - Create new variable
+- `update_variable` - Update variable configuration
+- `delete_variable` - Delete variable
 
-- `NODE_ENV`: Environment (production/development)
-- `API_BASE_URL`: DevCycle API base URL
-- `AUTH0_DOMAIN`: Auth0 domain
-- `AUTH0_AUDIENCE`: Auth0 API audience
-- `AUTH0_SCOPE`: OAuth scopes
+#### Environment Management
 
-### Secrets
+- `list_environments` - List all environments
+- `create_environment` - Create new environment
+- `update_environment` - Update environment
+- `get_sdk_keys` - Get SDK keys for environment
 
-Set via `wrangler secret put`:
+#### Targeting & Overrides
 
-- `AUTH0_CLIENT_ID`: Auth0 application client ID
-- `AUTH0_CLIENT_SECRET`: Auth0 application client secret
+- `enable_feature_targeting` - Enable targeting for feature
+- `disable_feature_targeting` - Disable targeting
+- `list_feature_targeting` - View targeting rules
+- `update_feature_targeting` - Update targeting configuration
+- `list_self_targeting_overrides` - List overrides
+- `set_self_targeting_override` - Set override
+- `clear_feature_self_targeting_overrides` - Clear overrides
+- `update_self_targeting_identity` - Set identity for testing
 
-## Monitoring
+#### Custom Properties
 
-### Observability
+- `list_custom_properties` - List custom properties
+- `create_custom_property` - Create new property
+- `update_custom_property` - Update property
+- `delete_custom_property` - Delete property
 
-The Worker has observability enabled in `wrangler.toml` for monitoring via Cloudflare Analytics.
+#### Analytics
 
-### Logs
-
-View logs during development:
-
-```bash
-wrangler tail
-```
-
-### Health Check
-
-Monitor service health:
-
-```bash
-curl https://your-worker.your-subdomain.workers.dev/health
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Authentication Errors**: Verify Auth0 configuration and secrets
-2. **Project Access**: Ensure JWT claims contain `org_id` and `project_key`
-3. **Tool Failures**: Check DevCycle API credentials and permissions
-
-### Debug Information
-
-Use the `whoami` tool to inspect:
-- User authentication status
-- JWT claims content
-- Project context
-- Token validity
-
-## Development Scripts
-
-```bash
-# Start local development
-yarn dev
-
-# Build TypeScript
-yarn build
-
-# Deploy to Cloudflare
-yarn deploy
-
-# Type checking
-yarn type-check
-
-# Generate Cloudflare types
-yarn cf-typegen
-```
-
-## Architecture Notes
-
-- **Shared Code**: Worker imports tools from main CLI package
-- **Authentication**: OAuth-based vs API key-based for local CLI
-- **Transport**: SSE vs stdio for communication
-- **State**: Durable Objects vs local file system 
+- `get_feature_total_evaluations` - Get feature usage metrics
+- `get_project_total_evaluations` - Get project-wide metrics
+- `get_feature_audit_log_history` - View change history
