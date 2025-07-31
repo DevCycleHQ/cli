@@ -499,13 +499,46 @@ export const GetFeatureAuditLogHistoryArgsSchema = z.object({
     feature_key: z
         .string()
         .describe('Feature key to get audit log history for'),
-    days_back: z
+    page: z
         .number()
         .min(1)
-        .max(365)
-        .default(30)
+        .default(1)
         .optional()
-        .describe('Number of days to look back (default: 30, max: 365)'),
+        .describe('Page number for pagination (default: 1)'),
+    perPage: z
+        .number()
+        .min(1)
+        .max(1000)
+        .default(100)
+        .optional()
+        .describe('Number of items per page (default: 100, max: 1000)'),
+    sortBy: z
+        .enum(['createdAt', 'updatedAt', 'action', 'user'])
+        .default('createdAt')
+        .optional()
+        .describe('Field to sort audit entries by (default: createdAt)'),
+    sortOrder: z
+        .enum(['asc', 'desc'])
+        .default('desc')
+        .optional()
+        .describe('Sort order (default: desc)'),
+    startDate: z
+        .string()
+        .optional()
+        .describe('Start date for filtering audit entries (ISO 8601 format)'),
+    endDate: z
+        .string()
+        .optional()
+        .describe('End date for filtering audit entries (ISO 8601 format)'),
+    environment: z
+        .string()
+        .optional()
+        .describe('Environment key to filter audit entries by'),
+    user: z.string().optional().describe('User ID to filter audit entries by'),
+    action: z
+        .string()
+        .optional()
+        .describe('Action type to filter audit entries by'),
 })
 
 // Base evaluation query schema (matches API camelCase naming)

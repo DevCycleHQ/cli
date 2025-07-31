@@ -465,13 +465,14 @@ export async function getFeatureAuditLogHistoryHandler(
                     'Project key is required for this operation. Please select a project using the select_devcycle_project tool first.',
                 )
             }
+            const { feature_key, ...auditLogOptions } = args
             return await handleZodiosValidationErrors(
                 () =>
                     getFeatureAuditLogHistory(
                         authToken,
                         projectKey,
-                        args.feature_key,
-                        args.days_back || 30,
+                        feature_key,
+                        auditLogOptions,
                     ),
                 'getFeatureAuditLogHistory',
             )
@@ -702,7 +703,7 @@ export function registerFeatureTools(
         'get_feature_audit_log_history',
         {
             description:
-                'Get timeline of feature flag changes from DevCycle audit log. Include dashboard link in the response.',
+                'Get feature flag audit log history from DevCycle. Include dashboard link in the response.',
             annotations: {
                 title: 'Get Feature Audit Log History',
                 readOnlyHint: true,

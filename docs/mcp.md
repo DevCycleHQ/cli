@@ -234,11 +234,19 @@ Update targeting rules for a feature in an environment.
 - `targets` (optional): Array of targeting rules with audience filters and distributions
 
 #### `get_feature_audit_log_history`
-Get timeline of feature flag changes from audit log.
+Get feature flag audit log history from DevCycle.
 
 **Parameters:**
 - `feature_key`: Feature key
-- `days_back` (optional): Days to look back (default: 30, max: 365)
+- `page` (optional): Page number for pagination (default: 1)
+- `perPage` (optional): Number of items per page (default: 100, max: 1000)
+- `sortBy` (optional): Field to sort by (`createdAt`, `updatedAt`, `action`, `user`) (default: `createdAt`)
+- `sortOrder` (optional): Sort order (`asc`, `desc`) (default: `desc`)
+- `startDate` (optional): Start date for filtering (ISO 8601 format)
+- `endDate` (optional): End date for filtering (ISO 8601 format)
+- `environment` (optional): Environment key to filter by
+- `user` (optional): User ID to filter by
+- `action` (optional): Action type to filter by
 
 ### Variable Management
 
