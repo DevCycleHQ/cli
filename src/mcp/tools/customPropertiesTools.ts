@@ -1,5 +1,5 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js'
-import { DevCycleApiClient, handleZodiosValidationErrors } from '../utils/api'
+import { z } from 'zod'
+import { handleZodiosValidationErrors } from '../utils/api'
 import {
     fetchCustomProperties,
     createCustomProperty,
@@ -12,385 +12,193 @@ import {
     UpdateCustomPropertyArgsSchema,
     DeleteCustomPropertyArgsSchema,
 } from '../types'
-import { ToolHandler } from '../server'
-import {
-    DASHBOARD_LINK_PROPERTY,
-    MESSAGE_RESPONSE_SCHEMA,
-    CUSTOM_PROPERTY_KEY_PROPERTY,
-} from './commonSchemas'
+import { IDevCycleApiClient } from '../api/interface'
+import { DevCycleMCPServerInstance } from '../server'
 
 // Helper function to generate custom properties dashboard links
 const generateCustomPropertiesDashboardLink = (
     orgId: string,
-    projectKey: string,
+    projectKey: string | undefined,
 ): string => {
+    if (!projectKey) {
+        throw new Error(
+            'Project key is required for custom properties dashboard link. Please select a project first.',
+        )
+    }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/custom-properties`
 }
 
-// =============================================================================
-// INPUT SCHEMAS
-// =============================================================================
-
-const CUSTOM_PROPERTY_PAGINATION_PROPERTIES = {
-    page: {
-        type: 'number' as const,
-        description: 'Page number',
-        minimum: 1,
-        default: 1,
-    },
-    perPage: {
-        type: 'number' as const,
-        description: 'Items per page',
-        minimum: 1,
-        maximum: 1000,
-        default: 100,
-    },
-    sortBy: {
-        type: 'string' as const,
-        description: 'Sort field',
-        enum: [
-            'createdAt',
-            'updatedAt',
-            'name',
-            'key',
-            'createdBy',
-            'propertyKey',
-        ],
-        default: 'createdAt',
-    },
-    sortOrder: {
-        type: 'string' as const,
-        description: 'Sort order',
-        enum: ['asc', 'desc'],
-        default: 'desc',
-    },
-    search: {
-        type: 'string' as const,
-        description: 'Search query to filter custom properties',
-        minLength: 3,
-    },
-    createdBy: {
-        type: 'string' as const,
-        description: 'Filter by creator',
-    },
+// Individual handler functions
+export async function listCustomPropertiesHandler(
+    args: z.infer<typeof ListCustomPropertiesArgsSchema>,
+    apiClient: IDevCycleApiClient,
+) {
+    return await apiClient.executeWithDashboardLink(
+        'listCustomProperties',
+        args,
+        async (authToken: string, projectKey: string | undefined) => {
+            if (!projectKey) {
+                throw new Error(
+                    'Project key is required for listing custom properties. Please select a project first.',
+                )
+            }
+            return await handleZodiosValidationErrors(
+                () => fetchCustomProperties(authToken, projectKey),
+                'fetchCustomProperties',
+            )
+        },
+        generateCustomPropertiesDashboardLink,
+    )
 }
 
-const CUSTOM_PROPERTY_TYPE_PROPERTY = {
-    type: 'string' as const,
-    enum: ['String', 'Boolean', 'Number'] as const,
-    description: 'Custom property type',
+export async function createCustomPropertyHandler(
+    args: z.infer<typeof UpsertCustomPropertyArgsSchema>,
+    apiClient: IDevCycleApiClient,
+) {
+    return await apiClient.executeWithDashboardLink(
+        'createCustomProperty',
+        args,
+        async (authToken: string, projectKey: string | undefined) => {
+            if (!projectKey) {
+                throw new Error(
+                    'Project key is required for creating custom properties. Please select a project first.',
+                )
+            }
+            return await handleZodiosValidationErrors(
+                () => createCustomProperty(authToken, projectKey, args),
+                'createCustomProperty',
+            )
+        },
+        generateCustomPropertiesDashboardLink,
+    )
 }
 
-const CUSTOM_PROPERTY_SCHEMA_PROPERTY = {
-    type: 'object' as const,
-    description: 'Schema definition for the custom property',
-    properties: {
-        schemaType: {
-            type: 'string' as const,
-            enum: ['enum'],
-            description: 'Schema type',
+export async function updateCustomPropertyHandler(
+    args: z.infer<typeof UpdateCustomPropertyArgsSchema>,
+    apiClient: IDevCycleApiClient,
+) {
+    return await apiClient.executeWithDashboardLink(
+        'updateCustomProperty',
+        args,
+        async (authToken: string, projectKey: string | undefined) => {
+            if (!projectKey) {
+                throw new Error(
+                    'Project key is required for updating custom properties. Please select a project first.',
+                )
+            }
+            const { key, ...updateData } = args
+
+            return await handleZodiosValidationErrors(
+                () =>
+                    updateCustomProperty(
+                        authToken,
+                        projectKey,
+                        key,
+                        updateData,
+                    ),
+                'updateCustomProperty',
+            )
         },
-        required: {
-            type: 'boolean' as const,
-            description: 'Whether the property is required',
-        },
-        enumSchema: {
-            type: 'object' as const,
-            description: 'Enum schema configuration',
-            properties: {
-                allowedValues: {
-                    type: 'array' as const,
-                    description: 'Array of allowed values',
-                    items: {
-                        type: 'object' as const,
-                        properties: {
-                            label: {
-                                type: 'string' as const,
-                                description: 'Display label for the value',
-                            },
-                            value: {
-                                description:
-                                    'The actual value (string or number)',
-                            },
-                        },
-                        required: ['label', 'value'],
-                    },
-                },
-                allowAdditionalValues: {
-                    type: 'boolean' as const,
-                    description:
-                        'Whether additional values are allowed beyond the enum',
-                },
-            },
-        },
-    },
+        generateCustomPropertiesDashboardLink,
+    )
 }
 
-const CUSTOM_PROPERTY_COMMON_PROPERTIES = {
-    key: CUSTOM_PROPERTY_KEY_PROPERTY,
-    name: {
-        type: 'string' as const,
-        description: 'Custom property name (max 100 characters)',
-        maxLength: 100,
-    },
-    type: CUSTOM_PROPERTY_TYPE_PROPERTY,
-    propertyKey: {
-        type: 'string' as const,
-        description:
-            'Property key used to identify the custom property in user data',
-    },
-    schema: CUSTOM_PROPERTY_SCHEMA_PROPERTY,
+export async function deleteCustomPropertyHandler(
+    args: z.infer<typeof DeleteCustomPropertyArgsSchema>,
+    apiClient: IDevCycleApiClient,
+) {
+    return await apiClient.executeWithDashboardLink(
+        'deleteCustomProperty',
+        args,
+        async (authToken: string, projectKey: string | undefined) => {
+            if (!projectKey) {
+                throw new Error(
+                    'Project key is required for deleting custom properties. Please select a project first.',
+                )
+            }
+            await handleZodiosValidationErrors(
+                () => deleteCustomProperty(authToken, projectKey, args.key),
+                'deleteCustomProperty',
+            )
+            return {
+                message: `Custom property '${args.key}' deleted successfully`,
+            }
+        },
+        generateCustomPropertiesDashboardLink,
+    )
 }
 
-// =============================================================================
-// OUTPUT SCHEMAS
-// =============================================================================
-
-const CUSTOM_PROPERTY_OBJECT_SCHEMA = {
-    type: 'object' as const,
-    description: 'A DevCycle custom property configuration',
-    properties: {
-        _id: {
-            type: 'string' as const,
-            description: 'Unique identifier for the custom property',
-        },
-        key: CUSTOM_PROPERTY_KEY_PROPERTY,
-        name: {
-            type: 'string' as const,
-            description: 'Display name of the custom property',
-        },
-        type: {
-            type: 'string' as const,
-            description: 'Custom property type (String, Boolean, Number)',
-        },
-        propertyKey: {
-            type: 'string' as const,
-            description: 'Property key used in user data',
-        },
-        schema: CUSTOM_PROPERTY_SCHEMA_PROPERTY,
-        _project: {
-            type: 'string' as const,
-            description: 'Associated project ID',
-        },
-        _createdBy: {
-            type: 'string' as const,
-            description: 'User who created the custom property',
-        },
-        createdAt: {
-            type: 'string' as const,
-            description: 'ISO timestamp when the custom property was created',
-        },
-        updatedAt: {
-            type: 'string' as const,
+/**
+ * Register custom properties tools with the MCP server using the new direct registration pattern
+ */
+export function registerCustomPropertiesTools(
+    serverInstance: DevCycleMCPServerInstance,
+    apiClient: IDevCycleApiClient,
+): void {
+    serverInstance.registerToolWithErrorHandling(
+        'list_custom_properties',
+        {
             description:
-                'ISO timestamp when the custom property was last updated',
+                'List custom properties in the current project. Include dashboard link in the response.',
+            annotations: {
+                title: 'List Custom Properties',
+                readOnlyHint: true,
+            },
+            inputSchema: ListCustomPropertiesArgsSchema.shape,
         },
-    },
-    required: [
-        '_id',
-        'key',
-        'name',
-        'type',
-        'propertyKey',
-        '_project',
-        '_createdBy',
-        'createdAt',
-        'updatedAt',
-    ],
-}
+        async (args: any) => {
+            const validatedArgs = ListCustomPropertiesArgsSchema.parse(args)
+            return await listCustomPropertiesHandler(validatedArgs, apiClient)
+        },
+    )
 
-// =============================================================================
-// TOOL DEFINITIONS
-// =============================================================================
+    serverInstance.registerToolWithErrorHandling(
+        'create_custom_property',
+        {
+            description:
+                'Create a new custom property. Include dashboard link in the response.',
+            annotations: {
+                title: 'Create Custom Property',
+            },
+            inputSchema: UpsertCustomPropertyArgsSchema.shape,
+        },
+        async (args: any) => {
+            const validatedArgs = UpsertCustomPropertyArgsSchema.parse(args)
+            return await createCustomPropertyHandler(validatedArgs, apiClient)
+        },
+    )
 
-export const customPropertiesToolDefinitions: Tool[] = [
-    {
-        name: 'list_custom_properties',
-        description:
-            'List custom properties in the current project. Include dashboard link in the response.',
-        annotations: {
-            title: 'List Custom Properties',
-            readOnlyHint: true,
-        },
-        inputSchema: {
-            type: 'object',
-            properties: CUSTOM_PROPERTY_PAGINATION_PROPERTIES,
-        },
-        outputSchema: {
-            type: 'object' as const,
-            properties: {
-                result: {
-                    type: 'array' as const,
-                    description:
-                        'Array of custom property objects in the project',
-                    items: CUSTOM_PROPERTY_OBJECT_SCHEMA,
-                },
-                dashboardLink: DASHBOARD_LINK_PROPERTY,
+    serverInstance.registerToolWithErrorHandling(
+        'update_custom_property',
+        {
+            description:
+                'Update an existing custom property. ⚠️ IMPORTANT: Custom property changes can affect feature flags in production environments. Always confirm with the user before updating custom properties for features that are active in production. Include dashboard link in the response.',
+            annotations: {
+                title: 'Update Custom Property',
+                destructiveHint: true,
             },
-            required: ['result', 'dashboardLink'],
+            inputSchema: UpdateCustomPropertyArgsSchema.shape,
         },
-    },
-    {
-        name: 'create_custom_property',
-        description:
-            'Create a new custom property. Include dashboard link in the response.',
-        annotations: {
-            title: 'Create Custom Property',
+        async (args: any) => {
+            const validatedArgs = UpdateCustomPropertyArgsSchema.parse(args)
+            return await updateCustomPropertyHandler(validatedArgs, apiClient)
         },
-        inputSchema: {
-            type: 'object',
-            properties: CUSTOM_PROPERTY_COMMON_PROPERTIES,
-            required: ['key', 'name', 'type', 'propertyKey'],
-        },
-        outputSchema: {
-            type: 'object' as const,
-            properties: {
-                result: CUSTOM_PROPERTY_OBJECT_SCHEMA,
-                dashboardLink: DASHBOARD_LINK_PROPERTY,
-            },
-            required: ['result', 'dashboardLink'],
-        },
-    },
-    {
-        name: 'update_custom_property',
-        description:
-            'Update an existing custom property. ⚠️ IMPORTANT: Custom property changes can affect feature flags in production environments. Always confirm with the user before updating custom properties for features that are active in production. Include dashboard link in the response.',
-        annotations: {
-            title: 'Update Custom Property',
-            destructiveHint: true,
-        },
-        inputSchema: {
-            type: 'object',
-            properties: CUSTOM_PROPERTY_COMMON_PROPERTIES,
-            required: ['key'],
-        },
-        outputSchema: {
-            type: 'object' as const,
-            properties: {
-                result: CUSTOM_PROPERTY_OBJECT_SCHEMA,
-                dashboardLink: DASHBOARD_LINK_PROPERTY,
-            },
-            required: ['result', 'dashboardLink'],
-        },
-    },
-    {
-        name: 'delete_custom_property',
-        description:
-            'Delete a custom property. ⚠️ CRITICAL: Deleting a custom property will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any custom property. Include dashboard link in the response.',
-        annotations: {
-            title: 'Delete Custom Property',
-            destructiveHint: true,
-        },
-        inputSchema: {
-            type: 'object',
-            properties: {
-                key: CUSTOM_PROPERTY_KEY_PROPERTY,
-            },
-            required: ['key'],
-        },
-        outputSchema: {
-            type: 'object' as const,
-            properties: {
-                result: MESSAGE_RESPONSE_SCHEMA,
-                dashboardLink: DASHBOARD_LINK_PROPERTY,
-            },
-            required: ['result', 'dashboardLink'],
-        },
-    },
-]
+    )
 
-export const customPropertiesToolHandlers: Record<string, ToolHandler> = {
-    list_custom_properties: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
-        const validatedArgs = ListCustomPropertiesArgsSchema.parse(args)
-
-        return await apiClient.executeWithDashboardLink(
-            'listCustomProperties',
-            validatedArgs,
-            async (authToken, projectKey) => {
-                return await handleZodiosValidationErrors(
-                    () => fetchCustomProperties(authToken, projectKey),
-                    'fetchCustomProperties',
-                )
+    serverInstance.registerToolWithErrorHandling(
+        'delete_custom_property',
+        {
+            description:
+                'Delete a custom property. ⚠️ CRITICAL: Deleting a custom property will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any custom property. Include dashboard link in the response.',
+            annotations: {
+                title: 'Delete Custom Property',
+                destructiveHint: true,
             },
-            generateCustomPropertiesDashboardLink,
-        )
-    },
-    create_custom_property: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
-        const validatedArgs = UpsertCustomPropertyArgsSchema.parse(args)
-
-        return await apiClient.executeWithDashboardLink(
-            'createCustomProperty',
-            validatedArgs,
-            async (authToken, projectKey) => {
-                return await handleZodiosValidationErrors(
-                    () =>
-                        createCustomProperty(
-                            authToken,
-                            projectKey,
-                            validatedArgs,
-                        ),
-                    'createCustomProperty',
-                )
-            },
-            generateCustomPropertiesDashboardLink,
-        )
-    },
-    update_custom_property: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
-        const validatedArgs = UpdateCustomPropertyArgsSchema.parse(args)
-
-        return await apiClient.executeWithDashboardLink(
-            'updateCustomProperty',
-            validatedArgs,
-            async (authToken, projectKey) => {
-                const { key, ...updateData } = validatedArgs
-
-                return await handleZodiosValidationErrors(
-                    () =>
-                        updateCustomProperty(
-                            authToken,
-                            projectKey,
-                            key,
-                            updateData,
-                        ),
-                    'updateCustomProperty',
-                )
-            },
-            generateCustomPropertiesDashboardLink,
-        )
-    },
-    delete_custom_property: async (
-        args: unknown,
-        apiClient: DevCycleApiClient,
-    ) => {
-        const validatedArgs = DeleteCustomPropertyArgsSchema.parse(args)
-
-        return await apiClient.executeWithDashboardLink(
-            'deleteCustomProperty',
-            validatedArgs,
-            async (authToken, projectKey) => {
-                await handleZodiosValidationErrors(
-                    () =>
-                        deleteCustomProperty(
-                            authToken,
-                            projectKey,
-                            validatedArgs.key,
-                        ),
-                    'deleteCustomProperty',
-                )
-                return {
-                    message: `Custom property '${validatedArgs.key}' deleted successfully`,
-                }
-            },
-            generateCustomPropertiesDashboardLink,
-        )
-    },
+            inputSchema: DeleteCustomPropertyArgsSchema.shape,
+        },
+        async (args: any) => {
+            const validatedArgs = DeleteCustomPropertyArgsSchema.parse(args)
+            return await deleteCustomPropertyHandler(validatedArgs, apiClient)
+        },
+    )
 }

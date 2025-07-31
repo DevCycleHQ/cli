@@ -1,0 +1,24 @@
+{
+    "name": "@devcycle/mcp-worker",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "wrangler dev",
+        "deploy": "wrangler deploy",
+        "build": "tsc",
+        "type-check": "tsc --noEmit",
+        "cf-typegen": "wrangler types"
+    },
+    "dependencies": {
+        "@cloudflare/workers-oauth-provider": "^0.0.5",
+        "agents": "^0.0.100",
+        "hono": "^4.8.4",
+        "jose": "^6.0.11",
+        "oauth4webapi": "^3.5.5"
+    },
+    "devDependencies": {
+        "wrangler": "^4.22.0"
+    },
+    "packageManager": "yarn@4.9.2"
+}
