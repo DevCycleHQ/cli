@@ -9,7 +9,22 @@ export const comparatorChoices = (input: Record<string, any>) => {
     } else if (input.subType === 'audienceMatch') {
         return ['=', '!=']
     }
-    return ['=', '!=', 'exist', '!exist', 'contain', '!contain']
+    return [
+        '=',
+        '!=',
+        '>',
+        '>=',
+        '<',
+        '<=',
+        'exist',
+        '!exist',
+        'contain',
+        '!contain',
+        'startWith',
+        '!startWith',
+        'endWith',
+        '!endWith',
+    ]
 }
 
 export const targetingStatusPrompt = {

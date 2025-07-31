@@ -3,7 +3,7 @@ import { BASE_URL } from '../../api/common'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import * as fs from 'fs'
-import chai from 'chai'
+import * as chai from 'chai'
 import Nock, { Body, ReplyHeaders } from 'nock'
 
 const mockVariablesResponse = [
