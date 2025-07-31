@@ -234,7 +234,7 @@ Update targeting rules for a feature in an environment.
 - `targets` (optional): Array of targeting rules with audience filters and distributions
 
 #### `get_feature_audit_log_history`
-Get feature flag audit log history from DevCycle.
+Get feature flag audit log history from DevCycle. Returns audit log entities matching the DevCycle API schema with date, a0_user, and changes fields.
 
 **Parameters:**
 - `feature_key`: Feature key

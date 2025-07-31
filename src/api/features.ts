@@ -208,9 +208,6 @@ export const getFeatureAuditLogHistory = async (
                 params: options,
             },
         )
-
-        console.error(`feature history response: ${JSON.stringify(response)}`)
-
         return response.data || []
     } catch (error) {
         // If audit log API fails, return empty result

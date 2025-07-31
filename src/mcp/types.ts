@@ -541,6 +541,19 @@ export const GetFeatureAuditLogHistoryArgsSchema = z.object({
         .describe('Action type to filter audit entries by'),
 })
 
+// Zod schema for DevCycle Audit Log Entity - matches the actual swagger specification
+export const AuditLogEntitySchema = z.object({
+    date: z
+        .string()
+        .describe(
+            'Timestamp when the audit entry was created (ISO 8601 format)',
+        ),
+    a0_user: z.string().describe('Auth0 user ID who performed the action'),
+    changes: z
+        .array(z.record(z.unknown()))
+        .describe('Array of changes made (objects with unknown structure)'),
+})
+
 // Base evaluation query schema (matches API camelCase naming)
 const BaseEvaluationQuerySchema = z.object({
     startDate: z
