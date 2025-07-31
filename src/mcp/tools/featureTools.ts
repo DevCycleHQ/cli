@@ -25,8 +25,7 @@ import {
     UpdateFeatureArgsSchema,
     UpdateFeatureStatusArgsSchema,
     DeleteFeatureArgsSchema,
-    EnableTargetingArgsSchema,
-    DisableTargetingArgsSchema,
+    SetFeatureTargetingArgsSchema,
     ListVariationsArgsSchema,
     CreateVariationArgsSchema,
     UpdateVariationArgsSchema,
@@ -307,68 +306,35 @@ export async function updateFeatureVariationHandler(
     )
 }
 
-export async function enableFeatureTargetingHandler(
-    args: z.infer<typeof EnableTargetingArgsSchema>,
+export async function setFeatureTargetingHandler(
+    args: z.infer<typeof SetFeatureTargetingArgsSchema>,
     apiClient: IDevCycleApiClient,
 ) {
-    return await apiClient.executeWithDashboardLink(
-        'enableTargeting',
-        args,
-        async (authToken: string, projectKey: string | undefined) => {
-            if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the selecting a project first.',
-                )
-            }
-            await handleZodiosValidationErrors(
-                () =>
-                    enableTargeting(
-                        authToken,
-                        projectKey,
-                        args.feature_key,
-                        args.environment_key,
-                    ),
-                'enableTargeting',
-            )
-            return {
-                message: `Targeting enabled for feature '${args.feature_key}' in environment '${args.environment_key}'`,
-            }
-        },
-        (orgId: string, projectKey: string | undefined) =>
-            generateFeatureDashboardLink(
-                orgId,
-                projectKey,
-                args.feature_key,
-                'manage-feature',
-            ),
-    )
-}
+    const operation = args.enabled ? 'enableTargeting' : 'disableTargeting'
+    const apiFunction = args.enabled ? enableTargeting : disableTargeting
 
-export async function disableFeatureTargetingHandler(
-    args: z.infer<typeof DisableTargetingArgsSchema>,
-    apiClient: IDevCycleApiClient,
-) {
     return await apiClient.executeWithDashboardLink(
-        'disableTargeting',
+        operation,
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the selecting a project first.',
+                    'Project key is required for this operation. Please selecting a project first.',
                 )
             }
             await handleZodiosValidationErrors(
                 () =>
-                    disableTargeting(
+                    apiFunction(
                         authToken,
                         projectKey,
                         args.feature_key,
                         args.environment_key,
                     ),
-                'disableTargeting',
+                operation,
             )
+            const action = args.enabled ? 'enabled' : 'disabled'
             return {
-                message: `Targeting disabled for feature '${args.feature_key}' in environment '${args.environment_key}'`,
+                message: `Targeting ${action} for feature '${args.feature_key}' in environment '${args.environment_key}'`,
             }
         },
         (orgId: string, projectKey: string | undefined) =>
@@ -629,39 +595,19 @@ export function registerFeatureTools(
     )
 
     serverInstance.registerToolWithErrorHandling(
-        'enable_feature_targeting',
+        'set_feature_targeting',
         {
             description:
-                'Enable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
+                'Set targeting status for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
             annotations: {
-                title: 'Enable Feature Targeting',
+                title: 'Set Feature Targeting',
                 destructiveHint: true,
             },
-            inputSchema: EnableTargetingArgsSchema.shape,
+            inputSchema: SetFeatureTargetingArgsSchema.shape,
         },
         async (args: any) => {
-            const validatedArgs = EnableTargetingArgsSchema.parse(args)
-            return await enableFeatureTargetingHandler(validatedArgs, apiClient)
-        },
-    )
-
-    serverInstance.registerToolWithErrorHandling(
-        'disable_feature_targeting',
-        {
-            description:
-                'Disable targeting for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
-            annotations: {
-                title: 'Disable Feature Targeting',
-                destructiveHint: true,
-            },
-            inputSchema: DisableTargetingArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = DisableTargetingArgsSchema.parse(args)
-            return await disableFeatureTargetingHandler(
-                validatedArgs,
-                apiClient,
-            )
+            const validatedArgs = SetFeatureTargetingArgsSchema.parse(args)
+            return await setFeatureTargetingHandler(validatedArgs, apiClient)
         },
     )
 

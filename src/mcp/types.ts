@@ -302,18 +302,12 @@ export const UpdateEnvironmentArgsSchema = z.object({
     ),
 })
 
-export const EnableTargetingArgsSchema = z.object({
-    feature_key: z.string().describe('Feature key to enable targeting for'),
-    environment_key: z
-        .string()
-        .describe('Environment key to enable targeting in'),
-})
-
-export const DisableTargetingArgsSchema = z.object({
-    feature_key: z.string().describe('Feature key to disable targeting for'),
-    environment_key: z
-        .string()
-        .describe('Environment key to disable targeting in'),
+export const SetFeatureTargetingArgsSchema = z.object({
+    feature_key: z.string().describe('Feature key to set targeting for'),
+    environment_key: z.string().describe('Environment key to set targeting in'),
+    enabled: z
+        .boolean()
+        .describe('Whether to enable (true) or disable (false) targeting'),
 })
 
 export const CreateFeatureArgsSchema = z.object({

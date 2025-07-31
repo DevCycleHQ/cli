@@ -179,8 +179,7 @@ All standard DevCycle CLI MCP tools are available through the Worker:
 - `fetch_feature_variations` - Get feature variations
 - `create_feature_variation` - Add new variation
 - `update_feature_variation` - Update variation
-- `enable_feature_targeting` - Enable feature targeting for feature
-- `disable_feature_targeting` - Disable feature targeting
+- `set_feature_targeting` - Set targeting status (enable/disable) for feature  
 - `list_feature_targeting` - View feature targeting rules
 - `update_feature_targeting` - Update feature targeting configuration
 

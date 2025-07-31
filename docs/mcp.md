@@ -202,19 +202,13 @@ Update an existing variation by key. ⚠️ WARNING: Updating a feature variatio
 - `name` (optional): New variation name
 - `variables` (optional): Updated variable values
 
-#### `enable_feature_targeting` ⚠️
-Enable targeting for a feature in an environment.
+#### `set_feature_targeting` ⚠️
+Set targeting status (enable or disable) for a feature in an environment.
 
 **Parameters:**
 - `feature_key`: Feature key
 - `environment_key`: Environment key
-
-#### `disable_feature_targeting` ⚠️
-Disable targeting for a feature in an environment.
-
-**Parameters:**
-- `feature_key`: Feature key
-- `environment_key`: Environment key
+- `enabled`: Boolean - true to enable targeting, false to disable
 
 #### `list_feature_targeting`
 List targeting rules for a feature.
