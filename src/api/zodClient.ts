@@ -188,13 +188,35 @@ const AllFilter = z.object({ type: z.literal('all').default('all') })
 const OptInFilter = z.object({ type: z.literal('optIn').default('optIn') })
 const UserFilter = z.object({
     subType: z.enum(['user_id', 'email', 'platform', 'deviceModel']),
-    comparator: z.enum(['=', '!=', 'exist', '!exist', 'contain', '!contain']),
+    comparator: z.enum([
+        '=',
+        '!=',
+        'exist',
+        '!exist',
+        'contain',
+        '!contain',
+        'startWith',
+        '!startWith',
+        'endWith',
+        '!endWith',
+    ]),
     values: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
 })
 const UserCountryFilter = z.object({
     subType: z.literal('country').default('country'),
-    comparator: z.enum(['=', '!=', 'exist', '!exist', 'contain', '!contain']),
+    comparator: z.enum([
+        '=',
+        '!=',
+        'exist',
+        '!exist',
+        'contain',
+        '!contain',
+        'startWith',
+        '!startWith',
+        'endWith',
+        '!endWith',
+    ]),
     values: z.array(z.string()),
     type: z.literal('user').default('user'),
 })
@@ -222,6 +244,10 @@ const UserCustomFilter = z.object({
         '!exist',
         'contain',
         '!contain',
+        'startWith',
+        '!startWith',
+        'endWith',
+        '!endWith',
     ]),
     dataKey: z.string().min(1),
     dataKeyType: z.enum(['String', 'Boolean', 'Number']),

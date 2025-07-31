@@ -2,7 +2,7 @@ import { expect } from '@oclif/test'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
-import chai from 'chai'
+import * as chai from 'chai'
 import inquirer from 'inquirer'
 
 describe('targeting update', () => {
