@@ -35,14 +35,18 @@ const subTypeMap = {
 const comparatorMap = {
     '=': 'is',
     '!=': 'is not',
-    contain: 'contains',
-    '!contain': 'does not contain',
-    exist: 'exists',
-    '!exist': 'does not exist',
     '>': 'is greater than',
     '>=': 'is greater than or equal to',
     '<': 'is less than',
     '<=': 'is less than or equal to',
+    contain: 'contains',
+    '!contain': 'does not contain',
+    startWith: 'starts with',
+    '!startWith': 'does not start with',
+    endWith: 'ends with',
+    '!endWith': 'does not end with',
+    exist: 'exists',
+    '!exist': 'does not exist',
 }
 
 export const renderTargetingTree = (

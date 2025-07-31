@@ -66,7 +66,7 @@
         "shx": "^0.3.4",
         "sinon": "^19.0.2",
         "ts-node": "^10.9.2",
-        "typescript": "^5.7.2",
+        "typescript": "^5.8.3",
         "typescript-eslint": "^8.21.0"
     },
     "oclif": {
@@ -119,14 +119,14 @@
         }
     },
     "scripts": {
-        "build": "shx rm -rf dist && tsc -b && oclif manifest && oclif readme --multi",
+        "build": "shx rm -rf dist && tsc -b && oclif manifest",
         "build:tar": "oclif pack tarballs",
         "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
         "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
         "lint": "eslint . --config eslint.config.mjs",
         "postpack": "shx rm -f oclif.manifest.json",
         "posttest": "yarn lint",
-        "prepack": "yarn build && oclif manifest && oclif readme --multi",
+        "prepack": "yarn build && oclif readme --multi",
         "pretest": "yarn format:check",
         "test": "mocha test/*.ts \"src/**/*.test.ts\"",
         "test:ci": "yarn test --forbid-only",
