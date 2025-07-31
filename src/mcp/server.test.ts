@@ -5,6 +5,11 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { DevCycleMCPServer } from './server'
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
+import {
+    categorizeError,
+    getErrorSuggestions,
+    handleToolError,
+} from './utils/errorHandling'
 
 describe('DevCycleMCPServer', () => {
     let server: McpServer
@@ -157,10 +162,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize authentication errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('401 Unauthorized')).to.equal(
                 'AUTHENTICATION_ERROR',
             )
@@ -170,10 +171,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize permission errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('403 Forbidden')).to.equal(
                 'PERMISSION_ERROR',
             )
@@ -183,10 +180,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize resource not found errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('404 Not Found')).to.equal(
                 'RESOURCE_NOT_FOUND',
             )
@@ -196,10 +189,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize validation errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('400 Bad Request')).to.equal(
                 'VALIDATION_ERROR',
             )
@@ -209,10 +198,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize schema validation errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('Zodios: invalid response')).to.equal(
                 'SCHEMA_VALIDATION_ERROR',
             )
@@ -225,10 +210,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize network errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('ENOTFOUND api.devcycle.com')).to.equal(
                 'NETWORK_ERROR',
             )
@@ -236,10 +217,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize project errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(
                 categorizeError('The project test-key was not found'),
             ).to.equal('PROJECT_ERROR')
@@ -249,14 +226,10 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should provide helpful suggestions for authentication errors', () => {
-            const getErrorSuggestions = (
-                mcpServer as any
-            ).getErrorSuggestions.bind(mcpServer)
-
             const suggestions = getErrorSuggestions('AUTHENTICATION_ERROR')
 
             expect(suggestions).to.include(
-                'Run "dvc login sso" to re-authenticate the devcycle cli',
+                'Re-authenticate with DevCycle (run "dvc login sso" for CLI for local MCP or re-login through OAuth for remote MCP)',
             )
             expect(suggestions).to.include(
                 'Verify your API credentials are correct',
@@ -265,14 +238,10 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should provide helpful suggestions for project errors', () => {
-            const getErrorSuggestions = (
-                mcpServer as any
-            ).getErrorSuggestions.bind(mcpServer)
-
             const suggestions = getErrorSuggestions('PROJECT_ERROR')
 
             expect(suggestions).to.include(
-                'Run "dvc projects select" to choose a valid project',
+                'Select a valid project (use "dvc projects select" in CLI or project selection tools in workers)',
             )
             expect(suggestions).to.include('Verify the project key is correct')
             expect(suggestions).to.include(
@@ -281,10 +250,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should format tool errors with helpful information', async () => {
-            const handleToolError = (mcpServer as any).handleToolError.bind(
-                mcpServer,
-            )
-
             const result = handleToolError(
                 new Error('401 Unauthorized'),
                 'test_tool',
@@ -300,10 +265,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should handle string errors', async () => {
-            const handleToolError = (mcpServer as any).handleToolError.bind(
-                mcpServer,
-            )
-
             const result = handleToolError('String error message', 'test_tool')
             const errorResponse = JSON.parse(result.content[0].text)
 
@@ -313,10 +274,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should handle object errors', async () => {
-            const handleToolError = (mcpServer as any).handleToolError.bind(
-                mcpServer,
-            )
-
             const errorObject = {
                 code: 'ERR001',
                 details: 'Something went wrong',
