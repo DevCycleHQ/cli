@@ -138,7 +138,7 @@ The Worker uses OAuth 2.0 flow integrated with DevCycle's Auth0 tenant:
 
 ### Available Tools
 
-All standard DevCycle CLI MCP tools are available through the Worker:
+All standard DevCycle CLI MCP tools are available through the Worker. For detailed tool call definitions, parameters, and usage examples, see the [complete MCP tool reference](../docs/mcp.md#available-tools).
 
 #### Project Management
 
