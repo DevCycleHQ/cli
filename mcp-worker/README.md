@@ -168,8 +168,6 @@ All standard DevCycle CLI MCP tools are available through the Worker:
 - `select_devcycle_project` - Select active project for subsequent operations
 - `list_projects` - List all projects in organization
 - `get_current_project` - Get currently selected project
-- `create_project` - Create new project
-- `update_project` - Update project settings
 
 #### Feature Management
 
@@ -192,8 +190,6 @@ All standard DevCycle CLI MCP tools are available through the Worker:
 #### Environment Management
 
 - `list_environments` - List all environments
-- `create_environment` - Create new environment
-- `update_environment` - Update environment
 - `get_sdk_keys` - Get SDK keys for environment
 
 #### Targeting & Overrides
@@ -206,13 +202,6 @@ All standard DevCycle CLI MCP tools are available through the Worker:
 - `set_self_targeting_override` - Set override
 - `clear_feature_self_targeting_overrides` - Clear overrides
 - `update_self_targeting_identity` - Set identity for testing
-
-#### Custom Properties
-
-- `list_custom_properties` - List custom properties
-- `create_custom_property` - Create new property
-- `update_custom_property` - Update property
-- `delete_custom_property` - Delete property
 
 #### Analytics
 

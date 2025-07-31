@@ -180,35 +180,36 @@ export function registerEnvironmentTools(
         },
     )
 
-    serverInstance.registerToolWithErrorHandling(
-        'create_environment',
-        {
-            description:
-                'Create a new environment. Include dashboard link in the response.',
-            annotations: {
-                title: 'Create Environment',
-            },
-            inputSchema: CreateEnvironmentArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = CreateEnvironmentArgsSchema.parse(args)
-            return await createEnvironmentHandler(validatedArgs, apiClient)
-        },
-    )
+    // DISABLED: Environment creation/update tools
+    // serverInstance.registerToolWithErrorHandling(
+    //     'create_environment',
+    //     {
+    //         description:
+    //             'Create a new environment. Include dashboard link in the response.',
+    //         annotations: {
+    //             title: 'Create Environment',
+    //         },
+    //         inputSchema: CreateEnvironmentArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = CreateEnvironmentArgsSchema.parse(args)
+    //         return await createEnvironmentHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
-    serverInstance.registerToolWithErrorHandling(
-        'update_environment',
-        {
-            description:
-                'Update an existing environment. Include dashboard link in the response.',
-            annotations: {
-                title: 'Update Environment',
-            },
-            inputSchema: UpdateEnvironmentArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = UpdateEnvironmentArgsSchema.parse(args)
-            return await updateEnvironmentHandler(validatedArgs, apiClient)
-        },
-    )
+    // serverInstance.registerToolWithErrorHandling(
+    //     'update_environment',
+    //     {
+    //         description:
+    //             'Update an existing environment. Include dashboard link in the response.',
+    //         annotations: {
+    //             title: 'Update Environment',
+    //         },
+    //         inputSchema: UpdateEnvironmentArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = UpdateEnvironmentArgsSchema.parse(args)
+    //         return await updateEnvironmentHandler(validatedArgs, apiClient)
+    //     },
+    // )
 }

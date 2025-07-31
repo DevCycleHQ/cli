@@ -4,14 +4,8 @@ import { McpAgent } from 'agents/mcp'
 import { createAuthApp, createTokenExchangeCallback } from './auth'
 import { WorkerApiClient } from './apiClient'
 
-// Import register functions from the modernized CLI modules
-import { registerProjectTools } from '../../src/mcp/tools/projectTools'
-import { registerCustomPropertiesTools } from '../../src/mcp/tools/customPropertiesTools'
-import { registerEnvironmentTools } from '../../src/mcp/tools/environmentTools'
-import { registerVariableTools } from '../../src/mcp/tools/variableTools'
-import { registerFeatureTools } from '../../src/mcp/tools/featureTools'
-import { registerSelfTargetingTools } from '../../src/mcp/tools/selfTargetingTools'
-import { registerResultsTools } from '../../src/mcp/tools/resultsTools'
+// Import the centralized registration function from CLI tools
+import { registerAllToolsWithServer } from '../../src/mcp/tools/index'
 
 // Import types
 import { DevCycleMCPServerInstance } from '../../src/mcp/server'
@@ -103,14 +97,9 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
             },
         }
 
-        // Register all CLI tools using the shared registration functions
-        registerProjectTools(serverAdapter, this.apiClient)
-        registerCustomPropertiesTools(serverAdapter, this.apiClient)
-        registerEnvironmentTools(serverAdapter, this.apiClient)
-        registerVariableTools(serverAdapter, this.apiClient)
-        registerFeatureTools(serverAdapter, this.apiClient)
-        registerSelfTargetingTools(serverAdapter, this.apiClient)
-        registerResultsTools(serverAdapter, this.apiClient)
+        // Register all CLI tools using the centralized registration function
+        // This automatically includes the same disabled tools as the main CLI MCP server
+        registerAllToolsWithServer(serverAdapter, this.apiClient)
 
         // Register worker-specific project selection tools using the modern pattern
         registerProjectSelectionTools(serverAdapter, this.apiClient)

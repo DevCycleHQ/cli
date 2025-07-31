@@ -20,7 +20,6 @@ Both implementations share the same underlying tools, schemas, and utilities, en
   - [Variable Management](#variable-management)
   - [Environment Management](#environment-management)
   - [Project Management](#project-management)
-  - [Custom Properties Management](#custom-properties-management)
   - [Self-Targeting & Overrides](#self-targeting--overrides)
   - [Results & Analytics](#results--analytics)
 - [Error Handling](#error-handling)
@@ -305,28 +304,6 @@ Get SDK keys for an environment.
 - `environmentKey`: Environment key
 - `keyType` (optional): Specific key type (`mobile`, `server`, `client`)
 
-#### `create_environment`
-Create a new environment.
-
-**Parameters:**
-- `key`: Unique environment key (pattern: `^[a-z0-9-_.]+$`)
-- `name`: Environment name (max 100 chars)
-- `type`: Environment type (`development`, `staging`, `production`, `disaster_recovery`)
-- `description` (optional): Environment description (max 1000 chars)
-- `color` (optional): Environment color in hex format
-- `settings` (optional): Environment settings configuration
-
-#### `update_environment`
-Update an existing environment.
-
-**Parameters:**
-- `key`: Environment key to update
-- `name` (optional): New name (max 100 chars)
-- `type` (optional): New environment type
-- `description` (optional): New description (max 1000 chars)
-- `color` (optional): New color in hex format
-- `settings` (optional): Updated environment settings
-
 ### Project Management
 
 #### `list_projects`
@@ -344,65 +321,6 @@ List all projects in the organization.
 Get details of the currently selected project.
 
 **Parameters:** None
-
-#### `create_project`
-Create a new project.
-
-**Parameters:**
-- `key`: Unique project key (pattern: `^[a-z0-9-_.]+$`)
-- `name`: Project name (max 100 chars)
-- `description` (optional): Project description (max 1000 chars)
-- `color` (optional): Project color in hex format (e.g., #FF0000)
-- `settings` (optional): Project settings configuration
-
-#### `update_project`
-Update an existing project.
-
-**Parameters:**
-- `key`: Project key to update
-- `name` (optional): New project name (max 100 chars)
-- `description` (optional): New description (max 1000 chars)
-- `color` (optional): New color in hex format
-- `settings` (optional): Updated project settings
-
-### Custom Properties Management
-
-#### `list_custom_properties`
-List custom properties in the current project.
-
-**Parameters:**
-- `search` (optional): Search query to filter custom properties (min 3 chars)
-- `page` (optional): Page number (default: 1)
-- `perPage` (optional): Items per page (default: 100, max: 1000)
-- `sortBy` (optional): Sort field (`createdAt`, `updatedAt`, `name`, `key`, `createdBy`, `propertyKey`)
-- `sortOrder` (optional): Sort order (`asc`, `desc`)
-- `createdBy` (optional): Filter by creator
-
-#### `create_custom_property`
-Create a new custom property.
-
-**Parameters:**
-- `key`: Unique property key (pattern: `^[a-z0-9-_.]+$`)
-- `name`: Property name (max 100 chars)
-- `type`: Property type (`String`, `Boolean`, `Number`)
-- `propertyKey`: Property key used to identify the custom property in user data
-- `schema` (optional): Schema definition with validation rules
-
-#### `update_custom_property` ⚠️
-Update an existing custom property.
-
-**Parameters:**
-- `key`: Property key to update
-- `name` (optional): New name
-- `type` (optional): New type
-- `propertyKey` (optional): New property key
-- `schema` (optional): New schema definition
-
-#### `delete_custom_property` ⚠️⚠️
-Delete a custom property from ALL environments.
-
-**Parameters:**
-- `key`: Property key to delete
 
 ### Self-Targeting & Overrides
 
@@ -500,16 +418,6 @@ The AI assistant will use:
 1. `create_feature` to create the feature
 2. `create_feature_variation` to add variations
 3. `enable_feature_targeting` to activate in development
-
-### Managing Custom Properties
-
-```text
-Create a custom property for user subscription tier with allowed values
-```
-
-The AI assistant will use:
-1. `create_custom_property` with enum schema for allowed values
-2. Configure the property with appropriate validation
 
 ### Viewing Analytics
 

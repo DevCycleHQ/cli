@@ -152,37 +152,38 @@ export function registerProjectTools(
         },
     )
 
-    serverInstance.registerToolWithErrorHandling(
-        'create_project',
-        {
-            description:
-                'Create a new project. Include dashboard link in the response.',
-            annotations: {
-                title: 'Create Project',
-            },
-            inputSchema: CreateProjectArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = CreateProjectArgsSchema.parse(args)
+    // DISABLED: Project creation/update tools
+    // serverInstance.registerToolWithErrorHandling(
+    //     'create_project',
+    //     {
+    //         description:
+    //             'Create a new project. Include dashboard link in the response.',
+    //         annotations: {
+    //             title: 'Create Project',
+    //         },
+    //         inputSchema: CreateProjectArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = CreateProjectArgsSchema.parse(args)
 
-            return await createProjectHandler(validatedArgs, apiClient)
-        },
-    )
+    //         return await createProjectHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
-    serverInstance.registerToolWithErrorHandling(
-        'update_project',
-        {
-            description:
-                'Update an existing project. Include dashboard link in the response.',
-            annotations: {
-                title: 'Update Project',
-            },
-            inputSchema: UpdateProjectArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = UpdateProjectArgsSchema.parse(args)
+    // serverInstance.registerToolWithErrorHandling(
+    //     'update_project',
+    //     {
+    //         description:
+    //             'Update an existing project. Include dashboard link in the response.',
+    //         annotations: {
+    //             title: 'Update Project',
+    //         },
+    //         inputSchema: UpdateProjectArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = UpdateProjectArgsSchema.parse(args)
 
-            return await updateProjectHandler(validatedArgs, apiClient)
-        },
-    )
+    //         return await updateProjectHandler(validatedArgs, apiClient)
+    //     },
+    // )
 }
