@@ -12,9 +12,5 @@
         "src/mcp/api/interface.ts",
         "src/api/**/*"
     ],
-    "exclude": [
-        "src/mcp/worker/**/*",
-        "**/*.test.ts",
-        "test/**/*"
-    ]
-} 
+    "exclude": ["src/mcp/worker/**/*", "**/*.test.ts", "test/**/*"]
+}

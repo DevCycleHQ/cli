@@ -123,8 +123,7 @@ describe('DevCycleMCPServer', () => {
             expect(registeredToolNames).to.include('list_variables')
             expect(registeredToolNames).to.include('list_environments')
             expect(registeredToolNames).to.include('list_projects')
-            expect(registeredToolNames).to.include('create_project')
-            expect(registeredToolNames).to.include('list_custom_properties')
+            expect(registeredToolNames).to.include('get_current_project')
             expect(registeredToolNames).to.include(
                 'get_self_targeting_identity',
             )
