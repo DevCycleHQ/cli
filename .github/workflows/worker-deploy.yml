@@ -1,0 +1,75 @@
+name: Deploy MCP Worker
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mcp-worker/**'
+      - '.github/workflows/worker-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Workers
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check for worker changes
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            git diff --name-only HEAD^ HEAD > changed_files.txt
+            if grep -q "^mcp-worker/" changed_files.txt || grep -q "worker-deploy.yml" changed_files.txt; then
+              echo "changed=true" >> $GITHUB_OUTPUT
+            else
+              echo "changed=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Skip deployment - no worker changes
+        if: steps.changes.outputs.changed == 'false'
+        run: echo "No changes detected in mcp-worker directory, skipping deployment"
+
+      - name: Enable Corepack
+        if: steps.changes.outputs.changed == 'true'
+        run: corepack enable
+
+      - name: Setup Node.js
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12
+          cache: 'yarn'
+
+      - name: Install dependencies
+        if: steps.changes.outputs.changed == 'true'
+        run: yarn install
+
+      - name: Build worker
+        if: steps.changes.outputs.changed == 'true'
+        run: yarn build:worker
+
+      - name: Deploy to Cloudflare Workers
+        if: steps.changes.outputs.changed == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: mcp-worker
+          secrets: |
+            AUTH0_CLIENT_ID
+            AUTH0_CLIENT_SECRET
+        env:
+          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
