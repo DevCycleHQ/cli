@@ -4,6 +4,13 @@
 
 The DevCycle MCP (Model Context Protocol) Server enables AI coding assistants like Cursor and Claude to interact directly with DevCycle's feature flag management system. This integration allows developers to manage feature flags, variables, and targeting rules without leaving their coding environment.
 
+DevCycle provides two MCP implementations:
+
+- **Local MCP Server** (`dvc-mcp`): Runs locally using CLI authentication or API keys
+- **Remote MCP Server** (`https://mcp.devcycle.com`): Hosted Cloudflare Worker with OAuth authentication
+
+Both implementations share the same underlying tools, schemas, and utilities, ensuring consistent functionality regardless of which option you choose.
+
 ## Table of Contents
 
 - [Installation & Setup](#installation--setup)
@@ -22,15 +29,17 @@ The DevCycle MCP (Model Context Protocol) Server enables AI coding assistants li
 
 ## Installation & Setup
 
+## Local MCP Server
+
 ### Prerequisites
 
 - Node.js 16+ installed
 - DevCycle CLI installed globally: `npm install -g @devcycle/cli`
 - DevCycle account with API credentials or SSO authentication
 
-### Cursor Configuration
+### Local Configuration
 
-Add to your Cursor settings (`.cursor/mcp_settings.json`):
+For Cursor (`.cursor/mcp_settings.json`):
 
 ```json
 {
@@ -42,10 +51,7 @@ Add to your Cursor settings (`.cursor/mcp_settings.json`):
 }
 ```
 
-### Claude Desktop Configuration
-
-Add to Claude's config file:
-
+For Claude Desktop:
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
@@ -59,11 +65,37 @@ Add to Claude's config file:
 }
 ```
 
+## Remote MCP Server (Cloudflare Worker)
+
+The remote MCP server provides OAuth-based authentication and requires no local installation.
+
+### Remote Configuration
+
+For Claude Desktop:
+```json
+{
+  "mcpServers": {
+    "devcycle": {
+      "command": "npx",
+      "args": [
+        "mcp-client-cli",
+        "sse",
+        "https://mcp.devcycle.com/sse"
+      ]
+    }
+  }
+}
+```
+
+For more details about the remote MCP implementation, see the [MCP Worker README](../mcp-worker/README.md).
+
 ## Authentication
 
-The MCP server supports two authentication methods:
+### Local MCP Server
 
-### 1. Environment Variables (Recommended for CI/CD)
+The local MCP server supports two authentication methods:
+
+#### 1. Environment Variables (Recommended for CI/CD)
 
 ```bash
 export DEVCYCLE_CLIENT_ID="your-client-id"
@@ -71,23 +103,31 @@ export DEVCYCLE_CLIENT_SECRET="your-client-secret"
 export DEVCYCLE_PROJECT_KEY="your-project-key"
 ```
 
-### 2. CLI Authentication (Recommended for local development)
-
-First authenticate using the CLI:
+#### 2. CLI Authentication (Recommended for local development)
 
 ```bash
+# Authenticate via SSO
 dvc login sso
-```
 
-Then select your project:
-
-```bash
+# Select your project
 dvc projects select
 ```
 
-The MCP server will use the stored credentials automatically.
+### Remote MCP Server
+
+The remote MCP server uses OAuth 2.0 authentication:
+- Users authenticate through DevCycle's Auth0 tenant
+- No API keys or local credentials needed
+- Project selection is handled through the `select_devcycle_project` tool
 
 ## Available Tools
+
+All tools listed below are available in both the local and remote MCP implementations. They share the same schemas, validation, and behavior.
+
+### Warning Symbols
+
+- **⚠️** - This tool can affect production environments. The AI will confirm with you before executing.
+- **⚠️⚠️** - This tool performs destructive operations (deletions). The AI will require explicit confirmation before executing.
 
 ### Feature Management
 
@@ -261,19 +301,23 @@ Get SDK keys for an environment.
 Create a new environment.
 
 **Parameters:**
-- `key`: Unique environment key
-- `name`: Environment name
-- `description` (optional): Environment description
-- `color` (optional): Environment color
+- `key`: Unique environment key (pattern: `^[a-z0-9-_.]+$`)
+- `name`: Environment name (max 100 chars)
+- `type`: Environment type (`development`, `staging`, `production`, `disaster_recovery`)
+- `description` (optional): Environment description (max 1000 chars)
+- `color` (optional): Environment color in hex format
+- `settings` (optional): Environment settings configuration
 
 #### `update_environment`
 Update an existing environment.
 
 **Parameters:**
 - `key`: Environment key to update
-- `name` (optional): New name
-- `description` (optional): New description
-- `color` (optional): New color
+- `name` (optional): New name (max 100 chars)
+- `type` (optional): New environment type
+- `description` (optional): New description (max 1000 chars)
+- `color` (optional): New color in hex format
+- `settings` (optional): Updated environment settings
 
 ### Project Management
 
@@ -282,10 +326,11 @@ List all projects in the organization.
 
 **Parameters:**
 - `search` (optional): Search query
-- `page` (optional): Page number
-- `perPage` (optional): Items per page
-- `sortBy` (optional): Sort field
-- `sortOrder` (optional): Sort order
+- `page` (optional): Page number (default: 1)
+- `perPage` (optional): Items per page (default: 100, max: 1000)
+- `sortBy` (optional): Sort field (`createdAt`, `updatedAt`, `name`, `key`, `createdBy`)
+- `sortOrder` (optional): Sort order (`asc`, `desc`)
+- `createdBy` (optional): Filter by creator user ID
 
 #### `get_current_project`
 Get details of the currently selected project.
@@ -296,9 +341,21 @@ Get details of the currently selected project.
 Create a new project.
 
 **Parameters:**
-- `key`: Unique project key
-- `name`: Project name
-- `description` (optional): Project description
+- `key`: Unique project key (pattern: `^[a-z0-9-_.]+$`)
+- `name`: Project name (max 100 chars)
+- `description` (optional): Project description (max 1000 chars)
+- `color` (optional): Project color in hex format (e.g., #FF0000)
+- `settings` (optional): Project settings configuration
+
+#### `update_project`
+Update an existing project.
+
+**Parameters:**
+- `key`: Project key to update
+- `name` (optional): New project name (max 100 chars)
+- `description` (optional): New description (max 1000 chars)
+- `color` (optional): New color in hex format
+- `settings` (optional): Updated project settings
 
 ### Custom Properties Management
 
@@ -372,7 +429,7 @@ Clear overrides for a specific feature/environment.
 - `feature_key`: Feature key
 - `environment_key`: Environment key
 
-#### `clear_all_self_targeting_overrides`
+#### `clear_all_self_targeting_overrides` ⚠️
 Clear all overrides for the current project.
 
 **Parameters:** None
@@ -427,7 +484,7 @@ Common error scenarios:
 
 ### Creating a Feature Flag
 
-```
+```text
 Create a feature flag for the new checkout flow with variations for A/B testing
 ```
 
@@ -438,7 +495,7 @@ The AI assistant will use:
 
 ### Managing Custom Properties
 
-```
+```text
 Create a custom property for user subscription tier with allowed values
 ```
 
@@ -448,7 +505,7 @@ The AI assistant will use:
 
 ### Viewing Analytics
 
-```
+```text
 Show me the evaluation metrics for the checkout_flow feature over the last week
 ```
 
@@ -458,7 +515,7 @@ The AI assistant will use:
 
 ### Managing Overrides for Testing
 
-```
+```text
 Set up my identity to test the premium user experience
 ```
 
@@ -468,7 +525,7 @@ The AI assistant will use:
 
 ### Analyzing Feature Usage
 
-```
+```text
 Show me the recent changes to the checkout_flow feature
 ```
 
@@ -512,39 +569,18 @@ Tools marked with ⚠️⚠️ are destructive and require extra confirmation.
 - Tag features appropriately for organization
 - Include descriptions for documentation
 
-## Limitations
+## Architecture & Implementation
 
-Current MCP server does NOT support:
-- Code analysis tools (usage scanning, cleanup)
-- Git integration features
-- Type generation
-- Analytics and metrics
-- MCP Resources (read-only data access)
-- MCP Prompts (guided workflows)
+Both the local and remote MCP servers share:
+- **Common Tools**: All tool implementations in `src/mcp/tools/`
+- **Schemas & Validation**: Shared Zod schemas for input/output validation
+- **API Clients**: Both implement the `IDevCycleApiClient` interface
+- **Error Handling**: Consistent error messages and handling across implementations
 
-These features are planned for future releases.
-
-## Troubleshooting
-
-### Authentication Issues
-
-1. Verify environment variables are set correctly
-2. Check CLI authentication: `dvc status`
-3. Ensure project is selected: `dvc projects current`
-
-### Connection Issues
-
-1. Check DevCycle CLI is installed: `dvc --version`
-2. Verify MCP server starts: `dvc-mcp`
-3. Check AI assistant logs for connection errors
-
-### API Errors
-
-1. Verify API credentials have necessary permissions
-2. Check project and organization access
-3. Review error messages for specific validation issues
-
-For additional support, visit [DevCycle Documentation](https://docs.devcycle.com) or contact support.
+Key differences:
+- **Authentication**: Local uses API keys/CLI auth, Remote uses OAuth 2.0
+- **Transport**: Local uses stdio, Remote uses SSE/HTTP
+- **State Storage**: Local uses file system, Remote uses Durable Objects
 
 ## Development & Local Testing
 
@@ -587,13 +623,3 @@ For local testing, update your AI assistant configuration to point to the local 
 The MCP server logs all operations to stderr, which can be viewed in:
 - Cursor: Developer Tools console
 - Claude Desktop: Log files in the application support directory
-
-### Environment Variables for Development
-
-```bash
-# Enable verbose logging
-export DEBUG=1
-
-# Use specific DevCycle API endpoint
-export DEVCYCLE_API_URL="https://api.devcycle.com"
-``` 
