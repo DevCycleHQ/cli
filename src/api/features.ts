@@ -12,6 +12,8 @@ import {
 } from './schemas'
 import 'reflect-metadata'
 import { buildHeaders } from './common'
+import { GetFeatureAuditLogHistoryArgsSchema } from '../mcp/types'
+import { z } from 'zod'
 
 const FEATURE_URL = '/v2/projects/:project/features'
 
@@ -192,81 +194,27 @@ export const getFeatureAuditLogHistory = async (
     token: string,
     projectKey: string,
     featureKey: string,
-    daysBack = 30,
-): Promise<{
-    timeline: Array<{
-        id: string
-        timestamp: string
-        action: string
-        actor: {
-            name: string
-            email?: string
-        }
-        resource: {
-            type: string
-            name: string
-            key: string
-        }
-        changes: Array<{
-            field: string
-            oldValue: unknown
-            newValue: unknown
-        }>
-        environment?: string
-    }>
-}> => {
+    options: Omit<
+        z.infer<typeof GetFeatureAuditLogHistoryArgsSchema>,
+        'feature_key'
+    > = {},
+): Promise<unknown[]> => {
     try {
-        // Calculate the date threshold
-        const sinceDate = new Date()
-        sinceDate.setDate(sinceDate.getDate() - daysBack)
-        const startDate = sinceDate.toISOString()
-
-        const params = {
-            startDate,
-            perPage: 100,
-            page: 1,
-        }
-        console.error(`feature history params: ${JSON.stringify(params)}`)
-
         // Use the audit log API to get feature history
         const response = await axiosClient.get(
             `/v1/projects/${projectKey}/features/${featureKey}/audit`,
             {
                 headers: buildHeaders(token),
-                params,
+                params: options,
             },
         )
-        console.error(
-            `feature history response: ${JSON.stringify(response.data)}`,
-        )
-
-        const auditLogs = response.data || []
-
-        // Transform audit log entries to timeline format
-        const timeline = auditLogs.map((entry: any) => ({
-            id: entry._id || entry.id,
-            timestamp: entry.createdAt || entry.timestamp,
-            action: entry.action || 'unknown',
-            actor: {
-                name: entry.user?.name || entry.actor?.name || 'Unknown',
-                email: entry.user?.email || entry.actor?.email,
-            },
-            resource: {
-                type: entry.resourceType || 'feature',
-                name: entry.resourceName || featureKey,
-                key: entry.resourceKey || featureKey,
-            },
-            changes: entry.changes || [],
-            environment: entry.environment?.key || entry.environmentKey,
-        }))
-
-        return { timeline }
+        return response.data || []
     } catch (error) {
         // If audit log API fails, return empty result
         console.warn(
             'Failed to fetch feature history from audit log:',
             error instanceof Error ? error.message : 'Unknown error',
         )
-        return { timeline: [] }
+        return []
     }
 }

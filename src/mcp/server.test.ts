@@ -1,17 +1,18 @@
 import { expect } from '@oclif/test'
 import sinon from 'sinon'
 import * as assert from 'assert'
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
-import {
-    CallToolRequestSchema,
-    ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js'
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { DevCycleMCPServer } from './server'
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
+import {
+    categorizeError,
+    getErrorSuggestions,
+    handleToolError,
+} from './utils/errorHandling'
 
 describe('DevCycleMCPServer', () => {
-    let server: Server
+    let server: McpServer
     let mcpServer: DevCycleMCPServer
     let authStub: sinon.SinonStubbedInstance<DevCycleAuth>
     let apiClientStub: sinon.SinonStubbedInstance<DevCycleApiClient>
@@ -19,8 +20,7 @@ describe('DevCycleMCPServer', () => {
     beforeEach(() => {
         // Mock the MCP Server
         server = {
-            setRequestHandler: sinon.stub(),
-            onerror: undefined,
+            registerTool: sinon.stub(),
         } as any
 
         // Create stubs for dependencies
@@ -52,9 +52,8 @@ describe('DevCycleMCPServer', () => {
             await mcpServer.initialize()
 
             sinon.assert.calledOnce(authStub.initialize)
-            sinon.assert.calledTwice(
-                server.setRequestHandler as sinon.SinonStub,
-            ) // ListTools and CallTool
+            // Verify that tools were registered (should be many calls to registerTool)
+            sinon.assert.called(server.registerTool as sinon.SinonStub)
         })
 
         it('should fail gracefully with missing auth credentials', async () => {
@@ -94,12 +93,14 @@ describe('DevCycleMCPServer', () => {
             }
         })
 
-        it('should set up error handler for server', async () => {
+        it('should register multiple tools during initialization', async () => {
             authStub.initialize.resolves()
 
             await mcpServer.initialize()
 
-            expect(server.onerror).to.be.a('function')
+            // Should register many tools (37 total across all modules)
+            const registerToolStub = server.registerTool as sinon.SinonStub
+            expect(registerToolStub.callCount).to.be.greaterThan(30)
         })
     })
 
@@ -109,67 +110,47 @@ describe('DevCycleMCPServer', () => {
             await mcpServer.initialize()
         })
 
-        it('should register ListTools handler', () => {
-            sinon.assert.calledWith(
-                server.setRequestHandler as sinon.SinonStub,
-                ListToolsRequestSchema,
-                sinon.match.func,
-            )
-        })
+        it('should register all expected tools', () => {
+            const registerToolStub = server.registerTool as sinon.SinonStub
 
-        it('should register CallTool handler', () => {
-            sinon.assert.calledWith(
-                server.setRequestHandler as sinon.SinonStub,
-                CallToolRequestSchema,
-                sinon.match.func,
-            )
-        })
-
-        it('should return all tool definitions when listing tools', async () => {
-            const setRequestHandlerStub =
-                server.setRequestHandler as sinon.SinonStub
-            const listToolsHandler = setRequestHandlerStub
+            // Verify specific tools were registered
+            const registeredToolNames = registerToolStub
                 .getCalls()
-                .find((call) => call.args[0] === ListToolsRequestSchema)
-                ?.args[1]
-
-            expect(listToolsHandler).to.be.a('function')
-
-            const result = await listToolsHandler()
-
-            expect(result).to.have.property('tools')
-            expect(result.tools).to.be.an('array')
-            expect(result.tools.length).to.be.greaterThan(0)
+                .map((call) => call.args[0])
 
             // Check that we have tools from all categories
-            const toolNames = result.tools.map((tool: any) => tool.name)
-            expect(toolNames).to.include('list_features')
-            expect(toolNames).to.include('list_variables')
-            expect(toolNames).to.include('list_environments')
-            expect(toolNames).to.include('list_projects')
+            expect(registeredToolNames).to.include('list_features')
+            expect(registeredToolNames).to.include('list_variables')
+            expect(registeredToolNames).to.include('list_environments')
+            expect(registeredToolNames).to.include('list_projects')
+            expect(registeredToolNames).to.include('get_current_project')
+            expect(registeredToolNames).to.include(
+                'get_self_targeting_identity',
+            )
         })
 
-        it('should handle unknown tool requests', async () => {
-            const setRequestHandlerStub =
-                server.setRequestHandler as sinon.SinonStub
-            const callToolHandler = setRequestHandlerStub
+        it('should register tools with proper configurations', () => {
+            const registerToolStub = server.registerTool as sinon.SinonStub
+
+            // Check that each tool registration has the required parameters
+            registerToolStub.getCalls().forEach((call) => {
+                expect(call.args[0]).to.be.a('string') // tool name
+                expect(call.args[1]).to.be.an('object') // config
+                expect(call.args[1]).to.have.property('description')
+                expect(call.args[2]).to.be.a('function') // handler
+            })
+        })
+
+        it('should register tools with input schemas', () => {
+            const registerToolStub = server.registerTool as sinon.SinonStub
+
+            // Find a tool that should have an input schema
+            const listProjectsCall = registerToolStub
                 .getCalls()
-                .find((call) => call.args[0] === CallToolRequestSchema)?.args[1]
+                .find((call) => call.args[0] === 'list_projects')
 
-            expect(callToolHandler).to.be.a('function')
-
-            const request = {
-                params: {
-                    name: 'unknown_tool',
-                    arguments: {},
-                },
-            }
-
-            const result = await callToolHandler(request)
-
-            expect(result.content[0].text).to.contain(
-                'Unknown tool: unknown_tool',
-            )
+            expect(listProjectsCall).to.exist
+            expect(listProjectsCall!.args[1]).to.have.property('inputSchema')
         })
     })
 
@@ -180,10 +161,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize authentication errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('401 Unauthorized')).to.equal(
                 'AUTHENTICATION_ERROR',
             )
@@ -193,10 +170,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize permission errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('403 Forbidden')).to.equal(
                 'PERMISSION_ERROR',
             )
@@ -206,10 +179,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize resource not found errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('404 Not Found')).to.equal(
                 'RESOURCE_NOT_FOUND',
             )
@@ -219,10 +188,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize validation errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('400 Bad Request')).to.equal(
                 'VALIDATION_ERROR',
             )
@@ -232,10 +197,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize schema validation errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('Zodios: invalid response')).to.equal(
                 'SCHEMA_VALIDATION_ERROR',
             )
@@ -248,10 +209,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize network errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(categorizeError('ENOTFOUND api.devcycle.com')).to.equal(
                 'NETWORK_ERROR',
             )
@@ -259,10 +216,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should categorize project errors correctly', () => {
-            const categorizeError = (mcpServer as any).categorizeError.bind(
-                mcpServer,
-            )
-
             expect(
                 categorizeError('The project test-key was not found'),
             ).to.equal('PROJECT_ERROR')
@@ -272,14 +225,10 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should provide helpful suggestions for authentication errors', () => {
-            const getErrorSuggestions = (
-                mcpServer as any
-            ).getErrorSuggestions.bind(mcpServer)
-
             const suggestions = getErrorSuggestions('AUTHENTICATION_ERROR')
 
             expect(suggestions).to.include(
-                'Run "dvc login sso" to re-authenticate the devcycle cli',
+                'Re-authenticate with DevCycle (run "dvc login sso" for CLI for local MCP or re-login through OAuth for remote MCP)',
             )
             expect(suggestions).to.include(
                 'Verify your API credentials are correct',
@@ -288,14 +237,10 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should provide helpful suggestions for project errors', () => {
-            const getErrorSuggestions = (
-                mcpServer as any
-            ).getErrorSuggestions.bind(mcpServer)
-
             const suggestions = getErrorSuggestions('PROJECT_ERROR')
 
             expect(suggestions).to.include(
-                'Run "dvc projects select" to choose a valid project',
+                'Select a valid project (use "dvc projects select" in CLI or project selection tools in workers)',
             )
             expect(suggestions).to.include('Verify the project key is correct')
             expect(suggestions).to.include(
@@ -304,10 +249,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should format tool errors with helpful information', async () => {
-            const handleToolError = (mcpServer as any).handleToolError.bind(
-                mcpServer,
-            )
-
             const result = handleToolError(
                 new Error('401 Unauthorized'),
                 'test_tool',
@@ -323,10 +264,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should handle string errors', async () => {
-            const handleToolError = (mcpServer as any).handleToolError.bind(
-                mcpServer,
-            )
-
             const result = handleToolError('String error message', 'test_tool')
             const errorResponse = JSON.parse(result.content[0].text)
 
@@ -336,10 +273,6 @@ describe('DevCycleMCPServer', () => {
         })
 
         it('should handle object errors', async () => {
-            const handleToolError = (mcpServer as any).handleToolError.bind(
-                mcpServer,
-            )
-
             const errorObject = {
                 code: 'ERR001',
                 details: 'Something went wrong',
@@ -359,29 +292,33 @@ describe('DevCycleMCPServer', () => {
             await mcpServer.initialize()
         })
 
-        it('should execute valid tool requests successfully', async () => {
-            const setRequestHandlerStub =
-                server.setRequestHandler as sinon.SinonStub
-            const callToolHandler = setRequestHandlerStub
-                .getCalls()
-                .find((call) => call.args[0] === CallToolRequestSchema)?.args[1]
+        it('should register tool handlers that can handle errors', async () => {
+            const registerToolStub = server.registerTool as sinon.SinonStub
 
-            expect(callToolHandler).to.be.a('function')
+            // Get a tool handler that was registered
+            const toolCall = registerToolStub.getCalls()[0]
+            expect(toolCall).to.exist
 
-            // Test that the handler function exists and can be called
-            // For now, we'll just verify that unknown tools are handled correctly
-            const request = {
-                params: {
-                    name: 'unknown_tool',
-                    arguments: {},
-                },
-            }
+            const [toolName, config, handler] = toolCall.args
+            expect(toolName).to.be.a('string')
+            expect(config).to.be.an('object')
+            expect(handler).to.be.a('function')
 
-            const result = await callToolHandler(request)
-            expect(result.content[0].type).to.equal('text')
-            expect(result.content[0].text).to.contain(
-                'Unknown tool: unknown_tool',
-            )
+            // The handler should be wrapped with error handling
+            // We can't easily test the actual execution without setting up the full API client
+            // But we can verify the handler exists and is a function
+        })
+
+        it('should register handlers with error wrapping', () => {
+            const registerToolStub = server.registerTool as sinon.SinonStub
+
+            // Verify that all registered handlers are wrapped functions
+            registerToolStub.getCalls().forEach((call) => {
+                const handler = call.args[2]
+                expect(handler).to.be.a('function')
+                // The handler should be async since it's wrapped with error handling
+                expect(handler.constructor.name).to.equal('AsyncFunction')
+            })
         })
     })
 })

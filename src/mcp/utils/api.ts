@@ -1,5 +1,6 @@
 import { DevCycleAuth } from './auth'
 import { setMCPToolCommand } from './headers'
+import { IDevCycleApiClient } from '../api/interface'
 
 /**
  * Utility function to handle Zodios validation errors by extracting response data
@@ -79,7 +80,7 @@ function ensureError(error: unknown): Error {
     return new Error(String(error))
 }
 
-export class DevCycleApiClient {
+export class DevCycleApiClient implements IDevCycleApiClient {
     constructor(private auth: DevCycleAuth) {}
 
     /**
@@ -88,7 +89,10 @@ export class DevCycleApiClient {
     public async executeWithLogging<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
         requiresProject = true,
     ): Promise<T> {
         console.error(
@@ -106,7 +110,9 @@ export class DevCycleApiClient {
             setMCPToolCommand(operationName)
 
             const authToken = this.auth.getAuthToken()
-            const projectKey = requiresProject ? this.auth.getProjectKey() : ''
+            const projectKey = requiresProject
+                ? this.auth.getProjectKey()
+                : undefined
             return await operation(authToken, projectKey)
         } catch (error) {
             console.error(
@@ -123,8 +129,15 @@ export class DevCycleApiClient {
     public async executeWithDashboardLink<T>(
         operationName: string,
         args: any,
-        operation: (authToken: string, projectKey: string) => Promise<T>,
-        dashboardLink: (orgId: string, projectKey: string, result: T) => string,
+        operation: (
+            authToken: string,
+            projectKey: string | undefined,
+        ) => Promise<T>,
+        dashboardLink: (
+            orgId: string,
+            projectKey: string | undefined,
+            result: T,
+        ) => string,
     ): Promise<{ result: T; dashboardLink: string }> {
         const result = await this.executeWithLogging(
             operationName,
