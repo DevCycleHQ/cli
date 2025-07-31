@@ -128,8 +128,7 @@
         }
     },
     "scripts": {
-        "build": "shx rm -rf dist && tsc -b && oclif manifest && oclif readme --multi",
-        "build:mcp-shared": "tsc --project tsconfig.mcp.json",
+        "build": "shx rm -rf dist && tsc -b && oclif manifest",
         "build:tar": "oclif pack tarballs",
         "build:worker": "cd mcp-worker && yarn build",
         "deploy:worker": "cd mcp-worker && yarn deploy",
