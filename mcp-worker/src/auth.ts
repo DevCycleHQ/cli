@@ -340,6 +340,8 @@ export function createTokenExchangeCallback(env: Env) {
     return async function tokenExchangeCallback(
         options: TokenExchangeCallbackOptions,
     ): Promise<TokenExchangeCallbackResult> {
+        console.log('TokenExchangeCallback called:', options.grantType)
+
         // During the Authorization Code Exchange, we want to make sure that the Access Token issued
         // by the MCP Server has the same TTL as the one issued by Auth0.
         if (options.grantType === 'authorization_code') {
@@ -352,52 +354,71 @@ export function createTokenExchangeCallback(env: Env) {
         }
 
         if (options.grantType === 'refresh_token') {
+            console.log('🔄 Starting token refresh flow')
+
             const auth0RefreshToken = options.props.tokenSet.refreshToken
             if (!auth0RefreshToken) {
                 throw new Error('No Auth0 refresh token found')
             }
 
-            const { as, client, clientAuth } = await getOidcConfig({
-                client_id: env.AUTH0_CLIENT_ID,
-                client_secret: env.AUTH0_CLIENT_SECRET,
-                issuer: `https://${env.AUTH0_DOMAIN}/`,
-            })
+            try {
+                const { as, client, clientAuth } = await getOidcConfig({
+                    client_id: env.AUTH0_CLIENT_ID,
+                    client_secret: env.AUTH0_CLIENT_SECRET,
+                    issuer: `https://${env.AUTH0_DOMAIN}/`,
+                })
 
-            // Perform the refresh token exchange with Auth0.
-            const response = await oauth.refreshTokenGrantRequest(
-                as,
-                client,
-                clientAuth,
-                auth0RefreshToken,
-            )
+                // Perform the refresh token exchange with Auth0.
+                const response = await oauth.refreshTokenGrantRequest(
+                    as,
+                    client,
+                    clientAuth,
+                    auth0RefreshToken,
+                )
 
-            const refreshTokenResponse =
-                await oauth.processRefreshTokenResponse(as, client, response)
+                const refreshTokenResponse =
+                    await oauth.processRefreshTokenResponse(
+                        as,
+                        client,
+                        response,
+                    )
 
-            // Get the claims from the id_token
-            const claims = oauth.getValidatedIdTokenClaims(refreshTokenResponse)
-            if (!claims) {
-                throw new Error('Received invalid id_token from Auth0')
-            }
+                // Get the claims from the id_token
+                const claims =
+                    oauth.getValidatedIdTokenClaims(refreshTokenResponse)
+                if (!claims) {
+                    throw new Error('Received invalid id_token from Auth0')
+                }
 
-            // Store the new token set and claims.
-            return {
-                accessTokenTTL: refreshTokenResponse.expires_in,
-                newProps: {
-                    ...options.props,
-                    claims: claims,
-                    tokenSet: {
-                        accessToken: refreshTokenResponse.access_token,
-                        accessTokenTTL: refreshTokenResponse.expires_in,
-                        idToken: refreshTokenResponse.id_token,
-                        refreshToken:
-                            refreshTokenResponse.refresh_token ||
-                            auth0RefreshToken,
+                console.log('✅ Token refresh successful')
+
+                const newTokenSet = {
+                    accessToken: refreshTokenResponse.access_token,
+                    accessTokenTTL: refreshTokenResponse.expires_in,
+                    idToken: refreshTokenResponse.id_token,
+                    refreshToken:
+                        refreshTokenResponse.refresh_token || auth0RefreshToken,
+                }
+
+                // Store the new token set and claims.
+                return {
+                    accessTokenTTL: refreshTokenResponse.expires_in,
+                    newProps: {
+                        ...options.props,
+                        claims: claims,
+                        tokenSet: newTokenSet,
                     },
-                },
+                }
+            } catch (error) {
+                console.error(
+                    '❌ Token refresh failed:',
+                    error instanceof Error ? error.message : 'Unknown error',
+                )
+                throw error
             }
         }
 
+        console.error('Unsupported grant type:', options.grantType)
         throw new Error(`Unsupported grant type: ${options.grantType}`)
     }
 }

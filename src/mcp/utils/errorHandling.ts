@@ -96,7 +96,10 @@ export function categorizeError(errorMessage: string): string {
             return 'SCHEMA_VALIDATION_ERROR'
 
         case lowerMessage.includes('401') ||
-            lowerMessage.includes('unauthorized'):
+            lowerMessage.includes('unauthorized') ||
+            lowerMessage.includes('jwt expired') ||
+            lowerMessage.includes('token expired') ||
+            lowerMessage.includes('access token expired'):
             return 'AUTHENTICATION_ERROR'
 
         case lowerMessage.includes('403') || lowerMessage.includes('forbidden'):
