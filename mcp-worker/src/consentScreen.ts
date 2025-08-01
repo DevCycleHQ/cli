@@ -31,7 +31,8 @@ export function renderConsentScreen({
                 <style>
                     @font-face {
                         font-family: 'Uni';
-                        src: url('https://devcycle.com/assets/brand/UniNeue-Heavy.otf') format('opentype');
+                        src: url('https://devcycle.com/assets/brand/UniNeue-Heavy.otf')
+                            format('opentype');
                         font-weight: 800;
                         font-style: normal;
                         font-display: swap;
@@ -39,7 +40,8 @@ export function renderConsentScreen({
 
                     @font-face {
                         font-family: 'Inter';
-                        src: url('https://devcycle.com/assets/brand/Inter-Regular.woff') format('woff');
+                        src: url('https://devcycle.com/assets/brand/Inter-Regular.woff')
+                            format('woff');
                         font-weight: 400;
                         font-style: normal;
                         font-display: swap;
@@ -55,7 +57,13 @@ export function renderConsentScreen({
                     body {
                         height: 100%;
                         overflow: hidden;
-                        font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+                        font-family:
+                            Inter,
+                            -apple-system,
+                            BlinkMacSystemFont,
+                            'Segoe UI',
+                            Roboto,
+                            sans-serif !important;
                         background: #f8fafc;
                     }
 
@@ -67,7 +75,11 @@ export function renderConsentScreen({
 
                     .marketing-column {
                         flex: 1;
-                        background: linear-gradient(135deg, #1d49f4 0%, #0c1f66 100%);
+                        background: linear-gradient(
+                            135deg,
+                            #1d49f4 0%,
+                            #0c1f66 100%
+                        );
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
@@ -123,9 +135,19 @@ export function renderConsentScreen({
                         justify-content: center;
                         align-items: center;
                         padding: 1.5rem;
-                        background: 
-                            linear-gradient(29deg, rgba(109, 40, 217, 0.1) 0%, rgba(255, 255, 255, 0.5) 20%, rgba(255, 255, 255, 0) 23%),
-                            linear-gradient(305deg, rgba(29, 78, 216, 0.1) 0%, rgba(255, 255, 255, 0.5) 25.5%, rgba(255, 255, 255, 0) 26.5%);
+                        background:
+                            linear-gradient(
+                                29deg,
+                                rgba(109, 40, 217, 0.1) 0%,
+                                rgba(255, 255, 255, 0.5) 20%,
+                                rgba(255, 255, 255, 0) 23%
+                            ),
+                            linear-gradient(
+                                305deg,
+                                rgba(29, 78, 216, 0.1) 0%,
+                                rgba(255, 255, 255, 0.5) 25.5%,
+                                rgba(255, 255, 255, 0) 26.5%
+                            );
                         position: relative;
                     }
 
@@ -318,12 +340,23 @@ export function renderConsentScreen({
                             margin: 1rem auto 1rem auto;
                         }
 
-                        html, body {
+                        html,
+                        body {
                             min-height: 100%;
                             overflow: auto;
-                            background: 
-                                linear-gradient(29deg, rgba(109, 40, 217, 0.1) 0%, rgba(255, 255, 255, 0.5) 20%, rgba(255, 255, 255, 0) 23%),
-                                linear-gradient(305deg, rgba(29, 78, 216, 0.1) 0%, rgba(255, 255, 255, 0.5) 25.5%, rgba(255, 255, 255, 0) 26.5%);
+                            background:
+                                linear-gradient(
+                                    29deg,
+                                    rgba(109, 40, 217, 0.1) 0%,
+                                    rgba(255, 255, 255, 0.5) 20%,
+                                    rgba(255, 255, 255, 0) 23%
+                                ),
+                                linear-gradient(
+                                    305deg,
+                                    rgba(29, 78, 216, 0.1) 0%,
+                                    rgba(255, 255, 255, 0.5) 25.5%,
+                                    rgba(255, 255, 255, 0) 26.5%
+                                );
                             height: auto;
                         }
 
@@ -364,10 +397,11 @@ export function renderConsentScreen({
 
                     /* Remove gradients on small mobile screens */
                     @media (max-width: 600px) {
-                        html, body {
+                        html,
+                        body {
                             background: #ffffff !important;
                         }
-                        
+
                         .consent-column {
                             padding: 0.5rem;
                         }
@@ -379,22 +413,33 @@ export function renderConsentScreen({
                     <!-- Marketing Column -->
                     <div class="marketing-column">
                         <div class="marketing-content">
-                            <img class="marketing-logo" src="https://devcycle.com/assets/brand/White-logo-horizontal.svg" alt="DevCycle" />
-                            
+                            <img
+                                class="marketing-logo"
+                                src="https://devcycle.com/assets/brand/White-logo-horizontal.svg"
+                                alt="DevCycle"
+                            />
+
                             <p class="marketing-title">
-                                DevCycle MCP Server provides secure access to feature flag management.
+                                DevCycle MCP Server provides secure access to
+                                feature flag management.
                             </p>
-                            
+
                             <p class="marketing-subtitle">
-                                Connect your tools directly to DevCycle's API with OAuth-secured authentication for seamless feature flag operations.
+                                Connect your tools directly to DevCycle's API
+                                with OAuth-secured authentication for seamless
+                                feature flag operations.
                             </p>
                         </div>
                     </div>
 
                     <!-- Consent Column -->
                     <div class="consent-column">
-                        <img class="mobile-logo-simple" src="https://devcycle.com/assets/brand/Color-logo-horizontal.svg" alt="DevCycle" />
-                        
+                        <img
+                            class="mobile-logo-simple"
+                            src="https://devcycle.com/assets/brand/Color-logo-horizontal.svg"
+                            alt="DevCycle"
+                        />
+
                         <div class="consent-wrapper">
                             <div class="consent-container-inner">
                                 ${clientLogo?.length
@@ -405,25 +450,33 @@ export function renderConsentScreen({
 
                                 <div class="consent-header">
                                     <h1>Authorization Request</h1>
-                                    <p>Review the permissions before granting access to your DevCycle account</p>
+                                    <p>
+                                        Review the permissions before granting
+                                        access to your DevCycle account
+                                    </p>
                                 </div>
 
                                 <div class="client-info">
-
                                     <p>
-                                        <strong>${clientName}</strong> is requesting permission to access the
-                                        <strong>DevCycle API</strong> using your account credentials.
+                                        <strong>${clientName}</strong> is
+                                        requesting permission to access the
+                                        <strong>DevCycle API</strong> using your
+                                        account credentials.
                                     </p>
                                 </div>
 
                                 <div class="permissions">
                                     <h3>
-                                        This application will be able to:
+                                        This application is requesting access to
+                                        OAuth scopes:
                                     </h3>
                                     <ul>
                                         ${raw(
                                             requestedScopes
-                                                .map((scope) => `<li>${scope}</li>`)
+                                                .map(
+                                                    (scope) =>
+                                                        `<li>${scope}</li>`,
+                                                )
                                                 .join('\n'),
                                         )}
                                     </ul>
@@ -431,12 +484,18 @@ export function renderConsentScreen({
 
                                 <div class="security-notice">
                                     <p>
-                                        <strong>Security Notice:</strong> Only authorize applications you trust. 
-                                        If you didn't initiate this request from <strong>${clientName}</strong> you should deny access.
+                                        <strong>Security Notice:</strong> Only
+                                        authorize applications you trust. If you
+                                        didn't initiate this request from
+                                        <strong>${clientName}</strong> you
+                                        should deny access.
                                     </p>
                                 </div>
 
-                                <form method="POST" action="/oauth/authorize/consent">
+                                <form
+                                    method="POST"
+                                    action="/oauth/authorize/consent"
+                                >
                                     <input
                                         type="hidden"
                                         name="transaction_state"
@@ -470,8 +529,9 @@ export function renderConsentScreen({
 
                             <div class="footer">
                                 <p>
-                                    You're signing in to a first-party application. Your 
-                                    account information is never shared without your permission.
+                                    You're signing in to a first-party
+                                    application. Your account information is
+                                    never shared without your permission.
                                 </p>
                             </div>
                         </div>
