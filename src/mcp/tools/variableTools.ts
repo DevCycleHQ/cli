@@ -22,7 +22,7 @@ const generateVariablesDashboardLink = (
 ): string => {
     if (!projectKey) {
         throw new Error(
-            'Project key is required for variables dashboard link. Please select a project using the selecting a project first.',
+            'Project key is required for variables dashboard link. Please select a project using the select_project tool first.',
         )
     }
     return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/variables`
@@ -39,7 +39,7 @@ export async function listVariablesHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the selecting a project first.',
+                    'Project key is required for this operation. Please select a project using the select_project tool first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -61,7 +61,7 @@ export async function createVariableHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the selecting a project first.',
+                    'Project key is required for this operation. Please select a project using the select_project tool first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -85,7 +85,7 @@ export async function updateVariableHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the selecting a project first.',
+                    'Project key is required for this operation. Please select a project using the select_project tool first.',
                 )
             }
             return await handleZodiosValidationErrors(
@@ -107,7 +107,7 @@ export async function deleteVariableHandler(
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
                 throw new Error(
-                    'Project key is required for this operation. Please select a project using the selecting a project first.',
+                    'Project key is required for this operation. Please select a project using the select_project tool first.',
                 )
             }
             await handleZodiosValidationErrors(

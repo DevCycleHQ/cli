@@ -75,6 +75,7 @@ export async function selectDevCycleProjectHandler(
                 }
             },
             generateOrganizationProjectsLink,
+            false, // Don't require project for listing projects
         )
     }
 
@@ -102,6 +103,7 @@ export async function selectDevCycleProjectHandler(
             }
         },
         (orgId: string) => generateProjectDashboardLink(orgId, args.projectKey),
+        false, // Don't require project for selecting a project
     )
 }
 
