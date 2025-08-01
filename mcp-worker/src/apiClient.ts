@@ -52,7 +52,9 @@ export class WorkerApiClient implements IDevCycleApiClient {
             return result
         } catch (error) {
             console.error(`Worker MCP ${operationName} error:`, {
-                error: error instanceof Error ? error.message : String(error),
+                error: error,
+                errorMessage:
+                    error instanceof Error ? error.message : String(error),
                 args,
                 userId: this.getUserId(),
                 orgId: this.getOrgId(),
