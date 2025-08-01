@@ -37,6 +37,7 @@ export interface IDevCycleApiClient {
      * @param args - Arguments passed to the operation
      * @param operation - The actual API operation function
      * @param dashboardLink - Function to generate dashboard link from result
+     * @param requiresProject - Whether this operation requires a project context (default: true)
      */
     executeWithDashboardLink<T>(
         operationName: string,
@@ -50,6 +51,7 @@ export interface IDevCycleApiClient {
             projectKey: string | undefined,
             result: T,
         ) => string,
+        requiresProject?: boolean,
     ): Promise<{ result: T; dashboardLink: string }>
 
     /**

@@ -37,7 +37,9 @@ export class WorkerApiClient implements IDevCycleApiClient {
         const projectKey = await this.getProjectKey()
 
         if (requiresProject && !projectKey) {
-            throw new Error('No project key found')
+            throw new Error(
+                'No project key found, please select a project using the select_project tool first.',
+            )
         }
 
         console.log(`Worker MCP ${operationName}:`, {
@@ -73,11 +75,13 @@ export class WorkerApiClient implements IDevCycleApiClient {
             projectKey: string | undefined,
             result: T,
         ) => string,
+        requiresProject: boolean = true,
     ): Promise<{ result: T; dashboardLink: string }> {
         const result = await this.executeWithLogging(
             operationName,
             args,
             operation,
+            requiresProject,
         )
 
         const orgId = this.getOrgId()

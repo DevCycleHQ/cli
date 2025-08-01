@@ -133,15 +133,19 @@ export class DevCycleApiClient implements IDevCycleApiClient {
             projectKey: string | undefined,
             result: T,
         ) => string,
+        requiresProject = true,
     ): Promise<{ result: T; dashboardLink: string }> {
         const result = await this.executeWithLogging(
             operationName,
             args,
             operation,
+            requiresProject,
         )
 
         const organizationId = this.auth.getOrgId()
-        const projectKey = this.auth.getProjectKey()
+        const projectKey = requiresProject
+            ? this.auth.getProjectKey()
+            : undefined
         const link = dashboardLink(organizationId, projectKey, result)
 
         return {
