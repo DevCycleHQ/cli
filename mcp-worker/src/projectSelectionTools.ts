@@ -47,7 +47,7 @@ export const SelectProjectArgsSchema = z.object({
         .string()
         .optional()
         .describe(
-            'The project key to select (e.g., "jonathans-project"). If not provided, will list all available projects to choose from.',
+            'The project key to select. If not provided, will list all available projects to choose from.',
         ),
 })
 
@@ -151,8 +151,12 @@ export function registerProjectSelectionTools(
     serverInstance.registerToolWithErrorHandling(
         'select_project',
         {
-            description:
-                'Select a project to use for subsequent MCP operations. Call without parameters to list available projects, or provide {"projectKey": "your-project-key"} to select a specific project. Include dashboard link in the response.',
+            description: [
+                'Select a project to use for subsequent MCP operations.',
+                'Call without parameters to list available projects.',
+                'Do not automatically select a project, ask the user which project they want to select.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Select Project',
             },
