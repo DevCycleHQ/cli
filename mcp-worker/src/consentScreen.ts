@@ -29,9 +29,21 @@ export function renderConsentScreen({
                     content="width=device-width, initial-scale=1"
                 />
                 <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@800&display=swap');
+                    @font-face {
+                        font-family: 'Uni';
+                        src: url('https://devcycle.com/assets/brand/UniNeue-Heavy.otf') format('opentype');
+                        font-weight: 800;
+                        font-style: normal;
+                        font-display: swap;
+                    }
 
-                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
+                    @font-face {
+                        font-family: 'Inter';
+                        src: url('https://devcycle.com/assets/brand/Inter-Regular.woff') format('woff');
+                        font-weight: 400;
+                        font-style: normal;
+                        font-display: swap;
+                    }
 
                     * {
                         box-sizing: border-box;
@@ -90,7 +102,7 @@ export function renderConsentScreen({
                     }
 
                     .marketing-title {
-                        font-family: Nunito, sans-serif;
+                        font-family: Uni, sans-serif;
                         font-size: 1.125rem;
                         font-weight: 300;
                         line-height: 1.2;
@@ -150,7 +162,7 @@ export function renderConsentScreen({
                     }
 
                     .consent-header h1 {
-                        font-family: Nunito, sans-serif !important;
+                        font-family: Uni, sans-serif !important;
                         font-size: 1.375rem;
                         color: #1f2937;
                         margin-bottom: 0.5rem;
