@@ -9,3 +9,7 @@ tmp
 .yarn/cache
 .yarn/install-state.gz
 tsconfig.tsbuildinfo
+
+# MCP Worker build outputs
+mcp-worker/dist/
+mcp-worker/.wrangler/
