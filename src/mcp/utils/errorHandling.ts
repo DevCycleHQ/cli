@@ -1,32 +1,80 @@
 /**
  * Shared error handling utilities for MCP servers
  */
+import { AxiosError } from 'axios'
 
-export function handleToolError(error: unknown, toolName: string) {
-    console.error(`Error in tool handler ${toolName}:`, error)
+/**
+ * Extract meaningful error message from various error types, especially API errors
+ */
+function extractMeaningfulErrorMessage(error: unknown): string {
+    // Handle AxiosError specifically to get API error messages
+    if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as AxiosError
+        const apiError = axiosError.response?.data
 
-    let errorMessage = 'Unknown error'
-    let errorType = 'UNKNOWN_ERROR'
-    let suggestions: string[] = []
+        if (apiError && typeof apiError === 'object') {
+            // Handle DevCycle API error response format
+            const apiErrorObj = apiError as Record<string, unknown>
 
-    if (error instanceof Error) {
-        errorMessage = error.message
-        errorType = categorizeError(error.message)
-        suggestions = getErrorSuggestions(errorType)
-    } else if (error && typeof error === 'string') {
-        errorMessage = error
-    } else if (error && typeof error === 'object') {
-        errorMessage = JSON.stringify(error)
+            if (apiErrorObj.message) {
+                if (Array.isArray(apiErrorObj.message)) {
+                    return apiErrorObj.message.join('; ')
+                } else if (typeof apiErrorObj.message === 'object') {
+                    // Extract validation errors from object like {0: "error message"}
+                    const messages = Object.values(
+                        apiErrorObj.message as Record<string, unknown>,
+                    )
+                    return messages.join('; ')
+                } else {
+                    return String(apiErrorObj.message)
+                }
+            } else if (apiErrorObj.error) {
+                return String(apiErrorObj.error)
+            } else if (apiErrorObj.detail) {
+                return String(apiErrorObj.detail)
+            }
+        }
+
+        // Fall back to axios error message
+        if (axiosError.message) {
+            return axiosError.message
+        }
     }
 
+    // Handle standard Error objects
+    if (error instanceof Error) {
+        return error.message
+    }
+
+    // Handle string errors
+    if (typeof error === 'string') {
+        return error
+    }
+
+    // Handle other objects
+    if (error && typeof error === 'object') {
+        return JSON.stringify(error)
+    }
+
+    return 'Unknown error'
+}
+
+export function handleToolError(error: unknown, toolName: string) {
+    const errorMessage = extractMeaningfulErrorMessage(error)
+    const errorType = categorizeError(errorMessage)
+    const suggestions = getErrorSuggestions(errorType)
+
     const errorResponse = {
-        error: true,
-        type: errorType,
-        message: errorMessage,
-        tool: toolName,
+        errorType,
+        errorMessage,
+        toolName,
         suggestions,
         timestamp: new Date().toISOString(),
     }
+    console.error(`Error in tool handler ${toolName}:`, {
+        error,
+        errorResponse,
+    })
 
     return {
         content: [
@@ -62,7 +110,11 @@ export function categorizeError(errorMessage: string): string {
             return 'RESOURCE_NOT_FOUND'
 
         case lowerMessage.includes('400') ||
-            lowerMessage.includes('bad request'):
+            lowerMessage.includes('bad request') ||
+            lowerMessage.includes('should not exist') ||
+            lowerMessage.includes('is required') ||
+            lowerMessage.includes('invalid format') ||
+            lowerMessage.includes('must be'):
             return 'VALIDATION_ERROR'
 
         case lowerMessage.includes('429') ||

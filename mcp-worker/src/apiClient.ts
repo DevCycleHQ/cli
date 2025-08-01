@@ -1,5 +1,6 @@
 import type { UserProps, DevCycleJWTClaims } from './types'
-import { IDevCycleApiClient } from '../../dist/mcp/api/interface'
+import { IDevCycleApiClient } from '../../src/mcp/api/interface'
+import { getErrorMessage, ensureError } from '../../src/mcp/utils/api'
 
 /**
  * Interface for state management - allows McpAgent or other state managers
@@ -25,7 +26,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
      */
     async executeWithLogging<T>(
         operationName: string,
-        args: any,
+        args: Record<string, unknown>,
         operation: (
             authToken: string,
             projectKey: string | undefined,
@@ -47,19 +48,13 @@ export class WorkerApiClient implements IDevCycleApiClient {
         })
 
         try {
-            const result = await operation(authToken, projectKey)
-            console.log(`Worker MCP ${operationName} completed successfully`)
-            return result
+            return await operation(authToken, projectKey)
         } catch (error) {
-            console.error(`Worker MCP ${operationName} error:`, {
-                error: error,
-                errorMessage:
-                    error instanceof Error ? error.message : String(error),
-                args,
-                userId: this.getUserId(),
-                orgId: this.getOrgId(),
-            })
-            throw error
+            console.error(
+                `Worker MCP ${operationName} error:`,
+                JSON.stringify({ error: getErrorMessage(error) }, null, 2),
+            )
+            throw ensureError(error)
         }
     }
 
@@ -68,7 +63,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
      */
     async executeWithDashboardLink<T>(
         operationName: string,
-        args: any,
+        args: Record<string, unknown>,
         operation: (
             authToken: string,
             projectKey: string | undefined,
@@ -79,37 +74,19 @@ export class WorkerApiClient implements IDevCycleApiClient {
             result: T,
         ) => string,
     ): Promise<{ result: T; dashboardLink: string }> {
-        const authToken = this.getAuthToken()
-        const projectKey = await this.getProjectKey()
-        const orgId = this.getOrgId()
-
-        console.log(`Worker MCP ${operationName} (with dashboard link):`, {
+        const result = await this.executeWithLogging(
+            operationName,
             args,
-            userId: this.getUserId(),
-            orgId,
-            projectKey,
-        })
+            operation,
+        )
 
-        try {
-            const result = await operation(authToken, projectKey)
-            const link = dashboardLink(orgId, projectKey, result)
+        const orgId = this.getOrgId()
+        const projectKey = await this.getProjectKey()
+        const link = dashboardLink(orgId, projectKey, result)
 
-            console.log(
-                `Worker MCP ${operationName} completed successfully with dashboard link`,
-            )
-
-            return {
-                result,
-                dashboardLink: link,
-            }
-        } catch (error) {
-            console.error(`Worker MCP ${operationName} error:`, {
-                error: error instanceof Error ? error.message : String(error),
-                args,
-                userId: this.getUserId(),
-                orgId,
-            })
-            throw error
+        return {
+            result,
+            dashboardLink: link,
         }
     }
 
