@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import { handleZodiosValidationErrors } from '../../src/mcp/utils/api'
 import { fetchProjects, fetchProject } from '../../src/api/projects'
+import { fetchEnvironments } from '../../src/api/environments'
+import { Project, Environment } from '../../src/api/schemas'
 import { IDevCycleApiClient } from '../../src/mcp/api/interface'
 import { DevCycleMCPServerInstance } from '../../src/mcp/server'
 
@@ -19,6 +21,21 @@ const generateProjectDashboardLink = (
 
 const generateOrganizationProjectsLink = (orgId: string): string => {
     return `https://app.devcycle.com/o/${orgId}/settings/projects`
+}
+
+// Helper function to transform SDK keys to only include key and createdAt
+const transformSdkKeys = (sdkKeys: Environment['sdkKeys']) => {
+    if (!sdkKeys) return { mobile: [], client: [], server: [] }
+
+    return Object.fromEntries(
+        Object.entries(sdkKeys).map(([keyType, keys]) => [
+            keyType,
+            keys?.map((sdk) => ({
+                key: sdk.key,
+                createdAt: sdk.createdAt,
+            })) || [],
+        ]),
+    )
 }
 
 // =============================================================================
@@ -65,7 +82,7 @@ export async function selectDevCycleProjectHandler(
                 )
 
                 return {
-                    availableProjects: projects.map((project: any) => ({
+                    availableProjects: projects.map((project: Project) => ({
                         key: project.key,
                         name: project.name,
                         description: project.description || '',
@@ -77,34 +94,51 @@ export async function selectDevCycleProjectHandler(
             generateOrganizationProjectsLink,
             false, // Don't require project for listing projects
         )
+    } else {
+        // Select the specified project
+        return await apiClient.executeWithDashboardLink(
+            'selectProject',
+            args,
+            async (authToken: string) => {
+                // Fetch the specific project to verify it exists and user has access
+                const selectedProject = await handleZodiosValidationErrors(
+                    () => fetchProject(authToken, projectKey),
+                    'selectProject.fetchProject',
+                )
+
+                // Fetch environments for the selected project
+                const environments = await handleZodiosValidationErrors(
+                    () => fetchEnvironments(authToken, projectKey),
+                    'selectProject.fetchEnvironments',
+                )
+
+                // Set the selected project in storage
+                if (apiClient.setSelectedProject) {
+                    await apiClient.setSelectedProject(projectKey)
+                }
+
+                return {
+                    selectedProject: {
+                        key: selectedProject.key,
+                        name: selectedProject.name,
+                        description: selectedProject.description || '',
+                        environments: environments.map((env: Environment) => ({
+                            key: env.key,
+                            name: env.name,
+                            description: env.description || '',
+                            color: env.color || '',
+                            type: env.type,
+                            sdkKeys: transformSdkKeys(env.sdkKeys),
+                        })),
+                    },
+                    message: `Project '${selectedProject.name}' (${selectedProject.key}) has been selected for subsequent MCP operations. Found ${environments.length} environment(s).`,
+                }
+            },
+            (orgId: string) =>
+                generateProjectDashboardLink(orgId, args.projectKey),
+            false, // Don't require project for selecting a project
+        )
     }
-
-    // Select the specified project
-    return await apiClient.executeWithDashboardLink(
-        'selectProject',
-        args,
-        async (authToken: string) => {
-            // Fetch the specific project to verify it exists and user has access
-            const selectedProject = await handleZodiosValidationErrors(
-                () => fetchProject(authToken, projectKey),
-                'fetchProject',
-            )
-
-            // Set the selected project in storage
-            await apiClient.setSelectedProject!(projectKey)
-
-            return {
-                selectedProject: {
-                    key: selectedProject.key,
-                    name: selectedProject.name,
-                    description: selectedProject.description || '',
-                },
-                message: `Project '${selectedProject.name}' (${selectedProject.key}) has been selected for subsequent MCP operations.`,
-            }
-        },
-        (orgId: string) => generateProjectDashboardLink(orgId, args.projectKey),
-        false, // Don't require project for selecting a project
-    )
 }
 
 /**
@@ -124,7 +158,7 @@ export function registerProjectSelectionTools(
             },
             inputSchema: SelectProjectArgsSchema.shape,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = SelectProjectArgsSchema.parse(args)
             return await selectDevCycleProjectHandler(validatedArgs, apiClient)
         },
