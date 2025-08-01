@@ -481,7 +481,7 @@ export function registerFeatureTools(
         'create_feature',
         {
             description:
-                'Create a new feature flag. If a user is creating a feature, you should follow this up by creating a Variable and Variations for the feature and setting the initial targeting for at least the development environment. Include dashboard link in the response.',
+                'Create a new feature flag. If a user is creating a feature, you should follow this up by 1. creating a Variable 2. creating Variations for the feature 3. setting the initial targeting for at least the development environment. Include dashboard link in the response.',
             annotations: {
                 title: 'Create Feature Flag',
             },
