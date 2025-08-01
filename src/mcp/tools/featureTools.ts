@@ -480,8 +480,13 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'create_feature',
         {
-            description:
-                'Create a new feature flag. If a user is creating a feature, you should follow this up by 1. creating a Variable 2. associating the Variable with the feature 3. creating Variations for the feature 4. setting the initial targeting for at least the development environment. Include dashboard link in the response.',
+            description: [
+                'Create a new feature flag. Include dashboard link in the response.',
+                'If a user is creating a feature, you should follow these steps: ',
+                '1. creating a Variable and associate it with this feature. (default to creating a "boolean" variable with the same key as the feature)',
+                '2. create Variations for the feature. (default to creating an "on" and "off" variation)',
+                '3. set and enable initial targeting for at least the development environment. (default to all users)',
+            ].join('\n'),
             annotations: {
                 title: 'Create Feature Flag',
             },
