@@ -54,7 +54,7 @@ export async function handleZodiosValidationErrors<T>(
     }
 }
 
-function getErrorMessage(error: unknown): string {
+export function getErrorMessage(error: unknown): string {
     if (error instanceof Error && error.message) {
         return error.message
     }
@@ -73,7 +73,7 @@ function getErrorMessage(error: unknown): string {
     return String(error)
 }
 
-function ensureError(error: unknown): Error {
+export function ensureError(error: unknown): Error {
     if (error instanceof Error) {
         return error
     }
@@ -95,11 +95,6 @@ export class DevCycleApiClient implements IDevCycleApiClient {
         ) => Promise<T>,
         requiresProject = true,
     ): Promise<T> {
-        console.error(
-            `MCP ${operationName} args:`,
-            args ? JSON.stringify(args, null, 2) : 'none',
-        )
-
         try {
             this.auth.requireAuth()
             if (requiresProject) {
