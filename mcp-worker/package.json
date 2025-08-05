@@ -12,13 +12,13 @@
     },
     "dependencies": {
         "@cloudflare/workers-oauth-provider": "^0.0.5",
-        "agents": "^0.0.100",
-        "hono": "^4.8.4",
-        "jose": "^6.0.11",
-        "oauth4webapi": "^3.5.5"
+        "agents": "^0.0.111",
+        "hono": "^4.8.12",
+        "jose": "^6.0.12",
+        "oauth4webapi": "^3.6.1"
     },
     "devDependencies": {
-        "wrangler": "^4.22.0"
+        "wrangler": "^4.28.0"
     },
     "packageManager": "yarn@4.9.2"
 }
