@@ -17,9 +17,27 @@
         "/npm-shrinkwrap.json",
         "/oclif.manifest.json"
     ],
+    "scripts": {
+        "build": "shx rm -rf dist && tsc -b && oclif manifest",
+        "build:tar": "oclif pack tarballs",
+        "build:worker": "cd mcp-worker && yarn build",
+        "deploy:worker": "cd mcp-worker && yarn deploy",
+        "dev:worker": "cd mcp-worker && yarn dev",
+        "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
+        "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
+        "lint": "eslint . --config eslint.config.mjs",
+        "postpack": "shx rm -f oclif.manifest.json",
+        "posttest": "yarn lint",
+        "prepack": "yarn build && oclif readme --multi",
+        "pretest": "yarn format:check",
+        "test": "mocha test/*.ts \"src/**/*.test.ts\"",
+        "test:ci": "yarn test --forbid-only",
+        "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
+        "version": "oclif readme --multi && git add README.md"
+    },
     "dependencies": {
         "@babel/parser": "^7.28.0",
-        "@modelcontextprotocol/sdk": "^1.15.0",
+        "@modelcontextprotocol/sdk": "^1.17.1",
         "@oclif/core": "^2.16.0",
         "@oclif/plugin-autocomplete": "^2.3.10",
         "@oclif/plugin-help": "^6.2.27",
@@ -126,24 +144,6 @@
                 "description": "Create, view, or modify Overrides for a Project with the Management API."
             }
         }
-    },
-    "scripts": {
-        "build": "shx rm -rf dist && tsc -b && oclif manifest",
-        "build:tar": "oclif pack tarballs",
-        "build:worker": "cd mcp-worker && yarn build",
-        "deploy:worker": "cd mcp-worker && yarn deploy",
-        "dev:worker": "cd mcp-worker && yarn dev",
-        "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
-        "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
-        "lint": "eslint . --config eslint.config.mjs",
-        "postpack": "shx rm -f oclif.manifest.json",
-        "posttest": "yarn lint",
-        "prepack": "yarn build && oclif readme --multi",
-        "pretest": "yarn format:check",
-        "test": "mocha test/*.ts \"src/**/*.test.ts\"",
-        "test:ci": "yarn test --forbid-only",
-        "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
-        "version": "oclif readme --multi && git add README.md"
     },
     "engines": {
         "node": ">=18.0.0"
