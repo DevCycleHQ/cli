@@ -765,7 +765,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
     typescript-eslint: "npm:^8.21.0"
-    zod: "npm:3.24.1"
+    zod: "npm:~3.25.76"
   bin:
     dvc: ./bin/run
     dvc-mcp: ./bin/mcp
