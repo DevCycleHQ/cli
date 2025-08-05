@@ -577,7 +577,22 @@ yarn install
 # Build the project
 yarn build
 
+# Create a local package
+npm pack
+
+# Install the package globally (replace with actual filename)
+npm install -g devcycle-cli-*.tgz
+
 # Run the MCP server
+dvc-mcp
+```
+
+### Alternative: Direct Node Execution
+
+If you prefer to run directly without installing globally:
+
+```bash
+# After building, run the MCP server directly
 node dist/mcp/index.js
 ```
 

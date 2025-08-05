@@ -4,14 +4,8 @@ import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
 import { IDevCycleApiClient } from './api/interface'
 import Writer from '../ui/writer'
-import { registerFeatureTools } from './tools/featureTools'
-import { registerEnvironmentTools } from './tools/environmentTools'
-import { registerVariableTools } from './tools/variableTools'
-import { registerSelfTargetingTools } from './tools/selfTargetingTools'
-import { registerResultsTools } from './tools/resultsTools'
-import { registerProjectTools } from './tools/projectTools'
-import { registerCustomPropertiesTools } from './tools/customPropertiesTools'
 import { handleToolError } from './utils/errorHandling'
+import { registerAllToolsWithServer } from './tools'
 
 // Environment variable to control output schema inclusion
 const ENABLE_OUTPUT_SCHEMAS = process.env.ENABLE_OUTPUT_SCHEMAS === 'true'
@@ -67,7 +61,7 @@ export class DevCycleMCPServer {
     async initialize() {
         try {
             await this.setupAuth()
-            this.setupToolHandlers()
+            registerAllToolsWithServer(this, this.apiClient)
         } catch (error) {
             console.error('Failed to initialize MCP server:', error)
             throw error
@@ -110,16 +104,5 @@ export class DevCycleMCPServer {
                 return handleToolError(error, name)
             }
         })
-    }
-
-    private setupToolHandlers() {
-        // Register project tools using the new direct registration pattern
-        registerProjectTools(this, this.apiClient)
-        registerCustomPropertiesTools(this, this.apiClient)
-        registerEnvironmentTools(this, this.apiClient)
-        registerFeatureTools(this, this.apiClient)
-        registerResultsTools(this, this.apiClient)
-        registerSelfTargetingTools(this, this.apiClient)
-        registerVariableTools(this, this.apiClient)
     }
 }
