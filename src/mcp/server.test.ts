@@ -255,10 +255,9 @@ describe('DevCycleMCPServer', () => {
             )
             const errorResponse = JSON.parse(result.content[0].text)
 
-            expect(errorResponse.error).to.be.true
-            expect(errorResponse.type).to.equal('AUTHENTICATION_ERROR')
-            expect(errorResponse.message).to.equal('401 Unauthorized')
-            expect(errorResponse.tool).to.equal('test_tool')
+            expect(errorResponse.errorType).to.equal('AUTHENTICATION_ERROR')
+            expect(errorResponse.errorMessage).to.equal('401 Unauthorized')
+            expect(errorResponse.toolName).to.equal('test_tool')
             expect(errorResponse.suggestions).to.be.an('array')
             expect(errorResponse.timestamp).to.be.a('string')
         })
@@ -267,9 +266,9 @@ describe('DevCycleMCPServer', () => {
             const result = handleToolError('String error message', 'test_tool')
             const errorResponse = JSON.parse(result.content[0].text)
 
-            expect(errorResponse.error).to.be.true
-            expect(errorResponse.message).to.equal('String error message')
-            expect(errorResponse.tool).to.equal('test_tool')
+            expect(errorResponse.errorType).to.equal('UNKNOWN_ERROR')
+            expect(errorResponse.errorMessage).to.equal('String error message')
+            expect(errorResponse.toolName).to.equal('test_tool')
         })
 
         it('should handle object errors', async () => {
@@ -280,9 +279,11 @@ describe('DevCycleMCPServer', () => {
             const result = handleToolError(errorObject, 'test_tool')
             const errorResponse = JSON.parse(result.content[0].text)
 
-            expect(errorResponse.error).to.be.true
-            expect(errorResponse.message).to.equal(JSON.stringify(errorObject))
-            expect(errorResponse.tool).to.equal('test_tool')
+            expect(errorResponse.errorType).to.equal('UNKNOWN_ERROR')
+            expect(errorResponse.errorMessage).to.equal(
+                JSON.stringify(errorObject),
+            )
+            expect(errorResponse.toolName).to.equal('test_tool')
         })
     })
 
