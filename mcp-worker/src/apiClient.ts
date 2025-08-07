@@ -1,6 +1,7 @@
 import type { UserProps, DevCycleJWTClaims } from './types'
 import { IDevCycleApiClient } from '../../src/mcp/api/interface'
 import { getErrorMessage, ensureError } from '../../src/mcp/utils/api'
+import { setDVCReferrer } from '../../src/api/apiClient'
 
 /**
  * Interface for state management - allows McpAgent or other state managers
@@ -19,6 +20,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
         private props: UserProps,
         private env: Env,
         private stateManager?: IStateManager,
+        private version: string = 'unknown',
     ) {}
 
     /**
@@ -41,6 +43,10 @@ export class WorkerApiClient implements IDevCycleApiClient {
                 'No project key found, please select a project using the select_project tool first.',
             )
         }
+
+        // Set MCP analytics headers for this specific tool operation
+        // Caller is 'mcp' to distinguish from CLI and other callers; command is the tool name
+        setDVCReferrer(operationName, this.version, 'mcp')
 
         console.log(`Worker MCP ${operationName}:`, {
             args,
