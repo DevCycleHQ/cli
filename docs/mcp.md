@@ -32,7 +32,7 @@ Both implementations share the same underlying tools, schemas, and utilities, en
 
 ### Prerequisites
 
-- Node.js 16+ installed
+- Node.js 18+ installed
 - DevCycle CLI installed globally: `npm install -g @devcycle/cli`
 - DevCycle account with API credentials or SSO authentication
 
@@ -150,9 +150,15 @@ List all features in the current project with optional search and pagination.
 
 **Parameters:**
 
-- `search` (optional): Search query to filter features
+- `search` (optional): Search query to filter features (minimum 3 characters)
 - `page` (optional): Page number (default: 1)
-- `per_page` (optional): Items per page (default: 100, max: 1000)
+- `perPage` (optional): Items per page (default: 100, max: 1000)
+- `sortBy` (optional): Sort field (`createdAt`, `updatedAt`, `name`, `key`, `createdBy`, `propertyKey`)
+- `sortOrder` (optional): Sort order (`asc`, `desc`)
+- `staleness` (optional): Filter by staleness (`all`, `unused`, `released`, `unmodified`, `notStale`)
+- `createdBy` (optional): Filter by creator user ID
+- `type` (optional): Feature type (`release`, `experiment`, `permission`, `ops`)
+- `status` (optional): Feature status (`active`, `complete`, `archived`)
 
 #### `create_feature` ⚠️
 
@@ -168,6 +174,11 @@ Create a new feature flag.
 - `variations` (optional): Array of variations with key, name, and variables
 - `configurations` (optional): Environment-specific configurations
 - `sdkVisibility` (optional): SDK visibility settings
+- `variables` (optional): Array of variables to create or reassociate with this feature
+- `variations` (optional): Array of variations for this feature
+- `controlVariation` (optional): The key of the variation that is used as the control for Metrics
+- `settings` (optional): Feature-level settings configuration
+- `interactive` (optional): MCP-only hint to prompt for missing fields
 
 #### `update_feature` ⚠️
 
@@ -181,6 +192,10 @@ Update an existing feature flag.
 - `type` (optional): New type
 - `tags` (optional): New tags
 - `variations` (optional): Updated variations
+- `variables` (optional): Updated array of variables for this feature
+- `settings` (optional): Updated feature-level settings configuration
+- `sdkVisibility` (optional): Updated SDK visibility settings
+- `controlVariation` (optional): Updated control variation key for Metrics
 
 #### `update_feature_status` ⚠️
 
@@ -217,7 +232,7 @@ Create a new variation within a feature.
 - `feature_key`: Feature key
 - `key`: Unique variation key
 - `name`: Variation name
-- `variables` (optional): Variable values for this variation
+- `variables`: Key-value map of variable keys to their values for this variation
 
 #### `update_feature_variation`
 
@@ -227,7 +242,6 @@ Update an existing variation by key. ⚠️ WARNING: Updating a feature variatio
 
 - `feature_key`: Feature key
 - `variation_key`: Variation to update
-- `_id` (optional): MongoDB ID for the variation
 - `key` (optional): New variation key
 - `name` (optional): New variation name
 - `variables` (optional): Updated variable values
@@ -289,7 +303,12 @@ List all variables in the current project.
 
 - `search` (optional): Search query
 - `page` (optional): Page number
-- `per_page` (optional): Items per page
+- `perPage` (optional): Items per page
+- `sortBy` (optional): Sort field (`createdAt`, `updatedAt`, `name`, `key`, `createdBy`, `propertyKey`)
+- `sortOrder` (optional): Sort order (`asc`, `desc`)
+- `feature` (optional): Filter by feature key
+- `type` (optional): Variable type (`String`, `Boolean`, `Number`, `JSON`)
+- `status` (optional): Variable status (`active`, `archived`)
 
 #### `create_variable` ⚠️
 
@@ -338,6 +357,7 @@ List all environments in the current project.
 - `perPage` (optional): Items per page
 - `sortBy` (optional): Sort field
 - `sortOrder` (optional): Sort order (`asc`, `desc`)
+- `createdBy` (optional): Filter by creator user ID
 
 #### `get_sdk_keys`
 
@@ -367,6 +387,11 @@ List all projects in the organization.
 
 Get details of the currently selected project.
 
+Returns the project defined by your current MCP context. If no project is selected:
+
+- Remote Worker: use the `select_project` tool
+- Local MCP: configure a project via `dvc projects select` or set `DEVCYCLE_PROJECT_KEY`
+
 **Parameters:** None
 
 ### Self-Targeting & Overrides
@@ -377,6 +402,8 @@ Get current DevCycle identity for self-targeting.
 
 **Parameters:** None
 
+Returns your current DevCycle identity for the selected project, along with a dashboard link to profile overrides.
+
 #### `update_self_targeting_identity`
 
 Update DevCycle identity for testing.
@@ -385,11 +412,15 @@ Update DevCycle identity for testing.
 
 - `dvc_user_id`: DevCycle User ID (use empty string to clear)
 
+Updates your identity for self-targeting and testing. Use `null` or empty string to clear.
+
 #### `list_self_targeting_overrides`
 
 List all active overrides for the current project.
 
 **Parameters:** None
+
+Lists all active overrides for the current project for your identity.
 
 #### `set_self_targeting_override` ⚠️
 
@@ -401,6 +432,8 @@ Set an override to test a specific variation.
 - `environment_key`: Environment key
 - `variation_key`: Variation to serve
 
+Important: Confirm with the user before setting overrides in production environments.
+
 #### `clear_feature_self_targeting_overrides` ⚠️
 
 Clear overrides for a specific feature/environment.
@@ -409,6 +442,8 @@ Clear overrides for a specific feature/environment.
 
 - `feature_key`: Feature key
 - `environment_key`: Environment key
+
+Important: Confirm with the user before clearing overrides in production environments.
 
 ### Results & Analytics
 
@@ -447,12 +482,25 @@ The MCP server returns structured error responses:
 
 ```json
 {
-  "error": true,
-  "message": "Detailed error message",
-  "tool": "tool_name",
-  "timestamp": "2024-01-01T00:00:00.000Z"
+  "errorType": "AUTHENTICATION_ERROR",
+  "errorMessage": "401 Unauthorized",
+  "toolName": "list_features",
+  "suggestions": [
+    "Re-authenticate with DevCycle (run \"dvc login sso\" for CLI for local MCP or re-login through OAuth for remote MCP)",
+    "Verify your API credentials are correct",
+    "Check if your token has expired"
+  ],
+  "timestamp": "2025-07-01T00:00:00.000Z"
 }
 ```
+
+Fields:
+
+- **errorType**: One of `AUTHENTICATION_ERROR`, `PERMISSION_ERROR`, `RESOURCE_NOT_FOUND`, `VALIDATION_ERROR`, `SCHEMA_VALIDATION_ERROR`, `RATE_LIMIT_ERROR`, `NETWORK_ERROR`, `PROJECT_ERROR`, `UNKNOWN_ERROR`.
+- **errorMessage**: Human-readable error description.
+- **toolName**: The MCP tool that produced the error.
+- **suggestions**: Remediation steps tailored to the error type.
+- **timestamp**: ISO 8601 timestamp when the error was generated.
 
 Common error scenarios:
 
