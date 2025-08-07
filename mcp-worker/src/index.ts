@@ -1,5 +1,6 @@
 import OAuthProvider from '@cloudflare/workers-oauth-provider'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import workerVersion from './version'
 import { McpAgent } from 'agents/mcp'
 import { createAuthApp, createTokenExchangeCallback } from './auth'
 import { WorkerApiClient } from './apiClient'
@@ -29,9 +30,10 @@ type DevCycleMCPState = {
  * It integrates OAuth authentication, tool registry, and Worker-specific API client.
  */
 export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
+    private readonly version = workerVersion
     server = new McpServer({
         name: 'DevCycle MCP Remote Server',
-        version: '1.0.0',
+        version: this.version,
     })
 
     // Worker-specific API client that uses OAuth tokens
@@ -51,6 +53,7 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
             this.props,
             this.env,
             this, // Pass the McpAgent instance for state management
+            this.version,
         )
 
         console.log('Initializing DevCycle MCP Worker', {
