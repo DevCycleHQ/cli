@@ -4,7 +4,8 @@
     "description": "DevCycle CLI Tool",
     "author": "support@devcycle.com",
     "bin": {
-        "dvc": "./bin/run"
+        "dvc": "./bin/run",
+        "dvc-mcp": "./bin/mcp"
     },
     "homepage": "https://github.com/DevCycleHQ/cli",
     "license": "MIT",
@@ -16,8 +17,27 @@
         "/npm-shrinkwrap.json",
         "/oclif.manifest.json"
     ],
+    "scripts": {
+        "build": "shx rm -rf dist && tsc -b && oclif manifest",
+        "build:tar": "oclif pack tarballs",
+        "build:worker": "cd mcp-worker && yarn build",
+        "deploy:worker": "cd mcp-worker && yarn deploy",
+        "dev:worker": "cd mcp-worker && yarn dev",
+        "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
+        "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
+        "lint": "eslint . --config eslint.config.mjs",
+        "postpack": "shx rm -f oclif.manifest.json",
+        "posttest": "yarn lint",
+        "prepack": "yarn build && oclif readme --multi",
+        "pretest": "yarn format:check",
+        "test": "mocha test/*.ts \"src/**/*.test.ts\"",
+        "test:ci": "yarn test --forbid-only",
+        "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
+        "version": "oclif readme --multi && git add README.md"
+    },
     "dependencies": {
-        "@babel/parser": "^7.27.0",
+        "@babel/parser": "^7.28.0",
+        "@modelcontextprotocol/sdk": "^1.17.1",
         "@oclif/core": "^2.16.0",
         "@oclif/plugin-autocomplete": "^2.3.10",
         "@oclif/plugin-help": "^6.2.27",
@@ -43,9 +63,16 @@
         "parse-diff": "^0.9.0",
         "recast": "^0.21.5",
         "reflect-metadata": "^0.1.14",
-        "zod": "^3.24.2"
+        "zod": "~3.25.76"
     },
     "devDependencies": {
+        "@babel/code-frame": "^7.27.1",
+        "@babel/core": "^7.28.0",
+        "@babel/generator": "^7.28.0",
+        "@babel/helper-validator-identifier": "^7.27.1",
+        "@babel/template": "^7.27.2",
+        "@babel/traverse": "^7.28.0",
+        "@babel/types": "^7.28.0",
         "@eslint/js": "^9.18.0",
         "@oclif/test": "^2.5.6",
         "@types/chai": "^5.2.2",
@@ -118,21 +145,6 @@
             }
         }
     },
-    "scripts": {
-        "build": "shx rm -rf dist && tsc -b && oclif manifest",
-        "build:tar": "oclif pack tarballs",
-        "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
-        "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
-        "lint": "eslint . --config eslint.config.mjs",
-        "postpack": "shx rm -f oclif.manifest.json",
-        "posttest": "yarn lint",
-        "prepack": "yarn build && oclif readme --multi",
-        "pretest": "yarn format:check",
-        "test": "mocha test/*.ts \"src/**/*.test.ts\"",
-        "test:ci": "yarn test --forbid-only",
-        "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
-        "version": "oclif readme --multi && git add README.md"
-    },
     "engines": {
         "node": ">=18.0.0"
     },
@@ -141,9 +153,13 @@
         "oclif"
     ],
     "types": "dist/index.d.ts",
-    "packageManager": "yarn@4.4.0",
+    "packageManager": "yarn@4.9.2",
+    "workspaces": [
+        "mcp-worker"
+    ],
     "resolutions": {
         "nanoid@3.3.1": "3.3.8",
-        "serialize-javascript@6.0.0": "^6.0.2"
+        "serialize-javascript@6.0.0": "^6.0.2",
+        "zod": "3.24.1"
     }
 }
