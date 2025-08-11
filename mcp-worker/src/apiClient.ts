@@ -1,10 +1,7 @@
 import type { UserProps, DevCycleJWTClaims } from './types'
 import { IDevCycleApiClient } from '../../src/mcp/api/interface'
 import { getErrorMessage, ensureError } from '../../src/mcp/utils/api'
-import {
-    initializeMCPHeaders,
-    setMCPToolCommand,
-} from '../../src/mcp/utils/headers'
+import { setMCPHeaders, setMCPToolCommand } from '../../src/mcp/utils/headers'
 
 /**
  * Interface for state management - allows McpAgent or other state managers
@@ -29,7 +26,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
      * Initialize MCP headers with version - should be called once at server startup
      */
     static initializeMCPHeaders(version: string): void {
-        initializeMCPHeaders(version)
+        setMCPHeaders(version)
     }
 
     /**

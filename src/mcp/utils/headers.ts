@@ -19,14 +19,6 @@ export function setMCPHeaders(version: string): void {
 }
 
 /**
- * Initialize MCP headers for both CLI and Worker implementations
- * Should be called once at server/application startup
- */
-export function initializeMCPHeaders(version: string): void {
-    setMCPHeaders(version)
-}
-
-/**
  * Updates the command in the headers for a specific MCP tool call
  * This allows tracking of individual MCP operations (e.g., "list_features", "create_project")
  * @param toolName - The name of the MCP tool being called
