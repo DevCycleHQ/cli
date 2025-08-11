@@ -1,6 +1,24 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core'
 import { z } from 'zod'
 
+/**
+ * IMPORTANT: MCP Schema Compatibility
+ *
+ * The MCP (Model Context Protocol) requires that all array types in JSON schemas
+ * have an 'items' property. When using Zod schemas that will be converted to JSON
+ * schemas for MCP tools:
+ *
+ * ❌ NEVER use: z.array(z.any()) - This doesn't generate the required 'items' property
+ * ✅ ALWAYS use: z.array(z.unknown()) - This generates proper JSON schemas
+ *
+ * Similarly:
+ * ❌ NEVER use: z.record(z.any())
+ * ✅ ALWAYS use: z.record(z.unknown())
+ *
+ * The z.unknown() type provides the same runtime flexibility as z.any() but
+ * generates valid JSON schemas that pass MCP validation.
+ */
+
 const EdgeDBSettings = z.object({ enabled: z.boolean() })
 const ColorSettings = z.object({
     primary: z
