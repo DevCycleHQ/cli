@@ -436,7 +436,7 @@ const FeatureVariationDto = z.object({
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         )
@@ -466,7 +466,7 @@ const CreateFeatureDto = z.object({
         .record(
             z.string(),
             z.object({
-                targets: z.array(z.any()).optional(),
+                targets: z.array(z.unknown()).optional(),
                 status: z.string().optional(),
             }),
         )
@@ -490,7 +490,7 @@ const Variation = z.object({
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         )
@@ -503,7 +503,7 @@ const CreateVariationDto = z.object({
         .max(100)
         .regex(/^[a-z0-9-_.]+$/),
     name: z.string().max(100),
-    variables: z.record(z.any()).optional(),
+    variables: z.record(z.unknown()).optional(),
 })
 const FeatureSettings = z.object({
     publicName: z.string().max(100),
@@ -553,7 +553,7 @@ const UpdateFeatureVariationDto = z
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         ),
@@ -603,7 +603,7 @@ const Target = z.object({
     _id: z.string(),
     name: z.string().optional(),
     audience: TargetAudience,
-    filters: z.array(z.any()).optional(),
+    filters: z.array(z.unknown()).optional(),
     rollout: Rollout.nullable().optional(),
     distribution: z.array(TargetDistribution),
     bucketingKey: z.string().optional(),
