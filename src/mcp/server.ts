@@ -1,11 +1,12 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { Tool, ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
 import { IDevCycleApiClient } from './api/interface'
 import Writer from '../ui/writer'
 import { handleToolError } from './utils/errorHandling'
 import { registerAllToolsWithServer } from './tools'
+import { processToolConfig } from './utils/schema'
 
 // Environment variable to control output schema inclusion
 const ENABLE_OUTPUT_SCHEMAS = process.env.ENABLE_OUTPUT_SCHEMAS === 'true'
@@ -17,7 +18,7 @@ if (ENABLE_OUTPUT_SCHEMAS) {
 export type ToolHandler = (
     args: unknown,
     apiClient: IDevCycleApiClient,
-) => Promise<any>
+) => Promise<unknown>
 
 // Type for the server instance with our helper method
 export type DevCycleMCPServerInstance = {
@@ -25,26 +26,15 @@ export type DevCycleMCPServerInstance = {
         name: string,
         config: {
             description: string
-            annotations?: any
-            inputSchema?: any
-            outputSchema?: any
+            annotations?: ToolAnnotations
+            inputSchema?: unknown
+            outputSchema?: unknown
         },
-        handler: (args: any) => Promise<any>,
+        handler: (args: unknown) => Promise<unknown>,
     ) => void
 }
 
-// Function to conditionally remove outputSchema from tool definitions
-const processToolDefinitions = (tools: Tool[]): Tool[] => {
-    if (ENABLE_OUTPUT_SCHEMAS) {
-        return tools
-    }
-
-    // Remove outputSchema from all tools when disabled
-    return tools.map((tool) => {
-        const { outputSchema, ...toolWithoutSchema } = tool
-        return toolWithoutSchema
-    })
-}
+// (legacy helper removed; schema conversion handled centrally)
 
 export class DevCycleMCPServer {
     private auth: DevCycleAuth
@@ -82,27 +72,31 @@ export class DevCycleMCPServer {
         name: string,
         config: {
             description: string
-            inputSchema?: any
-            outputSchema?: any
+            inputSchema?: unknown
+            outputSchema?: unknown
             annotations?: ToolAnnotations
         },
-        handler: (args: any) => Promise<any>,
+        handler: (args: unknown) => Promise<unknown>,
     ) {
-        this.server.registerTool(name, config, async (args: any) => {
-            try {
-                const result = await handler(args)
+        this.server.registerTool(
+            name,
+            processToolConfig(name, config),
+            async (args: unknown) => {
+                try {
+                    const result = await handler(args)
 
-                return {
-                    content: [
-                        {
-                            type: 'text' as const,
-                            text: JSON.stringify(result, null, 2),
-                        },
-                    ],
-                } as any
-            } catch (error) {
-                return handleToolError(error, name)
-            }
-        })
+                    return {
+                        content: [
+                            {
+                                type: 'text' as const,
+                                text: JSON.stringify(result, null, 2),
+                            },
+                        ],
+                    }
+                } catch (error) {
+                    return handleToolError(error, name)
+                }
+            },
+        )
     }
 }

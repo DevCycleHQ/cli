@@ -11,6 +11,7 @@ import { registerAllToolsWithServer } from '../../src/mcp/tools/index'
 // Import types
 import { DevCycleMCPServerInstance } from '../../src/mcp/server'
 import { handleToolError } from '../../src/mcp/utils/errorHandling'
+import { processToolConfig } from '../../src/mcp/utils/schema'
 
 import { registerProjectSelectionTools } from './projectSelectionTools'
 import type { UserProps } from './types'
@@ -68,20 +69,16 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
                 name: string,
                 config: {
                     description: string
-                    annotations?: any
-                    inputSchema?: any
-                    outputSchema?: any
+                    annotations?: Record<string, unknown>
+                    inputSchema?: unknown
+                    outputSchema?: unknown
                 },
-                handler: (args: any) => Promise<any>,
+                handler: (args: unknown) => Promise<unknown>,
             ) => {
                 this.server.registerTool(
                     name,
-                    {
-                        description: config.description,
-                        annotations: config.annotations,
-                        inputSchema: config.inputSchema || {},
-                    },
-                    async (args: any) => {
+                    processToolConfig(name, config),
+                    async (args: unknown) => {
                         try {
                             const result = await handler(args)
                             return {

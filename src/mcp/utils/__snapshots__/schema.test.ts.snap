@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`schema conversion processToolConfig converts a Zod shape object 1`] = `
+"{
+  \\"$ref\\": \\"#/definitions/shape_test_input\\",
+  \\"definitions\\": {
+    \\"shape_test_input\\": {
+      \\"type\\": \\"object\\",
+      \\"properties\\": {
+        \\"key\\": {
+          \\"type\\": \\"string\\",
+          \\"description\\": \\"k\\"
+        }
+      },
+      \\"required\\": [
+        \\"key\\"
+      ],
+      \\"additionalProperties\\": false
+    }
+  },
+  \\"$schema\\": \\"http://json-schema.org/draft-07/schema#\\"
+}"
+`;
+
+exports[`schema conversion registerToolWithErrorHandling uses JSON Schema input 1`] = `
+"{
+  \\"$ref\\": \\"#/definitions/tool_a_input\\",
+  \\"definitions\\": {
+    \\"tool_a_input\\": {
+      \\"type\\": \\"object\\",
+      \\"properties\\": {
+        \\"feature\\": {
+          \\"type\\": \\"string\\"
+        }
+      },
+      \\"required\\": [
+        \\"feature\\"
+      ],
+      \\"additionalProperties\\": false
+    }
+  },
+  \\"$schema\\": \\"http://json-schema.org/draft-07/schema#\\"
+}"
+`;
+
+exports[`schema conversion toJsonSchema converts a Zod object schema 1`] = `
+"{
+  \\"$ref\\": \\"#/definitions/Sample\\",
+  \\"definitions\\": {
+    \\"Sample\\": {
+      \\"type\\": \\"object\\",
+      \\"properties\\": {
+        \\"name\\": {
+          \\"type\\": \\"string\\",
+          \\"description\\": \\"n\\"
+        },
+        \\"page\\": {
+          \\"type\\": \\"number\\",
+          \\"minimum\\": 1,
+          \\"default\\": 1,
+          \\"description\\": \\"p\\"
+        }
+      },
+      \\"required\\": [
+        \\"name\\"
+      ],
+      \\"additionalProperties\\": false,
+      \\"description\\": \\"root\\"
+    }
+  },
+  \\"$schema\\": \\"http://json-schema.org/draft-07/schema#\\"
+}"
+`;
