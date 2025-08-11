@@ -234,6 +234,7 @@ export function registerSelfTargetingTools(
                 'Set a self-targeting override for a feature variation. ⚠️ IMPORTANT: Always confirm with the user before setting overrides for production environments (environments where type = "production"). Include dashboard link in the response.',
             annotations: {
                 title: 'Set Self-Targeting Override For Feature/Environment',
+                destructiveHint: true,
             },
             inputSchema: SetSelfTargetingOverrideArgsSchema.shape,
         },
@@ -253,6 +254,7 @@ export function registerSelfTargetingTools(
                 'Clear self-targeting overrides for a specific feature/environment. ⚠️ IMPORTANT: Always confirm with the user before clearing overrides for production environments (environments where type = "production"). Include dashboard link in the response.',
             annotations: {
                 title: 'Clear Self-Targeting Override For Feature/Environment',
+                destructiveHint: true,
             },
             inputSchema: ClearSelfTargetingOverridesArgsSchema.shape,
         },
