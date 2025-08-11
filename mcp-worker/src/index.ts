@@ -66,6 +66,13 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
             hasProject: await this.apiClient.hasProjectKey(),
         })
 
+        // Check environment variable for output schema support
+        const enableOutputSchemas =
+            (this.env.ENABLE_OUTPUT_SCHEMAS as string) === 'true'
+        if (enableOutputSchemas) {
+            console.log('DevCycle MCP Worker - Output Schemas: ENABLED')
+        }
+
         // Create an adapter to make the worker's McpServer compatible with the CLI registration pattern
         const serverAdapter: DevCycleMCPServerInstance = {
             registerToolWithErrorHandling: (
@@ -78,16 +85,30 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
                 },
                 handler: (args: unknown) => Promise<unknown>,
             ) => {
+                // Conditionally include output schema based on environment variable
+                const toolConfig: {
+                    description: string
+                    annotations?: ToolAnnotations
+                    inputSchema?: ZodRawShape
+                    outputSchema?: ZodRawShape
+                } = {
+                    description: config.description,
+                    annotations: config.annotations,
+                    inputSchema: config.inputSchema,
+                }
+
+                if (enableOutputSchemas && config.outputSchema) {
+                    toolConfig.outputSchema = config.outputSchema
+                }
+
                 this.server.registerTool(
                     name,
                     // TypeScript workaround: The MCP SDK's registerTool has complex generic constraints
                     // that cause "Type instantiation is excessively deep" errors when used with our
                     // adapter pattern. The types are correct at runtime, but TS can't verify them.
-                    {
-                        description: config.description,
-                        annotations: config.annotations,
-                        inputSchema: config.inputSchema,
-                    } as any,
+                    toolConfig as Parameters<
+                        typeof this.server.registerTool
+                    >[1],
                     async (args: unknown) => {
                         try {
                             const result = await handler(args)

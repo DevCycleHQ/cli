@@ -4,9 +4,9 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "tsc --noEmit",
         "dev": "wrangler dev",
         "deploy": "wrangler deploy",
+        "build": "tsc",
         "type-check": "tsc --noEmit",
         "cf-typegen": "wrangler types"
     },
