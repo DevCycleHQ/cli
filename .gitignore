@@ -13,3 +13,6 @@ tsconfig.tsbuildinfo
 # MCP Worker build outputs
 mcp-worker/dist/
 mcp-worker/.wrangler/
+
+# MCP Worker environment variables
+.dev.vars
