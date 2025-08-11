@@ -51,7 +51,6 @@ export class WorkerApiClient implements IDevCycleApiClient {
         }
 
         // Set MCP analytics headers for this specific tool operation
-        // This updates only the command/tool name, keeping version and caller consistent
         setMCPToolCommand(operationName)
 
         console.log(`Worker MCP ${operationName}:`, {
