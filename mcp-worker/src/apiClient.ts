@@ -1,7 +1,7 @@
 import type { UserProps, DevCycleJWTClaims } from './types'
 import { IDevCycleApiClient } from '../../src/mcp/api/interface'
 import { getErrorMessage, ensureError } from '../../src/mcp/utils/api'
-import { setDVCReferrer } from '../../src/api/apiClient'
+import { setMCPHeaders, setMCPToolCommand } from '../../src/mcp/utils/headers'
 
 /**
  * Interface for state management - allows McpAgent or other state managers
@@ -20,8 +20,14 @@ export class WorkerApiClient implements IDevCycleApiClient {
         private props: UserProps,
         private env: Env,
         private stateManager?: IStateManager,
-        private version: string = 'unknown',
     ) {}
+
+    /**
+     * Initialize MCP headers with version - should be called once at server startup
+     */
+    static initializeMCPHeaders(version: string): void {
+        setMCPHeaders(version)
+    }
 
     /**
      * Execute an API operation with OAuth token authentication and consistent logging
@@ -45,8 +51,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
         }
 
         // Set MCP analytics headers for this specific tool operation
-        // Caller is 'mcp' to distinguish from CLI and other callers; command is the tool name
-        setDVCReferrer(operationName, this.version, 'mcp')
+        setMCPToolCommand(operationName)
 
         console.log(`Worker MCP ${operationName}:`, {
             args,

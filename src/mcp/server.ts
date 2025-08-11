@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { Tool, ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
+import type { ZodRawShape } from 'zod'
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
 import { IDevCycleApiClient } from './api/interface'
@@ -8,7 +9,8 @@ import { handleToolError } from './utils/errorHandling'
 import { registerAllToolsWithServer } from './tools'
 
 // Environment variable to control output schema inclusion
-const ENABLE_OUTPUT_SCHEMAS = process.env.ENABLE_OUTPUT_SCHEMAS === 'true'
+const ENABLE_OUTPUT_SCHEMAS =
+    (process.env.ENABLE_OUTPUT_SCHEMAS as string) === 'true'
 if (ENABLE_OUTPUT_SCHEMAS) {
     console.error('DevCycle MCP Server - Output Schemas: ENABLED')
 }
@@ -17,7 +19,7 @@ if (ENABLE_OUTPUT_SCHEMAS) {
 export type ToolHandler = (
     args: unknown,
     apiClient: IDevCycleApiClient,
-) => Promise<any>
+) => Promise<unknown>
 
 // Type for the server instance with our helper method
 export type DevCycleMCPServerInstance = {
@@ -25,25 +27,12 @@ export type DevCycleMCPServerInstance = {
         name: string,
         config: {
             description: string
-            annotations?: any
-            inputSchema?: any
-            outputSchema?: any
+            annotations?: ToolAnnotations
+            inputSchema?: ZodRawShape
+            outputSchema?: ZodRawShape
         },
-        handler: (args: any) => Promise<any>,
+        handler: (args: unknown) => Promise<unknown>,
     ) => void
-}
-
-// Function to conditionally remove outputSchema from tool definitions
-const processToolDefinitions = (tools: Tool[]): Tool[] => {
-    if (ENABLE_OUTPUT_SCHEMAS) {
-        return tools
-    }
-
-    // Remove outputSchema from all tools when disabled
-    return tools.map((tool) => {
-        const { outputSchema, ...toolWithoutSchema } = tool
-        return toolWithoutSchema
-    })
 }
 
 export class DevCycleMCPServer {
@@ -82,13 +71,29 @@ export class DevCycleMCPServer {
         name: string,
         config: {
             description: string
-            inputSchema?: any
-            outputSchema?: any
+            inputSchema?: ZodRawShape
+            outputSchema?: ZodRawShape
             annotations?: ToolAnnotations
         },
-        handler: (args: any) => Promise<any>,
+        handler: (args: unknown) => Promise<unknown>,
     ) {
-        this.server.registerTool(name, config, async (args: any) => {
+        // Conditionally include output schema based on environment variable
+        const toolConfig: {
+            description: string
+            annotations?: ToolAnnotations
+            inputSchema?: ZodRawShape
+            outputSchema?: ZodRawShape
+        } = {
+            description: config.description,
+            annotations: config.annotations,
+            inputSchema: config.inputSchema,
+        }
+
+        if (ENABLE_OUTPUT_SCHEMAS && config.outputSchema) {
+            toolConfig.outputSchema = config.outputSchema
+        }
+
+        this.server.registerTool(name, toolConfig, async (args: unknown) => {
             try {
                 const result = await handler(args)
 
@@ -99,7 +104,7 @@ export class DevCycleMCPServer {
                             text: JSON.stringify(result, null, 2),
                         },
                     ],
-                } as any
+                }
             } catch (error) {
                 return handleToolError(error, name)
             }

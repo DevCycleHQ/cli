@@ -1,7 +1,7 @@
 import { setDVCReferrer } from '../../api/apiClient'
 
 // Store the version for reuse in tool commands
-let mcpVersion: string = 'unknown'
+let mcpVersion: string = ''
 
 /**
  * Sets up MCP-specific headers for all API requests

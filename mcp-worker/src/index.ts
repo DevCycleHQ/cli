@@ -1,5 +1,7 @@
 import OAuthProvider from '@cloudflare/workers-oauth-provider'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
+import type { ZodRawShape } from 'zod'
 import workerVersion from './version'
 import { McpAgent } from 'agents/mcp'
 import { createAuthApp, createTokenExchangeCallback } from './auth'
@@ -9,7 +11,7 @@ import { WorkerApiClient } from './apiClient'
 import { registerAllToolsWithServer } from '../../src/mcp/tools/index'
 
 // Import types
-import { DevCycleMCPServerInstance } from '../../src/mcp/server'
+import type { DevCycleMCPServerInstance } from '../../src/mcp/server'
 import { handleToolError } from '../../src/mcp/utils/errorHandling'
 
 import { registerProjectSelectionTools } from './projectSelectionTools'
@@ -48,12 +50,14 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
      * Initialize the MCP server with tools and handlers
      */
     async init() {
+        // Initialize MCP headers with version once at startup
+        WorkerApiClient.initializeMCPHeaders(this.version)
+
         // Initialize the Worker-specific API client with OAuth tokens and state management
         this.apiClient = new WorkerApiClient(
             this.props,
             this.env,
             this, // Pass the McpAgent instance for state management
-            this.version,
         )
 
         console.log('Initializing DevCycle MCP Worker', {
@@ -62,26 +66,50 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
             hasProject: await this.apiClient.hasProjectKey(),
         })
 
+        // Check environment variable for output schema support
+        const enableOutputSchemas =
+            (this.env.ENABLE_OUTPUT_SCHEMAS as string) === 'true'
+        if (enableOutputSchemas) {
+            console.log('DevCycle MCP Worker - Output Schemas: ENABLED')
+        }
+
         // Create an adapter to make the worker's McpServer compatible with the CLI registration pattern
         const serverAdapter: DevCycleMCPServerInstance = {
             registerToolWithErrorHandling: (
                 name: string,
                 config: {
                     description: string
-                    annotations?: any
-                    inputSchema?: any
-                    outputSchema?: any
+                    annotations?: ToolAnnotations
+                    inputSchema?: ZodRawShape
+                    outputSchema?: ZodRawShape
                 },
-                handler: (args: any) => Promise<any>,
+                handler: (args: unknown) => Promise<unknown>,
             ) => {
+                // Conditionally include output schema based on environment variable
+                const toolConfig: {
+                    description: string
+                    annotations?: ToolAnnotations
+                    inputSchema?: ZodRawShape
+                    outputSchema?: ZodRawShape
+                } = {
+                    description: config.description,
+                    annotations: config.annotations,
+                    inputSchema: config.inputSchema,
+                }
+
+                if (enableOutputSchemas && config.outputSchema) {
+                    toolConfig.outputSchema = config.outputSchema
+                }
+
                 this.server.registerTool(
                     name,
-                    {
-                        description: config.description,
-                        annotations: config.annotations,
-                        inputSchema: config.inputSchema || {},
-                    },
-                    async (args: any) => {
+                    // TypeScript workaround: The MCP SDK's registerTool has complex generic constraints
+                    // that cause "Type instantiation is excessively deep" errors when used with our
+                    // adapter pattern. The types are correct at runtime, but TS can't verify them.
+                    toolConfig as Parameters<
+                        typeof this.server.registerTool
+                    >[1],
+                    async (args: unknown) => {
                         try {
                             const result = await handler(args)
                             return {
