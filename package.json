@@ -64,7 +64,7 @@
         "recast": "^0.21.5",
         "reflect-metadata": "^0.1.14",
         "zod": "~3.25.76",
-        "zod-to-json-schema": "^3.23.5"
+        "zod-to-json-schema": "^3.24.6"
     },
     "devDependencies": {
         "@babel/code-frame": "^7.27.1",

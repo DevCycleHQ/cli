@@ -782,7 +782,7 @@ __metadata:
     typescript: "npm:^5.7.2"
     typescript-eslint: "npm:^8.21.0"
     zod: "npm:~3.25.76"
-    zod-to-json-schema: "npm:^3.23.5"
+    zod-to-json-schema: "npm:^3.24.6"
   bin:
     dvc: ./bin/run
     dvc-mcp: ./bin/mcp
@@ -10807,7 +10807,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.23.5, zod-to-json-schema@npm:^3.24.1":
+"zod-to-json-schema@npm:^3.24.1, zod-to-json-schema@npm:^3.24.6":
   version: 3.24.6
   resolution: "zod-to-json-schema@npm:3.24.6"
   peerDependencies:
