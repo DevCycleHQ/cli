@@ -1,6 +1,24 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core'
 import { z } from 'zod'
 
+/**
+ * IMPORTANT: MCP Schema Compatibility
+ *
+ * The MCP (Model Context Protocol) requires that all array types in JSON schemas
+ * have an 'items' property. When using Zod schemas that will be converted to JSON
+ * schemas for MCP tools:
+ *
+ * ❌ NEVER use: z.array(z.any()) - This doesn't generate the required 'items' property
+ * ✅ ALWAYS use: z.array(z.unknown()) - This generates proper JSON schemas
+ *
+ * Similarly:
+ * ❌ NEVER use: z.record(z.any())
+ * ✅ ALWAYS use: z.record(z.unknown())
+ *
+ * The z.unknown() type provides the same runtime flexibility as z.any() but
+ * generates valid JSON schemas that pass MCP validation.
+ */
+
 const EdgeDBSettings = z.object({ enabled: z.boolean() })
 const ColorSettings = z.object({
     primary: z
@@ -436,7 +454,7 @@ const FeatureVariationDto = z.object({
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         )
@@ -466,7 +484,7 @@ const CreateFeatureDto = z.object({
         .record(
             z.string(),
             z.object({
-                targets: z.array(z.any()).optional(),
+                targets: z.array(z.unknown()).optional(),
                 status: z.string().optional(),
             }),
         )
@@ -490,7 +508,7 @@ const Variation = z.object({
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         )
@@ -503,7 +521,7 @@ const CreateVariationDto = z.object({
         .max(100)
         .regex(/^[a-z0-9-_.]+$/),
     name: z.string().max(100),
-    variables: z.record(z.any()).optional(),
+    variables: z.record(z.unknown()).optional(),
 })
 const FeatureSettings = z.object({
     publicName: z.string().max(100),
@@ -553,7 +571,7 @@ const UpdateFeatureVariationDto = z
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         ),
@@ -603,7 +621,7 @@ const Target = z.object({
     _id: z.string(),
     name: z.string().optional(),
     audience: TargetAudience,
-    filters: z.array(z.any()).optional(),
+    filters: z.array(z.unknown()).optional(),
     rollout: Rollout.nullable().optional(),
     distribution: z.array(TargetDistribution),
     bucketingKey: z.string().optional(),
