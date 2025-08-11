@@ -18,14 +18,16 @@ function isZodType(value: unknown): value is ZodTypeAny {
 }
 
 function maybeWrapShape(schema: unknown): ZodTypeAny | undefined {
-    if (schema && typeof schema === 'object') {
-        const shape = schema as ZodRawShape
-        const values = Object.values(shape)
-        if (values.length > 0 && values.every((v) => isZodType(v))) {
-            return z.object(shape)
-        }
+    if (!schema || typeof schema !== 'object') return undefined
+    // If it's already a Zod type, leave it
+    if (isZodType(schema)) return schema as ZodTypeAny
+    // Be permissive: treat any plain object as a Zod object shape. This covers
+    // passing `SomeSchema.shape` as well as inline shapes.
+    try {
+        return z.object(schema as ZodRawShape)
+    } catch {
+        return undefined
     }
-    return undefined
 }
 
 export function toJsonSchema(
