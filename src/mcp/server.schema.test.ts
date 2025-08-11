@@ -3,6 +3,17 @@ import sinon from 'sinon'
 import { registerAllToolsWithServer } from './tools'
 import { DevCycleMCPServerInstance } from './server'
 
+// Type for tool configuration based on server definition
+type ToolConfig = {
+    description: string
+    annotations?: any
+    inputSchema?: any
+    outputSchema?: any
+}
+
+// Type for tool handler based on server definition
+type ToolHandler = (args: any) => Promise<any>
+
 describe('MCP Schema Validation', () => {
     /**
      * This test ensures that all MCP tool schemas are properly formatted for the MCP protocol.
@@ -87,15 +98,15 @@ describe('MCP Schema Validation', () => {
         it('should register all tools with valid MCP schemas', () => {
             const registeredTools: Array<{
                 name: string
-                config: any
+                config: ToolConfig
             }> = []
 
             // Create a mock server instance that captures registrations
             const mockServerInstance: DevCycleMCPServerInstance = {
                 registerToolWithErrorHandling: (
                     name: string,
-                    config: any,
-                    handler: any,
+                    config: ToolConfig,
+                    handler: ToolHandler,
                 ) => {
                     registeredTools.push({ name, config })
                 },
@@ -168,15 +179,15 @@ describe('MCP Schema Validation', () => {
         it('should validate each registered tool has required properties', () => {
             const registeredTools: Array<{
                 name: string
-                config: any
+                config: ToolConfig
             }> = []
 
             // Create a mock server instance that captures registrations
             const mockServerInstance: DevCycleMCPServerInstance = {
                 registerToolWithErrorHandling: (
                     name: string,
-                    config: any,
-                    handler: any,
+                    config: ToolConfig,
+                    handler: ToolHandler,
                 ) => {
                     registeredTools.push({ name, config })
                 },
