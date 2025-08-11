@@ -160,7 +160,7 @@ export function registerProjectSelectionTools(
             annotations: {
                 title: 'Select Project',
             },
-            inputSchema: SelectProjectArgsSchema.shape,
+            inputSchema: SelectProjectArgsSchema,
         },
         async (args: unknown) => {
             const validatedArgs = SelectProjectArgsSchema.parse(args)

@@ -13,10 +13,27 @@ type ToolConfig = {
 
 const ENABLE_OUTPUT_SCHEMAS = process.env.ENABLE_OUTPUT_SCHEMAS === 'true'
 
+/**
+ * Narrow an unknown value to a Zod type.
+ *
+ * Why: tool registrations often pass either full Zod schemas or plain
+ * shapes (e.g., `SomeZodSchema.shape`). We need a reliable way to detect when
+ * we already have a Zod schema so we don't wrap it again.
+ */
 function isZodType(value: unknown): value is ZodTypeAny {
     return !!value && typeof value === 'object' && 'safeParse' in value
 }
 
+/**
+ * Convert a plain object shape into a Zod object when needed.
+ *
+ * Why: our tool modules frequently pass `SomeSchema.shape` which is a plain
+ * object of Zod fields. `zod-to-json-schema` expects a full Zod schema.
+ * Without wrapping, we would emit an empty `{}` JSON Schema, which broke MCP
+ * consumers (e.g., Copilot Chat would see tools with no parameters).
+ *
+ * This function is deliberately permissive so inline shapes also work.
+ */
 function maybeWrapShape(schema: unknown): ZodTypeAny | undefined {
     if (!schema || typeof schema !== 'object') return undefined
     // If it's already a Zod type, leave it
@@ -30,6 +47,14 @@ function maybeWrapShape(schema: unknown): ZodTypeAny | undefined {
     }
 }
 
+/**
+ * Convert a Zod schema or shape to JSON Schema and normalize it for MCP.
+ *
+ * Why: some generated Zod schemas include arrays defined as `z.array(z.any())`.
+ * `zod-to-json-schema` may omit `items` for these, but MCP clients (notably
+ * Copilot Chat) require `items` to be present. We post-process the emitted
+ * schema to ensure every array node includes an `items` field.
+ */
 export function toJsonSchema(
     schema: unknown,
     name?: string,
@@ -43,9 +68,9 @@ export function toJsonSchema(
         name ? { name } : undefined,
     ) as JsonSchema
 
-    // Normalize the schema for MCP consumers that require `items` on arrays
-    // Some generated schemas (e.g., z.array(z.any())) omit `items`. Add a minimal
-    // empty schema so tools validate correctly.
+    // Normalize the schema for MCP consumers that require `items` on arrays.
+    // Some generated schemas (e.g., z.array(z.any())) omit `items`. Add a
+    // minimal empty schema so tools validate correctly.
     function ensureArrayItems(node: unknown): void {
         if (!node || typeof node !== 'object') return
         const obj = node as Record<string, unknown>
@@ -64,6 +89,14 @@ type ToolRegistrationConfig = Omit<Tool, 'name'>
 
 const defaultObjectSchema: JsonSchema = { type: 'object', properties: {} }
 
+/**
+ * Prepare a tool registration payload for the MCP server.
+ *
+ * Why: centralizes JSON Schema conversion and applies safe defaults so a
+ * tool always has a valid `inputSchema`. Also supports optional output schema
+ * generation behind a feature flag. We pass a `name` to help
+ * `zod-to-json-schema` generate stable `$ref` entries for large schemas.
+ */
 export function processToolConfig(
     name: string,
     config: ToolConfig,

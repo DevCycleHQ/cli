@@ -111,9 +111,9 @@ export function registerResultsTools(
                 title: 'Get Feature Total Evaluations',
                 readOnlyHint: true,
             },
-            inputSchema: GetFeatureTotalEvaluationsArgsSchema.shape,
+            inputSchema: GetFeatureTotalEvaluationsArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs =
                 GetFeatureTotalEvaluationsArgsSchema.parse(args)
             return await getFeatureTotalEvaluationsHandler(
@@ -132,9 +132,9 @@ export function registerResultsTools(
                 title: 'Get Project Total Evaluations',
                 readOnlyHint: true,
             },
-            inputSchema: GetProjectTotalEvaluationsArgsSchema.shape,
+            inputSchema: GetProjectTotalEvaluationsArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs =
                 GetProjectTotalEvaluationsArgsSchema.parse(args)
             return await getProjectTotalEvaluationsHandler(

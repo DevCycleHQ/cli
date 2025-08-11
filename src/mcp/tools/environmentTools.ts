@@ -155,9 +155,9 @@ export function registerEnvironmentTools(
                 title: 'List Environments',
                 readOnlyHint: true,
             },
-            inputSchema: ListEnvironmentsArgsSchema.shape,
+            inputSchema: ListEnvironmentsArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = ListEnvironmentsArgsSchema.parse(args)
             return await listEnvironmentsHandler(validatedArgs, apiClient)
         },
@@ -172,9 +172,9 @@ export function registerEnvironmentTools(
                 title: 'Get SDK Keys',
                 readOnlyHint: true,
             },
-            inputSchema: GetSdkKeysArgsSchema.shape,
+            inputSchema: GetSdkKeysArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = GetSdkKeysArgsSchema.parse(args)
             return await getSdkKeysHandler(validatedArgs, apiClient)
         },
@@ -189,7 +189,7 @@ export function registerEnvironmentTools(
     //         annotations: {
     //             title: 'Create Environment',
     //         },
-    //         inputSchema: CreateEnvironmentArgsSchema.shape,
+    //         inputSchema: CreateEnvironmentArgsSchema,
     //     },
     //     async (args: any) => {
     //         const validatedArgs = CreateEnvironmentArgsSchema.parse(args)
@@ -205,7 +205,7 @@ export function registerEnvironmentTools(
     //         annotations: {
     //             title: 'Update Environment',
     //         },
-    //         inputSchema: UpdateEnvironmentArgsSchema.shape,
+    //         inputSchema: UpdateEnvironmentArgsSchema,
     //     },
     //     async (args: any) => {
     //         const validatedArgs = UpdateEnvironmentArgsSchema.parse(args)

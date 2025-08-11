@@ -138,9 +138,9 @@ export function registerVariableTools(
                 title: 'List Variables',
                 readOnlyHint: true,
             },
-            inputSchema: ListVariablesArgsSchema.shape,
+            inputSchema: ListVariablesArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = ListVariablesArgsSchema.parse(args)
             return await listVariablesHandler(validatedArgs, apiClient)
         },
@@ -154,9 +154,9 @@ export function registerVariableTools(
             annotations: {
                 title: 'Create Variable',
             },
-            inputSchema: CreateVariableArgsSchema.shape,
+            inputSchema: CreateVariableArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = CreateVariableArgsSchema.parse(args)
             return await createVariableHandler(validatedArgs, apiClient)
         },
@@ -171,9 +171,9 @@ export function registerVariableTools(
                 title: 'Update Variable',
                 destructiveHint: true,
             },
-            inputSchema: UpdateVariableArgsSchema.shape,
+            inputSchema: UpdateVariableArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = UpdateVariableArgsSchema.parse(args)
             return await updateVariableHandler(validatedArgs, apiClient)
         },
@@ -188,9 +188,9 @@ export function registerVariableTools(
                 title: 'Delete Variable',
                 destructiveHint: true,
             },
-            inputSchema: DeleteVariableArgsSchema.shape,
+            inputSchema: DeleteVariableArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = DeleteVariableArgsSchema.parse(args)
             return await deleteVariableHandler(validatedArgs, apiClient)
         },

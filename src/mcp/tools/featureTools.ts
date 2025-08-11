@@ -469,9 +469,9 @@ export function registerFeatureTools(
                 title: 'List Feature Flags',
                 readOnlyHint: true,
             },
-            inputSchema: ListFeaturesArgsSchema.shape,
+            inputSchema: ListFeaturesArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = ListFeaturesArgsSchema.parse(args)
             return await listFeaturesHandler(validatedArgs, apiClient)
         },
@@ -490,9 +490,9 @@ export function registerFeatureTools(
             annotations: {
                 title: 'Create Feature Flag',
             },
-            inputSchema: CreateFeatureArgsSchema.shape,
+            inputSchema: CreateFeatureArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = CreateFeatureArgsSchema.parse(args)
             return await createFeatureHandler(validatedArgs, apiClient)
         },
@@ -507,9 +507,9 @@ export function registerFeatureTools(
                 title: 'Update Feature Flag',
                 destructiveHint: true,
             },
-            inputSchema: UpdateFeatureArgsSchema.shape,
+            inputSchema: UpdateFeatureArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = UpdateFeatureArgsSchema.parse(args)
             return await updateFeatureHandler(validatedArgs, apiClient)
         },
@@ -524,9 +524,9 @@ export function registerFeatureTools(
                 title: 'Update Feature Flag Status',
                 destructiveHint: true,
             },
-            inputSchema: UpdateFeatureStatusArgsSchema.shape,
+            inputSchema: UpdateFeatureStatusArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = UpdateFeatureStatusArgsSchema.parse(args)
             return await updateFeatureStatusHandler(validatedArgs, apiClient)
         },
@@ -541,9 +541,9 @@ export function registerFeatureTools(
                 title: 'Delete Feature Flag',
                 destructiveHint: true,
             },
-            inputSchema: DeleteFeatureArgsSchema.shape,
+            inputSchema: DeleteFeatureArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = DeleteFeatureArgsSchema.parse(args)
             return await deleteFeatureHandler(validatedArgs, apiClient)
         },
@@ -558,9 +558,9 @@ export function registerFeatureTools(
                 title: 'Get Feature Variations',
                 readOnlyHint: true,
             },
-            inputSchema: ListVariationsArgsSchema.shape,
+            inputSchema: ListVariationsArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = ListVariationsArgsSchema.parse(args)
             return await fetchFeatureVariationsHandler(validatedArgs, apiClient)
         },
@@ -574,9 +574,9 @@ export function registerFeatureTools(
             annotations: {
                 title: 'Create Feature Variation',
             },
-            inputSchema: CreateVariationArgsSchema.shape,
+            inputSchema: CreateVariationArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = CreateVariationArgsSchema.parse(args)
             return await createFeatureVariationHandler(validatedArgs, apiClient)
         },
@@ -591,9 +591,9 @@ export function registerFeatureTools(
                 title: 'Update Feature Variation',
                 destructiveHint: true,
             },
-            inputSchema: UpdateVariationArgsSchema.shape,
+            inputSchema: UpdateVariationArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = UpdateVariationArgsSchema.parse(args)
             return await updateFeatureVariationHandler(validatedArgs, apiClient)
         },
@@ -608,9 +608,9 @@ export function registerFeatureTools(
                 title: 'Set Feature Targeting',
                 destructiveHint: true,
             },
-            inputSchema: SetFeatureTargetingArgsSchema.shape,
+            inputSchema: SetFeatureTargetingArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = SetFeatureTargetingArgsSchema.parse(args)
             return await setFeatureTargetingHandler(validatedArgs, apiClient)
         },
@@ -625,9 +625,9 @@ export function registerFeatureTools(
                 title: 'List Feature Targeting Rules',
                 readOnlyHint: true,
             },
-            inputSchema: ListFeatureTargetingArgsSchema.shape,
+            inputSchema: ListFeatureTargetingArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = ListFeatureTargetingArgsSchema.parse(args)
             return await listFeatureTargetingHandler(validatedArgs, apiClient)
         },
@@ -642,9 +642,9 @@ export function registerFeatureTools(
                 title: 'Update Feature Targeting Rules',
                 destructiveHint: true,
             },
-            inputSchema: UpdateFeatureTargetingArgsSchema.shape,
+            inputSchema: UpdateFeatureTargetingArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = UpdateFeatureTargetingArgsSchema.parse(args)
             return await updateFeatureTargetingHandler(validatedArgs, apiClient)
         },
@@ -659,9 +659,9 @@ export function registerFeatureTools(
                 title: 'Get Feature Audit Log History',
                 readOnlyHint: true,
             },
-            inputSchema: GetFeatureAuditLogHistoryArgsSchema.shape,
+            inputSchema: GetFeatureAuditLogHistoryArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs =
                 GetFeatureAuditLogHistoryArgsSchema.parse(args)
             return await getFeatureAuditLogHistoryHandler(

@@ -130,9 +130,9 @@ export function registerProjectTools(
                 title: 'List Projects',
                 readOnlyHint: true,
             },
-            inputSchema: ListProjectsArgsSchema.shape,
+            inputSchema: ListProjectsArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = ListProjectsArgsSchema.parse(args)
 
             return await listProjectsHandler(validatedArgs, apiClient)
@@ -164,7 +164,7 @@ export function registerProjectTools(
     //         annotations: {
     //             title: 'Create Project',
     //         },
-    //         inputSchema: CreateProjectArgsSchema.shape,
+    //         inputSchema: CreateProjectArgsSchema,
     //     },
     //     async (args: any) => {
     //         const validatedArgs = CreateProjectArgsSchema.parse(args)
@@ -181,7 +181,7 @@ export function registerProjectTools(
     //         annotations: {
     //             title: 'Update Project',
     //         },
-    //         inputSchema: UpdateProjectArgsSchema.shape,
+    //         inputSchema: UpdateProjectArgsSchema,
     //     },
     //     async (args: any) => {
     //         const validatedArgs = UpdateProjectArgsSchema.parse(args)

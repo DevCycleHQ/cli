@@ -199,9 +199,9 @@ export function registerSelfTargetingTools(
             annotations: {
                 title: 'Update Self-Targeting Identity',
             },
-            inputSchema: UpdateSelfTargetingIdentityArgsSchema.shape,
+            inputSchema: UpdateSelfTargetingIdentityArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs =
                 UpdateSelfTargetingIdentityArgsSchema.parse(args)
             return await updateSelfTargetingIdentityHandler(
@@ -235,9 +235,9 @@ export function registerSelfTargetingTools(
             annotations: {
                 title: 'Set Self-Targeting Override For Feature/Environment',
             },
-            inputSchema: SetSelfTargetingOverrideArgsSchema.shape,
+            inputSchema: SetSelfTargetingOverrideArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = SetSelfTargetingOverrideArgsSchema.parse(args)
             return await setSelfTargetingOverrideHandler(
                 validatedArgs,
@@ -254,9 +254,9 @@ export function registerSelfTargetingTools(
             annotations: {
                 title: 'Clear Self-Targeting Override For Feature/Environment',
             },
-            inputSchema: ClearSelfTargetingOverridesArgsSchema.shape,
+            inputSchema: ClearSelfTargetingOverridesArgsSchema,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs =
                 ClearSelfTargetingOverridesArgsSchema.parse(args)
             return await clearFeatureSelfTargetingOverridesHandler(
