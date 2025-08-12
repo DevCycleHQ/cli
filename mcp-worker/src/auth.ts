@@ -413,6 +413,14 @@ export function createAuthApp(): Hono<{
     app.post('/oauth/authorize/consent', confirmConsent)
     app.get('/oauth/callback', callback)
 
+    // Root route - redirect to documentation
+    app.get('/', (c) => {
+        return c.redirect(
+            'https://docs.devcycle.com/cli-mcp/mcp-getting-started',
+            301,
+        )
+    })
+
     // Health check
     app.get('/health', (c) => {
         return c.json({

@@ -129,7 +129,6 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
         }
 
         // Register all CLI tools using the centralized registration function
-        // This automatically includes the same disabled tools as the main CLI MCP server
         registerAllToolsWithServer(serverAdapter, this.apiClient)
 
         // Register worker-specific project selection tools using the modern pattern
