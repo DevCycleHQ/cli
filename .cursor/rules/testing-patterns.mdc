@@ -1,0 +1,103 @@
+---
+description: Testing patterns and framework setup guidelines
+globs: **/*.test.ts,**/*.spec.ts,test/**/*.ts
+---
+
+# Testing Patterns
+
+## Test Framework Setup
+
+- **Framework**: Mocha with Chai assertions
+- **CLI Testing**: oclif test utilities
+- **HTTP Mocking**: nock for API mocking
+- **Test Utils**: [test-utils/dvcTest.ts](mdc:test-utils/dvcTest.ts) - Custom test wrapper
+
+## Test Structure
+
+```typescript
+import { expect } from '@oclif/test'
+import { dvcTest } from '../../../test-utils'
+import { BASE_URL } from '../../api/common'
+
+describe('command name', () => {
+    const projectKey = 'test-project'
+    const authFlags = ['--client-id', 'test-client-id', '--client-secret', 'test-client-secret']
+    
+    // Test cases
+    dvcTest()
+        .nock(BASE_URL, (api) => 
+            api.get('/endpoint').reply(200, mockResponse)
+        )
+        .stdout()
+        .command(['command', ...args])
+        .it('should do something', (ctx) => {
+            expect(ctx.stdout).to.contain('expected output')
+        })
+})
+```
+
+## Common Test Patterns
+
+### API Mocking
+
+```typescript
+.nock(BASE_URL, (api) =>
+    api
+        .post('/v2/projects/test-project/features', requestBody)
+        .reply(200, mockFeature)
+        .get('/v1/projects/test-project')
+        .reply(200, mockProject)
+)
+```
+
+### Command Testing
+
+```typescript
+.stdout()          // Capture stdout
+.stderr()          // Capture stderr
+.command([...])    // Run command with args
+.it('test description', (ctx) => {
+    // Assertions
+})
+```
+
+### Headless Mode Testing
+
+```typescript
+.command([
+    'features create',
+    '--name', 'Feature Name',
+    '--key', 'feature-key',
+    '--headless',
+    ...authFlags,
+])
+```
+
+### Error Testing
+
+```typescript
+.command(['command', 'invalid-args'])
+.catch((error) => {
+    expect(error.message).to.contain('expected error')
+})
+```
+
+## Mock Data
+
+- Create reusable mock objects
+- Use realistic data structures
+- Include all required fields
+- Version mock data with API changes
+
+## Snapshot Testing
+
+- Use for complex output validation
+- Store snapshots in `__snapshots__/` directories
+- Update with `yarn test:update-snapshots`
+
+## Test Organization
+
+- Group related tests in `describe` blocks
+- Use descriptive test names
+- Test both success and error cases
+- Include edge cases and validation
