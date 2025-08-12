@@ -1,0 +1,40 @@
+# Test configuration for DevCycle MCP Worker
+name = "devcycle-mcp-test"
+main = "src/test-index.ts"
+compatibility_date = "2024-12-30"
+compatibility_flags = ["nodejs_compat", "nodejs_compat_v2"]
+
+# Test environment configuration
+[env.test]
+
+# Durable Objects configuration for testing
+[[env.test.migrations]]
+new_sqlite_classes = ["DevCycleMCP"]
+tag = "v1"
+
+[[env.test.durable_objects.bindings]]
+class_name = "DevCycleMCP"
+name = "MCP_OBJECT"
+
+# KV namespace for OAuth session storage (test)
+[[env.test.kv_namespaces]]
+binding = "OAUTH_KV"
+id = "test-oauth-kv-namespace"
+
+# Test environment variables
+[env.test.vars]
+NODE_ENV = "test"
+API_BASE_URL = "https://api-test.devcycle.com"
+AUTH0_DOMAIN = "test-auth.devcycle.com"
+AUTH0_AUDIENCE = "https://api-test.devcycle.com/"
+AUTH0_SCOPE = "openid profile email offline_access"
+ENABLE_OUTPUT_SCHEMAS = "false"
+
+# Test secrets (will be mocked in tests)
+# AUTH0_CLIENT_ID = "test-client-id"
+# AUTH0_CLIENT_SECRET = "test-client-secret"
+
+# Development configuration for tests
+[env.test.dev]
+port = 8788
+local_protocol = "http"
