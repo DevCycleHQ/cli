@@ -43,7 +43,6 @@ export async function getOidcConfig({
     const response = await oauth.discoveryRequest(new URL(issuer), {
         algorithm: 'oidc',
     })
-    console.log('Auth0 Discovery Response:', JSON.stringify(response))
     const as = await oauth.processDiscoveryResponse(new URL(issuer), response)
     const client: oauth.Client = { client_id }
     const clientAuth = oauth.ClientSecretPost(client_secret)
@@ -128,8 +127,6 @@ export async function authorize(
 export async function confirmConsent(c: any) {
     // Get form data
     const formData = await c.req.formData()
-    console.log('Confirming consent')
-    console.log(JSON.stringify(formData))
 
     const transactionState = formData.get('transaction_state') as string
     const consentToken = formData.get('consent_token') as string
@@ -148,10 +145,6 @@ export async function confirmConsent(c: any) {
     }
 
     // Parse the Auth0 auth request from the cookie
-    console.log(
-        'Auth0 Authorization Server - Transaction State Cookie:',
-        auth0AuthRequestCookie,
-    )
     const auth0AuthRequest = JSON.parse(
         atob(auth0AuthRequestCookie),
     ) as Auth0AuthRequest
@@ -193,11 +186,6 @@ export async function confirmConsent(c: any) {
         client_secret: c.env.AUTH0_CLIENT_SECRET,
         issuer: `https://${c.env.AUTH0_DOMAIN}/`,
     })
-
-    console.log(
-        'Auth0 Authorization Server - Discovery Information:',
-        JSON.stringify(as),
-    )
 
     // Redirect to Auth0's authorization endpoint
     const authorizationUrl = new URL(as.authorization_endpoint!)
@@ -253,22 +241,13 @@ export async function callback(
         path: '/',
     })
 
-    console.log(
-        'Auth0 Authorization Server - Transaction State:',
-        auth0AuthRequest,
-    )
+    console.log('Processing OAuth callback with valid transaction state')
 
     const { as, client, clientAuth } = await getOidcConfig({
         client_id: c.env.AUTH0_CLIENT_ID,
         client_secret: c.env.AUTH0_CLIENT_SECRET,
         issuer: `https://${c.env.AUTH0_DOMAIN}/`,
     })
-
-    console.log(
-        'Auth0 Authorization Server - Discovery Information:',
-        JSON.stringify(as),
-        JSON.stringify(clientAuth),
-    )
 
     // Perform the Code Exchange
     const params = oauth.validateAuthResponse(
@@ -277,8 +256,6 @@ export async function callback(
         new URL(c.req.url),
         auth0AuthRequest.transactionState,
     )
-
-    console.log('Response parameters from Auth0:', params)
 
     const response = await oauth.authorizationCodeGrantRequest(
         as,
@@ -289,7 +266,7 @@ export async function callback(
         auth0AuthRequest.codeVerifier,
     )
 
-    console.log('Response from Auth0 callback:', response)
+    console.log('Successfully completed authorization code exchange')
 
     // Process the response
     const result = await oauth.processAuthorizationCodeResponse(
@@ -340,7 +317,7 @@ export function createTokenExchangeCallback(env: Env) {
     return async function tokenExchangeCallback(
         options: TokenExchangeCallbackOptions,
     ): Promise<TokenExchangeCallbackResult> {
-        console.log('TokenExchangeCallback called:', options.grantType)
+        console.log('Token exchange callback:', options.grantType)
 
         // During the Authorization Code Exchange, we want to make sure that the Access Token issued
         // by the MCP Server has the same TTL as the one issued by Auth0.
