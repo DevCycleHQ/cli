@@ -146,6 +146,7 @@ export class DevCycleAuth {
             'devcycle',
             'user.yml',
         )
+
         if (
             fs.existsSync(userConfigPath) &&
             (!this._projectKey || !this._orgId)

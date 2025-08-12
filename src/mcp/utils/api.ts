@@ -104,11 +104,10 @@ export class DevCycleApiClient implements IDevCycleApiClient {
             // Set the specific MCP tool command in headers before making API calls
             setMCPToolCommand(operationName)
 
-            const authToken = this.auth.getAuthToken()
-            const projectKey = requiresProject
-                ? this.auth.getProjectKey()
-                : undefined
-            return await operation(authToken, projectKey)
+            return await operation(
+                this.auth.getAuthToken(),
+                this.auth.getProjectKey(),
+            )
         } catch (error) {
             console.error(
                 `MCP ${operationName} error:`,
@@ -142,16 +141,12 @@ export class DevCycleApiClient implements IDevCycleApiClient {
             requiresProject,
         )
 
-        const organizationId = this.auth.getOrgId()
-        const projectKey = requiresProject
-            ? this.auth.getProjectKey()
-            : undefined
-        const link = dashboardLink(organizationId, projectKey, result)
-
-        return {
+        const link = dashboardLink(
+            this.auth.getOrgId(),
+            this.auth.getProjectKey(),
             result,
-            dashboardLink: link,
-        }
+        )
+        return { result, dashboardLink: link }
     }
 
     public getAuth(): DevCycleAuth {

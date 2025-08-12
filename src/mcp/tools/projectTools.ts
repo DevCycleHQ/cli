@@ -6,6 +6,7 @@ import {
     createProject,
     updateProject,
 } from '../../api/projects'
+import { fetchEnvironments } from '../../api/environments'
 import {
     ListProjectsArgsSchema,
     CreateProjectArgsSchema,
@@ -13,6 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
+import { formatProjectWithEnvironments } from '../utils/projectFormatting'
 
 // Helper functions to generate project dashboard links
 const generateProjectDashboardLink = (
@@ -47,7 +49,6 @@ export async function listProjectsHandler(
         'listProjects',
         args,
         async (authToken: string) => {
-            console.log('listProjectsHandler args: ', args)
             return await handleZodiosValidationErrors(
                 () => fetchProjects(authToken, args),
                 'fetchProjects',
@@ -68,9 +69,23 @@ export async function getCurrentProjectHandler(apiClient: IDevCycleApiClient) {
                     'Project key is required for getting current project. Please select a project using the select_project tool first.',
                 )
             }
-            return await handleZodiosValidationErrors(
+
+            // Fetch the current project details
+            const project = await handleZodiosValidationErrors(
                 () => fetchProject(authToken, projectKey),
                 'fetchProject',
+            )
+
+            // Fetch environments for the current project
+            const environments = await handleZodiosValidationErrors(
+                () => fetchEnvironments(authToken, projectKey),
+                'fetchEnvironments',
+            )
+
+            return formatProjectWithEnvironments(
+                project,
+                environments,
+                `Current project: '${project.name}' (${project.key}) with ${environments.length} environment(s).`,
             )
         },
         generateProjectDashboardLink,
@@ -132,7 +147,7 @@ export function registerProjectTools(
             },
             inputSchema: ListProjectsArgsSchema.shape,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = ListProjectsArgsSchema.parse(args)
 
             return await listProjectsHandler(validatedArgs, apiClient)

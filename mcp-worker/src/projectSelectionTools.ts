@@ -2,9 +2,10 @@ import { z } from 'zod'
 import { handleZodiosValidationErrors } from '../../src/mcp/utils/api'
 import { fetchProjects, fetchProject } from '../../src/api/projects'
 import { fetchEnvironments } from '../../src/api/environments'
-import { Project, Environment } from '../../src/api/schemas'
+import { Project } from '../../src/api/schemas'
 import { IDevCycleApiClient } from '../../src/mcp/api/interface'
 import { DevCycleMCPServerInstance } from '../../src/mcp/server'
+import { formatProjectWithEnvironments } from '../../src/mcp/utils/projectFormatting'
 
 // Helper functions to generate dashboard links
 const generateProjectDashboardLink = (
@@ -21,21 +22,6 @@ const generateProjectDashboardLink = (
 
 const generateOrganizationProjectsLink = (orgId: string): string => {
     return `https://app.devcycle.com/o/${orgId}/settings/projects`
-}
-
-// Helper function to transform SDK keys to only include key and createdAt
-const transformSdkKeys = (sdkKeys: Environment['sdkKeys']) => {
-    if (!sdkKeys) return { mobile: [], client: [], server: [] }
-
-    return Object.fromEntries(
-        Object.entries(sdkKeys).map(([keyType, keys]) => [
-            keyType,
-            keys?.map((sdk) => ({
-                key: sdk.key,
-                createdAt: sdk.createdAt,
-            })) || [],
-        ]),
-    )
 }
 
 // =============================================================================
@@ -59,11 +45,8 @@ export async function selectDevCycleProjectHandler(
     args: z.infer<typeof SelectProjectArgsSchema>,
     apiClient: IDevCycleApiClient,
 ) {
-    console.log('select_project validatedArgs: ', args)
-
     // If no project key provided, list available projects
     const projectKey = args.projectKey
-    console.log('select_project projectKey: ', projectKey)
 
     if (!projectKey) {
         return await apiClient.executeWithDashboardLink(
@@ -117,22 +100,11 @@ export async function selectDevCycleProjectHandler(
                     await apiClient.setSelectedProject(projectKey)
                 }
 
-                return {
-                    selectedProject: {
-                        key: selectedProject.key,
-                        name: selectedProject.name,
-                        description: selectedProject.description || '',
-                        environments: environments.map((env: Environment) => ({
-                            key: env.key,
-                            name: env.name,
-                            description: env.description || '',
-                            color: env.color || '',
-                            type: env.type,
-                            sdkKeys: transformSdkKeys(env.sdkKeys),
-                        })),
-                    },
-                    message: `Project '${selectedProject.name}' (${selectedProject.key}) has been selected for subsequent MCP operations. Found ${environments.length} environment(s).`,
-                }
+                return formatProjectWithEnvironments(
+                    selectedProject,
+                    environments,
+                    `Project '${selectedProject.name}' (${selectedProject.key}) has been selected for subsequent MCP operations. Found ${environments.length} environment(s).`,
+                )
             },
             (orgId: string) =>
                 generateProjectDashboardLink(orgId, args.projectKey),
