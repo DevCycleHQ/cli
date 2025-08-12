@@ -6,23 +6,7 @@ import { Project } from '../../src/api/schemas'
 import { IDevCycleApiClient } from '../../src/mcp/api/interface'
 import { DevCycleMCPServerInstance } from '../../src/mcp/server'
 import { formatProjectWithEnvironments } from '../../src/mcp/utils/projectFormatting'
-
-// Helper functions to generate dashboard links
-const generateProjectDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for project dashboard link. Please select a project using the select_project tool first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}`
-}
-
-const generateOrganizationProjectsLink = (orgId: string): string => {
-    return `https://app.devcycle.com/o/${orgId}/settings/projects`
-}
+import { dashboardLinks } from '../../src/utils/dashboardLinks'
 
 // =============================================================================
 // ZOD SCHEMAS
@@ -74,7 +58,7 @@ export async function selectDevCycleProjectHandler(
                         'Available projects listed. Call this tool again with a project_key to select one.',
                 }
             },
-            generateOrganizationProjectsLink,
+            dashboardLinks.project.list,
             false, // Don't require project for listing projects
         )
     } else {
@@ -107,7 +91,7 @@ export async function selectDevCycleProjectHandler(
                 )
             },
             (orgId: string) =>
-                generateProjectDashboardLink(orgId, args.projectKey),
+                dashboardLinks.project.dashboard(orgId, args.projectKey),
             false, // Don't require project for selecting a project
         )
     }
