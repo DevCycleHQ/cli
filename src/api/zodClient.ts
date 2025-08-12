@@ -1,6 +1,24 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core'
 import { z } from 'zod'
 
+/**
+ * IMPORTANT: MCP Schema Compatibility
+ *
+ * The MCP (Model Context Protocol) requires that all array types in JSON schemas
+ * have an 'items' property. When using Zod schemas that will be converted to JSON
+ * schemas for MCP tools:
+ *
+ * ❌ NEVER use: z.array(z.any()) - This doesn't generate the required 'items' property
+ * ✅ ALWAYS use: z.array(z.unknown()) - This generates proper JSON schemas
+ *
+ * Similarly:
+ * ❌ NEVER use: z.record(z.any())
+ * ✅ ALWAYS use: z.record(z.unknown())
+ *
+ * The z.unknown() type provides the same runtime flexibility as z.any() but
+ * generates valid JSON schemas that pass MCP validation.
+ */
+
 const EdgeDBSettings = z.object({ enabled: z.boolean() })
 const ColorSettings = z.object({
     primary: z
@@ -38,6 +56,24 @@ const ProjectSettings = z.object({
     sdkTypeVisibility: SDKTypeVisibilitySettings,
     obfuscation: ObfuscationSettings,
     staleness: StalenessSettings,
+})
+const GetProjectsParams = z.object({
+    page: z.number().gte(1).optional().default(1),
+    perPage: z.number().gte(1).lte(1000).optional().default(100),
+    sortBy: z
+        .enum([
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ])
+        .optional()
+        .default('createdAt'),
+    sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
+    search: z.string().optional(),
+    createdBy: z.string().optional(),
 })
 const CreateProjectDto = z.object({
     name: z.string().max(100),
@@ -184,8 +220,16 @@ const UpdateEnvironmentDto = z
 const GenerateSdkTokensDto = z
     .object({ client: z.boolean(), server: z.boolean(), mobile: z.boolean() })
     .partial()
-const AllFilter = z.object({ type: z.literal('all').default('all') })
-const OptInFilter = z.object({ type: z.literal('optIn').default('optIn') })
+const AllFilter = z.object({
+    type: z.literal('all').default('all'),
+    _audiences: z.array(z.string()).optional(),
+    values: z.array(z.string()).optional(),
+})
+const OptInFilter = z.object({
+    type: z.literal('optIn').default('optIn'),
+    _audiences: z.array(z.string()).optional(),
+    values: z.array(z.string()).optional(),
+})
 const UserFilter = z.object({
     subType: z.enum(['user_id', 'email', 'platform', 'deviceModel']),
     comparator: z.enum([
@@ -201,6 +245,7 @@ const UserFilter = z.object({
         '!endWith',
     ]),
     values: z.array(z.string()).optional(),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
 })
 const UserCountryFilter = z.object({
@@ -218,17 +263,20 @@ const UserCountryFilter = z.object({
         '!endWith',
     ]),
     values: z.array(z.string()),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
 })
 const UserAppVersionFilter = z.object({
     comparator: z.enum(['=', '!=', '>', '>=', '<', '<=', 'exist', '!exist']),
     values: z.array(z.string()).optional(),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
     subType: z.literal('appVersion').default('appVersion'),
 })
 const UserPlatformVersionFilter = z.object({
     comparator: z.enum(['=', '!=', '>', '>=', '<', '<=', 'exist', '!exist']),
     values: z.array(z.string()).optional(),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
     subType: z.literal('platformVersion').default('platformVersion'),
 })
@@ -252,6 +300,7 @@ const UserCustomFilter = z.object({
     dataKey: z.string().min(1),
     dataKeyType: z.enum(['String', 'Boolean', 'Number']),
     values: z.array(z.union([z.boolean(), z.string(), z.number()])).optional(),
+    _audiences: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
     subType: z.literal('customData').default('customData'),
 })
@@ -405,7 +454,7 @@ const FeatureVariationDto = z.object({
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         )
@@ -435,7 +484,7 @@ const CreateFeatureDto = z.object({
         .record(
             z.string(),
             z.object({
-                targets: z.array(z.any()).optional(),
+                targets: z.array(z.unknown()).optional(),
                 status: z.string().optional(),
             }),
         )
@@ -459,7 +508,7 @@ const Variation = z.object({
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         )
@@ -472,7 +521,7 @@ const CreateVariationDto = z.object({
         .max(100)
         .regex(/^[a-z0-9-_.]+$/),
     name: z.string().max(100),
-    variables: z.record(z.any()).optional(),
+    variables: z.record(z.unknown()).optional(),
 })
 const FeatureSettings = z.object({
     publicName: z.string().max(100),
@@ -522,7 +571,7 @@ const UpdateFeatureVariationDto = z
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         ),
@@ -572,8 +621,10 @@ const Target = z.object({
     _id: z.string(),
     name: z.string().optional(),
     audience: TargetAudience,
+    filters: z.array(z.unknown()).optional(),
     rollout: Rollout.nullable().optional(),
     distribution: z.array(TargetDistribution),
+    bucketingKey: z.string().optional(),
 })
 const FeatureConfig = z.object({
     _feature: z.string(),
@@ -584,6 +635,7 @@ const FeatureConfig = z.object({
     updatedAt: z.string().datetime(),
     targets: z.array(Target),
     readonly: z.boolean(),
+    hasStaticConfig: z.boolean().optional(),
 })
 const UpdateTargetDto = z.object({
     _id: z.string().optional(),
@@ -890,6 +942,7 @@ export const schemas = {
     OptInSettings,
     SDKTypeVisibilitySettings,
     ProjectSettings,
+    GetProjectsParams,
     CreateProjectDto,
     Project,
     BadRequestErrorResponse,

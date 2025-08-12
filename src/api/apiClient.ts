@@ -12,13 +12,17 @@ export const setDVCReferrer = (
     version: string,
     caller = 'cli',
 ): void => {
-    axiosClient.defaults.headers.common['dvc-referrer'] = 'cli'
+    axiosClient.defaults.headers.common['dvc-referrer'] = caller
+
+    // Ensure we have valid values before stringifying
+    const metadata = {
+        command: command || 'unknown',
+        version: version || 'unknown',
+        caller: caller || 'cli',
+    }
+
     axiosClient.defaults.headers.common['dvc-referrer-metadata'] =
-        JSON.stringify({
-            command,
-            version,
-            caller,
-        })
+        JSON.stringify(metadata)
 }
 
 axiosClient.interceptors.response.use(
@@ -28,10 +32,22 @@ axiosClient.interceptors.response.use(
     (error: AxiosError) => {
         let isCallerCli = false
         if (error.config) {
-            const parsedDvcReferrerMetadata = JSON.parse(
-                error.config.headers['dvc-referrer-metadata'],
-            )
-            isCallerCli = parsedDvcReferrerMetadata.caller === 'cli'
+            try {
+                const referrerMetadata =
+                    error.config.headers['dvc-referrer-metadata']
+                if (referrerMetadata && typeof referrerMetadata === 'string') {
+                    const parsedDvcReferrerMetadata =
+                        JSON.parse(referrerMetadata)
+                    isCallerCli = parsedDvcReferrerMetadata.caller === 'cli'
+                }
+            } catch (parseError) {
+                // If we can't parse the referrer metadata, assume it's not from CLI
+                console.error(
+                    'Failed to parse dvc-referrer-metadata:',
+                    parseError,
+                )
+                isCallerCli = false
+            }
         }
 
         if (error.response?.status === 401) {
@@ -93,10 +109,18 @@ export const errorMap = (issue: ZodIssueOptionalMessage, ctx: ErrorMapCtx) => {
     }
 }
 
-export const apiClient = createApiClient(BASE_URL, {
+// TLDR: the inferred TS schema was too big, so this is a workaround to fix it.
+// Create intermediate type alias to break complex type inference
+const _createApiClient = createApiClient
+type ApiClientType = ReturnType<typeof _createApiClient>
+
+// Create the actual instance with explicit type annotation
+const apiClient: ApiClientType = _createApiClient(BASE_URL, {
     axiosInstance: axiosClient,
     validate: 'request',
-})
+}) as ApiClientType
+
+export { apiClient }
 export default apiClient
 
 export const v2ApiClient = createV2ApiClient(BASE_URL)
