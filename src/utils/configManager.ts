@@ -27,8 +27,15 @@ export class ConfigManager {
             configPath ||
             path.join(os.homedir(), '.config', 'devcycle', 'user.yml')
         this.repoConfigPath = repoConfigPath || '.devcycle/config.yml'
-        this.writer = writer || new Writer()
-        this.writer.headless = silent
+
+        if (writer) {
+            // Use the provided writer and don't override its headless setting
+            this.writer = writer
+        } else {
+            // Create a new writer and set headless mode
+            this.writer = new Writer()
+            this.writer.headless = silent
+        }
     }
 
     /**
