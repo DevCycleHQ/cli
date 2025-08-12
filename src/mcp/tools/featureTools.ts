@@ -36,33 +36,7 @@ import {
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
 import { handleZodiosValidationErrors } from '../utils/api'
-
-// Helper functions to generate feature dashboard links
-const generateFeaturesDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for features dashboard link. Please select a project using the select_project tool first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features`
-}
-
-const generateFeatureDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-    featureKey: string,
-    page: 'overview' | 'manage-feature' | 'audit-log' = 'overview',
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for feature dashboard link. Please select a project using the select_project tool first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features/${featureKey}/${page}`
-}
+import { dashboardLinks } from '../../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listFeaturesHandler(
@@ -83,7 +57,7 @@ export async function listFeaturesHandler(
                 'listFeatures',
             )
         },
-        generateFeaturesDashboardLink,
+        dashboardLinks.feature.list,
     )
 }
 
@@ -110,7 +84,7 @@ export async function createFeatureHandler(
             )
         },
         (orgId: string, projectKey: string | undefined, result: any) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 result.key,
@@ -140,7 +114,7 @@ export async function updateFeatureHandler(
             )
         },
         (orgId: string, projectKey: string | undefined, result: any) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 result.key,
@@ -171,7 +145,7 @@ export async function updateFeatureStatusHandler(
             )
         },
         (orgId: string, projectKey: string | undefined, result: any) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 result.key,
@@ -201,7 +175,7 @@ export async function deleteFeatureHandler(
                 message: `Feature '${args.key}' deleted successfully`,
             }
         },
-        generateFeaturesDashboardLink,
+        dashboardLinks.feature.list,
     )
 }
 
@@ -224,7 +198,7 @@ export async function fetchFeatureVariationsHandler(
             )
         },
         (orgId: string, projectKey: string | undefined) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 args.feature_key,
@@ -260,7 +234,7 @@ export async function createFeatureVariationHandler(
             )
         },
         (orgId: string, projectKey: string | undefined, result: any) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 result.key,
@@ -297,7 +271,7 @@ export async function updateFeatureVariationHandler(
             )
         },
         (orgId: string, projectKey: string | undefined, result: any) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 result.key,
@@ -338,7 +312,7 @@ export async function setFeatureTargetingHandler(
             }
         },
         (orgId: string, projectKey: string | undefined) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 args.feature_key,
@@ -372,7 +346,7 @@ export async function listFeatureTargetingHandler(
             )
         },
         (orgId: string, projectKey: string | undefined) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 args.feature_key,
@@ -409,7 +383,7 @@ export async function updateFeatureTargetingHandler(
             )
         },
         (orgId: string, projectKey: string | undefined) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 args.feature_key,
@@ -444,7 +418,7 @@ export async function getFeatureAuditLogHistoryHandler(
             )
         },
         (orgId: string, projectKey: string | undefined) =>
-            generateFeatureDashboardLink(
+            dashboardLinks.feature.dashboard(
                 orgId,
                 projectKey,
                 args.feature_key,

@@ -14,19 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-
-// Helper function to generate variable dashboard links
-const generateVariablesDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for variables dashboard link. Please select a project using the select_project tool first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/variables`
-}
+import { dashboardLinks } from '../../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listVariablesHandler(
@@ -47,7 +35,7 @@ export async function listVariablesHandler(
                 'fetchVariables',
             )
         },
-        generateVariablesDashboardLink,
+        dashboardLinks.variable.list,
     )
 }
 
@@ -69,7 +57,7 @@ export async function createVariableHandler(
                 'createVariable',
             )
         },
-        generateVariablesDashboardLink,
+        dashboardLinks.variable.list,
     )
 }
 
@@ -93,7 +81,7 @@ export async function updateVariableHandler(
                 'updateVariable',
             )
         },
-        generateVariablesDashboardLink,
+        dashboardLinks.variable.list,
     )
 }
 
@@ -118,7 +106,7 @@ export async function deleteVariableHandler(
                 message: `Variable '${args.key}' deleted successfully`,
             }
         },
-        generateVariablesDashboardLink,
+        dashboardLinks.variable.list,
     )
 }
 

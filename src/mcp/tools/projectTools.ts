@@ -15,30 +15,7 @@ import {
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
 import { formatProjectWithEnvironments } from '../utils/projectFormatting'
-
-// Helper functions to generate project dashboard links
-const generateProjectDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for project dashboard link. Please select a project using the select_project tool first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}`
-}
-
-const generateOrganizationSettingsLink = (orgId: string): string => {
-    return `https://app.devcycle.com/o/${orgId}/settings`
-}
-
-const generateEditProjectLink = (
-    orgId: string,
-    projectKey: string | undefined,
-): string => {
-    return `https://app.devcycle.com/o/${orgId}/settings/projects/${projectKey}/edit`
-}
+import { dashboardLinks } from '../../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listProjectsHandler(
@@ -54,7 +31,7 @@ export async function listProjectsHandler(
                 'fetchProjects',
             )
         },
-        generateOrganizationSettingsLink,
+        dashboardLinks.organization.settings,
         false, // Don't require project for listing projects
     )
 }
@@ -88,7 +65,7 @@ export async function getCurrentProjectHandler(apiClient: IDevCycleApiClient) {
                 `Current project: '${project.name}' (${project.key}) with ${environments.length} environment(s).`,
             )
         },
-        generateProjectDashboardLink,
+        dashboardLinks.project.dashboard,
         false,
     )
 }
@@ -106,7 +83,7 @@ export async function createProjectHandler(
                 'createProject',
             )
         },
-        generateProjectDashboardLink,
+        dashboardLinks.project.dashboard,
     )
 }
 
@@ -125,7 +102,7 @@ export async function updateProjectHandler(
                 'updateProject',
             )
         },
-        generateEditProjectLink,
+        dashboardLinks.project.edit,
     )
 }
 

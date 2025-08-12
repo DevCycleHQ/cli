@@ -14,19 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-
-// Helper function to generate custom properties dashboard links
-const generateCustomPropertiesDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for custom properties dashboard link. Please select a project first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/custom-properties`
-}
+import { dashboardLinks } from '../../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listCustomPropertiesHandler(
@@ -47,7 +35,7 @@ export async function listCustomPropertiesHandler(
                 'fetchCustomProperties',
             )
         },
-        generateCustomPropertiesDashboardLink,
+        dashboardLinks.customProperties.list,
     )
 }
 
@@ -69,7 +57,7 @@ export async function createCustomPropertyHandler(
                 'createCustomProperty',
             )
         },
-        generateCustomPropertiesDashboardLink,
+        dashboardLinks.customProperties.list,
     )
 }
 
@@ -99,7 +87,7 @@ export async function updateCustomPropertyHandler(
                 'updateCustomProperty',
             )
         },
-        generateCustomPropertiesDashboardLink,
+        dashboardLinks.customProperties.list,
     )
 }
 
@@ -124,7 +112,7 @@ export async function deleteCustomPropertyHandler(
                 message: `Custom property '${args.key}' deleted successfully`,
             }
         },
-        generateCustomPropertiesDashboardLink,
+        dashboardLinks.customProperties.list,
     )
 }
 

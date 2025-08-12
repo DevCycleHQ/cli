@@ -1,21 +1,18 @@
 import 'reflect-metadata'
 
 import { Command, Flags } from '@oclif/core'
-import fs from 'fs'
 import path from 'path'
-import jsYaml from 'js-yaml'
 import {
     RepoConfigFromFile,
     SavedOrganization,
     UserConfigFromFile,
 } from '../types'
 import { ClassConstructor, plainToClass } from 'class-transformer'
-import { validateSync } from 'class-validator'
 import {
-    reportValidationErrors,
     reportZodValidationErrors,
     validateParams,
 } from '../utils/reportValidationErrors'
+import { ConfigManager } from '../utils/configManager'
 import { ApiAuth } from '../auth/ApiAuth'
 import { fetchProjects } from '../api/projects'
 import { promptForProject } from '../ui/promptForProject'
@@ -116,6 +113,54 @@ export default abstract class Base extends Command {
     repoConfig: RepoConfigFromFile | null
     writer: Writer = new Writer()
     tableOutput: TableOutput = new TableOutput()
+    protected configManager: ConfigManager
+
+    async init(): Promise<void> {
+        const { flags } = await this.parse(this.constructor as typeof Base)
+        this.writer.headless = flags.headless
+
+        if (flags['auth-path']) {
+            this.authPath = flags['auth-path']
+        }
+
+        if (flags['config-path']) {
+            this.configPath = flags['config-path']
+        }
+
+        if (flags['repo-config-path']) {
+            this.repoConfigPath = flags['repo-config-path']
+        }
+
+        if (flags['no-api']) {
+            this.noApi = flags['no-api']
+        }
+
+        if (flags['caller']) {
+            this.caller = flags['caller']
+        }
+
+        // Initialize config manager with the paths from flags
+        this.configManager = new ConfigManager(
+            this.configPath,
+            this.repoConfigPath,
+            this.writer,
+            false, // Not silent for CLI
+        )
+
+        this.userConfig = this.configManager.loadUserConfig()
+        this.repoConfig = this.configManager.loadRepoConfig()
+        this.projectKey =
+            flags['project'] ||
+            process.env.DEVCYCLE_PROJECT_KEY ||
+            process.env.DVC_PROJECT_KEY ||
+            this.repoConfig?.project ||
+            this.userConfig?.project ||
+            ''
+        this.organization = this.repoConfig?.org || this.userConfig?.org
+        this.orgId = flags['org'] || this.organization?.id
+        await this.authorizeApi()
+        setDVCReferrer(this.id, this.config.version, this.caller)
+    }
 
     async catch(error: unknown) {
         if (error instanceof Error) {
@@ -128,6 +173,7 @@ export default abstract class Base extends Command {
             throw error
         }
     }
+
     private async authorizeApi(): Promise<void> {
         const { flags } = await this.parse(this.constructor as typeof Base)
         const noBrowser = flags['no-browser-auth']
@@ -167,114 +213,18 @@ export default abstract class Base extends Command {
         }
     }
 
-    private loadUserConfig(path: string): UserConfigFromFile | null {
-        if (!fs.existsSync(path)) {
-            return null
-        }
-
-        const config = jsYaml.load(fs.readFileSync(path, 'utf8'))
-        const configParsed = plainToClass(UserConfigFromFile, config)
-        const errors = validateSync(configParsed)
-        reportValidationErrors(errors)
-
-        return configParsed
-    }
-
-    private loadRepoConfig(path: string): RepoConfigFromFile | null {
-        if (!fs.existsSync(path)) {
-            return null
-        }
-
-        const config = jsYaml.load(fs.readFileSync(path, 'utf8'))
-        const configParsed = plainToClass(RepoConfigFromFile, config)
-        const errors = validateSync(configParsed)
-        reportValidationErrors(errors)
-
-        return configParsed
-    }
-
     updateUserConfig(
         changes: Partial<UserConfigFromFile>,
     ): UserConfigFromFile | null {
-        let config = this.loadUserConfig(this.configPath)
-        if (!config) {
-            const configDir = path.dirname(this.configPath)
-            fs.mkdirSync(configDir, { recursive: true })
-            config = new UserConfigFromFile()
-        }
-
-        config = {
-            ...config,
-            ...changes,
-        }
-
-        fs.writeFileSync(this.configPath, jsYaml.dump(config))
-        this.writer.successMessage(`Configuration saved to ${this.configPath}`)
-
-        return config
+        return this.configManager.updateUserConfig(changes)
     }
 
     updateRepoConfig(
         changes: Partial<RepoConfigFromFile>,
     ): RepoConfigFromFile | null {
-        let config = this.loadRepoConfig(this.repoConfigPath)
-        if (!config) {
-            const configDir = path.dirname(this.repoConfigPath)
-            fs.mkdirSync(configDir, { recursive: true })
-            config = new RepoConfigFromFile()
-        }
-
-        config = {
-            ...config,
-            ...changes,
-        }
-
-        fs.writeFileSync(this.repoConfigPath, jsYaml.dump(config))
-        this.writer.successMessage(
-            `Repo configuration saved to ${this.repoConfigPath}`,
-        )
-
-        return config
+        return this.configManager.updateRepoConfig(changes)
     }
 
-    async init(): Promise<void> {
-        const { flags } = await this.parse(this.constructor as typeof Base)
-        this.writer.headless = flags.headless
-
-        if (flags['auth-path']) {
-            this.authPath = flags['auth-path']
-        }
-
-        if (flags['config-path']) {
-            this.configPath = flags['config-path']
-        }
-
-        if (flags['repo-config-path']) {
-            this.repoConfigPath = flags['repo-config-path']
-        }
-
-        if (flags['no-api']) {
-            this.noApi = flags['no-api']
-        }
-
-        if (flags['caller']) {
-            this.caller = flags['caller']
-        }
-
-        this.userConfig = this.loadUserConfig(this.configPath)
-        this.repoConfig = this.loadRepoConfig(this.repoConfigPath)
-        this.projectKey =
-            flags['project'] ||
-            process.env.DEVCYCLE_PROJECT_KEY ||
-            process.env.DVC_PROJECT_KEY ||
-            this.repoConfig?.project ||
-            this.userConfig?.project ||
-            ''
-        this.organization = this.repoConfig?.org || this.userConfig?.org
-        this.orgId = flags['org'] || this.organization?.id
-        await this.authorizeApi()
-        setDVCReferrer(this.id, this.config.version, this.caller)
-    }
     isAuthExpired() {
         const tokenExpiry = getTokenExpiry(this.authToken)
         return !tokenExpiry || tokenExpiry < Date.now()
@@ -323,6 +273,7 @@ export default abstract class Base extends Command {
 
         return findProjectByKey(this.projectKey)
     }
+
     hasToken(): boolean {
         return this.authToken !== ''
     }

@@ -9,6 +9,7 @@ import { promptForProject } from '../ui/promptForProject'
 import Base from './base'
 import { Project } from '../api/schemas'
 import { ApiAuth } from '../auth/ApiAuth'
+
 export default abstract class AuthCommand extends Base {
     static flags = {
         ...Base.flags,
@@ -45,10 +46,8 @@ export default abstract class AuthCommand extends Base {
     }
 
     public async saveProject(project: Project): Promise<void> {
-        if (this.repoConfig) {
-            await this.updateRepoConfig({ project: project.key })
-        }
-        await this.updateUserConfig({ project: project.key })
+        // Use the shared config manager for consistent project saving
+        this.configManager.saveProject(project.key)
     }
 
     public async retrieveProjectFromConfig(

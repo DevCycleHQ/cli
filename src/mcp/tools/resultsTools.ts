@@ -10,32 +10,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-
-// Helper functions to generate dashboard links
-const generateFeatureAnalyticsDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-    featureKey: string,
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for feature analytics dashboard link. Please select a project using the select_project tool first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/features/${featureKey}/analytics`
-}
-
-const generateProjectAnalyticsDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for project analytics dashboard link. Please select a project using the select_project tool first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/p/${projectKey}/analytics`
-}
+import { dashboardLinks } from '../../utils/dashboardLinks'
 
 // Individual handler functions
 export async function getFeatureTotalEvaluationsHandler(
@@ -65,7 +40,7 @@ export async function getFeatureTotalEvaluationsHandler(
             )
         },
         (orgId, projectKey) =>
-            generateFeatureAnalyticsDashboardLink(
+            dashboardLinks.analytics.feature(
                 orgId,
                 projectKey,
                 args.featureKey,
@@ -91,7 +66,7 @@ export async function getProjectTotalEvaluationsHandler(
                 'fetchProjectTotalEvaluations',
             )
         },
-        generateProjectAnalyticsDashboardLink,
+        dashboardLinks.analytics.project,
     )
 }
 

@@ -14,19 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-
-// Helper function to generate environment dashboard links
-const generateEnvironmentDashboardLink = (
-    orgId: string,
-    projectKey: string | undefined,
-): string => {
-    if (!projectKey) {
-        throw new Error(
-            'Project key is required for environment dashboard link. Please select a project using the select_project tool first.',
-        )
-    }
-    return `https://app.devcycle.com/o/${orgId}/settings/p/${projectKey}/environments`
-}
+import { dashboardLinks } from '../../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listEnvironmentsHandler(
@@ -47,7 +35,7 @@ export async function listEnvironmentsHandler(
                 'listEnvironments',
             )
         },
-        generateEnvironmentDashboardLink,
+        dashboardLinks.environment.settings,
     )
 }
 
@@ -88,7 +76,7 @@ export async function getSdkKeysHandler(
                 }
             }
         },
-        generateEnvironmentDashboardLink,
+        dashboardLinks.environment.settings,
     )
 }
 
@@ -110,7 +98,7 @@ export async function createEnvironmentHandler(
                 'createEnvironment',
             )
         },
-        generateEnvironmentDashboardLink,
+        dashboardLinks.environment.settings,
     )
 }
 
@@ -135,7 +123,7 @@ export async function updateEnvironmentHandler(
                 'updateEnvironment',
             )
         },
-        generateEnvironmentDashboardLink,
+        dashboardLinks.environment.settings,
     )
 }
 

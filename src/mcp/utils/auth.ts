@@ -1,14 +1,15 @@
 import * as path from 'path'
 import * as os from 'os'
-import * as fs from 'fs'
 import { ApiAuth } from '../../auth/ApiAuth'
 import Writer from '../../ui/writer'
+import { ConfigManager } from '../../utils/configManager'
 
 export class DevCycleAuth {
     private apiAuth: ApiAuth
     private authPath: string
     private cacheDir: string
     private writer: Writer
+    private configManager: ConfigManager
     private _authToken = ''
     private _projectKey = ''
     private _orgId = ''
@@ -23,6 +24,13 @@ export class DevCycleAuth {
         this.cacheDir = path.join(os.homedir(), '.config', 'devcycle', 'cache')
         this.writer = new Writer()
         this.writer.headless = true
+        // Use the shared ConfigManager with MCP-appropriate settings
+        this.configManager = new ConfigManager(
+            undefined, // Use default user config path
+            undefined, // Use default repo config path
+            this.writer,
+            true, // Silent mode for MCP
+        )
         this.apiAuth =
             apiAuth || new ApiAuth(this.authPath, this.cacheDir, this.writer)
     }
@@ -119,53 +127,31 @@ export class DevCycleAuth {
             process.env.DVC_PROJECT_KEY ||
             ''
 
-        // Try to load from repo config
-        const repoConfigPath = '.devcycle/config.yml'
-        if (fs.existsSync(repoConfigPath)) {
-            try {
-                const yaml = await import('js-yaml')
-                const configContent = fs.readFileSync(repoConfigPath, 'utf8')
-                const config = yaml.load(configContent) as any
-
-                if (config?.project && !this._projectKey) {
-                    this._projectKey = config.project
-                }
-                if (config?.org?.id) {
-                    this._orgId = config.org.id
-                }
-            } catch (error) {
-                console.error('Error loading repo config:', error)
-                // Ignore config loading errors, continue with env vars
+        // Use ConfigManager to load configs with proper validation
+        try {
+            const repoConfig = this.configManager.loadRepoConfig()
+            if (repoConfig?.project && !this._projectKey) {
+                this._projectKey = repoConfig.project
             }
+            if (repoConfig?.org?.id) {
+                this._orgId = repoConfig.org.id
+            }
+        } catch (error) {
+            console.error('Error loading repo config:', error)
+            // Ignore config loading errors, continue with env vars
         }
 
-        // Try to load from user config
-        const userConfigPath = path.join(
-            os.homedir(),
-            '.config',
-            'devcycle',
-            'user.yml',
-        )
-
-        if (
-            fs.existsSync(userConfigPath) &&
-            (!this._projectKey || !this._orgId)
-        ) {
-            try {
-                const yaml = await import('js-yaml')
-                const configContent = fs.readFileSync(userConfigPath, 'utf8')
-                const config = yaml.load(configContent) as any
-
-                if (config?.project && !this._projectKey) {
-                    this._projectKey = config.project
-                }
-                if (config?.org?.id && !this._orgId) {
-                    this._orgId = config.org.id
-                }
-            } catch (error) {
-                console.error('Error loading user config:', error)
-                // Ignore config loading errors
+        try {
+            const userConfig = this.configManager.loadUserConfig()
+            if (userConfig?.project && !this._projectKey) {
+                this._projectKey = userConfig.project
             }
+            if (userConfig?.org?.id && !this._orgId) {
+                this._orgId = userConfig.org.id
+            }
+        } catch (error) {
+            console.error('Error loading user config:', error)
+            // Ignore config loading errors
         }
     }
 
@@ -206,5 +192,17 @@ export class DevCycleAuth {
                     '  3. Or add project to .devcycle/config.yml in your repository',
             )
         }
+    }
+
+    /**
+     * Update the project key in memory and persist to user config
+     * Uses the exact same shared logic as CLI's saveProject method
+     */
+    async setSelectedProject(projectKey: string): Promise<void> {
+        // Use the shared saveProject method for consistency with CLI
+        this.configManager.saveProject(projectKey)
+
+        // Update in-memory state only after successful file operations
+        this._projectKey = projectKey
     }
 }

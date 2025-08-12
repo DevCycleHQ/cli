@@ -14,11 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-
-// Helper functions to generate dashboard links
-const generateSelfTargetingDashboardLink = (orgId: string): string => {
-    return `https://app.devcycle.com/o/${orgId}/settings/profile-overrides`
-}
+import { dashboardLinks } from '../../utils/dashboardLinks'
 
 // Individual handler functions
 export async function getSelfTargetingIdentityHandler(
@@ -38,7 +34,7 @@ export async function getSelfTargetingIdentityHandler(
                 'fetchUserProfile',
             )
         },
-        generateSelfTargetingDashboardLink,
+        dashboardLinks.organization.profileOverrides,
     )
 }
 
@@ -63,7 +59,7 @@ export async function updateSelfTargetingIdentityHandler(
                 'updateUserProfile',
             )
         },
-        generateSelfTargetingDashboardLink,
+        dashboardLinks.organization.profileOverrides,
     )
 }
 
@@ -84,7 +80,7 @@ export async function listSelfTargetingOverridesHandler(
                 'fetchProjectOverridesForUser',
             )
         },
-        generateSelfTargetingDashboardLink,
+        dashboardLinks.organization.profileOverrides,
     )
 }
 
@@ -110,7 +106,7 @@ export async function setSelfTargetingOverrideHandler(
                 'updateOverride',
             )
         },
-        generateSelfTargetingDashboardLink,
+        dashboardLinks.organization.profileOverrides,
     )
 }
 
@@ -142,7 +138,7 @@ export async function clearFeatureSelfTargetingOverridesHandler(
                 message: `Cleared override for feature '${args.feature_key}' in environment '${args.environment_key}'`,
             }
         },
-        generateSelfTargetingDashboardLink,
+        dashboardLinks.organization.profileOverrides,
     )
 }
 
@@ -164,7 +160,7 @@ export async function clearAllSelfTargetingOverridesHandler(
             )
             return { message: 'Cleared all overrides for the project' }
         },
-        generateSelfTargetingDashboardLink,
+        dashboardLinks.organization.profileOverrides,
     )
 }
 
