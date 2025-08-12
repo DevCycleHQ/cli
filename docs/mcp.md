@@ -162,7 +162,11 @@ List all features in the current project with optional search and pagination.
 
 #### `create_feature` ⚠️
 
-Create a new feature flag.
+Create a new feature flag. The AI assistant will guide you through a complete feature setup:
+
+1. Create a variable and associate it with the feature (defaults to a boolean variable with the same key)
+2. Create variations for the feature (defaults to "on" and "off" variations)
+3. Set and enable initial targeting for at least the development environment (defaults to all users with "on" variation)
 
 **Parameters:**
 
@@ -175,7 +179,6 @@ Create a new feature flag.
 - `configurations` (optional): Environment-specific configurations
 - `sdkVisibility` (optional): SDK visibility settings
 - `variables` (optional): Array of variables to create or reassociate with this feature
-- `variations` (optional): Array of variations for this feature
 - `controlVariation` (optional): The key of the variation that is used as the control for Metrics
 - `settings` (optional): Feature-level settings configuration
 - `interactive` (optional): MCP-only hint to prompt for missing fields
@@ -394,6 +397,14 @@ Returns the project defined by your current MCP context. If no project is select
 
 **Parameters:** None
 
+#### `select_project` (Local MCP only)
+
+Select a project to use for subsequent MCP operations. This tool is only available in the local MCP server, not the remote worker.
+
+**Parameters:**
+
+- `projectKey` (optional): The project key to select. If not provided, lists available projects
+
 ### Self-Targeting & Overrides
 
 #### `get_self_targeting_identity`
@@ -519,9 +530,10 @@ Create a feature flag for the new checkout flow with variations for A/B testing
 
 The AI assistant will use:
 
-1. `create_feature` to create the feature
-2. `create_feature_variation` to add variations
-3. `enable_feature_targeting` to activate in development
+1. `create_feature` to create the feature with guided setup
+2. `create_variable` to associate a variable with the feature
+3. `create_feature_variation` to add variations
+4. `set_feature_targeting` to enable targeting in development
 
 ### Viewing Analytics
 
