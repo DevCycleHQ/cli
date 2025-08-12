@@ -14,7 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-import { dashboardLinks } from '../../utils/dashboardLinks'
+import { dashboardLinks } from '../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listEnvironmentsHandler(
@@ -137,8 +137,10 @@ export function registerEnvironmentTools(
     serverInstance.registerToolWithErrorHandling(
         'list_environments',
         {
-            description:
-                'List environments in the current project. Include dashboard link in the response.',
+            description: [
+                'List environments in the current project.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'List Environments',
                 readOnlyHint: true,
@@ -154,8 +156,10 @@ export function registerEnvironmentTools(
     serverInstance.registerToolWithErrorHandling(
         'get_sdk_keys',
         {
-            description:
-                'Get SDK keys for an environment. Include dashboard link in the response.',
+            description: [
+                'Get SDK keys for an environment.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Get SDK Keys',
                 readOnlyHint: true,

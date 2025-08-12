@@ -36,7 +36,7 @@ import {
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
 import { handleZodiosValidationErrors } from '../utils/api'
-import { dashboardLinks } from '../../utils/dashboardLinks'
+import { dashboardLinks } from '../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listFeaturesHandler(
@@ -437,8 +437,10 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'list_features',
         {
-            description:
-                'List features in the current project. Include dashboard link in the response.',
+            description: [
+                'List features in the current project.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'List Feature Flags',
                 readOnlyHint: true,
@@ -475,8 +477,12 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'update_feature',
         {
-            description:
-                'Update an existing feature flag. ⚠️ IMPORTANT: Changes to feature flags may affect production environments. Always confirm with the user before making changes to features that are active in production. Include dashboard link in the response.',
+            description: [
+                'Update an existing feature flag.',
+                '⚠️ IMPORTANT: Changes to feature flags may affect production environments.',
+                'Always confirm with the user before making changes to features that are active in production.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Update Feature Flag',
                 destructiveHint: true,
@@ -492,8 +498,12 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'update_feature_status',
         {
-            description:
-                'Update the status of an existing feature flag. ⚠️ IMPORTANT: Changes to feature status may affect production environments. Always confirm with the user before making changes to features that are active in production. Include dashboard link in the response.',
+            description: [
+                'Update the status of an existing feature flag.',
+                '⚠️ IMPORTANT: Changes to feature status may affect production environments.',
+                'Always confirm with the user before making changes to features that are active in production.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Update Feature Flag Status',
                 destructiveHint: true,
@@ -509,8 +519,12 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'delete_feature',
         {
-            description:
-                'Delete an existing feature flag. ⚠️ CRITICAL: Deleting a feature flag will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any feature flag. Include dashboard link in the response.',
+            description: [
+                'Delete an existing feature flag.',
+                '⚠️ CRITICAL: Deleting a feature flag will remove it from ALL environments including production.',
+                'ALWAYS confirm with the user before deleting any feature flag.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Delete Feature Flag',
                 destructiveHint: true,
@@ -526,8 +540,10 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'fetch_feature_variations',
         {
-            description:
-                'Get a list of variations for a feature. Include dashboard link in the response.',
+            description: [
+                'Get a list of variations for a feature.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Get Feature Variations',
                 readOnlyHint: true,
@@ -543,8 +559,10 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'create_feature_variation',
         {
-            description:
-                'Create a new variation within a feature. Include dashboard link in the response.',
+            description: [
+                'Create a new variation within a feature.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Create Feature Variation',
             },
@@ -559,8 +577,11 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'update_feature_variation',
         {
-            description:
-                'Update an existing variation by key. ⚠️ WARNING: Updating a feature variation may affect production environments. Include dashboard link in the response.',
+            description: [
+                'Update an existing variation by key.',
+                '⚠️ WARNING: Updating a feature variation may affect production environments.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Update Feature Variation',
                 destructiveHint: true,
@@ -576,8 +597,11 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'set_feature_targeting',
         {
-            description:
-                'Set targeting status for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
+            description: [
+                'Set targeting status for a feature in an environment.',
+                '⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Set Feature Targeting',
                 destructiveHint: true,
@@ -593,8 +617,10 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'list_feature_targeting',
         {
-            description:
-                'List feature configurations (targeting rules) for a feature. Include dashboard link in the response.',
+            description: [
+                'List feature configurations (targeting rules) for a feature.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'List Feature Targeting Rules',
                 readOnlyHint: true,
@@ -610,8 +636,11 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'update_feature_targeting',
         {
-            description:
-                'Update feature configuration (targeting rules) for a feature in an environment. ⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production"). Include dashboard link in the response.',
+            description: [
+                'Update feature configuration (targeting rules) for a feature in an environment.',
+                '⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Update Feature Targeting Rules',
                 destructiveHint: true,
@@ -627,8 +656,10 @@ export function registerFeatureTools(
     serverInstance.registerToolWithErrorHandling(
         'get_feature_audit_log_history',
         {
-            description:
-                'Get feature flag audit log history from DevCycle. Include dashboard link in the response.',
+            description: [
+                'Get feature flag audit log history from DevCycle.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Get Feature Audit Log History',
                 readOnlyHint: true,

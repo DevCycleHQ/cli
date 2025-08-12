@@ -14,7 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-import { dashboardLinks } from '../../utils/dashboardLinks'
+import { dashboardLinks } from '../utils/dashboardLinks'
 
 // Individual handler functions
 export async function getSelfTargetingIdentityHandler(
@@ -174,8 +174,10 @@ export function registerSelfTargetingTools(
     serverInstance.registerToolWithErrorHandling(
         'get_self_targeting_identity',
         {
-            description:
-                'Get current DevCycle identity for self-targeting. Include dashboard link in the response.',
+            description: [
+                'Get current DevCycle identity for self-targeting.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Get Self-Targeting Identity',
                 readOnlyHint: true,
@@ -190,8 +192,10 @@ export function registerSelfTargetingTools(
     serverInstance.registerToolWithErrorHandling(
         'update_self_targeting_identity',
         {
-            description:
-                'Update DevCycle identity for self-targeting and overrides. Include dashboard link in the response.',
+            description: [
+                'Update DevCycle identity for self-targeting and overrides.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Update Self-Targeting Identity',
             },
@@ -210,8 +214,10 @@ export function registerSelfTargetingTools(
     serverInstance.registerToolWithErrorHandling(
         'list_self_targeting_overrides',
         {
-            description:
-                'List all self-targeting overrides for the current project. Include dashboard link in the response.',
+            description: [
+                'List all self-targeting overrides for the current project.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'List Self-Targeting Overrides',
                 readOnlyHint: true,
@@ -226,8 +232,11 @@ export function registerSelfTargetingTools(
     serverInstance.registerToolWithErrorHandling(
         'set_self_targeting_override',
         {
-            description:
-                'Set a self-targeting override for a feature variation. ⚠️ IMPORTANT: Always confirm with the user before setting overrides for production environments (environments where type = "production"). Include dashboard link in the response.',
+            description: [
+                'Set a self-targeting override for a feature variation.',
+                '⚠️ IMPORTANT: Always confirm with the user before setting overrides for production environments (environments where type = "production").',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Set Self-Targeting Override For Feature/Environment',
                 destructiveHint: true,
@@ -246,8 +255,11 @@ export function registerSelfTargetingTools(
     serverInstance.registerToolWithErrorHandling(
         'clear_feature_self_targeting_overrides',
         {
-            description:
-                'Clear self-targeting overrides for a specific feature/environment. ⚠️ IMPORTANT: Always confirm with the user before clearing overrides for production environments (environments where type = "production"). Include dashboard link in the response.',
+            description: [
+                'Clear self-targeting overrides for a specific feature/environment.',
+                '⚠️ IMPORTANT: Always confirm with the user before clearing overrides for production environments (environments where type = "production").',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Clear Self-Targeting Override For Feature/Environment',
                 destructiveHint: true,

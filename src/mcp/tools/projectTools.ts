@@ -15,7 +15,7 @@ import {
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
 import { formatProjectWithEnvironments } from '../utils/projectFormatting'
-import { dashboardLinks } from '../../utils/dashboardLinks'
+import { dashboardLinks } from '../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listProjectsHandler(
@@ -116,8 +116,10 @@ export function registerProjectTools(
     serverInstance.registerToolWithErrorHandling(
         'list_projects',
         {
-            description:
-                'List all projects in the current organization. Include dashboard link in the response.',
+            description: [
+                'List all projects in the current organization.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'List Projects',
                 readOnlyHint: true,
@@ -134,8 +136,10 @@ export function registerProjectTools(
     serverInstance.registerToolWithErrorHandling(
         'get_current_project',
         {
-            description:
-                'Get the currently selected project. Include dashboard link in the response.',
+            description: [
+                'Get the currently selected project.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Get Current Project',
                 readOnlyHint: true,

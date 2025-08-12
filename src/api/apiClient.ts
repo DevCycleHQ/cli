@@ -9,20 +9,13 @@ export const axiosClient = axios.create({
 
 export const setDVCReferrer = (
     command = 'unknown',
-    version: string,
+    version = 'unknown',
     caller = 'cli',
 ): void => {
     axiosClient.defaults.headers.common['dvc-referrer'] = caller
 
-    // Ensure we have valid values before stringifying
-    const metadata = {
-        command: command || 'unknown',
-        version: version || 'unknown',
-        caller: caller || 'cli',
-    }
-
     axiosClient.defaults.headers.common['dvc-referrer-metadata'] =
-        JSON.stringify(metadata)
+        JSON.stringify({ command, version, caller })
 }
 
 axiosClient.interceptors.response.use(

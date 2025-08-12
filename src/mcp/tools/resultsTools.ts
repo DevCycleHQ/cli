@@ -10,7 +10,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-import { dashboardLinks } from '../../utils/dashboardLinks'
+import { dashboardLinks } from '../utils/dashboardLinks'
 
 // Individual handler functions
 export async function getFeatureTotalEvaluationsHandler(
@@ -80,8 +80,10 @@ export function registerResultsTools(
     serverInstance.registerToolWithErrorHandling(
         'get_feature_total_evaluations',
         {
-            description:
-                'Get total variable evaluations per time period for a specific feature. Include dashboard link in the response.',
+            description: [
+                'Get total variable evaluations per time period for a specific feature.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Get Feature Total Evaluations',
                 readOnlyHint: true,
@@ -101,8 +103,10 @@ export function registerResultsTools(
     serverInstance.registerToolWithErrorHandling(
         'get_project_total_evaluations',
         {
-            description:
-                'Get total variable evaluations per time period for the entire project. Include dashboard link in the response.',
+            description: [
+                'Get total variable evaluations per time period for the entire project.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Get Project Total Evaluations',
                 readOnlyHint: true,

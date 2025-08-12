@@ -14,7 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-import { dashboardLinks } from '../../utils/dashboardLinks'
+import { dashboardLinks } from '../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listCustomPropertiesHandler(
@@ -126,8 +126,10 @@ export function registerCustomPropertiesTools(
     serverInstance.registerToolWithErrorHandling(
         'list_custom_properties',
         {
-            description:
-                'List custom properties in the current project. Include dashboard link in the response.',
+            description: [
+                'List custom properties in the current project.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'List Custom Properties',
                 readOnlyHint: true,
@@ -143,8 +145,10 @@ export function registerCustomPropertiesTools(
     serverInstance.registerToolWithErrorHandling(
         'create_custom_property',
         {
-            description:
-                'Create a new custom property. Include dashboard link in the response.',
+            description: [
+                'Create a new custom property.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Create Custom Property',
             },
@@ -159,8 +163,12 @@ export function registerCustomPropertiesTools(
     serverInstance.registerToolWithErrorHandling(
         'update_custom_property',
         {
-            description:
-                'Update an existing custom property. ⚠️ IMPORTANT: Custom property changes can affect feature flags in production environments. Always confirm with the user before updating custom properties for features that are active in production. Include dashboard link in the response.',
+            description: [
+                'Update an existing custom property.',
+                '⚠️ IMPORTANT: Custom property changes can affect feature flags in production environments.',
+                'Always confirm with the user before updating custom properties for features that are active in production.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Update Custom Property',
                 destructiveHint: true,
@@ -176,8 +184,12 @@ export function registerCustomPropertiesTools(
     serverInstance.registerToolWithErrorHandling(
         'delete_custom_property',
         {
-            description:
-                'Delete a custom property. ⚠️ CRITICAL: Deleting a custom property will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any custom property. Include dashboard link in the response.',
+            description: [
+                'Delete a custom property.',
+                '⚠️ CRITICAL: Deleting a custom property will remove it from ALL environments including production.',
+                'ALWAYS confirm with the user before deleting any custom property.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Delete Custom Property',
                 destructiveHint: true,

@@ -14,7 +14,7 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-import { dashboardLinks } from '../../utils/dashboardLinks'
+import { dashboardLinks } from '../utils/dashboardLinks'
 
 // Individual handler functions
 export async function listVariablesHandler(
@@ -120,8 +120,10 @@ export function registerVariableTools(
     serverInstance.registerToolWithErrorHandling(
         'list_variables',
         {
-            description:
-                'List variables in the current project. Include dashboard link in the response.',
+            description: [
+                'List variables in the current project.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'List Variables',
                 readOnlyHint: true,
@@ -137,8 +139,10 @@ export function registerVariableTools(
     serverInstance.registerToolWithErrorHandling(
         'create_variable',
         {
-            description:
-                'Create a new variable. Include dashboard link in the response.',
+            description: [
+                'Create a new variable.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Create Variable',
             },
@@ -153,8 +157,12 @@ export function registerVariableTools(
     serverInstance.registerToolWithErrorHandling(
         'update_variable',
         {
-            description:
-                'Update an existing variable. ⚠️ IMPORTANT: Variable changes can affect feature flags in production environments. Always confirm with the user before updating variables for features that are active in production. Include dashboard link in the response.',
+            description: [
+                'Update an existing variable.',
+                '⚠️ IMPORTANT: Variable changes can affect feature flags in production environments.',
+                'Always confirm with the user before updating variables for features that are active in production.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Update Variable',
                 destructiveHint: true,
@@ -170,8 +178,12 @@ export function registerVariableTools(
     serverInstance.registerToolWithErrorHandling(
         'delete_variable',
         {
-            description:
-                'Delete a variable. ⚠️ CRITICAL: Deleting a variable will remove it from ALL environments including production. ALWAYS confirm with the user before deleting any variable. Include dashboard link in the response.',
+            description: [
+                'Delete a variable.',
+                '⚠️ CRITICAL: Deleting a variable will remove it from ALL environments including production.',
+                'ALWAYS confirm with the user before deleting any variable.',
+                'Include dashboard link in the response.',
+            ].join('\n'),
             annotations: {
                 title: 'Delete Variable',
                 destructiveHint: true,

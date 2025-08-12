@@ -6,7 +6,7 @@ import { Project } from '../../src/api/schemas'
 import { IDevCycleApiClient } from '../../src/mcp/api/interface'
 import { DevCycleMCPServerInstance } from '../../src/mcp/server'
 import { formatProjectWithEnvironments } from '../../src/mcp/utils/projectFormatting'
-import { dashboardLinks } from '../../src/utils/dashboardLinks'
+import { dashboardLinks } from '../../src/mcp/utils/dashboardLinks'
 
 // =============================================================================
 // ZOD SCHEMAS
