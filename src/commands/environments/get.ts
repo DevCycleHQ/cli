@@ -1,4 +1,4 @@
-import { Flags } from '@oclif/core'
+import { Args, Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
 import {
     fetchEnvironments,
@@ -13,8 +13,19 @@ export default class DetailedEnvironments extends Base {
     static description = 'Retrieve Environments from the management API'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
+        '<%= config.bin %> <%= command.id %> environment-one',
+        '<%= config.bin %> <%= command.id %> environment-one environment-two',
+        '<%= config.bin %> <%= command.id %> environment-one,environment-two',
         '<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two',
     ]
+    static args = {
+        keys: Args.string({
+            description:
+                'Environment keys to fetch (space-separated or comma-separated)',
+            required: false,
+        }),
+    }
+    static strict = false
     static flags = {
         ...Base.flags,
         keys: Flags.string({
@@ -25,12 +36,24 @@ export default class DetailedEnvironments extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
-        const { flags } = await this.parse(DetailedEnvironments)
-        const keys = flags['keys']?.split(',')
+        const { args, argv, flags } = await this.parse(DetailedEnvironments)
         const { headless, project } = flags
         await this.requireProject(project, headless)
 
-        if (keys) {
+        // Handle positional arguments - they take precedence over --keys flag
+        let keys: string[] | undefined
+        if (argv && argv.length > 0) {
+            // Collect all positional arguments and split any comma-separated values
+            keys = argv.flatMap((arg) => String(arg).split(','))
+        } else if (args.keys) {
+            // Handle the first positional argument if provided
+            keys = args.keys.split(',')
+        } else if (flags.keys) {
+            // Fall back to --keys flag
+            keys = flags.keys.split(',')
+        }
+
+        if (keys && keys.length > 0) {
             const environments = await batchRequests(keys, (key) =>
                 fetchEnvironmentByKey(this.authToken, this.projectKey, key),
             )

@@ -24,6 +24,12 @@ describe('variables get', () => {
         },
     ]
 
+    const mockSingleVariable = {
+        key: 'test-var',
+        name: 'Test Variable',
+        _id: '61450f3daec96f5cf4a49948',
+    }
+
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
@@ -83,4 +89,31 @@ describe('variables get', () => {
                 JSON.stringify(mockVariables, null, 2),
             )
         })
+
+    // Test positional arguments functionality
+    dvcTest()
+        .nock(BASE_URL, (api) =>
+            api
+                .get(`/v1/projects/${projectKey}/variables/variable-1`)
+                .reply(200, mockVariables[0])
+                .get(`/v1/projects/${projectKey}/variables/variable-2`)
+                .reply(200, mockVariables[1]),
+        )
+        .stdout()
+        .command([
+            'variables get',
+            'variable-1',
+            'variable-2',
+            '--project',
+            projectKey,
+            ...authFlags,
+        ])
+        .it(
+            'fetches multiple variables by space-separated positional arguments',
+            (ctx) => {
+                expect(ctx.stdout).to.contain(
+                    JSON.stringify(mockVariables, null, 2),
+                )
+            },
+        )
 })
