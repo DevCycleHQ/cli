@@ -1,29 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import apiClient from './apiClient'
 import { buildHeaders } from './common'
-
-export class CreateProjectParams {
-    @IsString()
-    @IsNotEmpty()
-    name: string
-
-    @IsString()
-    @IsOptional()
-    description: string
-
-    @IsNotEmpty()
-    @IsString()
-    key: string
-}
-
-export class GetProjectsParams {
-    @IsString()
-    @IsOptional()
-    sortBy: string
-
-    @IsOptional()
-    sortOrder: 'asc' | 'desc'
-}
+import {
+    CreateProjectParams,
+    UpdateProjectParams,
+    GetProjectsParams,
+} from './schemas'
 
 const BASE_URL = '/v1/projects'
 
@@ -52,5 +33,18 @@ export const createProject = async (
 ) => {
     return apiClient.post(BASE_URL, params, {
         headers: buildHeaders(token),
+    })
+}
+
+export const updateProject = async (
+    token: string,
+    projectKey: string,
+    params: UpdateProjectParams,
+) => {
+    return apiClient.patch(`${BASE_URL}/:key`, params, {
+        headers: buildHeaders(token),
+        params: {
+            key: projectKey,
+        },
     })
 }

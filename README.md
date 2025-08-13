@@ -1,13 +1,15 @@
-DevCycle CLI
-=================
+DevCycle CLI & MCP Server
+=========================
 
-DevCycle CLI for interacting with DevCycle features from the command line.
+This repository contains the DevCycle CLI for managing feature flags from the command line, plus an MCP (Model Context Protocol) server that enables AI coding assistants to interact with DevCycle.
 
 Major features include:
+
 - Fully manage your Features, Variables, Variations and Targeting Rules from the command line
 - Detect and list DevCycle Variable usages in your codebase
 - Manage your Self-Targeting Overrides to quickly switch between Variable values
 - Generate type definitions for type-safe usage of DevCycle (Typescript only)
+- MCP (Model Context Protocol) server for AI-powered feature flag management with Cursor and Claude
 
 The CLI can be customized in several ways using command-line args or by creating a [configuration file](#repo-configuration).
 
@@ -16,31 +18,78 @@ The CLI can be customized in several ways using command-line args or by creating
 [![License](https://img.shields.io/npm/l/@devcycle/cli.svg)](https://github.com/DevCycleHQ/cli/blob/main/package.json)
 
 <!-- toc -->
-* [Setup](#setup)
-* [Authentication](#authentication)
-* [Usage](#usage)
 * [Command Topics](#command-topics)
-* [Repo Configuration](#repo-configuration)
 <!-- tocstop -->
-# Setup
 
-## Install the CLI
+## MCP Server for AI Assistants
+
+The DevCycle MCP (Model Context Protocol) server enables AI coding assistants like Cursor and Claude to manage feature flags directly from your development environment. DevCycle offers a hosted MCP server that requires no local installation.
+
+### Quick Setup (No Installation Required)
+
+1. **Configure your AI assistant to use the hosted MCP server:**
+
+   - **Cursor**: Add to `.cursor/mcp_settings.json`:
+
+     ```json
+     {
+       "mcpServers": {
+         "devcycle": {
+           "url": "https://mcp.devcycle.com/mcp"
+         }
+       }
+     }
+     ```
+
+   - **Claude Desktop**: Add to your Claude config file:
+
+     ```json
+     {
+       "mcpServers": {
+         "devcycle": {
+           "command": "npx",
+           "args": [
+             "mcp-remote",
+             "https://mcp.devcycle.com/mcp"
+           ]
+         }
+       }
+     }
+     ```
+
+2. **That's it!** The server will guide you through OAuth authentication when you first use it.
+
+Your AI assistant can now create, update, and manage feature flags on your behalf.
+
+For local installation options, detailed configuration, available tools, and advanced usage, see the [complete MCP documentation](docs/mcp.md).
+
+## CLI Documentation
+
+## Setup
+
+### Install the CLI
+
 Using NPM
+
 ```sh-session
 $ npm install -g @devcycle/cli
 ```
+
 Or alternatively, using homebrew
 
 ```sh-session
 $ brew tap devcyclehq/cli
 $ brew install devcycle
 ```
-# Authentication
+
+## Authentication
+
 Many of the CLI commands require DevCycle API authorization. There are several ways to provide these credentials.
 
-## Using Access Tokens (preferred)
+### Using Access Tokens (preferred)
 
-### Login Command
+#### Login Command
+
 By using the [`login sso` command](docs/login.md#dvc-login-sso), the CLI will retrieve and store an access token, which is valid for 24 hours.
 
 The [`login again` command](docs/login.md#dvc-login-again) can be used to retrieve a new access token using the saved project and organization without prompting for them.
@@ -51,12 +100,14 @@ To switch organizations once logged in, the [`organizations select` command](doc
 
 If executing the CLI in a containerized environment, please ensure one of the following PORTs can be accessed via Port Forwarding: 2194 (default), 2195, 2196 or 8080. This will allow the authentication process to complete and set the access token appropriately.
 
-### Repo Init Command
+#### Repo Init Command
+
 The [`repo init` command](docs/repo.md#dvc-repo-init) behaves in the same way as `login sso`, but creates a [repo configuration file](#repo-configuration) and stores the project and organization choices there instead.
 
-## Using Client Credentials
+### Using Client Credentials
 
-### Client Credentials in Auth File
+#### Client Credentials in Auth File
+
 Use the [`dvc status` command](docs/status.md#dvc-status) to find the configuration file location for your platform. The credentials can be stored in the file pointed to by the Auth config path. Create the file if it does not exist, with the following contents.
 
 ```yaml
@@ -71,7 +122,7 @@ The default location is based on the [oclif configDir](https://oclif.io/docs/con
 
 If you intend to run the CLI using options that override config file locations, the [`dvc status` command](docs/status.md#dvc-status) command can be run with those options to confirm that the file locations are as expected.
 
-## Project Selection
+### Project Selection
 
 You also need to specify the default project ID for the CLI to use.
 
@@ -79,7 +130,8 @@ If there is a repo configuration file, the [`dvc diff`](docs/diff.md) and [`dvc 
 
 Otherwise, this is chosen during login or set using the [project select command](docs/projects.md#dvc-projects-select)
 
-## Environment Variables
+### Environment Variables
+
 Set the following environment variables:
 
 ```sh-session
@@ -88,7 +140,7 @@ $ export DEVCYCLE_CLIENT_SECRET=<your client secret>
 $ export DEVCYCLE_PROJECT_KEY=<your project key>
 ```
 
-## Command-Line Arguments
+### Command-Line Arguments
 
 The CLI can be run with the following arguments:
 
@@ -96,11 +148,11 @@ The CLI can be run with the following arguments:
 $ dvc --client-id=<your client id> --client-secret=<your client secret> --project=<your project key>
 ```
 
-## Github Action
+### Github Action
 
 The Devcycle Github actions are configured with auth information through the `project-key`, `client-id` and `client-secret` configuration parameters. This is passed to the CLI via command line arguments.
 
-# Usage
+## Usage
 
 <!-- usage -->
 ```sh-session
@@ -108,7 +160,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/5.21.2 linux-x64 node-v22.12.0
+@devcycle/cli/5.21.2 darwin-arm64 node-v22.17.1
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
@@ -142,8 +194,8 @@ USAGE
 * [`dvc variations`](docs/variations.md) - Create a new Variation for an existing Feature.
 
 <!-- commandsstop -->
+## Repo Configuration
 
-# Repo Configuration
 The following commands can only be run from the root of a configured repository
 
 - [`dvc diff`](docs/diff.md)
@@ -187,10 +239,11 @@ codeInsights:
     - "dist/*"
 ```
 
-## Match Patterns
-When identifying variable usages in the code, the CLI will identify DevCycle SDK methods by default. To capture 
-other usages you may define match patterns. Match patterns are defined by file extension, and each pattern should 
-contain exactly one capture group which matches the key of the variable. Make sure the captured value contains the 
+### Match Patterns
+
+When identifying variable usages in the code, the CLI will identify DevCycle SDK methods by default. To capture
+other usages you may define match patterns. Match patterns are defined by file extension, and each pattern should
+contain exactly one capture group which matches the key of the variable. Make sure the captured value contains the
 entire key parameter (including quotes, if applicable).
 
 Match patterns can be defined in the configuration file, for example:
@@ -211,11 +264,13 @@ codeInsights:
 ```
 
 Match patterns can also be passed directly to relevant commands using the `--match-pattern` flag:
-```
+
+```bash
 dvc usages --match-pattern ts="customVariableGetter\(\s*[\"']([^\"']*)[\"']" js="customVariableGetter\(\s*[\"']([^\"']*)[\"']"
 ```
 
 When testing your regex the `--show-regex` flag can be helpful. This will print all patterns used to find matches in your codebase.
-```
+
+```bash
 dvc usages --show-regex
 ```

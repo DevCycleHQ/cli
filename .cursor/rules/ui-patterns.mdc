@@ -1,0 +1,128 @@
+---
+description: UI patterns and user interaction guidelines for prompts and output formatting
+globs: src/ui/**/*.ts,src/utils/prompts.ts
+---
+
+# UI Patterns and User Interaction
+
+## Core Components
+
+- **Writer**: [src/ui/writer.ts](mdc:src/ui/writer.ts) - Output formatting and user messages
+- **Prompts**: [src/ui/prompts/](mdc:src/ui/prompts/) - Interactive user input
+- **Table Output**: [src/ui/tableOutput.ts](mdc:src/ui/tableOutput.ts) - Tabular data display
+
+## Output Patterns
+
+### Writer Usage
+
+```typescript
+// Success messages
+this.writer.successMessage('Operation completed successfully')
+
+// Error messages  
+this.writer.showError('Something went wrong')
+
+// Warning messages
+this.writer.warningMessage('This is a warning')
+
+// Info messages
+this.writer.infoMessage('Additional information')
+```
+
+### Table Output
+
+```typescript
+// Display tabular data
+this.tableOutput.output(data, columns)
+
+// With custom formatting
+this.tableOutput.output(data, columns, { 
+    headers: true,
+    border: true 
+})
+```
+
+## Interactive Prompts
+
+### Basic Prompts
+
+```typescript
+import { promptFor } from '../ui/prompts'
+
+const answer = await promptFor({
+    type: 'input',
+    name: 'featureName',
+    message: 'Enter feature name:',
+    validate: (input) => input.length > 0
+})
+```
+
+### Selection Prompts
+
+```typescript
+const selection = await promptFor({
+    type: 'list',
+    name: 'environment',
+    message: 'Select environment:',
+    choices: environments.map(env => ({ name: env.name, value: env.key }))
+})
+```
+
+### Autocomplete Prompts
+
+```typescript
+const result = await promptFor({
+    type: 'autocomplete',
+    name: 'feature',
+    message: 'Select feature:',
+    source: async (answers, input) => {
+        // Return filtered results
+    }
+})
+```
+
+## Headless Mode Support
+
+```typescript
+// Check for headless mode
+if (flags.headless) {
+    // Output machine-readable JSON
+    console.log(JSON.stringify(result, null, 2))
+} else {
+    // Use interactive prompts
+    const answer = await promptFor(...)
+}
+```
+
+## Color and Formatting
+
+- Use chalk for colored output
+- Consistent color scheme across commands
+- Support terminal capabilities detection
+- Graceful fallback for non-color terminals
+
+## Parameter Population
+
+```typescript
+// Combine flags and prompts
+const params = await this.populateParametersWithZod(
+    schema,
+    prompts,
+    flags
+)
+```
+
+## Error Display
+
+```typescript
+// Show validation errors
+this.writer.showError('Validation failed:')
+errors.forEach(error => this.writer.showError(`  - ${error.message}`))
+```
+
+## Progress Indication
+
+- Use spinners for long-running operations
+- Show progress bars for batch operations
+- Provide clear status messages
+- Handle user interruption gracefully
