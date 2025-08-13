@@ -117,8 +117,8 @@ describe('MCP Protocol Compliance', () => {
 
         expect(response.jsonrpc).toBe('2.0')
         expect(response.error).toBeDefined()
-        expect(response.error!.code).toBeDefined()
-        expect(response.error!.message).toBeDefined()
+        expect(response.error?.code).toBeDefined()
+        expect(response.error?.message).toBeDefined()
     })
 
     it('should require authentication for MCP requests', async () => {
@@ -155,7 +155,7 @@ describe('MCP Protocol Compliance', () => {
         )
 
         expect(response.error).toBeDefined()
-        expect(response.error!.message).toBeDefined()
+        expect(response.error?.message).toBeDefined()
     })
 
     it('should maintain JSON-RPC request/response correlation', async () => {

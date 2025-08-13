@@ -1,4 +1,3 @@
-import { EncodeJWT } from 'jose'
 import type { UserProps, DevCycleJWTClaims } from '../../src/types'
 
 /**

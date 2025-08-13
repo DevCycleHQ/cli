@@ -23,7 +23,9 @@
     "include": [
         "src/**/*",
         "../src/mcp/**/*",
-        "worker-configuration.d.ts"
+        "worker-configuration.d.ts",
+        "test-types.d.ts",
+        "test/**/*"
     ],
     "exclude": [
         "node_modules",

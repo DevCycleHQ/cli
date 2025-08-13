@@ -7353,6 +7353,10 @@ interface DispatchNamespace {
         [key: string]: any;
     }, options?: DynamicDispatchOptions): Fetcher;
 }
+declare module 'cloudflare:test' {
+	export const SELF: Fetcher;
+}
+
 declare module 'cloudflare:workflows' {
     /**
      * NonRetryableError allows for a user to throw a fatal error

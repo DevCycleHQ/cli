@@ -67,7 +67,7 @@ describe('Tool Discovery and Listing', () => {
         // Find the mock tool
         const mockTool = tools.find((tool) => tool.name === 'mockTool')
         expect(mockTool).toBeDefined()
-        expect(mockTool!.description).toContain('testing')
+        expect(mockTool?.description).toContain('testing')
     })
 
     it('should return tools in proper format', async () => {
@@ -101,7 +101,7 @@ describe('Tool Discovery and Listing', () => {
         )
 
         expect(response.error).toBeDefined()
-        expect(response.error!.message).toBeDefined()
+        expect(response.error?.message).toBeDefined()
     })
 
     it('should validate tool arguments', async () => {
@@ -121,7 +121,7 @@ describe('Tool Discovery and Listing', () => {
 
         // Should return an error for invalid arguments to a known tool
         expect(response.error).toBeDefined()
-        expect(response.error!.message).toBeDefined()
+        expect(response.error?.message).toBeDefined()
     })
 
     it('should handle different authentication tokens', async () => {
@@ -171,8 +171,8 @@ describe('Tool Discovery and Listing', () => {
         )
 
         expect(response.error).toBeDefined()
-        expect(response.error!.code).toBeDefined()
-        expect(typeof response.error!.code).toBe('number')
+        expect(response.error?.code).toBeDefined()
+        expect(typeof response.error?.code).toBe('number')
     })
 
     it('should provide tools with consistent naming', async () => {
