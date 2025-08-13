@@ -18,7 +18,7 @@ export default class TableOutput {
             return
         }
 
-        ux.ux.table(data, columns, options)
+        ux.table(data, columns, options)
         console.log('\r')
     }
 
