@@ -1,0 +1,2 @@
+# Mark auto-generated files so GitHub linguist ignores them in code stats
+src/mcp/tools/installGuides.generated.ts linguist-generated

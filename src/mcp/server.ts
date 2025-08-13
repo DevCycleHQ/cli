@@ -97,6 +97,18 @@ export class DevCycleMCPServer {
             try {
                 const result = await handler(args)
 
+                // If the handler returned a plain string, send it as-is
+                if (typeof result === 'string') {
+                    return {
+                        content: [
+                            {
+                                type: 'text' as const,
+                                text: result,
+                            },
+                        ],
+                    }
+                }
+
                 return {
                     content: [
                         {
