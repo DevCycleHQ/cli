@@ -119,7 +119,7 @@ describe('Tool Discovery and Listing', () => {
             mockAuthToken,
         )
 
-        // Should return an error for unknown methods in our mock
+        // Should return an error for invalid arguments to a known tool
         expect(response.error).toBeDefined()
         expect(response.error!.message).toBeDefined()
     })
