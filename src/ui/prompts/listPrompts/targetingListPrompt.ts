@@ -11,7 +11,6 @@ import {
 import { servePrompt } from '../targetingPrompts'
 import {
     Audience,
-    Filters,
     UpdateTargetParams,
     Variation,
 } from '../../../api/schemas'

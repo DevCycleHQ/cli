@@ -1,10 +1,6 @@
 import {
     Audience,
-    AudienceMatchFilter,
-    FeatureConfig,
     Filter,
-    Target,
-    UpdateTargetParams,
 } from '../../api/schemas'
 
 export const buildAudienceNameMap = (audiences?: Audience[]) => {

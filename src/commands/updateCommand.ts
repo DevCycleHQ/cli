@@ -1,4 +1,3 @@
-import { Args, Flags } from '@oclif/core'
 import Base from './base'
 import { Prompt, handleCustomPrompts } from '../ui/prompts'
 import { chooseFields } from '../utils/prompts'

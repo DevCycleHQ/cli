@@ -1,5 +1,4 @@
-import { ux } from '@oclif/core'
-import { Tree } from '@oclif/core/lib/cli-ux/styled/tree'
+import { ux as cliUx } from '@oclif/core'
 import {
     FeatureConfig,
     Environment,
@@ -28,9 +27,12 @@ const subTypeMap = {
     user_id: 'User ID',
     platform: 'Platform',
     platformVersion: 'Platform Version',
-    deviceModel: 'Device Model',
     country: 'Country',
     appVersion: 'App Version',
+    deviceModel: 'Device Model',
+    customData: 'Custom Data',
+    audienceMatch: 'Audience Match',
+    deviceType: 'Device Type',
 }
 const comparatorMap = {
     '=': 'is',
@@ -55,9 +57,9 @@ export const renderTargetingTree = (
     variations: Variation[],
     audiences: AudienceSchema[],
 ) => {
-    const targetingTree = ux.tree()
+    const targetingTree = cliUx.tree()
     featureConfigs.forEach((config) => {
-        const environmentTree = ux.tree()
+        const environmentTree = cliUx.tree()
 
         insertStatusTree(environmentTree, config.status)
         insertRulesTree(environmentTree, config.targets, variations, audiences)
@@ -91,8 +93,8 @@ export const renderDefinitionTree = (
     definitionTree.display()
 }
 
-const insertStatusTree = (rootTree: Tree, status: FeatureConfig['status']) => {
-    const statusTree = ux.tree()
+const insertStatusTree = (rootTree: ReturnType<typeof cliUx.tree>, status: FeatureConfig['status']) => {
+    const statusTree = cliUx.tree()
     const convertedStatus = status === 'active' ? 'enabled' : 'disabled'
     const displayStatus = coloredStatus(convertedStatus)
     statusTree.insert(displayStatus)
@@ -105,9 +107,9 @@ const buildRulesTree = (
     variations: Variation[],
     audiences: AudienceSchema[],
 ) => {
-    const rulesTree = ux.tree()
+    const rulesTree = cliUx.tree()
     targets.forEach((target, idx) => {
-        const ruleTree = ux.tree()
+        const ruleTree = cliUx.tree()
 
         insertDefinitionTree(ruleTree, target.audience, audiences)
         insertServeTree(ruleTree, target.distribution, variations)
@@ -122,7 +124,7 @@ const buildRulesTree = (
 }
 
 const insertRulesTree = (
-    rootTree: Tree,
+    rootTree: ReturnType<typeof cliUx.tree>,
     targets: Rule[],
     variations: Variation[],
     audiences: AudienceSchema[],
@@ -139,7 +141,7 @@ const buildDefinitionTree = (
     operator: Operator,
     audiences: AudienceSchema[],
 ) => {
-    const definitionTree = ux.tree()
+    const definitionTree = cliUx.tree()
     const prefixWithOperator = (value: string, index: number) =>
         index !== 0 ? `${operator.toUpperCase()} ${value}` : value
 
@@ -148,8 +150,8 @@ const buildDefinitionTree = (
             const prefixedProperty = prefixWithOperator('All Users', index)
             definitionTree.insert(prefixedProperty)
         } else if (filter.type === 'user') {
-            const userFilter = ux.tree()
-            const values = ux.tree()
+            const userFilter = cliUx.tree()
+            const values = cliUx.tree()
             if (
                 Array.isArray(filter.values) &&
                 !['exist', '!exist'].includes(filter.subType)
@@ -166,8 +168,8 @@ const buildDefinitionTree = (
             const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
         } else if (filter.type === 'audienceMatch') {
-            const audienceFilter = ux.tree()
-            const audienceTree = ux.tree()
+            const audienceFilter = cliUx.tree()
+            const audienceTree = cliUx.tree()
             const audienceMap = buildAudienceNameMap(audiences)
             const replacedIdFilter = (replaceAudienceIdInFilter(
                 filter,
@@ -190,7 +192,7 @@ const buildDefinitionTree = (
 }
 
 const insertDefinitionTree = (
-    rootTree: Tree,
+    rootTree: ReturnType<typeof cliUx.tree>,
     audience: Audience,
     audiences: AudienceSchema[],
 ) => {
@@ -201,7 +203,7 @@ const insertDefinitionTree = (
 }
 
 const insertServeTree = (
-    rootTree: Tree,
+    rootTree: ReturnType<typeof cliUx.tree>,
     distribution: Distribution,
     variations: Variation[],
 ) => {
@@ -213,7 +215,7 @@ const insertServeTree = (
         {} as Record<string, Variation>,
     )
 
-    const serveTree = ux.tree()
+    const serveTree = cliUx.tree()
     if (distribution.length === 1) {
         const variationId = distribution[0]._variation
         const variationName = variationById[variationId]?.name
@@ -221,7 +223,7 @@ const insertServeTree = (
         serveTree.insert(coloredValue)
     } else {
         distribution.forEach((dist) => {
-            const variationTree = ux.tree()
+            const variationTree = cliUx.tree()
             variationTree.insert(`${dist.percentage * 100}%`)
             const variationName = variationById[dist._variation]?.name
             const coloredValue = coloredVariation(
@@ -234,38 +236,38 @@ const insertServeTree = (
     rootTree.insert(serveTitle, serveTree)
 }
 
-const insertScheduleTree = (rootTree: Tree, rollout?: Rollout) => {
+const insertScheduleTree = (rootTree: ReturnType<typeof cliUx.tree>, rollout?: Rollout) => {
     if (!rollout) return
 
-    const scheduleTree = ux.tree()
+    const scheduleTree = cliUx.tree()
     if (rollout.type === 'schedule') {
-        const startTree = ux.tree()
+        const startTree = cliUx.tree()
         scheduleTree.insert('start', startTree)
         startTree.insert(rollout.startDate)
         rootTree.insert('schedule', scheduleTree)
     } else if (rollout.type === 'gradual' && rollout.stages?.[0]) {
         // Start
-        const startTree = ux.tree()
+        const startTree = cliUx.tree()
         scheduleTree.insert('start', startTree)
 
-        const startDateTree = ux.tree()
+        const startDateTree = cliUx.tree()
         startDateTree.insert(rollout.startDate)
         startTree.insert('date', startDateTree)
 
-        const startPercentTree = ux.tree()
+        const startPercentTree = cliUx.tree()
         startPercentTree.insert((rollout.startPercentage || 0) * 100 + '%')
         startTree.insert('percentage', startPercentTree)
 
         // End
-        const endTree = ux.tree()
+        const endTree = cliUx.tree()
         const endStage = rollout.stages[0]
         scheduleTree.insert('end', endTree)
 
-        const endPercentTree = ux.tree()
+        const endPercentTree = cliUx.tree()
         endPercentTree.insert(endStage.percentage * 100 + '%')
         endTree.insert('percentage', endPercentTree)
 
-        const endDateTree = ux.tree()
+        const endDateTree = cliUx.tree()
         endDateTree.insert(endStage.date)
         endTree.insert('date', endDateTree)
 

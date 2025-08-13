@@ -1,5 +1,5 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp'
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types'
 import type { ZodRawShape } from 'zod'
 import { DevCycleAuth } from './utils/auth'
 import { DevCycleApiClient } from './utils/api'
