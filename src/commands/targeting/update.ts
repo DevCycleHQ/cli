@@ -27,7 +27,7 @@ import { createTargetAndEnable } from '../../utils/targeting'
 
 export default class UpdateTargeting extends UpdateCommand {
     static hidden = false
-     
+
     static description =
         'Update Targeting rules for a Feature. The definition is the audience for the feature, while serve is the key of the variation to serve to the audience.'
     authRequired = true

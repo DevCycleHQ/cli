@@ -13,7 +13,7 @@ export type FeaturePromptResult = {
 } & PromptResult
 
 let choices: FeatureChoice[]
- 
+
 export const featureChoices = async (
     input: Record<string, any>,
     search: string,

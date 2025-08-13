@@ -26,7 +26,7 @@ export type VariablePromptResult = {
 } & PromptResult
 
 let choices: { name: string; value: Variable }[]
- 
+
 export const variableChoices = async (
     input: Record<string, any>,
     search: string,

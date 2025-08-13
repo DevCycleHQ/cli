@@ -191,7 +191,6 @@ describe('variables create', () => {
             'includes _feature in request when user selects to attach to a feature',
             (ctx) => {
                 expect(ctx.stdout).to.contain(
-                     
                     'The variable was associated to the existing feature spam. Use "dvc features get --keys=spam" to see its details',
                 )
             },

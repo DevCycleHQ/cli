@@ -9,11 +9,7 @@ import {
     ReorderItemPrompt,
 } from './promptOptions'
 import { servePrompt } from '../targetingPrompts'
-import {
-    Audience,
-    UpdateTargetParams,
-    Variation,
-} from '../../../api/schemas'
+import { Audience, UpdateTargetParams, Variation } from '../../../api/schemas'
 import { FilterListOptions } from './filterListPrompt'
 import Writer from '../../writer'
 import { renderRulesTree } from '../../targetingTree'

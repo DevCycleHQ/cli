@@ -22,7 +22,7 @@ const EnvironmentTypeValue: Record<string, number> = {
 }
 
 let choices: { name: string; value: Environment }[]
- 
+
 export const environmentChoices = async (
     input: Record<string, any>,
     search: string,

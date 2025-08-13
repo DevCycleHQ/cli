@@ -93,7 +93,10 @@ export const renderDefinitionTree = (
     definitionTree.display()
 }
 
-const insertStatusTree = (rootTree: ReturnType<typeof cliUx.tree>, status: FeatureConfig['status']) => {
+const insertStatusTree = (
+    rootTree: ReturnType<typeof cliUx.tree>,
+    status: FeatureConfig['status'],
+) => {
     const statusTree = cliUx.tree()
     const convertedStatus = status === 'active' ? 'enabled' : 'disabled'
     const displayStatus = coloredStatus(convertedStatus)
@@ -236,7 +239,10 @@ const insertServeTree = (
     rootTree.insert(serveTitle, serveTree)
 }
 
-const insertScheduleTree = (rootTree: ReturnType<typeof cliUx.tree>, rollout?: Rollout) => {
+const insertScheduleTree = (
+    rootTree: ReturnType<typeof cliUx.tree>,
+    rollout?: Rollout,
+) => {
     if (!rollout) return
 
     const scheduleTree = cliUx.tree()

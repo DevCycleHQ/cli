@@ -1,7 +1,4 @@
-import {
-    Audience,
-    Filter,
-} from '../../api/schemas'
+import { Audience, Filter } from '../../api/schemas'
 
 export const buildAudienceNameMap = (audiences?: Audience[]) => {
     return (
