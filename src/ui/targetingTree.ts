@@ -1,4 +1,5 @@
-import { ux as cliUx } from '@oclif/core'
+import { ux } from '@oclif/core'
+import { Tree } from '@oclif/core/lib/cli-ux/styled/tree'
 import {
     FeatureConfig,
     Environment,
@@ -57,9 +58,9 @@ export const renderTargetingTree = (
     variations: Variation[],
     audiences: AudienceSchema[],
 ) => {
-    const targetingTree = cliUx.tree()
+    const targetingTree = ux.tree()
     featureConfigs.forEach((config) => {
-        const environmentTree = cliUx.tree()
+        const environmentTree = ux.tree()
 
         insertStatusTree(environmentTree, config.status)
         insertRulesTree(environmentTree, config.targets, variations, audiences)
@@ -93,11 +94,8 @@ export const renderDefinitionTree = (
     definitionTree.display()
 }
 
-const insertStatusTree = (
-    rootTree: ReturnType<typeof cliUx.tree>,
-    status: FeatureConfig['status'],
-) => {
-    const statusTree = cliUx.tree()
+const insertStatusTree = (rootTree: Tree, status: FeatureConfig['status']) => {
+    const statusTree = ux.tree()
     const convertedStatus = status === 'active' ? 'enabled' : 'disabled'
     const displayStatus = coloredStatus(convertedStatus)
     statusTree.insert(displayStatus)
@@ -110,9 +108,9 @@ const buildRulesTree = (
     variations: Variation[],
     audiences: AudienceSchema[],
 ) => {
-    const rulesTree = cliUx.tree()
+    const rulesTree = ux.tree()
     targets.forEach((target, idx) => {
-        const ruleTree = cliUx.tree()
+        const ruleTree = ux.tree()
 
         insertDefinitionTree(ruleTree, target.audience, audiences)
         insertServeTree(ruleTree, target.distribution, variations)
@@ -127,7 +125,7 @@ const buildRulesTree = (
 }
 
 const insertRulesTree = (
-    rootTree: ReturnType<typeof cliUx.tree>,
+    rootTree: Tree,
     targets: Rule[],
     variations: Variation[],
     audiences: AudienceSchema[],
@@ -144,7 +142,7 @@ const buildDefinitionTree = (
     operator: Operator,
     audiences: AudienceSchema[],
 ) => {
-    const definitionTree = cliUx.tree()
+    const definitionTree = ux.tree()
     const prefixWithOperator = (value: string, index: number) =>
         index !== 0 ? `${operator.toUpperCase()} ${value}` : value
 
@@ -153,8 +151,8 @@ const buildDefinitionTree = (
             const prefixedProperty = prefixWithOperator('All Users', index)
             definitionTree.insert(prefixedProperty)
         } else if (filter.type === 'user') {
-            const userFilter = cliUx.tree()
-            const values = cliUx.tree()
+            const userFilter = ux.tree()
+            const values = ux.tree()
             if (
                 Array.isArray(filter.values) &&
                 !['exist', '!exist'].includes(filter.subType)
@@ -171,8 +169,8 @@ const buildDefinitionTree = (
             const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
         } else if (filter.type === 'audienceMatch') {
-            const audienceFilter = cliUx.tree()
-            const audienceTree = cliUx.tree()
+            const audienceFilter = ux.tree()
+            const audienceTree = ux.tree()
             const audienceMap = buildAudienceNameMap(audiences)
             const replacedIdFilter = (replaceAudienceIdInFilter(
                 filter,
@@ -195,7 +193,7 @@ const buildDefinitionTree = (
 }
 
 const insertDefinitionTree = (
-    rootTree: ReturnType<typeof cliUx.tree>,
+    rootTree: Tree,
     audience: Audience,
     audiences: AudienceSchema[],
 ) => {
@@ -206,7 +204,7 @@ const insertDefinitionTree = (
 }
 
 const insertServeTree = (
-    rootTree: ReturnType<typeof cliUx.tree>,
+    rootTree: Tree,
     distribution: Distribution,
     variations: Variation[],
 ) => {
@@ -218,7 +216,7 @@ const insertServeTree = (
         {} as Record<string, Variation>,
     )
 
-    const serveTree = cliUx.tree()
+    const serveTree = ux.tree()
     if (distribution.length === 1) {
         const variationId = distribution[0]._variation
         const variationName = variationById[variationId]?.name
@@ -226,7 +224,7 @@ const insertServeTree = (
         serveTree.insert(coloredValue)
     } else {
         distribution.forEach((dist) => {
-            const variationTree = cliUx.tree()
+            const variationTree = ux.tree()
             variationTree.insert(`${dist.percentage * 100}%`)
             const variationName = variationById[dist._variation]?.name
             const coloredValue = coloredVariation(
@@ -240,40 +238,40 @@ const insertServeTree = (
 }
 
 const insertScheduleTree = (
-    rootTree: ReturnType<typeof cliUx.tree>,
+    rootTree: Tree,
     rollout?: Rollout,
 ) => {
     if (!rollout) return
 
-    const scheduleTree = cliUx.tree()
+    const scheduleTree = ux.tree()
     if (rollout.type === 'schedule') {
-        const startTree = cliUx.tree()
+        const startTree = ux.tree()
         scheduleTree.insert('start', startTree)
         startTree.insert(rollout.startDate)
         rootTree.insert('schedule', scheduleTree)
     } else if (rollout.type === 'gradual' && rollout.stages?.[0]) {
         // Start
-        const startTree = cliUx.tree()
+        const startTree = ux.tree()
         scheduleTree.insert('start', startTree)
 
-        const startDateTree = cliUx.tree()
+        const startDateTree = ux.tree()
         startDateTree.insert(rollout.startDate)
         startTree.insert('date', startDateTree)
 
-        const startPercentTree = cliUx.tree()
+        const startPercentTree = ux.tree()
         startPercentTree.insert((rollout.startPercentage || 0) * 100 + '%')
         startTree.insert('percentage', startPercentTree)
 
         // End
-        const endTree = cliUx.tree()
+        const endTree = ux.tree()
         const endStage = rollout.stages[0]
         scheduleTree.insert('end', endTree)
 
-        const endPercentTree = cliUx.tree()
+        const endPercentTree = ux.tree()
         endPercentTree.insert(endStage.percentage * 100 + '%')
         endTree.insert('percentage', endPercentTree)
 
-        const endDateTree = cliUx.tree()
+        const endDateTree = ux.tree()
         endDateTree.insert(endStage.date)
         endTree.insert('date', endDateTree)
 
