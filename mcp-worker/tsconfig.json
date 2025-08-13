@@ -5,7 +5,8 @@
         "rootDir": "../",
         "noEmit": true,
         "types": [
-            "node"
+            "node",
+            "@cloudflare/vitest-pool-workers"
         ],
         "lib": ["ES2022"],
         "module": "ESNext",

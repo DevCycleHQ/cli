@@ -53,14 +53,28 @@ class MockMcpAgent {
                 }
 
                 try {
-                    const body = await request.json()
+                    const raw = await request.json()
+
+                    const isRecord = (
+                        v: unknown,
+                    ): v is Record<string, unknown> =>
+                        v !== null && typeof v === 'object'
+
+                    const method =
+                        isRecord(raw) && typeof raw.method === 'string'
+                            ? raw.method
+                            : undefined
+                    const id =
+                        isRecord(raw) && 'id' in raw
+                            ? (raw as Record<string, unknown>).id
+                            : undefined
 
                     // Mock tools/list response
-                    if (body.method === 'tools/list') {
+                    if (method === 'tools/list') {
                         return new Response(
                             JSON.stringify({
                                 jsonrpc: '2.0',
-                                id: body.id,
+                                id: id ?? 1,
                                 result: {
                                     tools: [
                                         {
@@ -79,11 +93,11 @@ class MockMcpAgent {
                     }
 
                     // Mock initialize response
-                    if (body.method === 'initialize') {
+                    if (method === 'initialize') {
                         return new Response(
                             JSON.stringify({
                                 jsonrpc: '2.0',
-                                id: body.id,
+                                id: id ?? 1,
                                 result: {
                                     protocolVersion: '2024-11-05',
                                     capabilities: { tools: {} },
@@ -100,11 +114,11 @@ class MockMcpAgent {
                     }
 
                     // Mock notifications/initialized (should succeed silently)
-                    if (body.method === 'notifications/initialized') {
+                    if (method === 'notifications/initialized') {
                         return new Response(
                             JSON.stringify({
                                 jsonrpc: '2.0',
-                                id: body.id,
+                                id: id ?? 1,
                                 result: {},
                             }),
                             {
@@ -117,7 +131,7 @@ class MockMcpAgent {
                     return new Response(
                         JSON.stringify({
                             jsonrpc: '2.0',
-                            id: body.id,
+                            id: id ?? 1,
                             error: {
                                 code: -32601,
                                 message: 'Method not found',

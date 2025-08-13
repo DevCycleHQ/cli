@@ -9,9 +9,7 @@
         "build": "tsc",
         "type-check": "tsc --noEmit",
         "cf-typegen": "wrangler types",
-        "test": "vitest",
-        "test:e2e": "vitest run test/e2e",
-        "test:watch": "vitest watch"
+        "test": "vitest run --watch=false"
     },
     "dependencies": {
         "@cloudflare/workers-oauth-provider": "^0.0.5",
@@ -21,9 +19,9 @@
         "oauth4webapi": "^3.6.1"
     },
     "devDependencies": {
-        "@cloudflare/vitest-pool-workers": "^0.5.19",
+        "@cloudflare/vitest-pool-workers": "^0.8.62",
         "miniflare": "^3.20241127.1",
-        "vitest": "^2.1.8",
+        "vitest": "^3.2.4",
         "wrangler": "^4.28.0"
     },
     "packageManager": "yarn@4.9.2"
