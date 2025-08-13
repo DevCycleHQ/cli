@@ -34,7 +34,14 @@ describe('MCP Protocol Compliance', () => {
         expect(response.error).toBeUndefined()
         expect(response.result).toBeDefined()
 
-        const result = response.result as any
+        const result = response.result as {
+            protocolVersion: string
+            capabilities: Record<string, unknown>
+            serverInfo: {
+                name: string
+                version: string
+            }
+        }
         expect(result.protocolVersion).toBeDefined()
         expect(result.capabilities).toBeDefined()
         expect(result.serverInfo).toBeDefined()
@@ -67,7 +74,13 @@ describe('MCP Protocol Compliance', () => {
         expect(response.error).toBeUndefined()
         expect(response.result).toBeDefined()
 
-        const result = response.result as { tools: any[] }
+        const result = response.result as {
+            tools: Array<{
+                name: string
+                description: string
+                inputSchema: Record<string, unknown>
+            }>
+        }
         expect(result.tools).toBeDefined()
         expect(Array.isArray(result.tools)).toBe(true)
         expect(result.tools.length).toBeGreaterThan(0)
@@ -116,11 +129,15 @@ describe('MCP Protocol Compliance', () => {
                 // No auth token
             )
             // If we get here, the test should fail
-            expect.fail('Expected request to fail with 401 Unauthorized, but it succeeded')
-        } catch (error: any) {
+            expect.fail(
+                'Expected request to fail with 401 Unauthorized, but it succeeded',
+            )
+        } catch (error: unknown) {
             // Should get an HTTP 401 error
-            expect(error.message).toContain('401')
-            expect(error.message).toContain('Unauthorized')
+            const errorMessage =
+                error instanceof Error ? error.message : String(error)
+            expect(errorMessage).toContain('401')
+            expect(errorMessage).toContain('Unauthorized')
         }
     })
 
