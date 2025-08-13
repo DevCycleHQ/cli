@@ -237,10 +237,7 @@ const insertServeTree = (
     rootTree.insert(serveTitle, serveTree)
 }
 
-const insertScheduleTree = (
-    rootTree: Tree,
-    rollout?: Rollout,
-) => {
+const insertScheduleTree = (rootTree: Tree, rollout?: Rollout) => {
     if (!rollout) return
 
     const scheduleTree = ux.tree()
