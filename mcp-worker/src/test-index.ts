@@ -6,11 +6,11 @@
 // Mock MCP Server for testing
 class MockMcpServer {
     constructor(config: any) {
-        console.log('Mock MCP Server initialized:', config)
+        // Mock MCP Server initialized silently for testing
     }
 
     registerTool(name: string, config: any, handler: any) {
-        console.log('Mock tool registered:', name)
+        // Tool registration handled silently in mock
     }
 }
 

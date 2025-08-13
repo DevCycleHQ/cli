@@ -31,7 +31,7 @@
         "prepack": "yarn build && oclif readme --multi",
         "pretest": "yarn format:check",
         "test": "yarn test:cli && yarn test:worker",
-        "test:ci": "yarn test --forbid-only",
+        "test:ci": "yarn test:cli --forbid-only && yarn test:worker",
         "test:worker": "cd mcp-worker && yarn test",
         "test:cli": "TS_NODE_TRANSPILE_ONLY=1 TS_NODE_PROJECT=./test/tsconfig.json mocha -r ts-node/register test/*.ts \"src/**/*.test.ts\"",
         "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",

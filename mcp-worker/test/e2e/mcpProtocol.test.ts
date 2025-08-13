@@ -116,7 +116,7 @@ describe('MCP Protocol Compliance', () => {
                 // No auth token
             )
             // If we get here, the test should fail
-            expect(true).toBe(false) // Force failure
+            expect.fail('Expected request to fail with 401 Unauthorized, but it succeeded')
         } catch (error: any) {
             // Should get an HTTP 401 error
             expect(error.message).toContain('401')

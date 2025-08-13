@@ -31,8 +31,6 @@ describe('Tool Discovery and Listing', () => {
 
         // Check that we have at least one mock tool
         expect(toolNames).toContain('mockTool')
-
-        console.log('Available tools:', toolNames)
     })
 
     it('should provide valid tool schemas', async () => {
@@ -193,10 +191,5 @@ describe('Tool Discovery and Listing', () => {
             // Tool names should be camelCase or similar
             expect(tool.name).toMatch(/^[a-zA-Z][a-zA-Z0-9]*$/)
         }
-
-        console.log(
-            'Available tools:',
-            tools.map((t) => t.name),
-        )
     })
 })
