@@ -159,7 +159,8 @@ const buildDefinitionTree = (
             const userProperty =
                 filter.subType === 'customData'
                     ? filter.dataKey
-                    : (subTypeMap as Record<string, string>)[filter.subType] || filter.subType
+                    : (subTypeMap as Record<string, string>)[filter.subType] ||
+                      filter.subType
             const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
         } else if (filter.type === 'audienceMatch') {
