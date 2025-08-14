@@ -16,7 +16,7 @@ async function fetchInstallGuideHandler(args: InstallGuideArgs) {
         ? trimmedGuide
         : `${trimmedGuide}.md`
     const repoPath = `install-prompts/${fileName}`
-    const sourceUrl = `https://raw.githubusercontent.com/DevCycleHQ-Sandbox/AI-Prompts-And-Rules/main/${repoPath}`
+    const sourceUrl = `https://raw.githubusercontent.com/DevCycleHQ/AI-Prompts-And-Rules/main/${repoPath}`
 
     try {
         const response = await axios.get<string>(sourceUrl, {

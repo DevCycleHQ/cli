@@ -12,7 +12,7 @@ const fs = require('fs')
 const path = require('path')
 
 // Keep a single constant for clarity and reuse
-const TREE_URL = 'https://api.github.com/repos/DevCycleHQ-Sandbox/AI-Prompts-And-Rules/git/trees/main?recursive=1'
+const TREE_URL = 'https://api.github.com/repos/DevCycleHQ/AI-Prompts-And-Rules/git/trees/main?recursive=1'
 
 function fetchJson(url, headers = {}) {
     const requestHeaders = {
