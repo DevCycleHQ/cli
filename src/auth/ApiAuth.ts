@@ -138,7 +138,7 @@ export class ApiAuth {
             const accessToken = response.data.access_token
             this.tokenCache.set(client_id, client_secret, accessToken)
             return accessToken
-        } catch (e) {
+        } catch {
             throw new Error(
                 'Failed to authenticate with the DevCycle API. Check your credentials.',
             )

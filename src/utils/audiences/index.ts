@@ -1,11 +1,4 @@
-import {
-    Audience,
-    AudienceMatchFilter,
-    FeatureConfig,
-    Filter,
-    Target,
-    UpdateTargetParams,
-} from '../../api/schemas'
+import { Audience, Filter } from '../../api/schemas'
 
 export const buildAudienceNameMap = (audiences?: Audience[]) => {
     return (

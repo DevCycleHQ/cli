@@ -13,7 +13,7 @@ export type FeaturePromptResult = {
 } & PromptResult
 
 let choices: FeatureChoice[]
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const featureChoices = async (
     input: Record<string, any>,
     search: string,

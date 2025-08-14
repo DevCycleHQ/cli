@@ -1,4 +1,3 @@
-/* eslint-disable */
 // It doesn't like the semicolons and double quotes inside the block strings
 import chalk from 'chalk'
 

@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { expect, test } from '@oclif/test'
 import chai from 'chai'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'

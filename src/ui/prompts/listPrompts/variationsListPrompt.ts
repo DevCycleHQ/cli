@@ -3,7 +3,6 @@ import {
     CreateVariationDto,
     CreateVariationParams,
     Variable,
-    Variation,
 } from '../../../api/schemas'
 import inquirer from '../../autocomplete'
 import Writer from '../../writer'

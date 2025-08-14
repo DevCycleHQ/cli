@@ -25,7 +25,7 @@ export class TokenCache {
                 this.filePath,
                 JSON.stringify({ identifier, token, expiry }),
             )
-        } catch (err) {
+        } catch {
             // don't throw error
         }
     }
@@ -44,7 +44,7 @@ export class TokenCache {
             ) {
                 return cache.token
             }
-        } catch (err) {
+        } catch {
             // don't throw error
         }
 
