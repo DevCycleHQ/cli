@@ -24,12 +24,6 @@ describe('environments get', () => {
         },
     ]
 
-    const mockSingleEnvironment = {
-        key: 'test-env',
-        name: 'Test Environment',
-        _id: '61450f3daec96f5cf4a49962',
-    }
-
     dvcTest()
         .nock(BASE_URL, (api) =>
             api

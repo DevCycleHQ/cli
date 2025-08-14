@@ -24,12 +24,6 @@ describe('variables get', () => {
         },
     ]
 
-    const mockSingleVariable = {
-        key: 'test-var',
-        name: 'Test Variable',
-        _id: '61450f3daec96f5cf4a49948',
-    }
-
     dvcTest()
         .nock(BASE_URL, (api) =>
             api

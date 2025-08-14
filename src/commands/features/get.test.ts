@@ -11,29 +11,6 @@ describe('features get', () => {
         'test-client-secret',
     ]
 
-    const mockSingleFeature = {
-        key: 'test-feature',
-        name: 'Test Feature',
-        _id: '61450f3daec96f5cf4a49950',
-        _project: 'test-project',
-        source: 'api',
-        _createdBy: 'test-user',
-        createdAt: '2021-09-15T12:00:00Z',
-        updatedAt: '2021-09-15T12:00:00Z',
-        variations: [],
-        variables: [],
-        tags: [],
-        configurations: [],
-        sdkVisibility: {
-            mobile: true,
-            client: true,
-            server: true,
-        },
-        settings: {},
-        readonly: false,
-        controlVariation: 'control',
-    }
-
     const verifyOutput = (output: any[]) => {
         output.forEach((feature: any, index: number) => {
             expect(feature).to.deep.equal(mockFeatures[index])
