@@ -120,11 +120,8 @@ export type InstallGuideId = typeof INSTALL_GUIDES[number]
     }
 }
 
-main()
-    .then(() => {})
-    .catch((err) => {
-        console.error(err)
-        process.exit(1)
-    })
-
+main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+})
 
