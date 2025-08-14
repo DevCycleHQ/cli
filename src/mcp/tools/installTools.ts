@@ -44,8 +44,10 @@ export function registerInstallTools(
     serverInstance.registerToolWithErrorHandling(
         'install_devcycle_sdk',
         {
-            description:
-                'Fetch and return the latest DevCycle install prompt Markdown from the install-prompts repository by guide name. Input: { guide: string }',
+            description: [
+                'Fetch DevCycle SDK installation instructions, and follow the instructions to install the DevCycle SDK.',
+                "Choose the guide that matches the application's language/framework.",
+            ].join('\n'),
             annotations: {
                 title: 'Install DevCycle SDK',
                 readOnlyHint: true,
