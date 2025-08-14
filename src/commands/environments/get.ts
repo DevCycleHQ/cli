@@ -7,6 +7,7 @@ import {
 import { EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
 import Base from '../base'
 import { batchRequests } from '../../utils/batchRequests'
+import { parseKeysFromArgs } from '../../utils/parseKeysFromArgs'
 
 export default class DetailedEnvironments extends Base {
     static hidden = false
@@ -40,18 +41,7 @@ export default class DetailedEnvironments extends Base {
         const { headless, project } = flags
         await this.requireProject(project, headless)
 
-        // Handle positional arguments - they take precedence over --keys flag
-        let keys: string[] | undefined
-        if (argv && argv.length > 0) {
-            // Collect all positional arguments and split any comma-separated values
-            keys = argv.flatMap((arg) => String(arg).split(','))
-        } else if (args.keys) {
-            // Handle the first positional argument if provided
-            keys = args.keys.split(',')
-        } else if (flags.keys) {
-            // Fall back to --keys flag
-            keys = flags.keys.split(',')
-        }
+        const keys = parseKeysFromArgs(args, argv, flags)
 
         if (keys && keys.length > 0) {
             const environments = await batchRequests(keys, (key) =>
