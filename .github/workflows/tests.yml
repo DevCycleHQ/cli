@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-4
     strategy:
       matrix:
           node-version: [22.12]
