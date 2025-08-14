@@ -1,4 +1,5 @@
 import type { UserProps, DevCycleJWTClaims } from '../../src/types'
+import { defaultEnv } from './fixtures'
 
 /**
  * Creates a mock JWT token for testing
@@ -77,16 +78,9 @@ export function createMockOAuthKV() {
  */
 export function createMockEnv(overrides: Partial<Env> = {}): Env {
     return {
-        NODE_ENV: 'test',
-        API_BASE_URL: 'https://api-test.devcycle.com',
-        AUTH0_DOMAIN: 'test-auth.devcycle.com',
-        AUTH0_AUDIENCE: 'https://api-test.devcycle.com/',
-        AUTH0_SCOPE: 'openid profile email offline_access',
-        AUTH0_CLIENT_ID: 'test-client-id',
-        AUTH0_CLIENT_SECRET: 'test-client-secret',
-        ENABLE_OUTPUT_SCHEMAS: 'false',
+        ...defaultEnv,
         OAUTH_KV: createMockOAuthKV(),
-        MCP_OBJECT: {} as any, // Mock Durable Object
+        MCP_OBJECT: {} as any,
         ...overrides,
     } as Env
 }

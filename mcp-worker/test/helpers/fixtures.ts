@@ -84,3 +84,17 @@ export const mockApiResponses = {
         },
     ],
 }
+
+/**
+ * Default test environment values
+ */
+export const defaultEnv = {
+    NODE_ENV: 'test',
+    API_BASE_URL: 'https://api-test.devcycle.com',
+    AUTH0_DOMAIN: 'test-auth.devcycle.com',
+    AUTH0_AUDIENCE: 'https://api-test.devcycle.com/',
+    AUTH0_SCOPE: 'openid profile email offline_access',
+    AUTH0_CLIENT_ID: 'test-client-id',
+    AUTH0_CLIENT_SECRET: 'test-client-secret',
+    ENABLE_OUTPUT_SCHEMAS: 'false',
+} as const
