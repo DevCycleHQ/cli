@@ -5,7 +5,7 @@ Create, view, or modify Features with the Management API.
 
 * [`dvc features create`](#dvc-features-create)
 * [`dvc features delete [FEATURE]`](#dvc-features-delete-feature)
-* [`dvc features get`](#dvc-features-get)
+* [`dvc features get [KEYS]`](#dvc-features-get-keys)
 * [`dvc features list`](#dvc-features-list)
 * [`dvc features ls`](#dvc-features-ls)
 * [`dvc features update [KEY]`](#dvc-features-update-key)
@@ -43,7 +43,7 @@ DESCRIPTION
   Create a new Feature.
 ```
 
-_See code: [src/commands/features/create.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/features/create.ts)_
+_See code: [src/commands/features/create.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/features/create.ts)_
 
 ## `dvc features delete [FEATURE]`
 
@@ -72,17 +72,20 @@ DESCRIPTION
   Delete a feature
 ```
 
-_See code: [src/commands/features/delete.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/features/delete.ts)_
+_See code: [src/commands/features/delete.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/features/delete.ts)_
 
-## `dvc features get`
+## `dvc features get [KEYS]`
 
 Retrieve Features from the Management API
 
 ```
 USAGE
-  $ dvc features get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--keys <value>] [--search <value>]
-    [--page <value>] [--per-page <value>]
+  $ dvc features get [KEYS] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>]
+    [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--keys <value>]
+    [--search <value>] [--page <value>] [--per-page <value>]
+
+ARGUMENTS
+  KEYS  Feature keys to fetch (space-separated or comma-separated)
 
 FLAGS
   --keys=<value>      Comma-separated list of feature keys to fetch details for
@@ -107,10 +110,16 @@ DESCRIPTION
 EXAMPLES
   $ dvc features get
 
+  $ dvc features get feature-one
+
+  $ dvc features get feature-one feature-two
+
+  $ dvc features get feature-one,feature-two
+
   $ dvc features get --keys=feature-one,feature-two
 ```
 
-_See code: [src/commands/features/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/features/get.ts)_
+_See code: [src/commands/features/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/features/get.ts)_
 
 ## `dvc features list`
 
@@ -145,7 +154,7 @@ ALIASES
   $ dvc features ls
 ```
 
-_See code: [src/commands/features/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/features/list.ts)_
+_See code: [src/commands/features/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/features/list.ts)_
 
 ## `dvc features ls`
 
@@ -213,4 +222,4 @@ DESCRIPTION
   Update a Feature.
 ```
 
-_See code: [src/commands/features/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/features/update.ts)_
+_See code: [src/commands/features/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/features/update.ts)_

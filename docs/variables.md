@@ -4,7 +4,7 @@
 Create, view, or modify Variables with the Management API.
 
 * [`dvc variables create`](#dvc-variables-create)
-* [`dvc variables get`](#dvc-variables-get)
+* [`dvc variables get [KEYS]`](#dvc-variables-get-keys)
 * [`dvc variables list`](#dvc-variables-list)
 * [`dvc variables ls`](#dvc-variables-ls)
 * [`dvc variables update [KEY]`](#dvc-variables-update-key)
@@ -44,15 +44,20 @@ DESCRIPTION
   Create a new Variable for an existing Feature.
 ```
 
-_See code: [src/commands/variables/create.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/variables/create.ts)_
+_See code: [src/commands/variables/create.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/variables/create.ts)_
 
-## `dvc variables get`
+## `dvc variables get [KEYS]`
+
+Retrieve Variables from the Management API
 
 ```
 USAGE
-  $ dvc variables get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
-    <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--keys <value>] [--search <value>]
-    [--page <value>] [--per-page <value>]
+  $ dvc variables get [KEYS] [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>]
+    [--client-id <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--keys <value>]
+    [--search <value>] [--page <value>] [--per-page <value>]
+
+ARGUMENTS
+  KEYS  Variable keys to fetch (space-separated or comma-separated)
 
 FLAGS
   --keys=<value>      Comma-separated list of variable keys to fetch details for
@@ -70,9 +75,23 @@ GLOBAL FLAGS
                               warnings about missing credentials.
   --project=<value>           Project key to use for the DevCycle API requests
   --repo-config-path=<value>  Override the default location to look for the repo config.yml file
+
+DESCRIPTION
+  Retrieve Variables from the Management API
+
+EXAMPLES
+  $ dvc variables get
+
+  $ dvc variables get var-one
+
+  $ dvc variables get var-one var-two
+
+  $ dvc variables get var-one,var-two
+
+  $ dvc variables get --keys=var-one,var-two
 ```
 
-_See code: [src/commands/variables/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/variables/get.ts)_
+_See code: [src/commands/variables/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/variables/get.ts)_
 
 ## `dvc variables list`
 
@@ -102,7 +121,7 @@ ALIASES
   $ dvc variables ls
 ```
 
-_See code: [src/commands/variables/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/variables/list.ts)_
+_See code: [src/commands/variables/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/variables/list.ts)_
 
 ## `dvc variables ls`
 
@@ -161,4 +180,4 @@ DESCRIPTION
   Update a Variable.
 ```
 
-_See code: [src/commands/variables/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.0/src/commands/variables/update.ts)_
+_See code: [src/commands/variables/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.0.1/src/commands/variables/update.ts)_
