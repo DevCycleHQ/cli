@@ -7,3 +7,6 @@ oclif.manifest.json
 README.md
 **/*.snap
 test-utils/fixtures
+
+# Generated install guides enum
+src/mcp/tools/installGuides.generated.ts
