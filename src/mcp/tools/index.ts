@@ -11,6 +11,7 @@ import { registerSelfTargetingTools } from './selfTargetingTools'
 import { registerVariableTools } from './variableTools'
 import { registerLocalProjectTools } from './localProjectTools'
 import { DevCycleApiClient } from '../utils/api'
+import { registerInstallTools } from './installTools'
 
 /**
  * Register all DevCycle MCP tools with a server instance
@@ -26,6 +27,7 @@ export function registerAllToolsWithServer(
     registerResultsTools(serverInstance, apiClient)
     registerSelfTargetingTools(serverInstance, apiClient)
     registerVariableTools(serverInstance, apiClient)
+    registerInstallTools(serverInstance)
 
     // Register local project selection tools only for local MCP (not worker)
     // We detect local MCP by checking if the apiClient is an instance of DevCycleApiClient

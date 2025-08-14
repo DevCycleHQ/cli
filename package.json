@@ -18,7 +18,7 @@
         "/oclif.manifest.json"
     ],
     "scripts": {
-        "build": "shx rm -rf dist && tsc -b && oclif manifest",
+        "build": "node scripts/fetch-install-prompts.js && shx rm -rf dist && tsc -b && oclif manifest",
         "build:tar": "oclif pack tarballs",
         "build:worker": "cd mcp-worker && yarn build",
         "deploy:worker": "cd mcp-worker && yarn deploy",
