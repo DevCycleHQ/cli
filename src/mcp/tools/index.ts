@@ -27,7 +27,7 @@ export function registerAllToolsWithServer(
     registerResultsTools(serverInstance, apiClient)
     registerSelfTargetingTools(serverInstance, apiClient)
     registerVariableTools(serverInstance, apiClient)
-    registerInstallTools(serverInstance, apiClient)
+    registerInstallTools(serverInstance)
 
     // Register local project selection tools only for local MCP (not worker)
     // We detect local MCP by checking if the apiClient is an instance of DevCycleApiClient

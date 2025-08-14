@@ -86,7 +86,7 @@ async function main() {
                 // allow only safe characters (letters, numbers, dash, underscore, slash)
                 .replace(/[^a-zA-Z0-9_\-\/]/g, '')
                 // collapse multiple slashes
-                .replace(/\/+/, '/')
+                .replace(/\/+\/+/g, '/')
                 // trim leading/trailing slashes
                 .replace(/^\/+|\/+$/g, '')
             if (cleaned) slugSet.add(cleaned)

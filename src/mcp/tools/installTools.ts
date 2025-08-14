@@ -40,9 +40,7 @@ async function fetchInstallGuideHandler(args: InstallGuideArgs) {
 
 export function registerInstallTools(
     serverInstance: DevCycleMCPServerInstance,
-    _apiClient: IDevCycleApiClient,
 ): void {
-    void _apiClient
     serverInstance.registerToolWithErrorHandling(
         'install_devcycle_sdk',
         {
