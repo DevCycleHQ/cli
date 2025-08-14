@@ -28,12 +28,6 @@ const subTypeMap = {
     user_id: 'User ID',
     platform: 'Platform',
     platformVersion: 'Platform Version',
-    country: 'Country',
-    appVersion: 'App Version',
-    deviceModel: 'Device Model',
-    customData: 'Custom Data',
-    audienceMatch: 'Audience Match',
-    deviceType: 'Device Type',
 }
 const comparatorMap = {
     '=': 'is',
@@ -165,7 +159,7 @@ const buildDefinitionTree = (
             const userProperty =
                 filter.subType === 'customData'
                     ? filter.dataKey
-                    : subTypeMap[filter.subType]
+                    : (subTypeMap as Record<string, string>)[filter.subType] || filter.subType
             const prefixedProperty = prefixWithOperator(userProperty, index)
             definitionTree.insert(prefixedProperty, userFilter)
         } else if (filter.type === 'audienceMatch') {
