@@ -1,4 +1,4 @@
-import { Flags } from '@oclif/core'
+import { Args, Flags } from '@oclif/core'
 import inquirer from '../../ui/autocomplete'
 import {
     fetchEnvironments,
@@ -7,14 +7,26 @@ import {
 import { EnvironmentPromptResult, environmentPrompt } from '../../ui/prompts'
 import Base from '../base'
 import { batchRequests } from '../../utils/batchRequests'
+import { parseKeysFromArgs } from '../../utils/parseKeysFromArgs'
 
 export default class DetailedEnvironments extends Base {
     static hidden = false
     static description = 'Retrieve Environments from the management API'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
+        '<%= config.bin %> <%= command.id %> environment-one',
+        '<%= config.bin %> <%= command.id %> environment-one environment-two',
+        '<%= config.bin %> <%= command.id %> environment-one,environment-two',
         '<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two',
     ]
+    static args = {
+        keys: Args.string({
+            description:
+                'Environment keys to fetch (space-separated or comma-separated)',
+            required: false,
+        }),
+    }
+    static strict = false
     static flags = {
         ...Base.flags,
         keys: Flags.string({
@@ -25,12 +37,13 @@ export default class DetailedEnvironments extends Base {
     authRequired = true
 
     public async run(): Promise<void> {
-        const { flags } = await this.parse(DetailedEnvironments)
-        const keys = flags['keys']?.split(',')
+        const { args, argv, flags } = await this.parse(DetailedEnvironments)
         const { headless, project } = flags
         await this.requireProject(project, headless)
 
-        if (keys) {
+        const keys = parseKeysFromArgs(args, argv, flags)
+
+        if (keys && keys.length > 0) {
             const environments = await batchRequests(keys, (key) =>
                 fetchEnvironmentByKey(this.authToken, this.projectKey, key),
             )

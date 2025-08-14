@@ -1,5 +1,5 @@
 {
-  "version": "5.21.2",
+  "version": "6.0.0",
   "commands": {
     "authCommand": {
       "id": "authCommand",
@@ -1194,7 +1194,7 @@
     "environments:get": {
       "id": "environments:get",
       "description": "Retrieve Environments from the management API",
-      "strict": true,
+      "strict": false,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
@@ -1203,6 +1203,9 @@
       "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> environment-one",
+        "<%= config.bin %> <%= command.id %> environment-one environment-two",
+        "<%= config.bin %> <%= command.id %> environment-one,environment-two",
         "<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two"
       ],
       "flags": {
@@ -1295,7 +1298,13 @@
           "multiple": false
         }
       },
-      "args": {}
+      "args": {
+        "keys": {
+          "name": "keys",
+          "description": "Environment keys to fetch (space-separated or comma-separated)",
+          "required": false
+        }
+      }
     },
     "environments:list": {
       "id": "environments:list",
@@ -1761,7 +1770,7 @@
     "features:get": {
       "id": "features:get",
       "description": "Retrieve Features from the Management API",
-      "strict": true,
+      "strict": false,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
@@ -1770,6 +1779,9 @@
       "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> feature-one",
+        "<%= config.bin %> <%= command.id %> feature-one feature-two",
+        "<%= config.bin %> <%= command.id %> feature-one,feature-two",
         "<%= config.bin %> <%= command.id %> --keys=feature-one,feature-two"
       ],
       "flags": {
@@ -1880,7 +1892,13 @@
           "multiple": false
         }
       },
-      "args": {}
+      "args": {
+        "keys": {
+          "name": "keys",
+          "description": "Feature keys to fetch (space-separated or comma-separated)",
+          "required": false
+        }
+      }
     },
     "features:list": {
       "id": "features:list",
@@ -5198,13 +5216,21 @@
     },
     "variables:get": {
       "id": "variables:get",
-      "strict": true,
+      "description": "Retrieve Variables from the Management API",
+      "strict": false,
       "pluginName": "@devcycle/cli",
       "pluginAlias": "@devcycle/cli",
       "pluginType": "core",
       "hidden": false,
       "aliases": [],
       "hiddenAliases": [],
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> var-one",
+        "<%= config.bin %> <%= command.id %> var-one var-two",
+        "<%= config.bin %> <%= command.id %> var-one,var-two",
+        "<%= config.bin %> <%= command.id %> --keys=var-one,var-two"
+      ],
       "flags": {
         "config-path": {
           "name": "config-path",
@@ -5313,7 +5339,13 @@
           "multiple": false
         }
       },
-      "args": {}
+      "args": {
+        "keys": {
+          "name": "keys",
+          "description": "Variable keys to fetch (space-separated or comma-separated)",
+          "required": false
+        }
+      }
     },
     "variables:list": {
       "id": "variables:list",

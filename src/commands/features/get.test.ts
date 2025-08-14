@@ -70,4 +70,32 @@ describe('features get', () => {
         .it('passes search param to api', (ctx) => {
             verifyOutput(JSON.parse(ctx.stdout))
         })
+
+    // Test positional arguments functionality
+    dvcTest()
+        .nock(BASE_URL, (api) =>
+            api
+                .get(`/v2/projects/${projectKey}/features/feature-1`)
+                .reply(200, mockFeatures[0])
+                .get(`/v2/projects/${projectKey}/features/feature-2`)
+                .reply(200, mockFeatures[1]),
+        )
+        .stdout()
+        .command([
+            'features get',
+            'feature-1',
+            'feature-2',
+            '--project',
+            projectKey,
+            ...authFlags,
+        ])
+        .it(
+            'fetches multiple features by space-separated positional arguments',
+            (ctx) => {
+                expect(JSON.parse(ctx.stdout)).to.deep.equal([
+                    mockFeatures[0],
+                    mockFeatures[1],
+                ])
+            },
+        )
 })
