@@ -288,7 +288,7 @@ export async function setFeatureTargetingHandler(
     const apiFunction = args.enabled ? enableTargeting : disableTargeting
 
     return await apiClient.executeWithDashboardLink(
-        operation,
+        'set_feature_targeting',
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
@@ -362,7 +362,7 @@ export async function updateFeatureTargetingHandler(
     const { feature_key, environment_key, ...configData } = args
 
     return await apiClient.executeWithDashboardLink(
-        'updateFeatureTargeting',
+        'update_feature_targeting',
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
