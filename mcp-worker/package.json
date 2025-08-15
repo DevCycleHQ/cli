@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "wrangler dev",
         "deploy": "wrangler deploy",
+        "deploy:dev": "wrangler deploy --env dev",
         "build": "tsc",
         "type-check": "tsc --noEmit",
         "cf-typegen": "wrangler types"

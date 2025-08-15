@@ -44,7 +44,39 @@ ENABLE_OUTPUT_SCHEMAS = "false"
 [observability]
 enabled = true
 
-# Development configuration
+# Development configuration for local testing
 [dev]
 port = 8787
 local_protocol = "http"
+
+# Development environment (separate deployment)
+[env.dev]
+name = "devcycle-mcp-server-dev"
+
+# Development route
+[[env.dev.routes]]
+pattern = "mcp-dev.devcycle.com/*"
+zone_name = "devcycle.com"
+
+# Development Durable Objects configuration
+[[env.dev.durable_objects.bindings]]
+class_name = "DevCycleMCP"
+name = "MCP_OBJECT"
+
+# Development KV namespace (separate from production)
+[[env.dev.kv_namespaces]]
+binding = "OAUTH_KV"
+id = "511f2abf74904876ba3e4627154f4d86"
+
+# Development environment variables
+[env.dev.vars]
+NODE_ENV = "development"
+API_BASE_URL = "https://api.devcycle.com"
+AUTH0_DOMAIN = "auth.devcycle.com"
+AUTH0_AUDIENCE = "https://api.devcycle.com/"
+AUTH0_SCOPE = "openid profile email offline_access"
+ENABLE_OUTPUT_SCHEMAS = "false"
+
+# Development secrets (set via: wrangler secret put <SECRET_NAME> --env dev)
+# AUTH0_CLIENT_ID
+# AUTH0_CLIENT_SECRET
