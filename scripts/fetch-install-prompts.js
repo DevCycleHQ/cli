@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global console */
 /*
  * Auto-generates src/mcp/tools/installGuides.generated.ts
  * by listing all Markdown files under install-prompts/ (recursively)
@@ -66,7 +67,7 @@ async function main() {
                 !filePath.includes('..') &&
                 !path.isAbsolute(filePath) &&
                 filePath.startsWith('install-prompts/') &&
-                /^[a-zA-Z0-9_.\-\/]+$/.test(filePath)
+                /^[a-zA-Z0-9_.-/]+$/.test(filePath)
             )
         }
 
@@ -84,9 +85,9 @@ async function main() {
             if (!raw || raw.includes('..') || raw.startsWith('/')) continue
             const cleaned = raw
                 // allow only safe characters (letters, numbers, dash, underscore, slash)
-                .replace(/[^a-zA-Z0-9_\-\/]/g, '')
+                .replace(/[^a-zA-Z0-9_\-/]/g, '')
                 // collapse multiple slashes
-                .replace(/\/+\/+/g, '/')
+                .replace(/\/+/g, '/')
                 // trim leading/trailing slashes
                 .replace(/^\/+|\/+$/g, '')
             if (cleaned) slugSet.add(cleaned)
