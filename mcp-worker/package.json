@@ -19,7 +19,7 @@
         "oauth4webapi": "^3.6.1"
     },
     "devDependencies": {
-        "wrangler": "^4.28.0"
+        "wrangler": "^4.31.0"
     },
     "packageManager": "yarn@4.9.2"
 }

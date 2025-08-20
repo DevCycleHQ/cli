@@ -22,6 +22,7 @@ import type { UserProps } from './types'
  */
 type DevCycleMCPState = {
     selectedProjectKey?: string
+    clientToken?: string
 }
 
 /**
@@ -133,6 +134,18 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
 
         // Register worker-specific project selection tools using the modern pattern
         registerProjectSelectionTools(serverAdapter, this.apiClient)
+
+        // Persist optional clientToken from props into MCP state for this session
+        if (this.props.clientToken) {
+            const preview = String(this.props.clientToken).slice(0, 6)
+            console.log('MCP init: persisting clientToken', { preview })
+            this.setState({
+                ...(this.state || {}),
+                clientToken: this.props.clientToken,
+            })
+        } else {
+            console.log('MCP init: no clientToken to persist')
+        }
 
         console.log('✅ DevCycle MCP Worker initialization completed')
     }

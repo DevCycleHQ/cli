@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { z } from 'zod'
-import type { IDevCycleApiClient } from '../api/interface'
 import type { DevCycleMCPServerInstance } from '../server'
 import { INSTALL_GUIDES } from './installGuides.generated'
 

@@ -14,6 +14,8 @@ export type UserProps = {
         idToken: string
         refreshToken: string
     }
+    /** Optional correlation token captured from /mcp/:token */
+    clientToken?: string
 }
 
 // Env interface is now generated in worker-configuration.d.ts

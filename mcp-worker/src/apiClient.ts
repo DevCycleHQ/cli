@@ -7,8 +7,11 @@ import { setMCPHeaders, setMCPToolCommand } from '../../src/mcp/utils/headers'
  * Interface for state management - allows McpAgent or other state managers
  */
 interface IStateManager {
-    state?: { selectedProjectKey?: string }
-    setState(newState: { selectedProjectKey?: string }): void
+    state?: { selectedProjectKey?: string; clientToken?: string }
+    setState(newState: {
+        selectedProjectKey?: string
+        clientToken?: string
+    }): void
 }
 
 /**
@@ -58,6 +61,9 @@ export class WorkerApiClient implements IDevCycleApiClient {
             userId: this.getUserId(),
             orgId: this.getOrgId(),
             projectKey: requiresProject ? projectKey : 'N/A',
+            clientToken: this.stateManager?.state?.clientToken
+                ? `${this.stateManager.state.clientToken.slice(0, 6)}…`
+                : undefined,
         })
 
         try {

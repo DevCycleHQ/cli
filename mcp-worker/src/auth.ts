@@ -1,5 +1,6 @@
 // Import removed - using env parameter instead
 import { Hono } from 'hono'
+import type { Context } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 import * as oauth from 'oauth4webapi'
 import type { UserProps } from './types'
@@ -18,6 +19,7 @@ type Auth0AuthRequest = {
     nonce: string
     transactionState: string
     consentToken: string
+    clientToken?: string
 }
 
 export async function getOidcConfig({
@@ -57,9 +59,9 @@ export async function getOidcConfig({
  * original request information in a state-specific cookie for later retrieval.
  * Then it shows a consent screen before redirecting to Auth0.
  */
-export async function authorize(
-    c: any & { env: Env & { OAUTH_PROVIDER: OAuthHelpers } },
-) {
+type AppEnv = { Bindings: Env & { OAUTH_PROVIDER: OAuthHelpers } }
+
+export async function authorize(c: Context<AppEnv>) {
     const mcpClientAuthRequest = await c.env.OAUTH_PROVIDER.parseAuthRequest(
         c.req.raw,
     )
@@ -79,7 +81,7 @@ export async function authorize(
     const transactionState = oauth.generateRandomState()
     const consentToken = oauth.generateRandomState() // For CSRF protection on consent form
 
-    // We will persist everything in a cookie.
+    // Build the transaction payload (persisted cross redirects)
     const auth0AuthRequest: Auth0AuthRequest = {
         codeChallenge: await oauth.calculatePKCECodeChallenge(codeVerifier),
         codeVerifier,
@@ -87,16 +89,30 @@ export async function authorize(
         mcpAuthRequest: mcpClientAuthRequest,
         nonce: oauth.generateRandomNonce(),
         transactionState,
+        // Carry optional client token from query string if provided
+        clientToken:
+            c.req.query('client_token') ||
+            c.req.query('client_hash') ||
+            undefined,
+    }
+
+    // Debug: log clientToken presence (mask to first 6 chars)
+    if (auth0AuthRequest.clientToken) {
+        const preview = auth0AuthRequest.clientToken.slice(0, 6)
+        console.log('OAuth authorize: received clientToken', { preview })
+    } else {
+        console.log('OAuth authorize: no clientToken provided')
     }
 
     // Store the auth request in a transaction-specific cookie
     const cookieName = `auth0_req_${transactionState}`
+    const nodeEnv = String(c.env.NODE_ENV)
     setCookie(c, cookieName, btoa(JSON.stringify(auth0AuthRequest)), {
         httpOnly: true,
         maxAge: 60 * 60 * 1, // 1 hour
         path: '/',
-        sameSite: c.env.NODE_ENV !== 'development' ? 'none' : 'lax',
-        secure: c.env.NODE_ENV !== 'development',
+        sameSite: nodeEnv !== 'development' ? 'none' : 'lax',
+        secure: nodeEnv !== 'development',
     })
 
     // Extract client information for the consent screen
@@ -124,7 +140,7 @@ export async function authorize(
  *
  * This route handles the consent confirmation before redirecting to Auth0
  */
-export async function confirmConsent(c: any) {
+export async function confirmConsent(c: Context<AppEnv>) {
     // Get form data
     const formData = await c.req.formData()
 
@@ -188,7 +204,10 @@ export async function confirmConsent(c: any) {
     })
 
     // Redirect to Auth0's authorization endpoint
-    const authorizationUrl = new URL(as.authorization_endpoint!)
+    if (!as.authorization_endpoint) {
+        return c.text('OIDC configuration missing authorization endpoint', 500)
+    }
+    const authorizationUrl = new URL(as.authorization_endpoint)
     authorizationUrl.searchParams.set('client_id', c.env.AUTH0_CLIENT_ID)
     authorizationUrl.searchParams.set(
         'redirect_uri',
@@ -215,9 +234,7 @@ export async function confirmConsent(c: any) {
  * It exchanges the authorization code for tokens and completes the
  * authorization process.
  */
-export async function callback(
-    c: any & { env: Env & { OAUTH_PROVIDER: OAuthHelpers } },
-) {
+export async function callback(c: Context<AppEnv>) {
     // Parse the state parameter to extract transaction state and Auth0 state
     const stateParam = c.req.query('state') as string
     if (!stateParam) {
@@ -298,10 +315,11 @@ export async function callback(
                 idToken: result.id_token,
                 refreshToken: result.refresh_token,
             },
+            clientToken: auth0AuthRequest.clientToken,
         } as UserProps,
         request: auth0AuthRequest.mcpAuthRequest,
         scope: auth0AuthRequest.mcpAuthRequest.scope,
-        userId: claims.sub!,
+        userId: String(claims.sub || claims.email || 'unknown'),
     })
 
     return Response.redirect(redirectTo, 302)
@@ -407,6 +425,24 @@ export function createAuthApp(): Hono<{
     Bindings: Env & { OAUTH_PROVIDER: OAuthHelpers }
 }> {
     const app = new Hono<{ Bindings: Env & { OAUTH_PROVIDER: OAuthHelpers } }>()
+
+    // Capture /connect/:token and redirect to OAuth authorize carrying token
+    app.get('/connect/:token', (c) => {
+        const clientToken = c.req.param('token')
+        if (clientToken) {
+            const preview = clientToken.slice(0, 6)
+            console.log('Captured clientToken from /connect', { preview })
+        } else {
+            console.log('Captured empty clientToken from /connect')
+        }
+        const url = new URL(c.req.url)
+        // Redirect to /oauth/authorize carrying the client_token param
+        url.pathname = '/oauth/authorize'
+        if (clientToken) {
+            url.searchParams.set('client_token', clientToken)
+        }
+        return c.redirect(url.toString(), 302)
+    })
 
     // OAuth routes - these are required for the OAuth flow
     app.get('/oauth/authorize', authorize)
