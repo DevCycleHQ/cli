@@ -4,27 +4,23 @@ main = "src/index.ts"
 compatibility_date = "2025-06-28"
 compatibility_flags = ["nodejs_compat"]
 
-# Production route
-[[routes]]
+# Production environment (explicit section for --env prod)
+[env.prod]
+name = "devcycle-mcp-server"
+
+[[env.prod.routes]]
 pattern = "mcp.devcycle.com/*"
 zone_name = "devcycle.com"
 
-# Durable Objects configuration
-[[migrations]]
-new_sqlite_classes = ["DevCycleMCP"]
-tag = "v1"
-
-[[durable_objects.bindings]]
+[[env.prod.durable_objects.bindings]]
 class_name = "DevCycleMCP"
 name = "MCP_OBJECT"
 
-# KV namespace for OAuth session storage
-[[kv_namespaces]]
+[[env.prod.kv_namespaces]]
 binding = "OAUTH_KV"
 id = "511f2abf74904876ba3e4627154f4d86"
 
-# Environment variables
-[vars]
+[env.prod.vars]
 NODE_ENV = "production"
 API_BASE_URL = "https://api.devcycle.com"
 AUTH0_DOMAIN = "auth.devcycle.com"
@@ -32,14 +28,13 @@ AUTH0_AUDIENCE = "https://api.devcycle.com/"
 AUTH0_SCOPE = "openid profile email offline_access"
 ENABLE_OUTPUT_SCHEMAS = "false"
 
-# Secrets (set via: wrangler secret put <SECRET_NAME>)
-# AUTH0_CLIENT_ID
-# AUTH0_CLIENT_SECRET
-# ABLY_API_KEY
-
-# AI binding for future features (not currently used)
-[ai]
+[env.prod.ai]
 binding = "AI"
+
+# Durable Objects configuration
+[[migrations]]
+new_sqlite_classes = ["DevCycleMCP"]
+tag = "v1"
 
 # Observability
 [observability]
@@ -77,6 +72,10 @@ AUTH0_DOMAIN = "auth.devcycle.com"
 AUTH0_AUDIENCE = "https://api.devcycle.com/"
 AUTH0_SCOPE = "openid profile email offline_access"
 ENABLE_OUTPUT_SCHEMAS = "false"
+
+# Dev AI binding
+[env.dev.ai]
+binding = "AI"
 
 # Development secrets (set via: wrangler secret put <SECRET_NAME> --env dev)
 # AUTH0_CLIENT_ID
