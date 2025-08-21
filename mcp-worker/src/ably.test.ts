@@ -57,20 +57,26 @@ describe('publishMCPInstallEvent', () => {
 
     test('throws when ABLY_API_KEY missing', async () => {
         await expect(
-            publishMCPInstallEvent({}, {
-                org_id: 'o',
-                name: 'N',
-                email: 'e',
-            } as any),
+            publishMCPInstallEvent(
+                {},
+                {
+                    org_id: 'o',
+                    name: 'N',
+                    email: 'e',
+                } as any,
+            ),
         ).rejects.toThrow('ABLY_API_KEY is required to publish Ably MCP events')
     })
 
     test('throws when org_id missing', async () => {
         await expect(
-            publishMCPInstallEvent({ ABLY_API_KEY: 'k' }, {
-                name: 'N',
-                email: 'e',
-            } as any),
+            publishMCPInstallEvent(
+                { ABLY_API_KEY: 'k' },
+                {
+                    name: 'N',
+                    email: 'e',
+                } as any,
+            ),
         ).rejects.toThrow(
             'org_id is required in claims to publish Ably MCP events',
         )
