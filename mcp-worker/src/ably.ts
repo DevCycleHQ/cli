@@ -17,10 +17,6 @@ export async function publishMCPInstallEvent(
     try {
         const ably = new Ably.Rest.Promise({ key: env.ABLY_API_KEY })
         const ablyChannel = ably.channels.get(channel)
-        console.log(
-            `Publishing "mcp-install" event to Ably channel: ${channel}`,
-            claims,
-        )
         await ablyChannel.publish('mcp-install', claims)
         console.log(
             `Successfully published "mcp-install" event to Ably channel: ${channel}`,
@@ -33,5 +29,6 @@ export async function publishMCPInstallEvent(
                     : { message: String(error) },
             channel,
         })
+        throw error
     }
 }

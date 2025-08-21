@@ -3,8 +3,7 @@ import { Hono } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 import * as oauth from 'oauth4webapi'
 import type { UserProps } from './types'
-import type { DevCycleJWTClaims } from './types'
-import { publishMCPInstallEvent } from './telemetry'
+import { publishMCPInstallEvent } from './ably'
 import { OAuthHelpers } from '@cloudflare/workers-oauth-provider'
 import type {
     AuthRequest,
@@ -306,7 +305,13 @@ export async function callback(
         userId: claims.sub!,
     })
 
-    c.executionCtx.waitUntil(publishMCPInstallEvent(c.env, claims))
+    c.executionCtx.waitUntil(async () => {
+        try {
+            await publishMCPInstallEvent(c.env, claims)
+        } catch (error) {
+            console.error('Error publishing MCP install event', error)
+        }
+    })
 
     return Response.redirect(redirectTo, 302)
 }
