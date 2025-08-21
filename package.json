@@ -33,10 +33,10 @@
         "posttest": "yarn lint",
         "prepack": "yarn build && oclif readme --multi",
         "pretest": "yarn format:check",
-        "test": "mocha -r ts-node/register test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
-        "test:ci": "mocha --forbid-only -r ts-node/register test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
+        "test": "vitest run --config vitest.config.ts && yarn workspace @devcycle/mcp-worker test",
+        "test:ci": "vitest run --config vitest.config.ts && yarn workspace @devcycle/mcp-worker test",
         "validate:server": "mkdir -p .schema && curl -sSf https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json -o .schema/server.schema.json && ajv validate -c ajv-formats --spec=draft7 --strict=false -s .schema/server.schema.json -d server.json",
-        "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
+        "test:update-snapshots": "vitest -u --config vitest.config.ts && yarn workspace @devcycle/mcp-worker test",
         "version": "oclif readme --multi && git add README.md"
     },
     "dependencies": {
@@ -103,7 +103,8 @@
         "sinon": "^19.0.2",
         "ts-node": "^10.9.2",
         "typescript": "^5.7.2",
-        "typescript-eslint": "^8.21.0"
+        "typescript-eslint": "^8.21.0",
+        "vitest": "^3.2.4"
     },
     "oclif": {
         "bin": "dvc",
