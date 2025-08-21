@@ -5,6 +5,7 @@
         "rootDir": "../",
         "noEmit": true,
         "types": [
+            "vitest/globals",
             "node"
         ],
         "lib": ["ES2022"],
