@@ -1,13 +1,10 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import inquirer from 'inquirer'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
-import chai from 'chai'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 
 describe('variations update', () => {
     beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
     const projectKey = 'test-project'
     const authFlags = [
         '--client-id',

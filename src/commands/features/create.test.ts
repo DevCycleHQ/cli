@@ -1,4 +1,4 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import inquirer from 'inquirer'
 import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'

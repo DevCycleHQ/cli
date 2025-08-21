@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`environments get > fetches multiple environments by space-separated positional arguments 1`] = `
+"[
+  {
+    "key": "first-env",
+    "name": "first env"
+  },
+  {
+    "key": "second-env",
+    "name": "second env"
+  }
+]
+"
+`;
