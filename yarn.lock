@@ -5,6 +5,15 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
+"@ably/msgpack-js@npm:^0.4.0":
+  version: 0.4.1
+  resolution: "@ably/msgpack-js@npm:0.4.1"
+  dependencies:
+    bops: "npm:^1.0.1"
+  checksum: 10c0/5db069679d699f1bf6e32fe2a4c5d47940574062d06aada96d4685df353b3b4dfa82c1168b80620c6a4af67bef05e1acf778cd72409d2fa21376da8ff9d602e9
+  languageName: node
+  linkType: hard
+
 "@ai-sdk/provider-utils@npm:2.2.8":
   version: 2.2.8
   resolution: "@ai-sdk/provider-utils@npm:2.2.8"
@@ -793,6 +802,7 @@ __metadata:
   resolution: "@devcycle/mcp-worker@workspace:mcp-worker"
   dependencies:
     "@cloudflare/workers-oauth-provider": "npm:^0.0.5"
+    ably: "npm:^1.2.48"
     agents: "npm:^0.0.111"
     hono: "npm:^4.8.12"
     jose: "npm:^6.0.12"
@@ -2755,6 +2765,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ably@npm:^1.2.48":
+  version: 1.2.50
+  resolution: "ably@npm:1.2.50"
+  dependencies:
+    "@ably/msgpack-js": "npm:^0.4.0"
+    got: "npm:^11.8.5"
+    ws: "npm:^8.14.2"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 10c0/4ec4ba693ca428cb80d5d5802a4be1669aa22af0969b0cff6265a90cb8b2fc0429e41d274fd05c591c7d4e3c40fe01a3581558e0d7b572ea22ada0c09814eb67
+  languageName: node
+  linkType: hard
+
 "abort-controller@npm:^3.0.0":
   version: 3.0.0
   resolution: "abort-controller@npm:3.0.0"
@@ -3209,6 +3238,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"base64-js@npm:1.0.2":
+  version: 1.0.2
+  resolution: "base64-js@npm:1.0.2"
+  checksum: 10c0/68b7c8e3a22f81db6398bfe805174516037dcaf13672251dbb1ef8c9030b0305d4f869a0ed9d3df2ee062d747ee7e15cf14bbfdcfdf7f3427674dabcc901dea7
+  languageName: node
+  linkType: hard
+
 "base64-js@npm:^1.0.2, base64-js@npm:^1.3.1":
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
@@ -3283,6 +3319,16 @@ __metadata:
     raw-body: "npm:^3.0.0"
     type-is: "npm:^2.0.0"
   checksum: 10c0/a9ded39e71ac9668e2211afa72e82ff86cc5ef94de1250b7d1ba9cc299e4150408aaa5f1e8b03dd4578472a3ce6d1caa2a23b27a6c18e526e48b4595174c116c
+  languageName: node
+  linkType: hard
+
+"bops@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "bops@npm:1.0.1"
+  dependencies:
+    base64-js: "npm:1.0.2"
+    to-utf8: "npm:0.0.1"
+  checksum: 10c0/32bbeb9d830107e52735c20e59ee1b12de28717b1d1eecfda2c270ee025a21147522e955786dd3e28a80a8282fa674114cf8302fd28c919b91f3ff7f91f11fd6
   languageName: node
   linkType: hard
 
@@ -5504,7 +5550,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"got@npm:^11":
+"got@npm:^11, got@npm:^11.8.5":
   version: 11.8.6
   resolution: "got@npm:11.8.6"
   dependencies:
@@ -9802,6 +9848,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"to-utf8@npm:0.0.1":
+  version: 0.0.1
+  resolution: "to-utf8@npm:0.0.1"
+  checksum: 10c0/f04e6fa701ad56f103c575d20d4a6a5b65ea52449b7c0846382c4219b8017541fecbec8c49bf4563fb10700d9a23cb03d4857d8de91de00baabb0b4d4b8f9c46
+  languageName: node
+  linkType: hard
+
 "toidentifier@npm:1.0.1":
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
@@ -10579,6 +10632,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/25eb33aff17edcb90721ed6b0eb250976328533ad3cd1a28a274bd263682e7296a6591ff1436d6cbc50fa67463158b062f9d1122013b361cec99a05f84680e06
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.14.2":
+  version: 8.18.3
+  resolution: "ws@npm:8.18.3"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/eac918213de265ef7cb3d4ca348b891a51a520d839aa51cdb8ca93d4fa7ff9f6ccb339ccee89e4075324097f0a55157c89fa3f7147bde9d8d7e90335dc087b53
   languageName: node
   linkType: hard
 
