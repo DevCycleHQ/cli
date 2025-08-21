@@ -1,0 +1,6 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`variables list > passes pagination params to api 1`] = `
+"[]
+"
+`;

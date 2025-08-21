@@ -1,13 +1,11 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import * as chai from 'chai'
 import inquirer from 'inquirer'
 
 describe('targeting update', () => {
     beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
 
     const projectKey = 'test-project'
     const authFlags = [
@@ -34,10 +32,11 @@ describe('targeting update', () => {
         },
         distribution: [
             {
-                _variation: '647e36gg16c1d4814fe3f962',
+                _variation: '63b8677a7a95e795ac9146ce',
                 percentage: 1,
             },
         ],
+        name: 'Mutation targeting rule',
     }
 
     const mockTargetingRules = [

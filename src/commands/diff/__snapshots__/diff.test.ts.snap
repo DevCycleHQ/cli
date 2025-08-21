@@ -1,4 +1,427 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`diff > enriches output with API data 1`] = `
+"
+DevCycle Variable Changes:
+
+⚠️   1 Variable With Notices
+🟢  2 Variables Added
+🔴  2 Variables Removed
+🧹  1 Variable Cleaned up
+
+⚠️  Notices
+
+  1. Variable "no-exists" does not exist on DevCycle
+
+🟢 Added
+
+  1. exists
+	   Type: String
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. no-exists ⚠️
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L2
+
+🔴 Removed
+
+  1. exists2
+	   Type: String
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. no-exists2 🧹
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L2
+
+🧹 Cleaned Up
+
+The following variables that do not exist in DevCycle were cleaned up:
+
+  1. no-exists2
+"
+`;
+
+exports[`diff > enriches output with API data when caller is github.pr_insights without outputting API Errors 1`] = `
+"
+DevCycle Variable Changes:
+
+⚠️   1 Variable With Notices
+🟢  2 Variables Added
+🔴  2 Variables Removed
+🧹  1 Variable Cleaned up
+
+⚠️  Notices
+
+  1. Variable "no-exists" does not exist on DevCycle
+
+🟢 Added
+
+  1. exists
+	   Type: String
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. no-exists ⚠️
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L2
+
+🔴 Removed
+
+  1. exists2
+	   Type: String
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. no-exists2 🧹
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L2
+
+🧹 Cleaned Up
+
+The following variables that do not exist in DevCycle were cleaned up:
+
+  1. no-exists2
+"
+`;
+
+exports[`diff > formats the output as markdown 1`] = `
+"
+## <img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg#gh-light-mode-only" height="31px" align="center"/><img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot-white.svg#gh-dark-mode-only" height="31px" align="center"/> DevCycle Variable Changes:
+
+🟢  2 Variables Added
+🔴  0 Variables Removed
+
+### 🟢 Added
+
+  1. **optional-accessor**
+	   Location: services/api/src/organizations/organizations.controller.ts:L177
+  2. **optional-accessor-value**
+	   Location: services/api/src/organizations/organizations.controller.ts:L178
+"
+`;
+
+exports[`diff > formats the output as markdown without html 1`] = `
+"
+## DevCycle Variable Changes:
+
+🟢  2 Variables Added
+🔴  0 Variables Removed
+
+### 🟢 Added
+
+  1. **optional-accessor**
+	   Location: services/api/src/organizations/organizations.controller.ts:L177
+  2. **optional-accessor-value**
+	   Location: services/api/src/organizations/organizations.controller.ts:L178
+"
+`;
+
+exports[`diff > identifies aliased variables 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  1 Variable Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. some-addition
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+
+🔴 Removed
+
+  1. some-removal
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+"
+`;
+
+exports[`diff > identifies aliased variables specified in config file 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  1 Variable Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. some-addition
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+
+🔴 Removed
+
+  1. some-removal
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+"
+`;
+
+exports[`diff > identifies an aliased variable value with a custom matcher 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  1 Variable Added
+🔴  0 Variables Removed
+
+🟢 Added
+
+  1. my-variable
+	   Location: test-utils/fixtures/diff/sampleDiff.jsx:L1
+"
+`;
+
+exports[`diff > identifies an aliased variable with a custom matcher 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  1 Variable Added
+🔴  0 Variables Removed
+
+🟢 Added
+
+  1. my-variable
+	   Location: test-utils/fixtures/diff/sampleDiff.jsx:L1
+"
+`;
+
+exports[`diff > identifies unknown variables and warns about them 1`] = `
+"
+DevCycle Variable Changes:
+
+⚠️   2 Variables With Notices
+🟢  1 Variable Added
+🔴  1 Variable Removed
+
+⚠️  Notices
+
+  1. Variable "SOME_ADDITION" could not be identified. Try adding an alias.
+  2. Variable "VARIABLES.SOME_REMOVAL" could not be identified. Try adding an alias.
+
+🟢 Added
+
+  1. SOME_ADDITION ⚠️
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+
+🔴 Removed
+
+  1. VARIABLES.SOME_REMOVAL ⚠️
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+"
+`;
+
+exports[`diff > returns "No DevCycle Variables Changed" when there are no changes 1`] = `
+"
+No DevCycle Variables Changed
+
+"
+`;
+
+exports[`diff > runs against a test file 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  6 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. duplicate-case
+	   Locations:
+	    - test-utils/fixtures/diff/sampleDiff.js:L2
+	    - test-utils/fixtures/diff/sampleDiff.js:L3
+  3. single-quotes
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L5
+  4. multi-line
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L11
+  5. multi-line-comment
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L21
+  6. duplicate-same-line
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L26
+
+🔴 Removed
+
+  1. simple-case
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+"
+`;
+
+exports[`diff > runs against a test file and linkifies the output 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  6 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R1)
+  2. duplicate-case
+	   Locations:
+	    - [test-utils/fixtures/diff/sampleDiff.js:L2](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R2)
+	    - [test-utils/fixtures/diff/sampleDiff.js:L3](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R3)
+  3. single-quotes
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L5](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R5)
+  4. multi-line
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L11](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R11)
+  5. multi-line-comment
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L21](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R21)
+  6. duplicate-same-line
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L26](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262R26)
+
+🔴 Removed
+
+  1. simple-case
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://example.com/files#diff-0e0744c322958510b30bf297074e41ce72eed5d54196b0c9533199b574977262L1)
+"
+`;
+
+exports[`diff > runs against a test file and linkifies the output for a bitbucket PR 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  6 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT1)
+  2. duplicate-case
+	   Locations:
+	    - [test-utils/fixtures/diff/sampleDiff.js:L2](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT2)
+	    - [test-utils/fixtures/diff/sampleDiff.js:L3](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT3)
+  3. single-quotes
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L5](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT5)
+  4. multi-line
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L11](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT11)
+  5. multi-line-comment
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L21](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT21)
+  6. duplicate-same-line
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L26](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsT26)
+
+🔴 Removed
+
+  1. simple-case
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://bitbucket.org/devcyclehq/test-code-refs-pipes/pull-requests/7#Ltest-utils/fixtures/diff/sampleDiff.jsF1)
+"
+`;
+
+exports[`diff > runs against a test file and linkifies the output for a gitlab MR 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  6 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  2. duplicate-case
+	   Locations:
+	    - [test-utils/fixtures/diff/sampleDiff.js:L2](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+	    - [test-utils/fixtures/diff/sampleDiff.js:L3](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  3. single-quotes
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L5](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  4. multi-line
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L11](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  5. multi-line-comment
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L21](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+  6. duplicate-same-line
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L26](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+
+🔴 Removed
+
+  1. simple-case
+	   Location: [test-utils/fixtures/diff/sampleDiff.js:L1](https://gitlab.com/devcycle/devcycle-usages-ci-cd/-/merge_requests/6/diffs#diff-content-934428700c2f83423b2b273991070db8c347f8af)
+"
+`;
+
+exports[`diff > runs against a test file with a custom matcher 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  6 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. duplicate-case
+	   Locations:
+	    - test-utils/fixtures/diff/sampleDiff.js:L2
+	    - test-utils/fixtures/diff/sampleDiff.js:L3
+  3. single-quotes
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L5
+  4. multi-line
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L11
+  5. multi-line-comment
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L21
+  6. duplicate-same-line
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L26
+
+🔴 Removed
+
+  1. simple-case
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+"
+`;
+
+exports[`diff > runs against a test file with a custom matcher 2`] = `
+"
+DevCycle Variable Changes:
+
+🟢  6 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. duplicate-case
+	   Locations:
+	    - test-utils/fixtures/diff/sampleDiff.js:L2
+	    - test-utils/fixtures/diff/sampleDiff.js:L3
+  3. single-quotes
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L5
+  4. multi-line
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L11
+  5. multi-line-comment
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L21
+  6. duplicate-same-line
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L26
+
+🔴 Removed
+
+  1. simple-case
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+"
+`;
+
+exports[`diff > runs against a test file with a custom matcher specified in a config file 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  7 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. simple-case
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+  2. duplicate-case
+	   Locations:
+	    - test-utils/fixtures/diff/sampleDiff.js:L2
+	    - test-utils/fixtures/diff/sampleDiff.js:L3
+  3. single-quotes
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L5
+  4. multi-line
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L11
+  5. multi-line-comment
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L21
+  6. duplicate-same-line
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L26
+  7. func-proxy
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L7
+
+🔴 Removed
+
+  1. simple-case
+	   Location: test-utils/fixtures/diff/sampleDiff.js:L1
+"
+`;
 
 exports[`diff enriches output with API data 1`] = `
 "
