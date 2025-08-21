@@ -10,6 +10,7 @@ import type {
     TokenExchangeCallbackResult,
 } from '@cloudflare/workers-oauth-provider'
 import { renderConsentScreen } from './consentScreen'
+import { renderPopupSuccessPage, renderPopupErrorPage } from './popupPages'
 
 type Auth0AuthRequest = {
     mcpAuthRequest: AuthRequest
@@ -18,6 +19,7 @@ type Auth0AuthRequest = {
     nonce: string
     transactionState: string
     consentToken: string
+    isPopup?: boolean
 }
 
 export async function getOidcConfig({
@@ -79,11 +81,18 @@ export async function authorize(
     const transactionState = oauth.generateRandomState()
     const consentToken = oauth.generateRandomState() // For CSRF protection on consent form
 
+    // Detect if this is a popup authentication request
+    const url = new URL(c.req.url)
+    const isPopup = url.searchParams.get('display') === 'popup' || 
+                   url.searchParams.get('popup') === 'true' ||
+                   mcpClientAuthRequest.redirectUri.includes('popup')
+
     // We will persist everything in a cookie.
     const auth0AuthRequest: Auth0AuthRequest = {
         codeChallenge: await oauth.calculatePKCECodeChallenge(codeVerifier),
         codeVerifier,
         consentToken,
+        isPopup,
         mcpAuthRequest: mcpClientAuthRequest,
         nonce: oauth.generateRandomNonce(),
         transactionState,
@@ -156,6 +165,23 @@ export async function confirmConsent(c: any) {
 
     // Handle user denial
     if (consentAction !== 'approve') {
+        // Clear the transaction cookie
+        setCookie(c, cookieName, '', {
+            maxAge: 0,
+            path: '/',
+        })
+
+        // For popup flows, show error page; for regular flows, redirect to original app
+        if (auth0AuthRequest.isPopup) {
+            const errorUrl = new URL('/oauth/popup/error', c.req.url)
+            errorUrl.searchParams.set('error', 'access_denied')
+            errorUrl.searchParams.set('error_description', 'User denied the request')
+            if (auth0AuthRequest.mcpAuthRequest.state) {
+                errorUrl.searchParams.set('state', auth0AuthRequest.mcpAuthRequest.state)
+            }
+            return c.redirect(errorUrl.toString())
+        }
+
         // Parse the MCP client auth request to get the original redirect URI
         const redirectUri = new URL(auth0AuthRequest.mcpAuthRequest.redirectUri)
 
@@ -172,12 +198,6 @@ export async function confirmConsent(c: any) {
             )
         }
 
-        // Clear the transaction cookie
-        setCookie(c, cookieName, '', {
-            maxAge: 0,
-            path: '/',
-        })
-
         return c.redirect(redirectUri.toString())
     }
 
@@ -189,10 +209,12 @@ export async function confirmConsent(c: any) {
 
     // Redirect to Auth0's authorization endpoint
     const authorizationUrl = new URL(as.authorization_endpoint!)
+    const callbackPath = auth0AuthRequest.isPopup ? '/oauth/popup/callback' : '/oauth/callback'
+    
     authorizationUrl.searchParams.set('client_id', c.env.AUTH0_CLIENT_ID)
     authorizationUrl.searchParams.set(
         'redirect_uri',
-        new URL('/oauth/callback', c.req.url).href,
+        new URL(callbackPath, c.req.url).href,
     )
     authorizationUrl.searchParams.set('response_type', 'code')
     authorizationUrl.searchParams.set('audience', c.env.AUTH0_AUDIENCE)
@@ -257,12 +279,14 @@ export async function callback(
         auth0AuthRequest.transactionState,
     )
 
+    // Use the same callback path that was used in the authorization request
+    const callbackPath = auth0AuthRequest.isPopup ? '/oauth/popup/callback' : '/oauth/callback'
     const response = await oauth.authorizationCodeGrantRequest(
         as,
         client,
         clientAuth,
         params,
-        new URL('/oauth/callback', c.req.url).href,
+        new URL(callbackPath, c.req.url).href,
         auth0AuthRequest.codeVerifier,
     )
 
@@ -303,6 +327,13 @@ export async function callback(
         scope: auth0AuthRequest.mcpAuthRequest.scope,
         userId: claims.sub!,
     })
+
+    // For popup flows, redirect to success page; for regular flows, redirect to original app
+    if (auth0AuthRequest.isPopup) {
+        const successUrl = new URL('/oauth/popup/success', c.req.url)
+        successUrl.searchParams.set('redirectTo', redirectTo)
+        return Response.redirect(successUrl.toString(), 302)
+    }
 
     return Response.redirect(redirectTo, 302)
 }
@@ -401,6 +432,44 @@ export function createTokenExchangeCallback(env: Env) {
 }
 
 /**
+ * Popup Error Page
+ * 
+ * This page handles OAuth errors in popup scenarios.
+ * It communicates the error back to the parent window and closes the popup.
+ */
+export async function popupError(c: any) {
+    const url = new URL(c.req.url)
+    const error = url.searchParams.get('error')
+    const errorDescription = url.searchParams.get('error_description')
+    const state = url.searchParams.get('state')
+    
+    return c.html(
+        renderPopupErrorPage({
+            error,
+            errorDescription,
+            state,
+        })
+    )
+}
+
+/**
+ * Popup Success Page
+ * 
+ * This page handles successful OAuth completion in popup scenarios.
+ * It communicates the result back to the parent window and closes the popup.
+ */
+export async function popupSuccess(c: any) {
+    const url = new URL(c.req.url)
+    const redirectTo = url.searchParams.get('redirectTo')
+    
+    return c.html(
+        renderPopupSuccessPage({
+            redirectTo,
+        })
+    )
+}
+
+/**
  * Create the Hono app with OAuth and utility routes
  */
 export function createAuthApp(): Hono<{
@@ -412,9 +481,18 @@ export function createAuthApp(): Hono<{
     app.get('/oauth/authorize', authorize)
     app.post('/oauth/authorize/consent', confirmConsent)
     app.get('/oauth/callback', callback)
+    
+    // Popup callback route for popup-based authentication
+    app.get('/oauth/popup/callback', callback)
+    
+    // Popup success page for completed popup authentication
+    app.get('/oauth/popup/success', popupSuccess)
+    
+    // Popup error page for failed popup authentication
+    app.get('/oauth/popup/error', popupError)
 
     // Root route - redirect to documentation
-    app.get('/', (c) => {
+    app.get('/', (c: any) => {
         return c.redirect(
             'https://docs.devcycle.com/cli-mcp/mcp-getting-started',
             301,
@@ -422,7 +500,7 @@ export function createAuthApp(): Hono<{
     })
 
     // Health check
-    app.get('/health', (c) => {
+    app.get('/health', (c: any) => {
         return c.json({
             status: 'ok',
             service: 'DevCycle MCP Server',
@@ -431,7 +509,7 @@ export function createAuthApp(): Hono<{
     })
 
     // Info endpoint for debugging
-    app.get('/info', (c) => {
+    app.get('/info', (c: any) => {
         return c.json({
             service: 'DevCycle MCP Server',
             version: '1.0.0',
