@@ -1,4 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`targeting get > uses prompts when feature is not provided 1`] = `""`;
 
 exports[`targeting get includes environment in query params 1`] = `
 "├─ Production

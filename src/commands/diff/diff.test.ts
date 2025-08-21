@@ -1,6 +1,5 @@
-import { expect, test } from '@oclif/test'
-import chai from 'chai'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
+import { test } from '@oclif/test'
+import { expect } from 'vitest'
 import { setCurrentTestFile } from '../../../test-utils'
 import { AUTH_URL, BASE_URL } from '../../api/common'
 
@@ -8,7 +7,6 @@ process.env = {}
 
 describe('diff', () => {
     beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
 
     test.stdout()
         .command([
