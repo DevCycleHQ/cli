@@ -1,40 +1,44 @@
-import { expect } from '@oclif/test'
-import { dvcTest, mockFeatures } from '../../../test-utils'
+import { expect } from 'vitest'
+import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 
 describe('features list', () => {
     const projectKey = 'test-project'
-    const authFlags = [
-        '--client-id',
-        'test-client-id',
-        '--client-secret',
-        'test-client-secret',
-    ]
 
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v2/projects/${projectKey}/features`)
-                .reply(200, mockFeatures),
+                .get(`/v1/projects/${projectKey}/features?perPage=1000&page=1`)
+                .reply(200, [
+                    {
+                        key: 'first-feature',
+                        name: 'first feature',
+                    },
+                    {
+                        key: 'second-feature',
+                        name: 'second feature',
+                    },
+                ]),
         )
         .stdout()
-        .command(['features list', '--project', projectKey, ...authFlags])
+        .command([
+            'features list',
+            '--project',
+            projectKey,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
+        ])
         .it('returns a list of feature keys', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(
-                    ['feature-1', 'feature-2', 'feature-with-optin'],
-                    null,
-                    2,
-                ),
-            )
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v2/projects/${projectKey}/features`)
-                .query({ page: 2, perPage: 10 })
-                .reply(200, mockFeatures),
+                .get(`/v1/projects/${projectKey}/features?perPage=10&page=2`)
+                .reply(200, []),
         )
         .stdout()
         .command([
@@ -45,24 +49,22 @@ describe('features list', () => {
             '2',
             '--per-page',
             '10',
-            ...authFlags,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(
-                    ['feature-1', 'feature-2', 'feature-with-optin'],
-                    null,
-                    2,
-                ),
-            )
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v2/projects/${projectKey}/features`)
-                .query({ search: 'hello world' })
-                .reply(200, mockFeatures),
+                .get(
+                    `/v1/projects/${projectKey}/features?search=search&perPage=1000&page=1`,
+                )
+                .reply(200, []),
         )
         .stdout()
         .command([
@@ -70,16 +72,13 @@ describe('features list', () => {
             '--project',
             projectKey,
             '--search',
-            'hello world',
-            ...authFlags,
+            'search',
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(
-                    ['feature-1', 'feature-2', 'feature-with-optin'],
-                    null,
-                    2,
-                ),
-            )
+            expect(ctx.stdout).toMatchSnapshot()
         })
 })

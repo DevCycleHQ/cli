@@ -1,4 +1,96 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`variations update > prompts for variables when missing in interactive mode 1`] = `
+"
+
+🤖 Current values:
+🤖 {
+  "_id": "63b5eea3e6e91987bae47f40",
+  "key": "variation",
+  "name": "Test CLI",
+  "variables": {
+    "new-variable": false,
+    "first-feature": true
+  }
+}
+
+
+{
+  "_id": "63b5eea3e6e91987bae47f3a",
+  "_project": "63b5ee5de6e91987bae47f01",
+  "source": "dashboard",
+  "type": "experiment",
+  "name": "First Feature",
+  "key": "first-feature",
+  "description": "",
+  "_createdBy": "google-oauth2|111559006563333334214",
+  "createdAt": "2023-01-04T21:24:51.870Z",
+  "updatedAt": "2023-06-16T19:27:14.862Z",
+  "variations": [
+    {
+      "_id": "63b5eea3e6e91987bae47f40",
+      "key": "yo",
+      "name": "Yo",
+      "variables": {
+        "new-variable": false,
+        "first-feature": true
+      }
+    },
+    {
+      "_id": "63b5eea3e6e91987bae47f41",
+      "key": "variation-a",
+      "name": "Variation A",
+      "variables": {}
+    },
+    {
+      "_id": "63b5eea3e6e91987bae47f42",
+      "key": "variation-b",
+      "name": "Variation B",
+      "variables": {}
+    }
+  ],
+  "controlVariation": "control",
+  "variables": [
+    {
+      "_id": "63b5eea3e6e91987bae47f3c",
+      "_project": "63b5ee5de6e91987bae47f01",
+      "_feature": "63b5eea3e6e91987bae47f3a",
+      "name": "first-feature",
+      "key": "first-feature",
+      "type": "Boolean",
+      "status": "active",
+      "defaultValue": false,
+      "source": "dashboard",
+      "_createdBy": "google-oauth2|111559006563333334214",
+      "createdAt": "2023-01-04T21:24:51.877Z",
+      "updatedAt": "2023-01-04T21:24:51.877Z"
+    }
+  ],
+  "tags": [],
+  "readonly": false,
+  "settings": {
+    "optInEnabled": false,
+    "publicName": "",
+    "publicDescription": ""
+  },
+  "sdkVisibility": {
+    "client": false,
+    "mobile": false,
+    "server": true
+  }
+}
+"
+`;
+
+exports[`variations update > updates a variation and returns the full feature in headless mode 1`] = `
+"{"_id":"63b5eea3e6e91987bae47f3a","_project":"63b5ee5de6e91987bae47f01","source":"dashboard","type":"experiment","name":"First Feature","key":"first-feature","description":"","_createdBy":"google-oauth2|111559006563333334214","createdAt":"2023-01-04T21:24:51.870Z","updatedAt":"2023-06-16T19:27:14.862Z","variations":[{"_id":"63b5eea3e6e91987bae47f40","key":"yo","name":"Yo","variables":{"new-variable":false,"first-feature":true}},{"_id":"63b5eea3e6e91987bae47f41","key":"variation-a","name":"Variation A","variables":{}},{"_id":"63b5eea3e6e91987bae47f42","key":"variation-b","name":"Variation B","variables":{}}],"controlVariation":"control","variables":[{"_id":"63b5eea3e6e91987bae47f3c","_project":"63b5ee5de6e91987bae47f01","_feature":"63b5eea3e6e91987bae47f3a","name":"first-feature","key":"first-feature","type":"Boolean","status":"active","defaultValue":false,"source":"dashboard","_createdBy":"google-oauth2|111559006563333334214","createdAt":"2023-01-04T21:24:51.877Z","updatedAt":"2023-01-04T21:24:51.877Z"}],"tags":[],"readonly":false,"settings":{"optInEnabled":false,"publicName":"","publicDescription":""},"sdkVisibility":{"client":false,"mobile":false,"server":true}}
+"
+`;
+
+exports[`variations update > updates a variation and returns the full feature in interactive mode 1`] = `
+"{"_id":"63b5eea3e6e91987bae47f3a","_project":"63b5ee5de6e91987bae47f01","source":"dashboard","type":"experiment","name":"First Feature","key":"first-feature","description":"","_createdBy":"google-oauth2|111559006563333334214","createdAt":"2023-01-04T21:24:51.870Z","updatedAt":"2023-06-16T19:27:14.862Z","variations":[{"_id":"63b5eea3e6e91987bae47f40","key":"yo","name":"Yo","variables":{"new-variable":false,"first-feature":true}},{"_id":"63b5eea3e6e91987bae47f41","key":"variation-a","name":"Variation A","variables":{}},{"_id":"63b5eea3e6e91987bae47f42","key":"variation-b","name":"Variation B","variables":{}}],"controlVariation":"control","variables":[{"_id":"63b5eea3e6e91987bae47f3c","_project":"63b5ee5de6e91987bae47f01","_feature":"63b5eea3e6e91987bae47f3a","name":"first-feature","key":"first-feature","type":"Boolean","status":"active","defaultValue":false,"source":"dashboard","_createdBy":"google-oauth2|111559006563333334214","createdAt":"2023-01-04T21:24:51.877Z","updatedAt":"2023-01-04T21:24:51.877Z"}],"tags":[],"readonly":false,"settings":{"optInEnabled":false,"publicName":"","publicDescription":""},"sdkVisibility":{"client":false,"mobile":false,"server":true}}
+"
+`;
 
 exports[`variations update prompts for variables when missing in interactive mode 1`] = `
 "
