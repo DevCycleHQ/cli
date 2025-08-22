@@ -10,6 +10,7 @@ import { CLI_CLIENT_ID } from './SSOAuth'
 import * as config from './config'
 
 const envVars = process.env
+const MOCK_AUTH_PATH = 'test-utils/fixtures/auth/mock-auth.yml'
 
 const expiredToken =
     'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlhpTzk1Xzllbk53Z1NNSkZRSXZNUiJ9.eyJodHRwczovL2RldmN5Y2xlLmNvbS9vcmdfaWQiOiJvcmdfVTlGOFlNYVRDaFRFbmRXdyIsImlzcyI6Imh0dHBzOi8vYXV0aC5kZXZjeWNsZS5jb20vIiwic3ViIjoiaHNWQm1Scmg1UDlBR2FBSDBlS0dwajMxQ1I1WkxuM3ZAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vYXBpLmRldmN5Y2xlLmNvbS8iLCJpYXQiOjE2OTU3NTAxNDUsImV4cCI6MTY5NTgzNjU0NSwiYXpwIjoiaHNWQm1Scmg1UDlBR2FBSDBlS0dwajMxQ1I1WkxuM3YiLCJzY29wZSI6ImNyZWF0ZTpyZXNvdXJjZXMgdXBkYXRlOnJlc291cmNlcyByZWFkOnJlc291cmNlcyBkZWxldGU6cmVzb3VyY2VzIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOlsiY3JlYXRlOnJlc291cmNlcyIsInVwZGF0ZTpyZXNvdXJjZXMiLCJyZWFkOnJlc291cmNlcyIsImRlbGV0ZTpyZXNvdXJjZXMiXX0.sQn49xJWdcE1xt6r3W8eBrvnUFFP3zOBOJXvjsOOzbfeOPMOeWyR0iqBZ8n96rxtB7wcgR0SB_uk3avNv0zd4X6x-Z4Jv2S0krIPUidTegfO_VLZiSA3uIBiZ--9IZtOLuaQhc16Qq6ezXGibVkFpc6JNLFELVpDQA87pmhF_RoErlH7U_qYuFeYEX_8qksDgeVxYoUOam2O5LksN8BorpzBZ8fikQkHibryqq4MLJvcksDUBwn17H67sGP6wUxWnNbzSksmNqsbKjLSQRvwoQgBL6O6uOW_cGiwnptOcXTz4XC640z2gXRa7FxSHzWKHOGpDRxi6erFSMQIB8_Jow'
@@ -36,7 +37,7 @@ describe('ApiAuth', () => {
             'fetches token using client id & secret when passed as flags',
             async () => {
                 const auth = new ApiAuth(
-                    'mock-auth-path',
+                    MOCK_AUTH_PATH,
                     'mock-cache-dir',
                     mockWriter,
                 )
@@ -64,7 +65,7 @@ describe('ApiAuth', () => {
             'fetches token using client id & secret when passed as env vars',
             async () => {
                 const auth = new ApiAuth(
-                    'mock-auth-path',
+                    MOCK_AUTH_PATH,
                     'mock-cache-dir',
                     mockWriter,
                 )
@@ -91,7 +92,7 @@ describe('ApiAuth', () => {
             'fetches token using client id & secret from auth config',
             async () => {
                 const auth = new ApiAuth(
-                    'mock-auth-path',
+                    MOCK_AUTH_PATH,
                     'mock-cache-dir',
                     mockWriter,
                 )
@@ -114,7 +115,7 @@ describe('ApiAuth', () => {
 
         it('returns token from cache if available', async () => {
             const auth = new ApiAuth(
-                'mock-auth-path',
+                MOCK_AUTH_PATH,
                 'mock-cache-dir',
                 mockWriter,
             )
@@ -135,7 +136,7 @@ describe('ApiAuth', () => {
 
         it('returns sso token from auth file if available', async () => {
             const auth = new ApiAuth(
-                'mock-auth-path',
+                MOCK_AUTH_PATH,
                 'mock-cache-dir',
                 mockWriter,
             )
@@ -168,7 +169,7 @@ describe('ApiAuth', () => {
             'refreshes sso token from auth file when nearing expiration',
             async () => {
                 const auth = new ApiAuth(
-                    'mock-auth-path',
+                    MOCK_AUTH_PATH,
                     'mock-cache-dir',
                     mockWriter,
                 )
@@ -195,7 +196,7 @@ describe('ApiAuth', () => {
                         accessToken: 'mock-refreshed-token',
                         refreshToken: 'mock-new-refresh-token',
                     },
-                    'mock-auth-path',
+                    MOCK_AUTH_PATH,
                 )
                 assert.equal(response, 'mock-refreshed-token')
             },
@@ -203,7 +204,7 @@ describe('ApiAuth', () => {
 
         it('does not refresh sso token if refresh is already in progress', async () => {
             const auth = new ApiAuth(
-                'mock-auth-path',
+                MOCK_AUTH_PATH,
                 'mock-cache-dir',
                 mockWriter,
             )
