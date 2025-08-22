@@ -1,25 +1,30 @@
 {
-    "name": "@devcycle/mcp-worker",
-    "version": "1.0.0",
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "dev": "wrangler dev",
-        "deploy": "wrangler deploy",
-        "deploy:dev": "wrangler deploy --env dev",
-        "build": "tsc",
-        "type-check": "tsc --noEmit",
-        "cf-typegen": "wrangler types"
-    },
-    "dependencies": {
-        "@cloudflare/workers-oauth-provider": "^0.0.5",
-        "agents": "^0.0.111",
-        "hono": "^4.8.12",
-        "jose": "^6.0.12",
-        "oauth4webapi": "^3.6.1"
-    },
-    "devDependencies": {
-        "wrangler": "^4.28.0"
-    },
-    "packageManager": "yarn@4.9.2"
+  "name": "@devcycle/mcp-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --env dev",
+    "deploy:prod": "wrangler deploy --env prod",
+    "deploy:dev": "wrangler deploy --env dev",
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "cf-typegen": "wrangler types",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@cloudflare/workers-oauth-provider": "^0.0.5",
+    "ably": "^1.2.48",
+    "agents": "^0.0.111",
+    "hono": "^4.8.12",
+    "jose": "^6.0.12",
+    "oauth4webapi": "^3.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.31.0"
+  },
+  "packageManager": "yarn@4.9.2"
 }

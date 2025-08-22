@@ -21,7 +21,8 @@
         "build": "node scripts/fetch-install-prompts.js && shx rm -rf dist && tsc -b && oclif manifest",
         "build:tar": "oclif pack tarballs",
         "build:worker": "cd mcp-worker && yarn build",
-        "deploy:worker": "cd mcp-worker && yarn deploy",
+        "deploy:worker:prod": "cd mcp-worker && yarn deploy:prod",
+        "deploy:worker:dev": "cd mcp-worker && yarn deploy:dev",
         "dev:worker": "cd mcp-worker && yarn dev",
         "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
         "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.{ts,js,json}\" \"test-utils/**/*.{ts,js,json}\" \"*.{ts,js,json,md}\"",
@@ -30,8 +31,8 @@
         "posttest": "yarn lint",
         "prepack": "yarn build && oclif readme --multi",
         "pretest": "yarn format:check",
-        "test": "mocha test/*.ts \"src/**/*.test.ts\"",
-        "test:ci": "yarn test --forbid-only",
+        "test": "mocha test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
+        "test:ci": "mocha --forbid-only test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
         "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
         "version": "oclif readme --multi && git add README.md"
     },
@@ -161,6 +162,9 @@
         "nanoid@3.3.1": "3.3.8",
         "serialize-javascript@6.0.0": "^6.0.2",
         "tmp": "0.2.5",
-        "zod": "3.24.1"
+        "zod": "3.24.1",
+        "@types/estree": "1.0.5",
+        "estraverse": "5.3.0",
+        "@types/estraverse": "5.1.7"
     }
 }

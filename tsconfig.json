@@ -21,6 +21,7 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "incremental": true,
+        "composite": true,
         "tsBuildInfoFile": "./dist/.tsbuildinfo"
     },
     "include": ["src/**/*"],
