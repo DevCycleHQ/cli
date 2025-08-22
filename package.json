@@ -31,9 +31,9 @@
         "posttest": "yarn lint",
         "prepack": "yarn build && oclif readme --multi",
         "pretest": "yarn format:check",
-        "test": "mocha test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
-        "test:ci": "mocha --forbid-only test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
-        "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
+        "test": "vitest run --config vitest.config.ts && yarn workspace @devcycle/mcp-worker test",
+        "test:ci": "vitest run --config vitest.config.ts && yarn workspace @devcycle/mcp-worker test",
+        "test:update-snapshots": "vitest -u --config vitest.config.ts && yarn workspace @devcycle/mcp-worker test",
         "version": "oclif readme --multi && git add README.md"
     },
     "dependencies": {
@@ -95,7 +95,8 @@
         "sinon": "^19.0.2",
         "ts-node": "^10.9.2",
         "typescript": "^5.7.2",
-        "typescript-eslint": "^8.21.0"
+        "typescript-eslint": "^8.21.0",
+        "vitest": "^3.2.4"
     },
     "oclif": {
         "bin": "dvc",

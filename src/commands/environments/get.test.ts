@@ -1,34 +1,18 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import { dvcTest } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('environments get', () => {
     const projectKey = 'test-project'
-    const authFlags = [
-        '--client-id',
-        'test-client-id',
-        '--client-secret',
-        'test-client-secret',
-    ]
-
-    const mockEnvironments = [
-        {
-            key: 'development',
-            name: 'Development',
-            _id: '61450f3daec96f5cf4a49960',
-        },
-        {
-            key: 'production',
-            name: 'Production',
-            _id: '61450f3daec96f5cf4a49961',
-        },
-    ]
 
     dvcTest()
         .nock(BASE_URL, (api) =>
-            api
-                .get(`/v1/projects/${projectKey}/environments`)
-                .reply(200, mockEnvironments),
+            api.get(`/v1/projects/${projectKey}/environments`).reply(200, [
+                { key: 'first-env', name: 'first env' },
+                { key: 'second-env', name: 'second env' },
+            ]),
         )
         .stdout()
         .command([
@@ -36,36 +20,52 @@ describe('environments get', () => {
             '--project',
             projectKey,
             '--headless',
-            ...authFlags,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
         ])
         .it('returns a list of environment objects in headless mode', (ctx) => {
-            expect(ctx.stdout).to.contain(JSON.stringify(mockEnvironments))
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
-    // Test positional arguments functionality
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/environments/development`)
-                .reply(200, mockEnvironments[0])
-                .get(`/v1/projects/${projectKey}/environments/production`)
-                .reply(200, mockEnvironments[1]),
+                .get(`/v1/projects/${projectKey}/environments/first-env`)
+                .reply(200, {
+                    key: 'first-env',
+                    name: 'first env',
+                }),
+        )
+        .nock(BASE_URL, (api) =>
+            api
+                .get(`/v1/projects/${projectKey}/environments/second-env`)
+                .reply(200, {
+                    key: 'second-env',
+                    name: 'second env',
+                }),
         )
         .stdout()
         .command([
             'environments get',
-            'development',
-            'production',
             '--project',
             projectKey,
-            ...authFlags,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
+            'first-env',
+            'second-env',
         ])
         .it(
             'fetches multiple environments by space-separated positional arguments',
             (ctx) => {
-                expect(ctx.stdout).to.contain(
-                    JSON.stringify(mockEnvironments, null, 2),
-                )
+                expect(ctx.stdout).toMatchSnapshot()
             },
         )
 })

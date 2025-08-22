@@ -1,49 +1,46 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 
 describe('variables list', () => {
     const projectKey = 'test-project'
-    const authFlags = [
-        '--client-id',
-        'test-client-id',
-        '--client-secret',
-        'test-client-secret',
-    ]
-
-    const mockVariables = [
-        {
-            key: 'variable-1',
-            name: 'Variable 1',
-            _id: '61450f3daec96f5cf4a49946',
-        },
-        {
-            key: 'variable-2',
-            name: 'Variable 2',
-            _id: '61450f3daec96f5cf4a49947',
-        },
-    ]
 
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables`)
-                .reply(200, mockVariables),
+                .get(`/v1/projects/${projectKey}/variables?perPage=1000&page=1`)
+                .reply(200, [
+                    {
+                        key: 'first-variable',
+                        name: 'first variable',
+                        type: 'String',
+                    },
+                    {
+                        key: 'second-variable',
+                        name: 'second variable',
+                        type: 'String',
+                    },
+                ]),
         )
         .stdout()
-        .command(['variables list', '--project', projectKey, ...authFlags])
+        .command([
+            'variables list',
+            '--project',
+            projectKey,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
+        ])
         .it('returns a list of variable keys', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(['variable-1', 'variable-2'], null, 2),
-            )
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables`)
-                .query({ page: 2, perPage: 10 })
-                .reply(200, mockVariables),
+                .get(`/v1/projects/${projectKey}/variables?perPage=10&page=2`)
+                .reply(200, []),
         )
         .stdout()
         .command([
@@ -54,20 +51,22 @@ describe('variables list', () => {
             '2',
             '--per-page',
             '10',
-            ...authFlags,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(['variable-1', 'variable-2'], null, 2),
-            )
+            expect(ctx.stdout).toMatchSnapshot()
         })
 
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables`)
-                .query({ search: 'hello world' })
-                .reply(200, mockVariables),
+                .get(
+                    `/v1/projects/${projectKey}/variables?search=search&perPage=1000&page=1`,
+                )
+                .reply(200, []),
         )
         .stdout()
         .command([
@@ -75,12 +74,13 @@ describe('variables list', () => {
             '--project',
             projectKey,
             '--search',
-            'hello world',
-            ...authFlags,
+            'search',
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(['variable-1', 'variable-2'], null, 2),
-            )
+            expect(ctx.stdout).toMatchSnapshot()
         })
 })

@@ -1,7 +1,9 @@
-import { expect } from '@oclif/test'
+import { expect, vi } from 'vitest'
 import inquirer from 'inquirer'
 import { dvcTest } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 import { mergeQuickFeatureParamsWithAnswers } from '../../utils/features/quickCreateFeatureUtils'
 
 describe('features create', () => {
@@ -77,7 +79,16 @@ describe('features create', () => {
     }))
 
     // Headless mode
+    let stderrSpy: ReturnType<typeof vi.spyOn> | undefined
+    let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+            stderrSpy = vi.spyOn(process.stderr, 'write' as any)
+            consoleErrorSpy = vi.spyOn(console, 'error')
+        })
+        .stdout()
         .stderr()
         .command([
             'features create',
@@ -88,11 +99,22 @@ describe('features create', () => {
             '--headless',
             ...authFlags,
         ])
-        .it('Errors when called in headless mode with no key', (ctx) => {
-            expect(ctx.stderr).to.contain('The key and name flags are required')
+        .it('Errors when called in headless mode with no key', () => {
+            const stderrCalls = (stderrSpy?.mock.calls || []).flat().join('')
+            const consoleErrCalls = (consoleErrorSpy?.mock.calls || [])
+                .flat()
+                .join(' ')
+            const combined = `${stderrCalls}${consoleErrCalls}`
+            expect(combined).toContain('The key and name flags are required')
+            stderrSpy?.mockRestore()
+            consoleErrorSpy?.mockRestore()
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .post(`/v2/projects/${projectKey}/features`, requestBody)
@@ -118,6 +140,10 @@ describe('features create', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .post(`/v2/projects/${projectKey}/features`)
@@ -147,6 +173,10 @@ describe('features create', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .post(`/v2/projects/${projectKey}/features`, {
@@ -183,6 +213,10 @@ describe('features create', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .post(`/v2/projects/${projectKey}/features`, {
@@ -230,6 +264,13 @@ describe('features create', () => {
         .nock(BASE_URL, (api) =>
             api.get(`/v1/projects/${projectKey}`).reply(200, mockProject),
         )
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+            stderrSpy = vi.spyOn(process.stderr, 'write' as any)
+            consoleErrorSpy = vi.spyOn(console, 'error')
+        })
+        .stdout()
         .stderr()
         .command([
             'features create',
@@ -239,11 +280,22 @@ describe('features create', () => {
             ...authFlags,
         ])
         .catch((err) => null)
-        .it('returns an error if name is not provided', (ctx) => {
-            expect(ctx.stderr).to.contain('name is a required field')
+        .it('returns an error if name is not provided', () => {
+            const stderrCalls = (stderrSpy?.mock.calls || []).flat().join('')
+            const consoleErrCalls = (consoleErrorSpy?.mock.calls || [])
+                .flat()
+                .join(' ')
+            const combined = `${stderrCalls}${consoleErrCalls}`
+            expect(combined).toContain('name is a required field')
+            stderrSpy?.mockRestore()
+            consoleErrorSpy?.mockRestore()
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .stub(inquirer, 'prompt', () => ({
             key: requestBody.key,
             description: undefined,
@@ -283,6 +335,10 @@ describe('features create', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .stub(inquirer, 'registerPrompt', () => {
             return
         })
