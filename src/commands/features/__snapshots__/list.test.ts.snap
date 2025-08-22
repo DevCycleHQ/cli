@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`features list > passes pagination params to api 1`] = `
+"[]
+"
+`;
+
+exports[`features list > passes search param to api 1`] = `
+"[]
+"
+`;
+
+exports[`features list > returns a list of feature keys 1`] = `
+"[
+  "first-feature",
+  "second-feature"
+]
+"
+`;
