@@ -115,7 +115,10 @@ describe('variables get', () => {
             'first-variable',
             'second-variable',
         ])
-        .it('fetches multiple variables by space-separated positional arguments', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
-        })
+        .it(
+            'fetches multiple variables by space-separated positional arguments',
+            (ctx) => {
+                expect(ctx.stdout).toMatchSnapshot()
+            },
+        )
 })

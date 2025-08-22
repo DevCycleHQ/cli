@@ -8,7 +8,9 @@ describe('environments get', () => {
     dvcTest()
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/environments?perPage=1000&page=1`)
+                .get(
+                    `/v1/projects/${projectKey}/environments?perPage=1000&page=1`,
+                )
                 .reply(200, [
                     { key: 'first-env', name: 'first env' },
                     { key: 'second-env', name: 'second env' },
@@ -30,16 +32,20 @@ describe('environments get', () => {
 
     dvcTest()
         .nock(BASE_URL, (api) =>
-            api.get(`/v1/projects/${projectKey}/environments/first-env`).reply(200, {
-                key: 'first-env',
-                name: 'first env',
-            }),
+            api
+                .get(`/v1/projects/${projectKey}/environments/first-env`)
+                .reply(200, {
+                    key: 'first-env',
+                    name: 'first env',
+                }),
         )
         .nock(BASE_URL, (api) =>
-            api.get(`/v1/projects/${projectKey}/environments/second-env`).reply(200, {
-                key: 'second-env',
-                name: 'second env',
-            }),
+            api
+                .get(`/v1/projects/${projectKey}/environments/second-env`)
+                .reply(200, {
+                    key: 'second-env',
+                    name: 'second env',
+                }),
         )
         .stdout()
         .command([
@@ -53,7 +59,10 @@ describe('environments get', () => {
             'first-env',
             'second-env',
         ])
-        .it('fetches multiple environments by space-separated positional arguments', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
-        })
+        .it(
+            'fetches multiple environments by space-separated positional arguments',
+            (ctx) => {
+                expect(ctx.stdout).toMatchSnapshot()
+            },
+        )
 })
