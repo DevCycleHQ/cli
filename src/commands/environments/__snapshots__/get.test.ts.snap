@@ -13,3 +13,8 @@ exports[`environments get > fetches multiple environments by space-separated pos
 ]
 "
 `;
+
+exports[`environments get > returns a list of environment objects in headless mode 1`] = `
+"[{"key":"first-env","name":"first env"},{"key":"second-env","name":"second env"}]
+"
+`;
