@@ -1,24 +1,40 @@
 import { expect } from 'vitest'
 import { dvcTest } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('features get', () => {
     const projectKey = 'test-project'
+    const fullFeature = {
+        key: 'first-feature',
+        name: 'first feature',
+        _id: 'id1',
+        _project: 'string',
+        source: 'api',
+        _createdBy: 'string',
+        createdAt: '2019-08-24T14:15:22Z',
+        updatedAt: '2019-08-24T14:15:22Z',
+        variations: [],
+        controlVariation: 'variation_id',
+        variables: [],
+        tags: [],
+        ldLink: 'string',
+        readonly: true,
+        settings: {},
+        sdkVisibility: { mobile: true, client: true, server: true },
+    }
+    const fullFeature2 = { ...fullFeature, key: 'second-feature', name: 'second feature', _id: 'id2' }
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features?perPage=1000&page=1`)
-                .reply(200, [
-                    {
-                        key: 'first-feature',
-                        name: 'first feature',
-                    },
-                    {
-                        key: 'second-feature',
-                        name: 'second feature',
-                    },
-                ]),
+                .get(`/v2/projects/${projectKey}/features`)
+                .reply(200, [fullFeature, fullFeature2]),
         )
         .stdout()
         .command([
@@ -35,9 +51,13 @@ describe('features get', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features?perPage=10&page=2`)
+                .get(`/v2/projects/${projectKey}/features?page=2&perPage=10`)
                 .reply(200, []),
         )
         .stdout()
@@ -47,7 +67,7 @@ describe('features get', () => {
             projectKey,
             '--page',
             '2',
-            '--perPage',
+            '--per-page',
             '10',
             '--client-id',
             'test-client-id',
@@ -59,10 +79,14 @@ describe('features get', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
-                    `/v1/projects/${projectKey}/features?search=search&perPage=1000&page=1`,
+                    `/v2/projects/${projectKey}/features?search=search`,
                 )
                 .reply(200, []),
         )
@@ -83,21 +107,19 @@ describe('features get', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features/first-feature`)
-                .reply(200, {
-                    key: 'first-feature',
-                    name: 'first feature',
-                }),
+                .get(`/v2/projects/${projectKey}/features/first-feature`)
+                .reply(200, fullFeature),
         )
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/features/second-feature`)
-                .reply(200, {
-                    key: 'second-feature',
-                    name: 'second feature',
-                }),
+                .get(`/v2/projects/${projectKey}/features/second-feature`)
+                .reply(200, fullFeature2),
         )
         .stdout()
         .command([
