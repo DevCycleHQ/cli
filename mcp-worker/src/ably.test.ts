@@ -62,7 +62,7 @@ describe('publishMCPInstallEvent', () => {
                 name: 'N',
                 email: 'e',
             } as any),
-        ).rejects.toThrow('ABLY_API_KEY is required to publish MCP events')
+        ).rejects.toThrow('ABLY_API_KEY is required to publish Ably MCP events')
     })
 
     test('throws when org_id missing', async () => {
@@ -71,7 +71,9 @@ describe('publishMCPInstallEvent', () => {
                 name: 'N',
                 email: 'e',
             } as any),
-        ).rejects.toThrow('org_id is required in claims to publish MCP events')
+        ).rejects.toThrow(
+            'org_id is required in claims to publish Ably MCP events',
+        )
     })
 
     test('logs and rethrows on publish error', async () => {
