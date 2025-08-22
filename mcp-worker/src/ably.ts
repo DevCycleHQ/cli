@@ -6,10 +6,12 @@ export async function publishMCPInstallEvent(
     claims: DevCycleJWTClaims,
 ): Promise<void> {
     if (!env.ABLY_API_KEY) {
-        throw new Error('ABLY_API_KEY is required to publish MCP events')
+        throw new Error('ABLY_API_KEY is required to publish Ably MCP events')
     }
     if (!claims.org_id) {
-        throw new Error('org_id is required in claims to publish MCP events')
+        throw new Error(
+            'org_id is required in claims to publish Ably MCP events',
+        )
     }
 
     const channel = `${claims.org_id}-mcp-install`

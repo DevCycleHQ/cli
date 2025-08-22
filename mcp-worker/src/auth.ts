@@ -305,13 +305,11 @@ export async function callback(
         userId: claims.sub!,
     })
 
-    c.executionCtx.waitUntil(async () => {
-        try {
-            await publishMCPInstallEvent(c.env, claims)
-        } catch (error) {
+    c.executionCtx.waitUntil(
+        publishMCPInstallEvent(c.env, claims).catch((error) => {
             console.error('Error publishing MCP install event', error)
-        }
-    })
+        }),
+    )
 
     return Response.redirect(redirectTo, 302)
 }
