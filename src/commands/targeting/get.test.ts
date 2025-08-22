@@ -67,12 +67,7 @@ describe('targeting get', () => {
                 .reply(200, mockTargeting),
         )
         .stdout()
-        .command([
-            'targeting get',
-            featureKey,
-            'test-env',
-            ...authFlags,
-        ])
+        .command(['targeting get', featureKey, 'test-env', ...authFlags])
         .it('includes environment in query params', (ctx) => {
             expect(ctx.stdout).toMatchSnapshot()
         })

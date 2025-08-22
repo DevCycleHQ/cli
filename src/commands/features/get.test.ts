@@ -111,7 +111,10 @@ describe('features get', () => {
             'first-feature',
             'second-feature',
         ])
-        .it('fetches multiple features by space-separated positional arguments', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
-        })
+        .it(
+            'fetches multiple features by space-separated positional arguments',
+            (ctx) => {
+                expect(ctx.stdout).toMatchSnapshot()
+            },
+        )
 })
