@@ -187,6 +187,7 @@ describe('variations update', () => {
         .do(async () => {
             // Ensure no pending OAuth expectation; command will fetch token normally
             // Do not stub cache here so command path remains the same
+            tokenCacheStub_get.returns('mock-cached-token')
             await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>

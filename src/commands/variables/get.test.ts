@@ -1,26 +1,30 @@
 import { expect } from 'vitest'
 import { dvcTest } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variables get', () => {
     const projectKey = 'test-project'
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
-            api
-                .get(`/v1/projects/${projectKey}/variables?perPage=1000&page=1`)
-                .reply(200, [
-                    {
-                        key: 'first-variable',
-                        name: 'first variable',
-                        type: 'String',
-                    },
-                    {
-                        key: 'second-variable',
-                        name: 'second variable',
-                        type: 'String',
-                    },
-                ]),
+            api.get(`/v1/projects/${projectKey}/variables`).reply(200, [
+                {
+                    key: 'first-variable',
+                    name: 'first variable',
+                    type: 'String',
+                },
+                {
+                    key: 'second-variable',
+                    name: 'second variable',
+                    type: 'String',
+                },
+            ]),
         )
         .stdout()
         .command([
@@ -37,6 +41,10 @@ describe('variables get', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables?perPage=10&page=2`)
@@ -49,7 +57,7 @@ describe('variables get', () => {
             projectKey,
             '--page',
             '2',
-            '--perPage',
+            '--per-page',
             '10',
             '--client-id',
             'test-client-id',
@@ -61,11 +69,13 @@ describe('variables get', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(
-                    `/v1/projects/${projectKey}/variables?search=search&perPage=1000&page=1`,
-                )
+                .get(`/v1/projects/${projectKey}/variables?search=search`)
                 .reply(200, []),
         )
         .stdout()
@@ -85,6 +95,10 @@ describe('variables get', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables/first-variable`)
