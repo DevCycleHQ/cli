@@ -15,3 +15,29 @@ exports[`variables get > fetches multiple variables by space-separated positiona
 ]
 "
 `;
+
+exports[`variables get > passes pagination params to api 1`] = `
+"[]
+"
+`;
+
+exports[`variables get > passes search param to api 1`] = `
+"[]
+"
+`;
+
+exports[`variables get > returns a list of variable objects 1`] = `
+"[
+  {
+    "key": "first-variable",
+    "name": "first variable",
+    "type": "String"
+  },
+  {
+    "key": "second-variable",
+    "name": "second variable",
+    "type": "String"
+  }
+]
+"
+`;

@@ -4,3 +4,16 @@ exports[`variables list > passes pagination params to api 1`] = `
 "[]
 "
 `;
+
+exports[`variables list > passes search param to api 1`] = `
+"[]
+"
+`;
+
+exports[`variables list > returns a list of variable keys 1`] = `
+"[
+  "first-variable",
+  "second-variable"
+]
+"
+`;

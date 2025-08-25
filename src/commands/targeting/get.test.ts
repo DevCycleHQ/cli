@@ -1,7 +1,9 @@
 import { expect } from 'vitest'
 import inquirer from 'inquirer'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('targeting get', () => {
     beforeEach(setCurrentTestFile(__filename))
@@ -25,69 +27,77 @@ describe('targeting get', () => {
             status: 'active',
             startedAt: '2023-04-05T16:12:19.911Z',
             updatedAt: '2023-04-05T16:12:19.922Z',
+            targets: [],
         },
     ]
 
     dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(`/v1/projects/${projectKey}/features?perPage=1000&page=1`)
-                .reply(200, [
-                    { key: 'test-feature' },
-                    { key: 'another-feature' },
-                ]),
-        )
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
-                    `/v1/projects/${projectKey}/features/${featureKey}/environments/${projectKey}/targeting`,
+                    `/v1/projects/${projectKey}/features/${featureKey}/configurations`,
                 )
                 .reply(200, mockTargeting),
         )
         .stdout()
-        .command(['targeting get', featureKey, ...authFlags])
+        .command(['targeting get', featureKey, '--headless', ...authFlags])
         .it('returns all targeting for a feature', (ctx) => {
             expect(ctx.stdout).toMatchSnapshot()
         })
 
     dvcTest()
-        .nock(BASE_URL, (api) =>
-            api
-                .get(`/v1/projects/${projectKey}/features?perPage=1000&page=1`)
-                .reply(200, [
-                    { key: 'test-feature' },
-                    { key: 'another-feature' },
-                ]),
-        )
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
-                    `/v1/projects/${projectKey}/features/${featureKey}/environments/${projectKey}/targeting?environment=test-env`,
+                    `/v1/projects/${projectKey}/features/${featureKey}/configurations?environment=test-env`,
                 )
                 .reply(200, mockTargeting),
         )
         .stdout()
-        .command(['targeting get', featureKey, 'test-env', ...authFlags])
+        .command([
+            'targeting get',
+            featureKey,
+            'test-env',
+            '--headless',
+            ...authFlags,
+        ])
         .it('includes environment in query params', (ctx) => {
             expect(ctx.stdout).toMatchSnapshot()
         })
 
     dvcTest()
         .stub(inquirer, 'prompt', () =>
-            Promise.resolve({ feature: 'another-feature' }),
+            Promise.resolve({ feature: { key: 'another-feature' } }),
         )
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
-            api
-                .get(`/v1/projects/${projectKey}/features?perPage=1000&page=1`)
-                .reply(200, [
-                    { key: 'test-feature' },
-                    { key: 'another-feature' },
-                ]),
+            api.get(`/v1/projects/${projectKey}/environments`).reply(200, []),
         )
         .nock(BASE_URL, (api) =>
             api
                 .get(
-                    `/v1/projects/${projectKey}/features/another-feature/environments/${projectKey}/targeting`,
+                    `/v1/projects/${projectKey}/features/another-feature/variations`,
+                )
+                .reply(200, []),
+        )
+        .nock(BASE_URL, (api) =>
+            api.get(`/v1/projects/${projectKey}/audiences`).reply(200, []),
+        )
+        .nock(BASE_URL, (api) =>
+            api
+                .get(
+                    `/v1/projects/${projectKey}/features/another-feature/configurations`,
                 )
                 .reply(200, mockTargeting),
         )
