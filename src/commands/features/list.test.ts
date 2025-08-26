@@ -6,6 +6,7 @@ import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('features list', () => {
     const projectKey = 'test-project'
+    const expectedFeatureKeys = ['first-feature', 'second-feature']
     const fullFeature = {
         key: 'first-feature',
         name: 'first feature',
@@ -52,7 +53,8 @@ describe('features list', () => {
             'test-client-secret',
         ])
         .it('returns a list of feature keys', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedFeatureKeys)
         })
 
     dvcTest()
@@ -80,7 +82,8 @@ describe('features list', () => {
             'test-client-secret',
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
     dvcTest()
@@ -106,6 +109,7 @@ describe('features list', () => {
             'test-client-secret',
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 })

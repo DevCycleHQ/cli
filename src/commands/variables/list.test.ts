@@ -6,6 +6,11 @@ import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variables list', () => {
     const projectKey = 'test-project'
+    const expectedVariableKeys = ['first-variable', 'second-variable']
+    const expectedVariables = [
+        { key: 'first-variable', name: 'first variable', type: 'String' },
+        { key: 'second-variable', name: 'second variable', type: 'String' },
+    ]
 
     dvcTest()
         .do(async () => {
@@ -13,18 +18,9 @@ describe('variables list', () => {
             await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
-            api.get(`/v1/projects/${projectKey}/variables`).reply(200, [
-                {
-                    key: 'first-variable',
-                    name: 'first variable',
-                    type: 'String',
-                },
-                {
-                    key: 'second-variable',
-                    name: 'second variable',
-                    type: 'String',
-                },
-            ]),
+            api
+                .get(`/v1/projects/${projectKey}/variables`)
+                .reply(200, expectedVariables),
         )
         .stdout()
         .command([
@@ -37,7 +33,8 @@ describe('variables list', () => {
             'test-client-secret',
         ])
         .it('returns a list of variable keys', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedVariableKeys)
         })
 
     dvcTest()
@@ -65,7 +62,8 @@ describe('variables list', () => {
             'test-client-secret',
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
     dvcTest()
@@ -91,6 +89,7 @@ describe('variables list', () => {
             'test-client-secret',
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 })
