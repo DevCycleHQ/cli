@@ -37,8 +37,9 @@ describe('features get', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v2/projects/${projectKey}/features?page=2&perPage=10`)
-                .reply(200, []),
+                .get(`/v2/projects/${projectKey}/features`)
+                .query({ page: 2, perPage: 10 })
+                .reply(200, mockFeatures),
         )
         .stdout()
         .command([
@@ -53,7 +54,7 @@ describe('features get', () => {
         ])
         .it('passes pagination params to api', (ctx) => {
             const data = JSON.parse(ctx.stdout)
-            expect(data).to.eql([])
+            expect(data).to.eql(mockFeatures)
         })
 
     dvcTest()
@@ -63,8 +64,9 @@ describe('features get', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v2/projects/${projectKey}/features?search=search`)
-                .reply(200, []),
+                .get(`/v2/projects/${projectKey}/features`)
+                .query({ search: 'hello world' })
+                .reply(200, [mockFeatures[1]]),
         )
         .stdout()
         .command([
@@ -72,12 +74,12 @@ describe('features get', () => {
             '--project',
             projectKey,
             '--search',
-            'search',
+            'hello world',
             ...authFlags,
         ])
         .it('passes search param to api', (ctx) => {
             const data = JSON.parse(ctx.stdout)
-            expect(data).to.eql([])
+            expect(data).to.eql([mockFeatures[1]])
         })
 
     dvcTest()
@@ -87,22 +89,23 @@ describe('features get', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v2/projects/${projectKey}/features/first-feature`)
-                .reply(200, mockFeatures[0]),
-        )
-        .nock(BASE_URL, (api) =>
-            api
-                .get(`/v2/projects/${projectKey}/features/second-feature`)
+                .get(
+                    `/v2/projects/${projectKey}/features/${mockFeatures[0].key}`,
+                )
+                .reply(200, mockFeatures[0])
+                .get(
+                    `/v2/projects/${projectKey}/features/${mockFeatures[1].key}`,
+                )
                 .reply(200, mockFeatures[1]),
         )
         .stdout()
         .command([
             'features get',
+            mockFeatures[0].key,
+            mockFeatures[1].key,
             '--project',
             projectKey,
             ...authFlags,
-            'first-feature',
-            'second-feature',
         ])
         .it(
             'fetches multiple features by space-separated positional arguments',

@@ -6,6 +6,12 @@ import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('environments get', () => {
     const projectKey = 'test-project'
+    const authFlags = [
+        '--client-id',
+        'test-client-id',
+        '--client-secret',
+        'test-client-secret',
+    ]
     const expectedEnvironments = [
         { key: 'first-env', name: 'first env' },
         { key: 'second-env', name: 'second env' },
@@ -23,10 +29,7 @@ describe('environments get', () => {
             '--project',
             projectKey,
             '--headless',
-            '--client-id',
-            'test-client-id',
-            '--client-secret',
-            'test-client-secret',
+            ...authFlags,
         ])
         .it('returns a list of environment objects in headless mode', (ctx) => {
             const data = JSON.parse(ctx.stdout)
@@ -53,10 +56,7 @@ describe('environments get', () => {
             'environments get',
             '--project',
             projectKey,
-            '--client-id',
-            'test-client-id',
-            '--client-secret',
-            'test-client-secret',
+            ...authFlags,
             'first-env',
             'second-env',
         ])
