@@ -24,7 +24,12 @@ describe('features get', () => {
         settings: {},
         sdkVisibility: { mobile: true, client: true, server: true },
     }
-    const fullFeature2 = { ...fullFeature, key: 'second-feature', name: 'second feature', _id: 'id2' }
+    const fullFeature2 = {
+        ...fullFeature,
+        key: 'second-feature',
+        name: 'second feature',
+        _id: 'id2',
+    }
 
     dvcTest()
         .do(async () => {
@@ -85,9 +90,7 @@ describe('features get', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(
-                    `/v2/projects/${projectKey}/features?search=search`,
-                )
+                .get(`/v2/projects/${projectKey}/features?search=search`)
                 .reply(200, []),
         )
         .stdout()

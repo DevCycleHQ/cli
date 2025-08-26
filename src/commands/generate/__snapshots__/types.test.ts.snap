@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`generate types correctly generates JS SDK types with custom data type 1`] = `
+exports[`generate types > correctly generates JS SDK types with custom data type 1`] = `
 "import { DevCycleJSON } from '@devcycle/js-client-sdk'
 
 declare module '@devcycle/types' {
@@ -64,7 +64,7 @@ export type DVCVariableTypes = {
      * key: deprecated-var
      * created by: Unknown User
      * created on: 2021-07-04
-     * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+     * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
     */
     'deprecated-var': string
@@ -123,7 +123,7 @@ export const JSON_VAR = 'json-var' as const
  * key: deprecated-var
  * created by: Unknown User
  * created on: 2021-07-04
- * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+ * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
 */
 
@@ -131,7 +131,7 @@ export const DEPRECATED_VAR = 'deprecated-var' as const
 "
 `;
 
-exports[`generate types correctly generates JS SDK types with custom data type in strict mode 1`] = `
+exports[`generate types > correctly generates JS SDK types with custom data type in strict mode 1`] = `
 "import { DevCycleJSON } from '@devcycle/js-client-sdk'
 
 declare module '@devcycle/types' {
@@ -195,7 +195,7 @@ export type DVCVariableTypes = {
      * key: deprecated-var
      * created by: Unknown User
      * created on: 2021-07-04
-     * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+     * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
     */
     'deprecated-var': string
@@ -254,7 +254,7 @@ export const JSON_VAR = 'json-var' as const
  * key: deprecated-var
  * created by: Unknown User
  * created on: 2021-07-04
- * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+ * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
 */
 
@@ -262,7 +262,7 @@ export const DEPRECATED_VAR = 'deprecated-var' as const
 "
 `;
 
-exports[`generate types correctly generates JS SDK types with obfuscated keys 1`] = `
+exports[`generate types > correctly generates JS SDK types with obfuscated keys 1`] = `
 "import { DevCycleJSON } from '@devcycle/js-client-sdk'
 
 declare module '@devcycle/types' {
@@ -328,7 +328,7 @@ export const JSON_VAR = 'dvc_obfs_a991871dbce45b30da1e125ae28b59eb74c1da1f48ad6a
 /**
  * created by: Unknown User
  * created on: 2021-07-04
- * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+ * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
 */
 
@@ -336,7 +336,7 @@ export const DEPRECATED_VAR = 'dvc_obfs_a991871dbce45b30da1e125ae28b59eb74c1da1f
 "
 `;
 
-exports[`generate types correctly generates Next.js SDK types 1`] = `
+exports[`generate types > correctly generates Next.js SDK types 1`] = `
 "import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
@@ -426,7 +426,7 @@ export type DVCVariableTypes = {
      * key: deprecated-var
      * created by: Unknown User
      * created on: 2021-07-04
-     * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+     * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
     */
     'deprecated-var': string
@@ -485,7 +485,7 @@ export const JSON_VAR = 'json-var' as const
  * key: deprecated-var
  * created by: Unknown User
  * created on: 2021-07-04
- * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+ * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
 */
 
@@ -493,7 +493,7 @@ export const DEPRECATED_VAR = 'deprecated-var' as const
 "
 `;
 
-exports[`generate types correctly generates React SDK types 1`] = `
+exports[`generate types > correctly generates React SDK types 1`] = `
 "import {
     useVariable as originalUseVariable,
     useVariableValue as originalUseVariableValue,
@@ -583,7 +583,7 @@ export type DVCVariableTypes = {
      * key: deprecated-var
      * created by: Unknown User
      * created on: 2021-07-04
-     * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+     * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
     */
     'deprecated-var': string
@@ -642,7 +642,7 @@ export const JSON_VAR = 'json-var' as const
  * key: deprecated-var
  * created by: Unknown User
  * created on: 2021-07-04
- * @deprecated This variable is part of complete feature \\"Completed Feature\\" and should be cleaned up.
+ * @deprecated This variable is part of complete feature "Completed Feature" and should be cleaned up.
 
 */
 
