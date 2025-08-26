@@ -6,13 +6,16 @@ import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('environments get', () => {
     const projectKey = 'test-project'
+    const expectedEnvironments = [
+        { key: 'first-env', name: 'first env' },
+        { key: 'second-env', name: 'second env' },
+    ]
 
     dvcTest()
         .nock(BASE_URL, (api) =>
-            api.get(`/v1/projects/${projectKey}/environments`).reply(200, [
-                { key: 'first-env', name: 'first env' },
-                { key: 'second-env', name: 'second env' },
-            ]),
+            api
+                .get(`/v1/projects/${projectKey}/environments`)
+                .reply(200, expectedEnvironments),
         )
         .stdout()
         .command([
@@ -26,7 +29,8 @@ describe('environments get', () => {
             'test-client-secret',
         ])
         .it('returns a list of environment objects in headless mode', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedEnvironments)
         })
 
     dvcTest()
@@ -37,18 +41,12 @@ describe('environments get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/environments/first-env`)
-                .reply(200, {
-                    key: 'first-env',
-                    name: 'first env',
-                }),
+                .reply(200, expectedEnvironments[0]),
         )
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/environments/second-env`)
-                .reply(200, {
-                    key: 'second-env',
-                    name: 'second env',
-                }),
+                .reply(200, expectedEnvironments[1]),
         )
         .stdout()
         .command([
@@ -65,7 +63,8 @@ describe('environments get', () => {
         .it(
             'fetches multiple environments by space-separated positional arguments',
             (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
+                const data = JSON.parse(ctx.stdout)
+                expect(data).to.eql(expectedEnvironments)
             },
         )
 })
