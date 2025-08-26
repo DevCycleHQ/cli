@@ -6,6 +6,7 @@ import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('features get', () => {
     const projectKey = 'test-project'
+    const expectedTwoFeatures = ['first-feature', 'second-feature']
     const fullFeature = {
         key: 'first-feature',
         name: 'first feature',
@@ -52,7 +53,8 @@ describe('features get', () => {
             'test-client-secret',
         ])
         .it('returns a list of feature objects', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([fullFeature, fullFeature2])
         })
 
     dvcTest()
@@ -80,7 +82,8 @@ describe('features get', () => {
             'test-client-secret',
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
     dvcTest()
@@ -106,7 +109,8 @@ describe('features get', () => {
             'test-client-secret',
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
     dvcTest()
@@ -139,7 +143,8 @@ describe('features get', () => {
         .it(
             'fetches multiple features by space-separated positional arguments',
             (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
+                const data = JSON.parse(ctx.stdout)
+                expect(data).to.eql([fullFeature, fullFeature2])
             },
         )
 })

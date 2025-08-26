@@ -6,6 +6,10 @@ import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variables get', () => {
     const projectKey = 'test-project'
+    const expectedVariables = [
+        { key: 'first-variable', name: 'first variable', type: 'String' },
+        { key: 'second-variable', name: 'second variable', type: 'String' },
+    ]
 
     dvcTest()
         .do(async () => {
@@ -13,18 +17,9 @@ describe('variables get', () => {
             await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
-            api.get(`/v1/projects/${projectKey}/variables`).reply(200, [
-                {
-                    key: 'first-variable',
-                    name: 'first variable',
-                    type: 'String',
-                },
-                {
-                    key: 'second-variable',
-                    name: 'second variable',
-                    type: 'String',
-                },
-            ]),
+            api
+                .get(`/v1/projects/${projectKey}/variables`)
+                .reply(200, expectedVariables),
         )
         .stdout()
         .command([
@@ -37,7 +32,8 @@ describe('variables get', () => {
             'test-client-secret',
         ])
         .it('returns a list of variable objects', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedVariables)
         })
 
     dvcTest()
@@ -65,7 +61,8 @@ describe('variables get', () => {
             'test-client-secret',
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
     dvcTest()
@@ -91,7 +88,8 @@ describe('variables get', () => {
             'test-client-secret',
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).toMatchSnapshot()
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
     dvcTest()
@@ -102,20 +100,12 @@ describe('variables get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables/first-variable`)
-                .reply(200, {
-                    key: 'first-variable',
-                    name: 'first variable',
-                    type: 'String',
-                }),
+                .reply(200, expectedVariables[0]),
         )
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables/second-variable`)
-                .reply(200, {
-                    key: 'second-variable',
-                    name: 'second variable',
-                    type: 'String',
-                }),
+                .reply(200, expectedVariables[1]),
         )
         .stdout()
         .command([
@@ -132,7 +122,8 @@ describe('variables get', () => {
         .it(
             'fetches multiple variables by space-separated positional arguments',
             (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
+                const data = JSON.parse(ctx.stdout)
+                expect(data).to.eql(expectedVariables)
             },
         )
 })
