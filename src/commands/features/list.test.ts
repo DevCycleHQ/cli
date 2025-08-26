@@ -24,7 +24,12 @@ describe('features list', () => {
         settings: {},
         sdkVisibility: { mobile: true, client: true, server: true },
     }
-    const fullFeature2 = { ...fullFeature, key: 'second-feature', name: 'second feature', _id: 'id2' }
+    const fullFeature2 = {
+        ...fullFeature,
+        key: 'second-feature',
+        name: 'second feature',
+        _id: 'id2',
+    }
 
     dvcTest()
         .do(async () => {
@@ -32,10 +37,9 @@ describe('features list', () => {
             await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
-            api.get(`/v2/projects/${projectKey}/features`).reply(200, [
-                fullFeature,
-                fullFeature2,
-            ]),
+            api
+                .get(`/v2/projects/${projectKey}/features`)
+                .reply(200, [fullFeature, fullFeature2]),
         )
         .stdout()
         .command([
@@ -86,9 +90,7 @@ describe('features list', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(
-                    `/v2/projects/${projectKey}/features?search=search`,
-                )
+                .get(`/v2/projects/${projectKey}/features?search=search`)
                 .reply(200, []),
         )
         .stdout()
