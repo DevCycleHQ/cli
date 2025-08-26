@@ -1,36 +1,17 @@
 import { expect } from 'vitest'
-import { dvcTest } from '../../../test-utils'
+import { dvcTest, mockFeatures } from '../../../test-utils'
 import { AUTH_URL, BASE_URL } from '../../api/common'
 import axios from 'axios'
 import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('features get', () => {
     const projectKey = 'test-project'
-    const expectedTwoFeatures = ['first-feature', 'second-feature']
-    const fullFeature = {
-        key: 'first-feature',
-        name: 'first feature',
-        _id: 'id1',
-        _project: 'string',
-        source: 'api',
-        _createdBy: 'string',
-        createdAt: '2019-08-24T14:15:22Z',
-        updatedAt: '2019-08-24T14:15:22Z',
-        variations: [],
-        controlVariation: 'variation_id',
-        variables: [],
-        tags: [],
-        ldLink: 'string',
-        readonly: true,
-        settings: {},
-        sdkVisibility: { mobile: true, client: true, server: true },
-    }
-    const fullFeature2 = {
-        ...fullFeature,
-        key: 'second-feature',
-        name: 'second feature',
-        _id: 'id2',
-    }
+    const authFlags = [
+        '--client-id',
+        'test-client-id',
+        '--client-secret',
+        'test-client-secret',
+    ]
 
     dvcTest()
         .do(async () => {
@@ -40,21 +21,13 @@ describe('features get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features`)
-                .reply(200, [fullFeature, fullFeature2]),
+                .reply(200, mockFeatures),
         )
         .stdout()
-        .command([
-            'features get',
-            '--project',
-            projectKey,
-            '--client-id',
-            'test-client-id',
-            '--client-secret',
-            'test-client-secret',
-        ])
+        .command(['features get', '--project', projectKey, ...authFlags])
         .it('returns a list of feature objects', (ctx) => {
             const data = JSON.parse(ctx.stdout)
-            expect(data).to.eql([fullFeature, fullFeature2])
+            expect(data).to.eql(mockFeatures)
         })
 
     dvcTest()
@@ -76,10 +49,7 @@ describe('features get', () => {
             '2',
             '--per-page',
             '10',
-            '--client-id',
-            'test-client-id',
-            '--client-secret',
-            'test-client-secret',
+            ...authFlags,
         ])
         .it('passes pagination params to api', (ctx) => {
             const data = JSON.parse(ctx.stdout)
@@ -103,10 +73,7 @@ describe('features get', () => {
             projectKey,
             '--search',
             'search',
-            '--client-id',
-            'test-client-id',
-            '--client-secret',
-            'test-client-secret',
+            ...authFlags,
         ])
         .it('passes search param to api', (ctx) => {
             const data = JSON.parse(ctx.stdout)
@@ -121,22 +88,19 @@ describe('features get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features/first-feature`)
-                .reply(200, fullFeature),
+                .reply(200, mockFeatures[0]),
         )
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features/second-feature`)
-                .reply(200, fullFeature2),
+                .reply(200, mockFeatures[1]),
         )
         .stdout()
         .command([
             'features get',
             '--project',
             projectKey,
-            '--client-id',
-            'test-client-id',
-            '--client-secret',
-            'test-client-secret',
+            ...authFlags,
             'first-feature',
             'second-feature',
         ])
@@ -144,7 +108,7 @@ describe('features get', () => {
             'fetches multiple features by space-separated positional arguments',
             (ctx) => {
                 const data = JSON.parse(ctx.stdout)
-                expect(data).to.eql([fullFeature, fullFeature2])
+                expect(data).to.eql([mockFeatures[0], mockFeatures[1]])
             },
         )
 })
