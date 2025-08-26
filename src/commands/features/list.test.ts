@@ -1,6 +1,8 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import { dvcTest, mockFeatures } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('features list', () => {
     const projectKey = 'test-project'
@@ -12,6 +14,10 @@ describe('features list', () => {
     ]
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features`)
@@ -20,21 +26,19 @@ describe('features list', () => {
         .stdout()
         .command(['features list', '--project', projectKey, ...authFlags])
         .it('returns a list of feature keys', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(
-                    ['feature-1', 'feature-2', 'feature-with-optin'],
-                    null,
-                    2,
-                ),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(mockFeatures.map((f) => f.key))
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v2/projects/${projectKey}/features`)
-                .query({ page: 2, perPage: 10 })
-                .reply(200, mockFeatures),
+                .get(`/v2/projects/${projectKey}/features?page=2&perPage=10`)
+                .reply(200, []),
         )
         .stdout()
         .command([
@@ -48,21 +52,19 @@ describe('features list', () => {
             ...authFlags,
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(
-                    ['feature-1', 'feature-2', 'feature-with-optin'],
-                    null,
-                    2,
-                ),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v2/projects/${projectKey}/features`)
-                .query({ search: 'hello world' })
-                .reply(200, mockFeatures),
+                .get(`/v2/projects/${projectKey}/features?search=search`)
+                .reply(200, []),
         )
         .stdout()
         .command([
@@ -70,16 +72,11 @@ describe('features list', () => {
             '--project',
             projectKey,
             '--search',
-            'hello world',
+            'search',
             ...authFlags,
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(
-                    ['feature-1', 'feature-2', 'feature-with-optin'],
-                    null,
-                    2,
-                ),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 })
