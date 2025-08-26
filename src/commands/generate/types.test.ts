@@ -1,10 +1,10 @@
-import { expect } from '@oclif/test'
-import { BASE_URL } from '../../api/common'
+import { expect, afterAll } from 'vitest'
+import { AUTH_URL, BASE_URL } from '../../api/common'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import * as fs from 'fs'
-import * as chai from 'chai'
 import Nock, { Body, ReplyHeaders } from 'nock'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 const mockVariablesResponse = [
     {
@@ -182,13 +182,16 @@ const setupNockMock = (customProperties: unknown[]) => (api: Nock.Scope) => {
 
 describe('generate types', () => {
     beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
 
-    after(() => {
+    afterAll(() => {
         fs.rmSync(artifactsDir, { recursive: true })
     })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
@@ -211,6 +214,10 @@ describe('generate types', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
@@ -239,6 +246,10 @@ describe('generate types', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
@@ -262,6 +273,10 @@ describe('generate types', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
@@ -285,6 +300,10 @@ describe('generate types', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, setupNockMock([]))
         .stdout()
         .command([
@@ -315,6 +334,10 @@ describe('generate types', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, setupNockMock([]))
         .stdout()
         .command([
