@@ -34,12 +34,11 @@ describe('DevCycleApiClient', () => {
 
             // Create a proper mock Zodios error with data property
             class ZodiosValidationError extends Error {
-                constructor(
-                    message: string,
-                    public data: any,
-                ) {
+                public data: unknown
+                constructor(message: string, data: unknown) {
                     super(message)
                     this.name = 'ZodiosValidationError'
+                    this.data = data
                 }
             }
 
