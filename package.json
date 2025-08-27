@@ -31,8 +31,8 @@
         "posttest": "yarn lint",
         "prepack": "yarn build && oclif readme --multi",
         "pretest": "yarn format:check",
-        "test": "mocha test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
-        "test:ci": "mocha --forbid-only test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
+        "test": "mocha -r ts-node/register test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
+        "test:ci": "mocha --forbid-only -r ts-node/register test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
         "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
         "version": "oclif readme --multi && git add README.md"
     },
