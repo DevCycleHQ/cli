@@ -54,7 +54,11 @@ export async function updateSelfTargetingIdentityHandler(
             return await handleZodiosValidationErrors(
                 () =>
                     updateUserProfile(authToken, projectKey, {
-                        dvcUserId: args.dvc_user_id,
+                        dvcUserId:
+                            typeof args.dvc_user_id === 'string' &&
+                            args.dvc_user_id.trim() === ''
+                                ? null
+                                : args.dvc_user_id,
                     }),
                 'updateUserProfile',
             )

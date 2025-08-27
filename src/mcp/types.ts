@@ -402,7 +402,6 @@ export const UpdateFeatureStatusArgsSchema = z.object({
 export const UpdateSelfTargetingIdentityArgsSchema = z.object({
     dvc_user_id: z
         .string()
-        .nullable()
         .describe(
             'DevCycle User ID for self-targeting (use null or empty string to clear)',
         ),
