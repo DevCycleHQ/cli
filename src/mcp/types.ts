@@ -463,7 +463,7 @@ export const GetFeatureAuditLogHistoryArgsSchema = z.object({
         .describe('Environment key to filter audit entries by'),
     user: z.string().optional().describe('User ID to filter audit entries by'),
     action: z
-        .string()
+        .enum(['created', 'modified', 'deleted'])
         .optional()
         .describe('Action type to filter audit entries by'),
 })
