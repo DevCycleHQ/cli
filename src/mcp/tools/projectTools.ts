@@ -118,7 +118,7 @@ export function registerProjectTools(
         {
             description: [
                 'List all projects in the current organization.',
-                'Include dashboard link in the response.',
+                'Can be called before "select_project"',
             ].join('\n'),
             annotations: {
                 title: 'List Projects',
