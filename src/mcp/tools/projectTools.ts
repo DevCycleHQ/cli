@@ -139,6 +139,7 @@ export function registerProjectTools(
             description: [
                 'Get the currently selected project.',
                 'Include dashboard link in the response.',
+                'Returns the current project, its environments, and SDK keys.',
             ].join('\n'),
             annotations: {
                 title: 'Get Current Project',
