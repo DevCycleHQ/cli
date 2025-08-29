@@ -133,3 +133,27 @@ When a user completes OAuth on the hosted MCP Worker, the worker emits a single 
 
 - **Channel**: `${orgId}-mcp-install`
 - **Event name**: `mcp-install`
+
+## MCP Tool Token Counts
+
+Measure how many AI tokens our MCP tool descriptions and schemas consume. Run the measurement script (from repo root):
+
+```bash
+yarn install &&
+yarn measure:mcp-tokens
+```
+
+What it does:
+
+- Uses `gpt-tokenizer` (OpenAI-style) and `@anthropic-ai/tokenizer` (Anthropic) to count tokens in each tool's `description` and `inputSchema`.
+
+Current token totals:
+
+```json
+{
+  "totals": {
+    "anthropic": 10428,
+    "openai": 10746
+  }
+}
+```
