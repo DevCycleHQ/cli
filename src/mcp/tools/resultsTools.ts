@@ -81,7 +81,8 @@ export function registerResultsTools(
         'get_feature_total_evaluations',
         {
             description: [
-                'Get total variable evaluations per time period for a specific feature.',
+                'Get total variable evaluations per time period for a feature.',
+                'Useful for understanding if a feature is being used or not.',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {
@@ -105,6 +106,7 @@ export function registerResultsTools(
         {
             description: [
                 'Get total variable evaluations per time period for the entire project.',
+                'Useful for understanding the overall usage of variables in a project by environment or SDK type.',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {

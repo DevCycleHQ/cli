@@ -457,7 +457,9 @@ export function registerFeatureTools(
         'create_feature',
         {
             description: [
-                'Create a new feature flag. Include dashboard link in the response.',
+                'Create a new DevCycle feature. Include dashboard link in the response.',
+                'Features are the main logical container for variables and targeting rules, defining what values variables will be served to users across environments.',
+                'Features can contin multiple variables, and many variations, defined by the targeting rules to determine how variable values are distributed to users.',
                 'If a user is creating a feature, you should follow these steps and ask users for input on these steps:',
                 '1. create a variable and associate it with this feature. (default to creating a "boolean" variable with the same key as the feature)',
                 '2. create variations for the feature. (default to creating an "on" and "off" variation)',
@@ -499,7 +501,7 @@ export function registerFeatureTools(
         'update_feature_status',
         {
             description: [
-                'Update the status of an existing feature flag.',
+                'Update the status of an existing feature.',
                 '⚠️ IMPORTANT: Changes to feature status may affect production environments.',
                 'Always confirm with the user before making changes to features that are active in production.',
                 'Include dashboard link in the response.',
@@ -520,13 +522,13 @@ export function registerFeatureTools(
         'delete_feature',
         {
             description: [
-                'Delete an existing feature flag.',
-                '⚠️ CRITICAL: Deleting a feature flag will remove it from ALL environments including production.',
-                'ALWAYS confirm with the user before deleting any feature flag.',
+                'Delete an existing feature.',
+                '⚠️ CRITICAL: Deleting a feature will remove it from ALL environments including production.',
+                'ALWAYS confirm with the user before deleting any feature.',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {
-                title: 'Delete Feature Flag',
+                title: 'Delete Feature',
                 destructiveHint: true,
             },
             inputSchema: DeleteFeatureArgsSchema.shape,
@@ -657,7 +659,8 @@ export function registerFeatureTools(
         'get_feature_audit_log_history',
         {
             description: [
-                'Get feature flag audit log history from DevCycle.',
+                'Get feature audit log history from DevCycle.',
+                'Returns audit log data for all changes made to a feature / variation / targeting rule ordered by date.',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {
