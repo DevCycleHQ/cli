@@ -3,6 +3,32 @@ import { schemas } from '../api/zodClient'
 import { UpdateFeatureStatusDto } from '../api/schemas'
 
 // Zod schemas for MCP tool arguments
+export const VariableValidationSchema = z.object({
+    schemaType: z
+        .enum(['enum', 'regex', 'jsonSchema'])
+        .describe('Type of validation to apply'),
+    enumValues: z
+        .union([z.array(z.string()), z.array(z.number())])
+        .optional()
+        .describe(
+            'Required when schemaType="enum": allowable values as strings or numbers',
+        ),
+    regexPattern: z
+        .string()
+        .optional()
+        .describe(
+            'Required when schemaType="regex": regular expression pattern to validate against',
+        ),
+    jsonSchema: z
+        .string()
+        .optional()
+        .describe(
+            'Required when schemaType="jsonSchema": stringified JSON Schema to validate against',
+        ),
+    description: z.string(),
+    exampleValue: z.any().describe('Example value demonstrating a valid input'),
+})
+
 export const ListFeaturesArgsSchema = z.object({
     page: z
         .number()
@@ -16,7 +42,7 @@ export const ListFeaturesArgsSchema = z.object({
         .max(1000)
         .default(100)
         .optional()
-        .describe('Number of items per page (1-1000)'),
+        .describe('Number of items per page'),
     sortBy: z
         .enum([
             'createdAt',
@@ -27,18 +53,13 @@ export const ListFeaturesArgsSchema = z.object({
             'propertyKey',
         ])
         .default('createdAt')
-        .optional()
-        .describe('Field to sort features by'),
-    sortOrder: z
-        .enum(['asc', 'desc'])
-        .default('desc')
-        .optional()
-        .describe('Sort order (ascending or descending)'),
+        .optional(),
+    sortOrder: z.enum(['asc', 'desc']).default('desc').optional(),
     search: z
         .string()
         .min(3)
         .optional()
-        .describe('Search term to filter features by name or key'),
+        .describe('Search term to filter features by "name" or "key"'),
     staleness: z
         .enum(['all', 'unused', 'released', 'unmodified', 'notStale'])
         .optional()
@@ -70,7 +91,7 @@ export const ListVariablesArgsSchema = z.object({
         .max(1000)
         .default(100)
         .optional()
-        .describe('Number of items per page (1-1000)'),
+        .describe('Number of items per page'),
     sortBy: z
         .enum([
             'createdAt',
@@ -81,18 +102,13 @@ export const ListVariablesArgsSchema = z.object({
             'propertyKey',
         ])
         .default('createdAt')
-        .optional()
-        .describe('Field to sort variables by'),
-    sortOrder: z
-        .enum(['asc', 'desc'])
-        .default('desc')
-        .optional()
-        .describe('Sort order (ascending or descending)'),
+        .optional(),
+    sortOrder: z.enum(['asc', 'desc']).default('desc').optional(),
     search: z
         .string()
         .min(3)
         .optional()
-        .describe('Search query to filter variables (minimum 3 characters)'),
+        .describe('Search query to filter variables by "name" or "key"'),
     feature: z.string().optional().describe('Filter by feature key'),
     type: z
         .enum(['String', 'Boolean', 'Number', 'JSON'])
@@ -105,27 +121,23 @@ export const ListVariablesArgsSchema = z.object({
 })
 
 export const CreateVariableArgsSchema = z.object({
-    key: schemas.CreateVariableDto.shape.key.describe(
-        'Unique variable key (1-100 characters, lowercase letters, numbers, dots, dashes, underscores only)',
-    ),
-    name: schemas.CreateVariableDto.shape.name.describe(
-        'Variable name (1-100 characters)',
-    ),
-    description: schemas.CreateVariableDto.shape.description
-        .optional()
-        .describe('Variable description (max 1000 characters)'),
-    type: schemas.CreateVariableDto.shape.type.describe(
-        'Variable type (String, Boolean, Number, JSON)',
-    ),
+    key: schemas.CreateVariableDto.shape.key.describe('Unique variable key'),
+    name: schemas.CreateVariableDto.shape.name,
+    description: schemas.CreateVariableDto.shape.description.optional(),
+    type: schemas.CreateVariableDto.shape.type,
     defaultValue: schemas.CreateVariableDto.shape.defaultValue
         .optional()
-        .describe('Default value for the variable'),
+        .describe(
+            'Default value for the variable, the data type of the defaultValue must match the variable.type',
+        ),
     _feature: schemas.CreateVariableDto.shape._feature
         .optional()
-        .describe('Feature key or ID to associate with this variable'),
-    validationSchema: schemas.CreateVariableDto.shape.validationSchema
-        .optional()
-        .describe('Validation schema for variable values'),
+        .describe(
+            'Feature key or ID to associate with this variable, only set if variable is associated with a feature',
+        ),
+    validationSchema: VariableValidationSchema.optional().describe(
+        'Validation schema for variable values',
+    ),
 })
 
 export const UpdateVariableArgsSchema = z.object({
@@ -133,29 +145,21 @@ export const UpdateVariableArgsSchema = z.object({
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
-        .describe('Current variable key to identify which variable to update'),
-    name: schemas.UpdateVariableDto.shape.name
-        .optional()
-        .describe('Variable name (1-100 characters)'),
-    description: schemas.UpdateVariableDto.shape.description
-        .optional()
-        .describe('Variable description (max 1000 characters)'),
-    type: schemas.UpdateVariableDto.shape.type
-        .optional()
-        .describe('Variable type (String, Boolean, Number, JSON)'),
-    validationSchema: schemas.UpdateVariableDto.shape.validationSchema
-        .optional()
-        .describe('Validation schema for variable values'),
+        .describe('key to identify variable'),
+    name: schemas.UpdateVariableDto.shape.name.optional(),
+    description: schemas.UpdateVariableDto.shape.description.optional(),
+    type: schemas.UpdateVariableDto.shape.type.optional(),
+    validationSchema: VariableValidationSchema.optional().describe(
+        'Validation schema for variable values',
+    ),
 })
 
 export const DeleteVariableArgsSchema = z.object({
-    key: z
-        .string()
-        .describe('Variable key to identify which variable to delete'),
+    key: z.string().describe('key to identify variable to delete'),
 })
 
 export const DeleteFeatureArgsSchema = z.object({
-    key: z.string().describe('Feature key to identify which feature to delete'),
+    key: z.string().describe('key to identify feature to delete'),
 })
 
 export const ListProjectsArgsSchema = z.object({
@@ -163,16 +167,12 @@ export const ListProjectsArgsSchema = z.object({
         'Page number for pagination',
     ),
     perPage: schemas.GetProjectsParams.shape.perPage.describe(
-        'Number of items per page (1-1000)',
+        'Number of items per page',
     ),
-    sortBy: schemas.GetProjectsParams.shape.sortBy.describe(
-        'Field to sort projects by',
-    ),
-    sortOrder: schemas.GetProjectsParams.shape.sortOrder.describe(
-        'Sort order (ascending or descending)',
-    ),
+    sortBy: schemas.GetProjectsParams.shape.sortBy,
+    sortOrder: schemas.GetProjectsParams.shape.sortOrder,
     search: schemas.GetProjectsParams.shape.search.describe(
-        'Search term to filter projects by name or key',
+        'Search term to filter projects by "name" or "key"',
     ),
     createdBy: schemas.GetProjectsParams.shape.createdBy.describe(
         'Filter projects by creator user ID',
@@ -180,21 +180,15 @@ export const ListProjectsArgsSchema = z.object({
 })
 
 export const CreateProjectArgsSchema = z.object({
-    name: schemas.CreateProjectDto.shape.name.describe(
-        'Project name (max 100 characters)',
-    ),
+    name: schemas.CreateProjectDto.shape.name,
     key: schemas.CreateProjectDto.shape.key.describe(
         'Unique project key (lowercase letters, numbers, dots, dashes, underscores only)',
     ),
-    description: schemas.CreateProjectDto.shape.description.describe(
-        'Project description (max 1000 characters)',
-    ),
+    description: schemas.CreateProjectDto.shape.description,
     color: schemas.CreateProjectDto.shape.color.describe(
         'Project color in hex format (e.g., #FF0000)',
     ),
-    settings: schemas.CreateProjectDto.shape.settings.describe(
-        'Project settings configuration',
-    ),
+    settings: schemas.CreateProjectDto.shape.settings,
 })
 
 export const UpdateProjectArgsSchema = z.object({
@@ -202,19 +196,13 @@ export const UpdateProjectArgsSchema = z.object({
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
-        .describe('Project key to identify which project to update'), // Make key required for identifying the project
-    name: schemas.UpdateProjectDto.shape.name.describe(
-        'Updated project name (max 100 characters)',
-    ),
-    description: schemas.UpdateProjectDto.shape.description.describe(
-        'Updated project description (max 1000 characters)',
-    ),
+        .describe('key to identify project to update'),
+    name: schemas.UpdateProjectDto.shape.name,
+    description: schemas.UpdateProjectDto.shape.description,
     color: schemas.UpdateProjectDto.shape.color.describe(
         'Updated project color in hex format (e.g., #FF0000)',
     ),
-    settings: schemas.UpdateProjectDto.shape.settings.describe(
-        'Updated project settings configuration',
-    ),
+    settings: schemas.UpdateProjectDto.shape.settings,
 })
 
 export const ListEnvironmentsArgsSchema = z.object({
@@ -222,7 +210,7 @@ export const ListEnvironmentsArgsSchema = z.object({
         .string()
         .min(3)
         .optional()
-        .describe('Search term to filter environments by name or key'),
+        .describe('filter environments by "name" or "key"'),
     page: z.number().min(1).optional().describe('Page number for pagination'),
     perPage: z
         .number()
@@ -230,7 +218,7 @@ export const ListEnvironmentsArgsSchema = z.object({
         .max(1000)
         .default(100)
         .optional()
-        .describe('Number of items per page (1-1000)'),
+        .describe('Number of items per page'),
     sortBy: z
         .enum([
             'createdAt',
@@ -240,86 +228,57 @@ export const ListEnvironmentsArgsSchema = z.object({
             'createdBy',
             'propertyKey',
         ])
-        .optional()
-        .describe('Field to sort environments by'),
-    sortOrder: z
-        .enum(['asc', 'desc'])
-        .optional()
-        .describe('Sort order (ascending or descending)'),
-    createdBy: z
-        .string()
-        .optional()
-        .describe('Filter environments by creator user ID'),
+        .optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
+    createdBy: z.string().optional().describe('Filter by creator user ID'),
 })
 
 export const GetSdkKeysArgsSchema = z.object({
-    environmentKey: z.string().describe('Environment key to get SDK keys for'),
+    environmentKey: z.string(),
     keyType: z
         .enum(['mobile', 'server', 'client'])
         .optional()
-        .describe('Specific type of SDK key to retrieve (optional)'),
+        .describe('type of SDK key to retrieve'),
 })
 
 export const CreateEnvironmentArgsSchema = z.object({
-    name: schemas.CreateEnvironmentDto.shape.name.describe(
-        'Environment name (max 100 characters)',
-    ),
+    name: schemas.CreateEnvironmentDto.shape.name,
     key: schemas.CreateEnvironmentDto.shape.key.describe(
         'Unique environment key (lowercase letters, numbers, dots, dashes, underscores only)',
     ),
-    description: schemas.CreateEnvironmentDto.shape.description.describe(
-        'Environment description (max 1000 characters)',
-    ),
+    description: schemas.CreateEnvironmentDto.shape.description,
     color: schemas.CreateEnvironmentDto.shape.color.describe(
         'Environment color in hex format (e.g., #FF0000)',
     ),
-    type: schemas.CreateEnvironmentDto.shape.type.describe(
-        'Environment type (development, staging, production, or disaster_recovery)',
-    ),
-    settings: schemas.CreateEnvironmentDto.shape.settings.describe(
-        'Environment settings configuration',
-    ),
+    type: schemas.CreateEnvironmentDto.shape.type,
+    settings: schemas.CreateEnvironmentDto.shape.settings,
 })
 
 export const UpdateEnvironmentArgsSchema = z.object({
-    key: z
-        .string()
-        .describe('Environment key to identify which environment to update'), // Make key required for identifying the environment
-    name: schemas.UpdateEnvironmentDto.shape.name.describe(
-        'Updated environment name (max 100 characters)',
-    ),
-    description: schemas.UpdateEnvironmentDto.shape.description.describe(
-        'Updated environment description (max 1000 characters)',
-    ),
+    key: z.string().describe('key to identify environment to update'),
+    name: schemas.UpdateEnvironmentDto.shape.name,
+    description: schemas.UpdateEnvironmentDto.shape.description,
     color: schemas.UpdateEnvironmentDto.shape.color.describe(
-        'Updated environment color in hex format (e.g., #FF0000)',
+        'color in hex format (e.g., #FF0000)',
     ),
-    type: schemas.UpdateEnvironmentDto.shape.type.describe(
-        'Updated environment type (development, staging, production, or disaster_recovery)',
-    ),
-    settings: schemas.UpdateEnvironmentDto.shape.settings.describe(
-        'Updated environment settings configuration',
-    ),
+    type: schemas.UpdateEnvironmentDto.shape.type,
+    settings: schemas.UpdateEnvironmentDto.shape.settings,
 })
 
 export const SetFeatureTargetingArgsSchema = z.object({
     feature_key: z.string().describe('Feature key to set targeting for'),
-    environment_key: z.string().describe('Environment key to set targeting in'),
-    enabled: z
-        .boolean()
-        .describe('Whether to enable (true) or disable (false) targeting'),
+    environment_key: z
+        .string()
+        .describe('Environment key to set targeting for'),
+    enabled: z.boolean().describe('enable or disable targeting'),
 })
 
 export const CreateFeatureArgsSchema = z.object({
-    name: schemas.CreateFeatureDto.shape.name.describe(
-        'Feature name (max 100 characters)',
-    ),
+    name: schemas.CreateFeatureDto.shape.name,
     key: schemas.CreateFeatureDto.shape.key.describe(
         'Unique feature key (lowercase letters, numbers, dots, dashes, underscores only)',
     ),
-    description: schemas.CreateFeatureDto.shape.description.describe(
-        'Feature description (max 1000 characters)',
-    ),
+    description: schemas.CreateFeatureDto.shape.description,
     variables: schemas.CreateFeatureDto.shape.variables.describe(
         'Array of variables to create or reassociate with this feature',
     ),
@@ -338,16 +297,10 @@ export const CreateFeatureArgsSchema = z.object({
     sdkVisibility: schemas.CreateFeatureDto.shape.sdkVisibility.describe(
         'SDK Type Visibility Settings for mobile, client, and server SDKs',
     ),
-    type: schemas.CreateFeatureDto.shape.type.describe(
-        'Feature type (release, experiment, permission, or ops)',
-    ),
+    type: schemas.CreateFeatureDto.shape.type,
     tags: schemas.CreateFeatureDto.shape.tags.describe(
         'Tags to organize features',
     ),
-    interactive: z
-        .boolean()
-        .optional()
-        .describe('MCP-specific: prompt for missing fields'),
 })
 
 export const UpdateFeatureArgsSchema = z.object({
@@ -355,13 +308,9 @@ export const UpdateFeatureArgsSchema = z.object({
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
-        .describe('Feature key to identify which feature to update'),
-    name: schemas.UpdateFeatureDto.shape.name.describe(
-        'Updated feature name (max 100 characters)',
-    ),
-    description: schemas.UpdateFeatureDto.shape.description.describe(
-        'Updated feature description (max 1000 characters)',
-    ),
+        .describe('key to identify feature to update'),
+    name: schemas.UpdateFeatureDto.shape.name,
+    description: schemas.UpdateFeatureDto.shape.description,
     variables: schemas.UpdateFeatureDto.shape.variables.describe(
         'Updated array of variables for this feature',
     ),
@@ -374,9 +323,7 @@ export const UpdateFeatureArgsSchema = z.object({
     sdkVisibility: schemas.UpdateFeatureDto.shape.sdkVisibility.describe(
         'Updated SDK Type Visibility Settings for mobile, client, and server SDKs',
     ),
-    type: schemas.UpdateFeatureDto.shape.type.describe(
-        'Updated feature type (release, experiment, permission, or ops)',
-    ),
+    type: schemas.UpdateFeatureDto.shape.type,
     tags: schemas.UpdateFeatureDto.shape.tags.describe(
         'Updated tags to organize features',
     ),
@@ -390,12 +337,10 @@ export const UpdateFeatureStatusArgsSchema = z.object({
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
-        .describe('Feature key to identify which feature to update'),
-    status: UpdateFeatureStatusDto.shape.status.describe(
-        'Updated feature status (active, complete, or archived)',
-    ),
+        .describe('key to identify feature to update'),
+    status: UpdateFeatureStatusDto.shape.status,
     staticVariation: UpdateFeatureStatusDto.shape.staticVariation.describe(
-        'The variation key or ID to serve if the status is set to complete (optional)',
+        'The variation key or ID to serve if the status is set to complete',
     ),
 })
 
@@ -426,32 +371,30 @@ export const ListVariationsArgsSchema = z.object({
     feature_key: z.string().describe('Feature key to list variations for'),
 })
 
+const variablesDescription =
+    'key-value map of variable keys to their values for this variation. { "variableKey1": "value1", "variableKey2": false }'
+
 export const CreateVariationArgsSchema = z.object({
     feature_key: z.string().describe('Feature key to create variation for'),
     key: schemas.CreateVariationDto.shape.key.describe(
         'Unique variation key (lowercase letters, numbers, dots, dashes, underscores only)',
     ),
-    name: schemas.CreateVariationDto.shape.name.describe(
-        'Variation name (max 100 characters)',
-    ),
-    variables: schemas.CreateVariationDto.shape.variables.describe(
-        'Key-value map of variable keys to their values for this variation',
-    ),
+    name: schemas.CreateVariationDto.shape.name,
+    variables:
+        schemas.CreateVariationDto.shape.variables.describe(
+            variablesDescription,
+        ),
 })
 
 export const UpdateVariationArgsSchema = z.object({
     feature_key: z
         .string()
         .describe('Feature key that the variation belongs to'),
-    variation_key: z
-        .string()
-        .describe('Variation key to identify which variation to update'),
+    variation_key: z.string().describe('key to identify variation to update'),
     key: schemas.UpdateFeatureVariationDto.shape.key.describe(
         'Updated variation key (lowercase letters, numbers, dots, dashes, underscores only)',
     ),
-    name: schemas.UpdateFeatureVariationDto.shape.name.describe(
-        'Updated variation name (max 100 characters)',
-    ),
+    name: schemas.UpdateFeatureVariationDto.shape.name,
     variables: z
         .record(
             z.union([
@@ -462,9 +405,7 @@ export const UpdateVariationArgsSchema = z.object({
             ]),
         )
         .optional()
-        .describe(
-            'Updated key-value map of variable keys to their values for this variation',
-        ),
+        .describe(`Updated ${variablesDescription}`),
 })
 
 export const ListFeatureTargetingArgsSchema = z.object({
@@ -480,9 +421,7 @@ export const UpdateFeatureTargetingArgsSchema = z.object({
     environment_key: z
         .string()
         .describe('Environment key to update targeting in'),
-    status: schemas.UpdateFeatureConfigDto.shape.status.describe(
-        'Updated targeting status for the feature',
-    ),
+    status: schemas.UpdateFeatureConfigDto.shape.status,
     targets: schemas.UpdateFeatureConfigDto.shape.targets.describe(
         'Updated array of targeting rules/targets for the feature',
     ),
@@ -497,24 +436,19 @@ export const GetFeatureAuditLogHistoryArgsSchema = z.object({
         .min(1)
         .default(1)
         .optional()
-        .describe('Page number for pagination (default: 1)'),
+        .describe('Page number for pagination'),
     perPage: z
         .number()
         .min(1)
         .max(1000)
         .default(100)
         .optional()
-        .describe('Number of items per page (default: 100, max: 1000)'),
+        .describe('Number of items per page'),
     sortBy: z
         .enum(['createdAt', 'updatedAt', 'action', 'user'])
         .default('createdAt')
-        .optional()
-        .describe('Field to sort audit entries by (default: createdAt)'),
-    sortOrder: z
-        .enum(['asc', 'desc'])
-        .default('desc')
-        .optional()
-        .describe('Sort order (default: desc)'),
+        .optional(),
+    sortOrder: z.enum(['asc', 'desc']).default('desc').optional(),
     startDate: z
         .string()
         .optional()
@@ -549,26 +483,17 @@ export const AuditLogEntitySchema = z.object({
 
 // Base evaluation query schema (matches API camelCase naming)
 const BaseEvaluationQuerySchema = z.object({
-    startDate: z
-        .number()
-        .optional()
-        .describe('Start date as Unix timestamp (optional)'),
-    endDate: z
-        .number()
-        .optional()
-        .describe('End date as Unix timestamp (optional)'),
-    environment: z
-        .string()
-        .optional()
-        .describe('Environment key to filter by (optional)'),
+    startDate: z.number().optional().describe('Start date as Unix timestamp'),
+    endDate: z.number().optional().describe('End date as Unix timestamp'),
+    environment: z.string().optional().describe('Environment key to filter by'),
     period: z
         .enum(['day', 'hour', 'month'])
         .optional()
-        .describe('Time period for aggregation (optional)'),
+        .describe('Time period for aggregation'),
     sdkType: z
         .enum(['client', 'server', 'mobile', 'api'])
         .optional()
-        .describe('SDK type to filter by (optional)'),
+        .describe('SDK type to filter by'),
 })
 
 // MCP argument schemas (using camelCase to match API)
@@ -577,14 +502,8 @@ export const GetFeatureTotalEvaluationsArgsSchema =
         featureKey: z
             .string()
             .describe('Feature key to get evaluation data for'),
-        platform: z
-            .string()
-            .optional()
-            .describe('Platform to filter by (optional)'),
-        variable: z
-            .string()
-            .optional()
-            .describe('Variable key to filter by (optional)'),
+        platform: z.string().optional().describe('Platform to filter by'),
+        variable: z.string().optional().describe('Variable key to filter by'),
     })
 
 export const GetProjectTotalEvaluationsArgsSchema = BaseEvaluationQuerySchema
@@ -608,7 +527,7 @@ export const ListCustomPropertiesArgsSchema = z.object({
         .max(1000)
         .default(100)
         .optional()
-        .describe('Number of items per page (1-1000)'),
+        .describe('Number of items per page'),
     sortBy: z
         .enum([
             'createdAt',
@@ -619,34 +538,22 @@ export const ListCustomPropertiesArgsSchema = z.object({
             'propertyKey',
         ])
         .default('createdAt')
-        .optional()
-        .describe('Field to sort custom properties by'),
-    sortOrder: z
-        .enum(['asc', 'desc'])
-        .default('desc')
-        .optional()
-        .describe('Sort order (ascending or descending)'),
+        .optional(),
+    sortOrder: z.enum(['asc', 'desc']).default('desc').optional(),
     search: z
         .string()
         .min(3)
         .optional()
-        .describe('Search term to filter custom properties by name or key'),
-    createdBy: z
-        .string()
-        .optional()
-        .describe('Filter custom properties by creator user ID'),
+        .describe('Search term to filter by "name" or "key"'),
+    createdBy: z.string().optional().describe('Filter by creator user ID'),
 })
 
 export const UpsertCustomPropertyArgsSchema = z.object({
-    name: schemas.CreateCustomPropertyDto.shape.name.describe(
-        'Custom property name (max 100 characters)',
-    ),
+    name: schemas.CreateCustomPropertyDto.shape.name,
     key: schemas.CreateCustomPropertyDto.shape.key.describe(
         'Unique custom property key (lowercase letters, numbers, dots, dashes, underscores only)',
     ),
-    type: schemas.CreateCustomPropertyDto.shape.type.describe(
-        'Custom property type (String, Boolean, or Number)',
-    ),
+    type: schemas.CreateCustomPropertyDto.shape.type,
     propertyKey: schemas.CreateCustomPropertyDto.shape.propertyKey.describe(
         'Property key to associate with the custom property',
     ),
@@ -657,20 +564,12 @@ export const UpdateCustomPropertyArgsSchema = z.object({
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
-        .describe('Custom property key to identify which property to update'), // Make key required for identifying the custom property
-    name: schemas.UpdateCustomPropertyDto.shape.name.describe(
-        'Updated custom property name (max 100 characters)',
-    ),
-    propertyKey: schemas.UpdateCustomPropertyDto.shape.propertyKey.describe(
-        'Updated property key to associate with the custom property',
-    ),
-    type: schemas.UpdateCustomPropertyDto.shape.type.describe(
-        'Updated custom property type (String, Boolean, or Number)',
-    ),
+        .describe('key to identify property to update'),
+    name: schemas.UpdateCustomPropertyDto.shape.name,
+    propertyKey: schemas.UpdateCustomPropertyDto.shape.propertyKey,
+    type: schemas.UpdateCustomPropertyDto.shape.type,
 })
 
 export const DeleteCustomPropertyArgsSchema = z.object({
-    key: z
-        .string()
-        .describe('Custom property key to identify which property to delete'),
+    key: z.string().describe('key to identify property to delete'),
 })
