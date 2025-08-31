@@ -131,46 +131,50 @@ export async function updateEnvironmentHandler(
  * Register environment tools with the MCP server using the new direct registration pattern
  */
 export function registerEnvironmentTools(
-    serverInstance: DevCycleMCPServerInstance,
-    apiClient: IDevCycleApiClient,
+    _serverInstance: DevCycleMCPServerInstance,
+    _apiClient: IDevCycleApiClient,
 ): void {
-    serverInstance.registerToolWithErrorHandling(
-        'list_environments',
-        {
-            description: [
-                'List environments in the current project.',
-                'Include dashboard link in the response.',
-            ].join('\n'),
-            annotations: {
-                title: 'List Environments',
-                readOnlyHint: true,
-            },
-            inputSchema: ListEnvironmentsArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = ListEnvironmentsArgsSchema.parse(args)
-            return await listEnvironmentsHandler(validatedArgs, apiClient)
-        },
-    )
+    void _serverInstance
+    void _apiClient
+    // DISABLED: list_environments tool (data available from select_project)
+    // serverInstance.registerToolWithErrorHandling(
+    //     'list_environments',
+    //     {
+    //         description: [
+    //             'List environments in the current project.',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'List Environments',
+    //             readOnlyHint: true,
+    //         },
+    //         inputSchema: ListEnvironmentsArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = ListEnvironmentsArgsSchema.parse(args)
+    //         return await listEnvironmentsHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
-    serverInstance.registerToolWithErrorHandling(
-        'get_sdk_keys',
-        {
-            description: [
-                'Get SDK keys for an environment.',
-                'Include dashboard link in the response.',
-            ].join('\n'),
-            annotations: {
-                title: 'Get SDK Keys',
-                readOnlyHint: true,
-            },
-            inputSchema: GetSdkKeysArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = GetSdkKeysArgsSchema.parse(args)
-            return await getSdkKeysHandler(validatedArgs, apiClient)
-        },
-    )
+    // DISABLED: get_sdk_keys tool (data available from select_project)
+    // serverInstance.registerToolWithErrorHandling(
+    //     'get_sdk_keys',
+    //     {
+    //         description: [
+    //             'Get SDK keys for an environment.',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'Get SDK Keys',
+    //             readOnlyHint: true,
+    //         },
+    //         inputSchema: GetSdkKeysArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = GetSdkKeysArgsSchema.parse(args)
+    //         return await getSdkKeysHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
     // DISABLED: Environment creation/update tools
     // serverInstance.registerToolWithErrorHandling(

@@ -121,8 +121,10 @@ describe('DevCycleMCPServer', () => {
             // Check that we have tools from all categories
             expect(registeredToolNames).to.include('list_features')
             expect(registeredToolNames).to.include('list_variables')
-            expect(registeredToolNames).to.include('list_environments')
-            expect(registeredToolNames).to.include('list_projects')
+            // expect(registeredToolNames).to.include('list_environments')
+            // expect(registeredToolNames).to.include('list_projects')
+            // list_environments and list_projects are disabled; using select_project instead
+            expect(registeredToolNames).to.include('select_project')
             expect(registeredToolNames).to.include('get_current_project')
             expect(registeredToolNames).to.include(
                 'get_self_targeting_identity',
@@ -144,13 +146,20 @@ describe('DevCycleMCPServer', () => {
         it('should register tools with input schemas', () => {
             const registerToolStub = server.registerTool as sinon.SinonStub
 
-            // Find a tool that should have an input schema
-            const listProjectsCall = registerToolStub
-                .getCalls()
-                .find((call) => call.args[0] === 'list_projects')
+            // Old expectation (tool disabled):
+            // const listProjectsCall = registerToolStub
+            //     .getCalls()
+            //     .find((call) => call.args[0] === 'list_projects')
+            // expect(listProjectsCall).to.exist
+            // expect(listProjectsCall!.args[1]).to.have.property('inputSchema')
 
-            expect(listProjectsCall).to.exist
-            expect(listProjectsCall!.args[1]).to.have.property('inputSchema')
+            // Find a tool that should have an input schema
+            const listFeaturesCall = registerToolStub
+                .getCalls()
+                .find((call) => call.args[0] === 'list_features')
+
+            expect(listFeaturesCall).to.exist
+            expect(listFeaturesCall!.args[1]).to.have.property('inputSchema')
         })
     })
 

@@ -113,25 +113,27 @@ export function registerProjectTools(
     serverInstance: DevCycleMCPServerInstance,
     apiClient: IDevCycleApiClient,
 ): void {
-    serverInstance.registerToolWithErrorHandling(
-        'list_projects',
-        {
-            description: [
-                'List all projects in the current organization.',
-                'Can be called before "select_project"',
-            ].join('\n'),
-            annotations: {
-                title: 'List Projects',
-                readOnlyHint: true,
-            },
-            inputSchema: ListProjectsArgsSchema.shape,
-        },
-        async (args: unknown) => {
-            const validatedArgs = ListProjectsArgsSchema.parse(args)
-
-            return await listProjectsHandler(validatedArgs, apiClient)
-        },
-    )
+    // DISABLED: list_projects tool (data available from select_project)
+    // serverInstance.registerToolWithErrorHandling(
+    //     'list_projects',
+    //     {
+    //         description: [
+    //             'List all projects in the current organization.',
+    //             'Can be called before "select_project"',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'List Projects',
+    //             readOnlyHint: true,
+    //         },
+    //         inputSchema: ListProjectsArgsSchema.shape,
+    //     },
+    //     async (args: unknown) => {
+    //         const validatedArgs = ListProjectsArgsSchema.parse(args)
+    //
+    //         return await listProjectsHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
     serverInstance.registerToolWithErrorHandling(
         'get_current_project',
