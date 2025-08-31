@@ -20,6 +20,14 @@ export function registerAllToolsWithServer(
     serverInstance: DevCycleMCPServerInstance,
     apiClient: IDevCycleApiClient,
 ): void {
+    // Register local project selection tools first for local MCP
+    // We detect local MCP by checking if the apiClient is an instance of DevCycleApiClient
+    if (apiClient instanceof DevCycleApiClient) {
+        const auth = apiClient.getAuth()
+        registerLocalProjectTools(serverInstance, apiClient, auth)
+    }
+
+    registerInstallTools(serverInstance)
     registerProjectTools(serverInstance, apiClient)
     // registerCustomPropertiesTools(serverInstance, apiClient) // DISABLED: Custom properties tools
     registerEnvironmentTools(serverInstance, apiClient)
@@ -27,14 +35,6 @@ export function registerAllToolsWithServer(
     registerResultsTools(serverInstance, apiClient)
     registerSelfTargetingTools(serverInstance, apiClient)
     registerVariableTools(serverInstance, apiClient)
-    registerInstallTools(serverInstance)
-
-    // Register local project selection tools only for local MCP (not worker)
-    // We detect local MCP by checking if the apiClient is an instance of DevCycleApiClient
-    if (apiClient instanceof DevCycleApiClient) {
-        const auth = apiClient.getAuth()
-        registerLocalProjectTools(serverInstance, apiClient, auth)
-    }
 }
 
 export type { IDevCycleApiClient } from '../api/interface'
