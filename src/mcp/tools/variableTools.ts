@@ -141,6 +141,7 @@ export function registerVariableTools(
         {
             description: [
                 'Create a new variable.',
+                'DevCycle variables can also be referred to as "feature flags" or "flags".',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {
@@ -159,7 +160,7 @@ export function registerVariableTools(
         {
             description: [
                 'Update an existing variable.',
-                '⚠️ IMPORTANT: Variable changes can affect feature flags in production environments.',
+                '⚠️ IMPORTANT: Variable changes can affect features in production environments.',
                 'Always confirm with the user before updating variables for features that are active in production.',
                 'Include dashboard link in the response.',
             ].join('\n'),

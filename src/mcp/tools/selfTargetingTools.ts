@@ -179,7 +179,8 @@ export function registerSelfTargetingTools(
         'get_self_targeting_identity',
         {
             description: [
-                'Get current DevCycle identity for self-targeting.',
+                'Get current DevCycle identity for self-targeting yourself into a feature.',
+                'Your applications user_id used to identify yourself with the DevCycle SDK needs to match for self-targeting to work.',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {
@@ -197,7 +198,8 @@ export function registerSelfTargetingTools(
         'update_self_targeting_identity',
         {
             description: [
-                'Update DevCycle identity for self-targeting and overrides.',
+                'Update DevCycle identity for self-targeting yourself into a feature.',
+                'Your applications user_id used to identify yourself with the DevCycle SDK needs to match for self-targeting to work.',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {

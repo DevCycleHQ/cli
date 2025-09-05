@@ -18,7 +18,10 @@ export const SelectProjectArgsSchema = z.object({
         .string()
         .optional()
         .describe(
-            'The project key to select. If not provided, will list all available projects to choose from.',
+            [
+                'The project key to select.',
+                'If not provided, will list all available projects to choose from.',
+            ].join('\n'),
         ),
 })
 
@@ -113,7 +116,8 @@ export function registerLocalProjectTools(
                 'Select a project to use for subsequent MCP operations.',
                 'Call without parameters to list available projects.',
                 'Do not automatically select a project, ask the user which project they want to select.',
-                'This will update your local DevCycle configuration (~/.config/devcycle/user.yml).',
+                'This will update your local DevCycle configuration for the MCP and CLI (~/.config/devcycle/user.yml).',
+                'Returns the current project, its environments, and SDK keys.',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {
