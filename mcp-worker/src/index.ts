@@ -128,11 +128,11 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
             },
         }
 
+        // Register worker-specific project selection tools first so it appears at the front
+        registerProjectSelectionTools(serverAdapter, this.apiClient)
+
         // Register all CLI tools using the centralized registration function
         registerAllToolsWithServer(serverAdapter, this.apiClient)
-
-        // Register worker-specific project selection tools using the modern pattern
-        registerProjectSelectionTools(serverAdapter, this.apiClient)
 
         console.log('✅ DevCycle MCP Worker initialization completed')
     }
