@@ -147,6 +147,7 @@ export function registerCustomPropertiesTools(
         {
             description: [
                 'Create a new custom property.',
+                'Custom properties are used in feature targeting audiences as custom user-data definitions.',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {

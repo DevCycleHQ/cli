@@ -46,6 +46,7 @@ export function registerInstallTools(
         {
             description: [
                 'Fetch DevCycle SDK installation instructions, and follow the instructions to install the DevCycle SDK.',
+                'Also includes documentation and examples for using DevCycle SDK in your application.',
                 "Choose the guide that matches the application's language/framework.",
             ].join('\n'),
             annotations: {
