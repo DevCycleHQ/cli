@@ -4,7 +4,7 @@ import * as assert from 'assert'
 import { DevCycleApiClient, handleZodiosValidationErrors } from './api'
 import { DevCycleAuth } from './auth'
 import { setMCPToolCommand } from './headers'
-import * as apiClientModule from '../../api/apiClient'
+import { axiosClient } from '../../api/apiClient'
 
 describe('DevCycleApiClient', () => {
     let apiClient: DevCycleApiClient
@@ -20,8 +20,11 @@ describe('DevCycleApiClient', () => {
 
         apiClient = new DevCycleApiClient(authStub)
 
-        // Stub the setDVCReferrer function from apiClient module
-        setDVCReferrerStub = sinon.stub(apiClientModule, 'setDVCReferrer')
+        // Clear any prior header state to make assertions deterministic
+        delete (axiosClient.defaults.headers.common as any)['dvc-referrer']
+        delete (axiosClient.defaults.headers.common as any)[
+            'dvc-referrer-metadata'
+        ]
     })
 
     afterEach(() => {
@@ -92,12 +95,11 @@ describe('DevCycleApiClient', () => {
                 'mock-auth-token',
                 'test-project',
             )
-            sinon.assert.calledWith(
-                setDVCReferrerStub,
-                'testOperation',
-                sinon.match.string,
-                'mcp',
-            )
+            const headers = axiosClient.defaults.headers.common as any
+            expect(headers['dvc-referrer']).to.equal('mcp')
+            const meta = JSON.parse(headers['dvc-referrer-metadata'])
+            expect(meta.command).to.equal('testOperation')
+            expect(meta.caller).to.equal('mcp')
         })
 
         it('should handle authentication errors gracefully', async () => {
@@ -162,7 +164,11 @@ describe('Header Management', () => {
     let setDVCReferrerStub: sinon.SinonStub
 
     beforeEach(() => {
-        setDVCReferrerStub = sinon.stub(apiClientModule, 'setDVCReferrer')
+        // Clear header state
+        delete (axiosClient.defaults.headers.common as any)['dvc-referrer']
+        delete (axiosClient.defaults.headers.common as any)[
+            'dvc-referrer-metadata'
+        ]
     })
 
     afterEach(() => {
@@ -173,12 +179,11 @@ describe('Header Management', () => {
         it('should set MCP headers correctly for tool commands', () => {
             setMCPToolCommand('list_features')
 
-            sinon.assert.calledWith(
-                setDVCReferrerStub,
-                'list_features',
-                sinon.match.string, // version
-                'mcp',
-            )
+            const headers = axiosClient.defaults.headers.common as any
+            expect(headers['dvc-referrer']).to.equal('mcp')
+            const meta = JSON.parse(headers['dvc-referrer-metadata'])
+            expect(meta.command).to.equal('list_features')
+            expect(meta.caller).to.equal('mcp')
         })
     })
 })
