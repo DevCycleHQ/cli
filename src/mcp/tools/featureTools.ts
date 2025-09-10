@@ -37,6 +37,8 @@ import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
 import { handleZodiosValidationErrors } from '../utils/api'
 import { dashboardLinks } from '../utils/dashboardLinks'
+import { fetchAiPromptsAndRules } from '../utils/github'
+import { CleanupFeatureArgsSchema } from '../types'
 
 // Individual handler functions
 export async function listFeaturesHandler(
@@ -675,6 +677,31 @@ export function registerFeatureTools(
             return await getFeatureAuditLogHistoryHandler(
                 validatedArgs,
                 apiClient,
+            )
+        },
+    )
+
+    // Cleanup Feature Prompt tool: fetches the cleanup prompt from GitHub
+    serverInstance.registerToolWithErrorHandling(
+        'cleanup_feature',
+        {
+            description: [
+                'Fetch the DevCycle Feature Cleanup prompt and return its markdown content.',
+                'Use this to guide safe cleanup of a completed feature and its variables in codebases.',
+                'Includes steps to analyze production state, complete the feature, and remove variables.',
+            ].join('\n'),
+            annotations: {
+                title: 'Cleanup Feature Prompt',
+                readOnlyHint: true,
+            },
+            inputSchema: CleanupFeatureArgsSchema.shape,
+        },
+        async (args: unknown) => {
+            // validate args
+            CleanupFeatureArgsSchema.parse(args)
+            return await fetchAiPromptsAndRules(
+                'clean-up-prompts/clean-up.md',
+                'Cleanup prompt not found at clean-up-prompts/clean-up.md.',
             )
         },
     )

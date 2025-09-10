@@ -468,6 +468,11 @@ export const GetFeatureAuditLogHistoryArgsSchema = z.object({
         .describe('Action type to filter audit entries by'),
 })
 
+// Cleanup feature prompt tool args
+export const CleanupFeatureArgsSchema = z.object({
+    featureKey: z.string(),
+})
+
 // Zod schema for DevCycle Audit Log Entity - matches the actual swagger specification
 export const AuditLogEntitySchema = z.object({
     date: z
