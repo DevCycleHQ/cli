@@ -107,7 +107,7 @@ export const updateFeatureStatus = async (
     params: UpdateFeatureStatusParams,
 ): Promise<Feature> => {
     const response = await axiosClient.patch(
-        `/v1/projects/${project_id}/features/${feature_id}/status`,
+        `/v2/projects/${project_id}/features/${feature_id}/status`,
         params,
         {
             headers: buildHeaders(token),
@@ -187,7 +187,7 @@ const generatePaginatedFeatureUrl = (
     perPage: number,
     status: string,
 ): string => {
-    return `/v1/projects/${project_id}/features?perPage=${perPage}&page=${page}&status=${status}`
+    return `/v2/projects/${project_id}/features?perPage=${perPage}&page=${page}&status=${status}`
 }
 
 export const getFeatureAuditLogHistory = async (
