@@ -169,11 +169,11 @@ const setupNockMock = (customProperties: unknown[]) => (api: Nock.Scope) => {
             mockOrganizationMembersResponseHeaders,
         )
         .get(
-            '/v1/projects/project/features?perPage=1000&page=1&status=complete',
+            '/v2/projects/project/features?perPage=1000&page=1&status=complete',
         )
         .reply(200, mockCompletedArchivedFeaturesResponse)
         .get(
-            '/v1/projects/project/features?perPage=1000&page=1&status=archived',
+            '/v2/projects/project/features?perPage=1000&page=1&status=archived',
         )
         .reply(200, mockCompletedArchivedFeaturesResponse)
         .get('/v1/projects/project/customProperties')
