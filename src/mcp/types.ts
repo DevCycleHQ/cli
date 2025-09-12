@@ -322,6 +322,13 @@ export const UpdateFeatureArgsSchema = z.object({
         .describe('key to identify feature to update'),
     name: UpdateFeatureDto.shape.name,
     description: UpdateFeatureDto.shape.description,
+    type: UpdateFeatureDto.shape.type,
+    tags: UpdateFeatureDto.shape.tags.describe(
+        'Updated tags to organize features',
+    ),
+    configurations: UpdateFeatureDto.shape.configurations.describe(
+        'Updated environment-specific targeting configurations (key-value map of environment keys to config)',
+    ),
     variables: UpdateFeatureDto.shape.variables.describe(
         'Updated array of variables for this feature',
     ),
@@ -334,13 +341,15 @@ export const UpdateFeatureArgsSchema = z.object({
     sdkVisibility: UpdateFeatureDto.shape.sdkVisibility.describe(
         'Updated SDK Type Visibility Settings for mobile, client, and server SDKs',
     ),
-    type: UpdateFeatureDto.shape.type,
-    tags: UpdateFeatureDto.shape.tags.describe(
-        'Updated tags to organize features',
-    ),
     controlVariation: UpdateFeatureDto.shape.controlVariation.describe(
         'Updated control variation key for Metrics',
     ),
+    // summary: UpdateFeatureDto.shape.summary.describe(
+    //     'Updated feature summary',
+    // ),
+    // staleness: UpdateFeatureDto.shape.staleness.describe(
+    //     'Updated feature staleness configuration',
+    // ),
 })
 
 export const UpdateFeatureStatusArgsSchema = z.object({
