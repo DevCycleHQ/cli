@@ -110,3 +110,4 @@ export type Filter =
     | AudienceMatchFilter
 
 export type UserOverride = z.infer<typeof schemas.UserOverride>
+export type FeatureOverride = z.infer<typeof schemas.FeatureOverride>

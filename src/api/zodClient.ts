@@ -1,5 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core'
 import { z } from 'zod'
+import { CreateFeatureDto as CreateFeatureDtoV2 } from './zodClientV2'
 
 /**
  * IMPORTANT: MCP Schema Compatibility
@@ -1021,6 +1022,7 @@ export const schemas = {
     UpdateUserOverrideDto,
     Override,
     Overrides,
+    FeatureOverride,
     FeatureOverrideResponse,
     UserOverride,
     UserOverrides,
@@ -1861,7 +1863,7 @@ const endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: CreateFeatureDto,
+                schema: CreateFeatureDtoV2,
             },
             {
                 name: 'project',
@@ -3898,13 +3900,42 @@ const v2Endpoints = makeApi([
     },
 ])
 
-export const api = new Zodios(endpoints)
-export const v2Api = new Zodios(v2Endpoints)
+/**
+ * TypeScript workaround for large Zodios endpoint definitions.
+ *
+ * Our ~80+ endpoints exceed TypeScript's inference limits, causing "type exceeds
+ * maximum length" errors. This pattern breaks the inference chain while maintaining
+ * full type safety through ReturnType<> extraction.
+ */
+const _createApiClient: (baseUrl?: string, options?: ZodiosOptions) => any = (
+    baseUrl?: string,
+    options?: ZodiosOptions,
+) => (baseUrl ? new Zodios(baseUrl, endpoints, options) : new Zodios(endpoints))
+const _createV2ApiClient: (baseUrl?: string, options?: ZodiosOptions) => any = (
+    baseUrl?: string,
+    options?: ZodiosOptions,
+) =>
+    baseUrl
+        ? new Zodios(baseUrl, v2Endpoints, options)
+        : new Zodios(v2Endpoints)
 
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-    return new Zodios(baseUrl, endpoints, options)
+type ApiClientType = ReturnType<typeof _createApiClient>
+type V2ApiClientType = ReturnType<typeof _createV2ApiClient>
+
+// Create the actual instances with explicit type annotation
+export const api: ApiClientType = _createApiClient()
+export const v2Api: V2ApiClientType = _createV2ApiClient()
+
+export function createApiClient(
+    baseUrl: string,
+    options?: ZodiosOptions,
+): ApiClientType {
+    return _createApiClient(baseUrl, options)
 }
 
-export function createV2ApiClient(baseUrl: string, options?: ZodiosOptions) {
-    return new Zodios(baseUrl, v2Endpoints, options)
+export function createV2ApiClient(
+    baseUrl: string,
+    options?: ZodiosOptions,
+): V2ApiClientType {
+    return _createV2ApiClient(baseUrl, options)
 }

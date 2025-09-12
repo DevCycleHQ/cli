@@ -1,5 +1,6 @@
 import { fetchProjects } from '../../api/projects'
 import { schemas } from '../../api/zodClient'
+import type { Project } from '../../api/schemas'
 import GetCommand from '../getCommand'
 
 export default class DetailedProjects extends GetCommand {
@@ -28,7 +29,7 @@ export default class DetailedProjects extends GetCommand {
                     description,
                     updatedAt,
                     createdAt,
-                }) => ({
+                }: Project) => ({
                     _id,
                     _organization,
                     key,

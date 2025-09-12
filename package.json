@@ -98,7 +98,8 @@
         "sinon": "^19.0.2",
         "ts-node": "^10.9.2",
         "typescript": "^5.7.2",
-        "typescript-eslint": "^8.21.0"
+        "typescript-eslint": "^8.21.0",
+        "zod-to-json-schema": "^3.24.6"
     },
     "oclif": {
         "bin": "dvc",

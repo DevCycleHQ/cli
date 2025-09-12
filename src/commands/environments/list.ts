@@ -1,4 +1,5 @@
 import { fetchEnvironments } from '../../api/environments'
+import type { Environment } from '../../api/schemas'
 import Base from '../base'
 
 export default class ListEnvironments extends Base {
@@ -15,7 +16,7 @@ export default class ListEnvironments extends Base {
             this.projectKey,
         )
         const environmentKeys = environments.map(
-            (environment) => environment.key,
+            (environment: Environment) => environment.key,
         )
         this.writer.showResults(environmentKeys)
     }

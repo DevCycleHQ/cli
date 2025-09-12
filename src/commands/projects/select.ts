@@ -1,5 +1,5 @@
 import { fetchProjects } from '../../api/projects'
-import { Project } from '../../api/schemas'
+import type { Project } from '../../api/schemas'
 import { promptForProject } from '../../ui/promptForProject'
 import AuthCommand from '../authCommand'
 export default class SelectProject extends AuthCommand {
@@ -19,7 +19,7 @@ export default class SelectProject extends AuthCommand {
         const projects = await fetchProjects(this.authToken)
         if (flags.headless && !flags.project) {
             return this.writer.showResults(
-                projects.map((project) => project.key),
+                projects.map((project: Project) => project.key),
             )
         }
         const selectedProject = await this.getSelectedProject(projects)
