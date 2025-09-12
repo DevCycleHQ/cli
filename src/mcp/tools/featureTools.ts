@@ -483,6 +483,7 @@ export function registerFeatureTools(
         {
             description: [
                 'Update an existing feature flag.',
+                'Also accepts partial PATCH updates to the feature, to update feature configuration, variables, variations, and targeting rules.',
                 '⚠️ IMPORTANT: Changes to feature flags may affect production environments.',
                 'Always confirm with the user before making changes to features that are active in production.',
                 'Include dashboard link in the response.',
@@ -541,121 +542,121 @@ export function registerFeatureTools(
         },
     )
 
-    serverInstance.registerToolWithErrorHandling(
-        'fetch_feature_variations',
-        {
-            description: [
-                'Get a list of variations for a feature.',
-                'Include dashboard link in the response.',
-            ].join('\n'),
-            annotations: {
-                title: 'Get Feature Variations',
-                readOnlyHint: true,
-            },
-            inputSchema: ListVariationsArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = ListVariationsArgsSchema.parse(args)
-            return await fetchFeatureVariationsHandler(validatedArgs, apiClient)
-        },
-    )
+    // serverInstance.registerToolWithErrorHandling(
+    //     'fetch_feature_variations',
+    //     {
+    //         description: [
+    //             'Get a list of variations for a feature.',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'Get Feature Variations',
+    //             readOnlyHint: true,
+    //         },
+    //         inputSchema: ListVariationsArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = ListVariationsArgsSchema.parse(args)
+    //         return await fetchFeatureVariationsHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
-    serverInstance.registerToolWithErrorHandling(
-        'create_feature_variation',
-        {
-            description: [
-                'Create a new variation within a feature.',
-                'Include dashboard link in the response.',
-            ].join('\n'),
-            annotations: {
-                title: 'Create Feature Variation',
-            },
-            inputSchema: CreateVariationArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = CreateVariationArgsSchema.parse(args)
-            return await createFeatureVariationHandler(validatedArgs, apiClient)
-        },
-    )
+    // serverInstance.registerToolWithErrorHandling(
+    //     'create_feature_variation',
+    //     {
+    //         description: [
+    //             'Create a new variation within a feature.',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'Create Feature Variation',
+    //         },
+    //         inputSchema: CreateVariationArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = CreateVariationArgsSchema.parse(args)
+    //         return await createFeatureVariationHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
-    serverInstance.registerToolWithErrorHandling(
-        'update_feature_variation',
-        {
-            description: [
-                'Update an existing variation by key.',
-                '⚠️ WARNING: Updating a feature variation may affect production environments.',
-                'Include dashboard link in the response.',
-            ].join('\n'),
-            annotations: {
-                title: 'Update Feature Variation',
-                destructiveHint: true,
-            },
-            inputSchema: UpdateVariationArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = UpdateVariationArgsSchema.parse(args)
-            return await updateFeatureVariationHandler(validatedArgs, apiClient)
-        },
-    )
+    // serverInstance.registerToolWithErrorHandling(
+    //     'update_feature_variation',
+    //     {
+    //         description: [
+    //             'Update an existing variation by key.',
+    //             '⚠️ WARNING: Updating a feature variation may affect production environments.',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'Update Feature Variation',
+    //             destructiveHint: true,
+    //         },
+    //         inputSchema: UpdateVariationArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = UpdateVariationArgsSchema.parse(args)
+    //         return await updateFeatureVariationHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
-    serverInstance.registerToolWithErrorHandling(
-        'set_feature_targeting',
-        {
-            description: [
-                'Set targeting status for a feature in an environment.',
-                '⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
-                'Include dashboard link in the response.',
-            ].join('\n'),
-            annotations: {
-                title: 'Set Feature Targeting',
-                destructiveHint: true,
-            },
-            inputSchema: SetFeatureTargetingArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = SetFeatureTargetingArgsSchema.parse(args)
-            return await setFeatureTargetingHandler(validatedArgs, apiClient)
-        },
-    )
+    // serverInstance.registerToolWithErrorHandling(
+    //     'set_feature_targeting',
+    //     {
+    //         description: [
+    //             'Set targeting status for a feature in an environment.',
+    //             '⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'Set Feature Targeting',
+    //             destructiveHint: true,
+    //         },
+    //         inputSchema: SetFeatureTargetingArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = SetFeatureTargetingArgsSchema.parse(args)
+    //         return await setFeatureTargetingHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
-    serverInstance.registerToolWithErrorHandling(
-        'list_feature_targeting',
-        {
-            description: [
-                'List feature configurations (targeting rules) for a feature.',
-                'Include dashboard link in the response.',
-            ].join('\n'),
-            annotations: {
-                title: 'List Feature Targeting Rules',
-                readOnlyHint: true,
-            },
-            inputSchema: ListFeatureTargetingArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = ListFeatureTargetingArgsSchema.parse(args)
-            return await listFeatureTargetingHandler(validatedArgs, apiClient)
-        },
-    )
+    // serverInstance.registerToolWithErrorHandling(
+    //     'list_feature_targeting',
+    //     {
+    //         description: [
+    //             'List feature configurations (targeting rules) for a feature.',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'List Feature Targeting Rules',
+    //             readOnlyHint: true,
+    //         },
+    //         inputSchema: ListFeatureTargetingArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = ListFeatureTargetingArgsSchema.parse(args)
+    //         return await listFeatureTargetingHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
-    serverInstance.registerToolWithErrorHandling(
-        'update_feature_targeting',
-        {
-            description: [
-                'Update feature configuration (targeting rules) for a feature in an environment.',
-                '⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
-                'Include dashboard link in the response.',
-            ].join('\n'),
-            annotations: {
-                title: 'Update Feature Targeting Rules',
-                destructiveHint: true,
-            },
-            inputSchema: UpdateFeatureTargetingArgsSchema.shape,
-        },
-        async (args: any) => {
-            const validatedArgs = UpdateFeatureTargetingArgsSchema.parse(args)
-            return await updateFeatureTargetingHandler(validatedArgs, apiClient)
-        },
-    )
+    // serverInstance.registerToolWithErrorHandling(
+    //     'update_feature_targeting',
+    //     {
+    //         description: [
+    //             'Update feature configuration (targeting rules) for a feature in an environment.',
+    //             '⚠️ IMPORTANT: Always confirm with the user before making changes to production environments (environments where type = "production").',
+    //             'Include dashboard link in the response.',
+    //         ].join('\n'),
+    //         annotations: {
+    //             title: 'Update Feature Targeting Rules',
+    //             destructiveHint: true,
+    //         },
+    //         inputSchema: UpdateFeatureTargetingArgsSchema.shape,
+    //     },
+    //     async (args: any) => {
+    //         const validatedArgs = UpdateFeatureTargetingArgsSchema.parse(args)
+    //         return await updateFeatureTargetingHandler(validatedArgs, apiClient)
+    //     },
+    // )
 
     serverInstance.registerToolWithErrorHandling(
         'get_feature_audit_log_history',

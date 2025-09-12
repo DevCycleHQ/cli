@@ -877,7 +877,7 @@ export const Feature = z
             'slack',
             'mcp',
         ]),
-        status: z.enum(['active', 'complete', 'archived']),
+        status: z.enum(['active', 'complete', 'archived']).optional(),
         type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
         name: z.string(),
         key: z.string(),
@@ -893,18 +893,18 @@ export const Feature = z
         controlVariation: z.string(),
         staticVariation: z.string().optional(),
         variables: z.array(Variable).optional(),
-        tags: z.array(z.string()).optional(),
+        tags: z.array(z.string()),
         ldLink: z.string().optional(),
         readonly: z.boolean(),
-        settings: FeatureSettings.optional(),
+        settings: FeatureSettings.partial().optional(),
         sdkVisibility: FeatureSDKVisibility.optional(),
-        configurations: z.array(FeatureConfig),
+        configurations: z.array(FeatureConfig.partial()).optional(),
         latestUpdate: AuditLogEntity.optional(),
         changeRequests: z
             .array(z.object({}).partial().passthrough())
             .optional(),
         staleness: FeatureStalenessEntity.optional(),
-        summary: FeatureSummary,
+        summary: FeatureSummary.partial().optional(),
     })
     .passthrough()
 const UpdateVariationDto = z
