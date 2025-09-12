@@ -119,15 +119,17 @@ export default class CreateVariable extends CreateCommand {
                     )
                     return
                 }
+
                 const parsedVariations = JSON.parse(variations as string)
                 const featureVariables = feature.variables
                 const featureVariations = feature.variations
-                featureVariables.push(params as Variable)
-                for (const featVar of featureVariations) {
+                featureVariables?.push(params as Variable)
+                for (const featVar of featureVariations ?? []) {
                     featVar.variables = featVar.variables || {}
                     featVar.variables[params.key] =
                         parsedVariations[featVar.key]
                 }
+
                 await updateFeature(
                     this.authToken,
                     this.projectKey,

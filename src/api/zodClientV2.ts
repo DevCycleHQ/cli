@@ -586,12 +586,14 @@ const AudienceUsage = z
     .passthrough()
 const VariableValidationEntity = z
     .object({
-        schemaType: z.object({}).partial().passthrough(),
-        enumValues: z.object({}).partial().passthrough().optional(),
+        schemaType: z.enum(['enum', 'regex', 'jsonSchema']),
+        enumValues: z
+            .union([z.array(z.string()), z.array(z.number())])
+            .optional(),
         regexPattern: z.string().optional(),
         jsonSchema: z.string().optional(),
         description: z.string(),
-        exampleValue: z.object({}).partial().passthrough(),
+        exampleValue: z.any(),
     })
     .passthrough()
 const CreateVariableDto = z
@@ -609,7 +611,7 @@ const CreateVariableDto = z
         tags: z.array(z.string()).optional(),
     })
     .passthrough()
-const Variable = z
+export const Variable = z
     .object({
         name: z.string().min(1).max(100).optional(),
         description: z.string().max(1000).optional(),
@@ -856,7 +858,7 @@ const FeatureSummary = z
         markdown: z.string(),
     })
     .passthrough()
-const Feature = z
+export const Feature = z
     .object({
         _id: z.string(),
         _project: z.string(),
@@ -901,7 +903,7 @@ const Feature = z
         changeRequests: z
             .array(z.object({}).partial().passthrough())
             .optional(),
-        staleness: FeatureStaleness.optional(),
+        staleness: FeatureStalenessEntity.optional(),
         summary: FeatureSummary,
     })
     .passthrough()
@@ -935,7 +937,7 @@ const UpdateFeatureSummaryDto = z
     })
     .partial()
     .passthrough()
-const UpdateFeatureDto = z
+export const UpdateFeatureDto = z
     .object({
         key: z
             .string()
