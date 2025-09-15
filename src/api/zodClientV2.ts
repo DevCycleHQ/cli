@@ -80,108 +80,108 @@ import { z } from 'zod'
 //         settings: ProjectSettingsDTO.optional(),
 //     })
 //     .passthrough()
-const EdgeDBSettings = z.object({ enabled: z.boolean() }).passthrough()
-const ColorSettings = z
-    .object({ primary: z.string(), secondary: z.string() })
-    .passthrough()
-const OptInSettings = z
-    .object({
-        enabled: z.boolean(),
-        title: z.string(),
-        description: z.string(),
-        imageURL: z.string(),
-        colors: ColorSettings,
-        poweredByAlignment: z.object({}).partial().passthrough(),
-    })
-    .passthrough()
-const SDKTypeVisibilitySettings = z
-    .object({ enabledInFeatureSettings: z.boolean() })
-    .passthrough()
-const LifeCycleSettings = z
-    .object({ disableCodeRefChecks: z.boolean() })
-    .passthrough()
-const ObfuscationSettings = z
-    .object({ enabled: z.boolean(), required: z.boolean() })
-    .passthrough()
-const FeatureApprovalWorkflowSettings = z
-    .object({
-        enabled: z.boolean(),
-        allowPublisherBypass: z.boolean(),
-        defaultReviewers: z.array(z.string()),
-    })
-    .passthrough()
-const ReleasedStalenessSettings = z
-    .object({ enabled: z.boolean() })
-    .passthrough()
-const UnmodifiedLongStalenessSettings = z
-    .object({ enabled: z.boolean() })
-    .passthrough()
-const UnmodifiedShortStalenessSettings = z
-    .object({ enabled: z.boolean() })
-    .passthrough()
-const UnusedStalenessSettings = z.object({ enabled: z.boolean() }).passthrough()
-const StalenessEmailSettings = z
-    .object({
-        enabled: z.boolean(),
-        frequency: z.enum(['weekly', 'biweekly', 'monthly']),
-        users: z.array(z.string()),
-        lastNotification: z.string().datetime({ offset: true }),
-    })
-    .passthrough()
-const StalenessSettings = z
-    .object({
-        enabled: z.boolean(),
-        released: ReleasedStalenessSettings,
-        unmodifiedLong: UnmodifiedLongStalenessSettings,
-        unmodifiedShort: UnmodifiedShortStalenessSettings,
-        unused: UnusedStalenessSettings,
-        email: StalenessEmailSettings,
-    })
-    .passthrough()
-const DynatraceProjectSettings = z
-    .object({
-        enabled: z.boolean(),
-        environmentMap: z.object({}).partial().passthrough(),
-    })
-    .passthrough()
-const ProjectSettings = z
-    .object({
-        edgeDB: EdgeDBSettings,
-        optIn: OptInSettings,
-        sdkTypeVisibility: SDKTypeVisibilitySettings,
-        lifeCycle: LifeCycleSettings,
-        obfuscation: ObfuscationSettings,
-        featureApprovalWorkflow: FeatureApprovalWorkflowSettings,
-        disablePassthroughRollouts: z.boolean(),
-        staleness: StalenessSettings,
-        dynatrace: DynatraceProjectSettings,
-    })
-    .passthrough()
-const VercelEdgeConfigConnection = z
-    .object({ edgeConfigName: z.string(), configurationId: z.string() })
-    .passthrough()
-const Project = z
-    .object({
-        _id: z.string(),
-        _organization: z.string(),
-        _createdBy: z.string(),
-        name: z.string(),
-        key: z.string(),
-        description: z.string().optional(),
-        color: z.string().optional(),
-        settings: ProjectSettings,
-        createdAt: z.string().datetime({ offset: true }),
-        updatedAt: z.string().datetime({ offset: true }),
-        hasJiraIntegration: z.boolean(),
-        hasReceivedCodeUsages: z.boolean(),
-        hasUserConfigFetch: z.boolean(),
-        jiraBaseUrl: z.string(),
-        readonly: z.boolean(),
-        vercelEdgeConfigConnections: z
-            .array(VercelEdgeConfigConnection)
-            .optional(),
-    })
-    .passthrough()
+// const EdgeDBSettings = z.object({ enabled: z.boolean() }).passthrough()
+// const ColorSettings = z
+//     .object({ primary: z.string(), secondary: z.string() })
+//     .passthrough()
+// const OptInSettings = z
+//     .object({
+//         enabled: z.boolean(),
+//         title: z.string(),
+//         description: z.string(),
+//         imageURL: z.string(),
+//         colors: ColorSettings,
+//         poweredByAlignment: z.object({}).partial().passthrough(),
+//     })
+//     .passthrough()
+// const SDKTypeVisibilitySettings = z
+//     .object({ enabledInFeatureSettings: z.boolean() })
+//     .passthrough()
+// const LifeCycleSettings = z
+//     .object({ disableCodeRefChecks: z.boolean() })
+//     .passthrough()
+// const ObfuscationSettings = z
+//     .object({ enabled: z.boolean(), required: z.boolean() })
+//     .passthrough()
+// const FeatureApprovalWorkflowSettings = z
+//     .object({
+//         enabled: z.boolean(),
+//         allowPublisherBypass: z.boolean(),
+//         defaultReviewers: z.array(z.string()),
+//     })
+//     .passthrough()
+// const ReleasedStalenessSettings = z
+//     .object({ enabled: z.boolean() })
+//     .passthrough()
+// const UnmodifiedLongStalenessSettings = z
+//     .object({ enabled: z.boolean() })
+//     .passthrough()
+// const UnmodifiedShortStalenessSettings = z
+//     .object({ enabled: z.boolean() })
+//     .passthrough()
+// const UnusedStalenessSettings = z.object({ enabled: z.boolean() }).passthrough()
+// const StalenessEmailSettings = z
+//     .object({
+//         enabled: z.boolean(),
+//         frequency: z.enum(['weekly', 'biweekly', 'monthly']),
+//         users: z.array(z.string()),
+//         lastNotification: z.string().datetime({ offset: true }),
+//     })
+//     .passthrough()
+// const StalenessSettings = z
+//     .object({
+//         enabled: z.boolean(),
+//         released: ReleasedStalenessSettings,
+//         unmodifiedLong: UnmodifiedLongStalenessSettings,
+//         unmodifiedShort: UnmodifiedShortStalenessSettings,
+//         unused: UnusedStalenessSettings,
+//         email: StalenessEmailSettings,
+//     })
+//     .passthrough()
+// const DynatraceProjectSettings = z
+//     .object({
+//         enabled: z.boolean(),
+//         environmentMap: z.object({}).partial().passthrough(),
+//     })
+//     .passthrough()
+// const ProjectSettings = z
+//     .object({
+//         edgeDB: EdgeDBSettings,
+//         optIn: OptInSettings,
+//         sdkTypeVisibility: SDKTypeVisibilitySettings,
+//         lifeCycle: LifeCycleSettings,
+//         obfuscation: ObfuscationSettings,
+//         featureApprovalWorkflow: FeatureApprovalWorkflowSettings,
+//         disablePassthroughRollouts: z.boolean(),
+//         staleness: StalenessSettings,
+//         dynatrace: DynatraceProjectSettings,
+//     })
+//     .passthrough()
+// const VercelEdgeConfigConnection = z
+//     .object({ edgeConfigName: z.string(), configurationId: z.string() })
+//     .passthrough()
+// const Project = z
+//     .object({
+//         _id: z.string(),
+//         _organization: z.string(),
+//         _createdBy: z.string(),
+//         name: z.string(),
+//         key: z.string(),
+//         description: z.string().optional(),
+//         color: z.string().optional(),
+//         settings: ProjectSettings,
+//         createdAt: z.string().datetime({ offset: true }),
+//         updatedAt: z.string().datetime({ offset: true }),
+//         hasJiraIntegration: z.boolean(),
+//         hasReceivedCodeUsages: z.boolean(),
+//         hasUserConfigFetch: z.boolean(),
+//         jiraBaseUrl: z.string(),
+//         readonly: z.boolean(),
+//         vercelEdgeConfigConnections: z
+//             .array(VercelEdgeConfigConnection)
+//             .optional(),
+//     })
+//     .passthrough()
 // const BadRequestErrorResponse = z
 //     .object({
 //         statusCode: z.number(),
