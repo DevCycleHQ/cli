@@ -598,7 +598,7 @@ const CreateVariableDto = z.object({
     validationSchema: VariableValidationEntity.optional(),
     tags: z.array(z.string()).optional(),
 })
-
+// Remove defaultValue from CreateVariableDto for Features V2 endpoints
 export const FeatureVariableDto = CreateVariableDto.omit({ defaultValue: true })
 export const Variable = z
     .object({
