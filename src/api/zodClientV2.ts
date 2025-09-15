@@ -715,7 +715,12 @@ const UpdateTargetDto = z
 const UpdateFeatureConfigDto = z
     .object({
         status: z.enum(['active', 'inactive']).default('inactive'),
-        targets: z.array(UpdateTargetDto),
+        targets: z
+            .array(UpdateTargetDto)
+            .optional()
+            .describe(
+                'Setting an empty array will remove all targets for this configuration',
+            ),
     })
     .partial()
     .passthrough()
