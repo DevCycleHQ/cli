@@ -457,9 +457,9 @@ export function registerFeatureTools(
 
     const featureDescription = [
         'Features are the main logical container for variables and targeting rules, defining what values variables will be served to users across environments.',
-        'Features can contin multiple variables, and many variations, defined by the targeting rules to determine how variable values are distributed to users.',
+        'Features can contain multiple variables, and many variations, defined by the targeting rules to determine how variable values are distributed to users.',
         'Feature configurations determine the targeting rules applied for a user per environment. Configurations that are "active" (on) will serve the feature to configured users.',
-        'When turnning on/off configurations for a feature, keep existing targeting rules.',
+        'When turning on/off configurations for a feature, keep existing targeting rules.',
     ]
 
     serverInstance.registerToolWithErrorHandling(
