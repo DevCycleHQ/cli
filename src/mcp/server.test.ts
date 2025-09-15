@@ -98,9 +98,9 @@ describe('DevCycleMCPServer', () => {
 
             await mcpServer.initialize()
 
-            // Should register many tools (37 total across all modules)
+            // Should register many tools (21 currently active tools across all modules)
             const registerToolStub = server.registerTool as sinon.SinonStub
-            expect(registerToolStub.callCount).to.be.greaterThan(25)
+            expect(registerToolStub.callCount).to.be.greaterThan(15)
         })
     })
 

@@ -81,7 +81,10 @@ describe('features update', () => {
             api
                 .patch(
                     `/v2/projects/${projectKey}/features/${mockFeature.key}`,
-                    requestBodyWithVariables,
+                    {
+                        ...requestBodyWithVariables,
+                        headless: true,
+                    },
                 )
                 .reply(200, mockFeature),
         )
@@ -151,7 +154,11 @@ describe('features update', () => {
             api
                 .patch(
                     `/v2/projects/${projectKey}/features/${mockFeature.key}`,
-                    requestBodyWithVariations,
+                    {
+                        ...requestBodyWithVariations,
+                        whichFields: Object.keys(requestBodyWithVariations),
+                        listPromptOption: 'continue',
+                    },
                 )
                 .reply(200, mockFeature),
         )
@@ -184,7 +191,11 @@ describe('features update', () => {
             api
                 .patch(
                     `/v2/projects/${projectKey}/features/${mockFeature.key}`,
-                    requestBody,
+                    {
+                        ...requestBody,
+                        whichFields: ['key', 'description', 'sdkVisibility'],
+                        listPromptOption: 'continue',
+                    },
                 )
                 .reply(200, mockFeature),
         )

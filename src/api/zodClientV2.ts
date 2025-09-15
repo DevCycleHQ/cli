@@ -387,9 +387,12 @@ const FeatureStalenessEntity = z
 //     .object({ client: z.boolean(), server: z.boolean(), mobile: z.boolean() })
 //     .partial()
 //     .passthrough()
-const AllFilter = z
-    .object({ type: z.literal('all').default('all') })
-    .passthrough()
+const AllFilter = z.object({ type: z.literal('all').default('all') })
+const OptInFilter = z.object({
+    type: z.literal('optIn').default('optIn'),
+    _audiences: z.array(z.string()).optional(),
+    values: z.array(z.string()).optional(),
+})
 const UserFilter = z.object({
     subType: z.enum(['user_id', 'email', 'platform', 'deviceModel']),
     comparator: z.enum([
@@ -664,53 +667,45 @@ export const Variable = z
 // const UpdateVariableStatusDto = z
 //     .object({ status: z.enum(['active', 'archived']) })
 //     .passthrough()
-const RolloutStage = z
-    .object({
-        percentage: z.number().gte(0).lte(1),
-        type: z.enum(['linear', 'discrete']),
-        date: z.string().datetime({ offset: true }),
-    })
-    .passthrough()
-const Rollout = z
-    .object({
-        startPercentage: z.number().gte(0).lte(1).optional(),
-        type: z.enum(['schedule', 'gradual', 'stepped']),
-        startDate: z.string().datetime({ offset: true }),
-        stages: z.array(RolloutStage).optional(),
-    })
-    .passthrough()
-const TargetDistribution = z
-    .object({ percentage: z.number().gte(0).lte(1), _variation: z.string() })
-    .passthrough()
-const AudienceMatchFilter = z
-    .object({
-        type: z.literal('audienceMatch').default('audienceMatch'),
-        comparator: z.enum(['=', '!=']).optional(),
-        _audiences: z.array(z.string()).optional(),
-    })
-    .passthrough()
-const AudienceOperatorWithAudienceMatchFilter = z
-    .object({
-        filters: z.array(
-            z.union([
-                AllFilter,
-                UserFilter,
-                UserCountryFilter,
-                UserAppVersionFilter,
-                UserPlatformVersionFilter,
-                UserCustomFilter,
-                AudienceMatchFilter,
-            ]),
-        ),
-        operator: z.enum(['and', 'or']),
-    })
-    .passthrough()
-const TargetAudience = z
-    .object({
-        name: z.string().min(1).max(100).optional(),
-        filters: AudienceOperatorWithAudienceMatchFilter,
-    })
-    .passthrough()
+const RolloutStage = z.object({
+    percentage: z.number().gte(0).lte(1),
+    type: z.enum(['linear', 'discrete']),
+    date: z.string().datetime({ offset: true }),
+})
+const Rollout = z.object({
+    startPercentage: z.number().gte(0).lte(1).optional(),
+    type: z.enum(['schedule', 'gradual', 'stepped']),
+    startDate: z.string().datetime({ offset: true }),
+    stages: z.array(RolloutStage).optional(),
+})
+const TargetDistribution = z.object({
+    percentage: z.number().gte(0).lte(1),
+    _variation: z.string(),
+})
+const AudienceMatchFilter = z.object({
+    type: z.literal('audienceMatch').default('audienceMatch'),
+    comparator: z.enum(['=', '!=']).optional(),
+    _audiences: z.array(z.string()).optional(),
+})
+const AudienceOperatorWithAudienceMatchFilter = z.object({
+    filters: z.array(
+        z.union([
+            AllFilter.passthrough(),
+            OptInFilter.passthrough(),
+            UserFilter.passthrough(),
+            UserCountryFilter.passthrough(),
+            UserAppVersionFilter.passthrough(),
+            UserPlatformVersionFilter.passthrough(),
+            UserCustomFilter.passthrough(),
+            AudienceMatchFilter.passthrough(),
+        ]),
+    ),
+    operator: z.enum(['and', 'or']),
+})
+const TargetAudience = z.object({
+    name: z.string().min(1).max(100).optional(),
+    filters: AudienceOperatorWithAudienceMatchFilter,
+})
 const UpdateTargetDto = z
     .object({
         _id: z.string().optional(),
@@ -1562,6 +1557,7 @@ export const UpdateFeatureDto = z
 //     UpdateEnvironmentDto,
 //     GenerateSdkTokensDto,
 //     AllFilter,
+//     OptInFilter,
 //     UserFilter,
 //     UserCountryFilter,
 //     UserAppVersionFilter,
