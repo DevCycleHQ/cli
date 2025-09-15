@@ -724,34 +724,30 @@ const UpdateFeatureConfigDto = z
     })
     .partial()
     .passthrough()
-const CreateVariationDto = z
-    .object({
-        key: z
-            .string()
-            .min(1)
-            .max(100)
-            .regex(/^[a-z0-9-_.]+$/),
-        name: z.string().min(1).max(100),
-        variables: z
-            .record(
-                z.union([
-                    z.string(),
-                    z.number(),
-                    z.boolean(),
-                    z.array(z.any()),
-                    z.object({}).partial().passthrough(),
-                ]),
-            )
-            .optional(),
-    })
-    .passthrough()
-const FeatureSettingsDto = z
-    .object({
-        publicName: z.string().max(100),
-        publicDescription: z.string().max(1000),
-        optInEnabled: z.boolean(),
-    })
-    .passthrough()
+const CreateVariationDto = z.object({
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
+    variables: z
+        .record(
+            z.union([
+                z.string(),
+                z.number(),
+                z.boolean(),
+                z.array(z.any()),
+                z.object({}).partial().passthrough(),
+            ]),
+        )
+        .optional(),
+})
+const FeatureSettingsDto = z.object({
+    publicName: z.string().max(100),
+    publicDescription: z.string().max(1000),
+    optInEnabled: z.boolean(),
+})
 const FeatureSDKVisibilityDto = z
     .object({ mobile: z.boolean(), client: z.boolean(), server: z.boolean() })
     .passthrough()
@@ -945,13 +941,10 @@ export const UpdateFeatureDto = z
         sdkVisibility: FeatureSDKVisibilityDto,
     })
     .partial()
-    .passthrough()
-// const UpdateFeatureStatusDto = z
-//     .object({
-//         status: z.enum(['active', 'complete', 'archived']),
-//         staticVariation: z.string().optional(),
-//     })
-//     .passthrough()
+export const UpdateFeatureStatusDto = z.object({
+    status: z.enum(['active', 'complete', 'archived']),
+    staticVariation: z.string().optional(),
+})
 // const StaticConfiguration = z
 //     .object({
 //         key: z

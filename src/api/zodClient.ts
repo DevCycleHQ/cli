@@ -5,6 +5,7 @@ import {
     UpdateFeatureDto as UpdateFeatureDtoV2,
     Feature as FeatureV2,
     Variable as VariableV2,
+    UpdateFeatureStatusDto,
 } from './zodClientV2'
 
 /**
@@ -1914,17 +1915,27 @@ const endpoints = makeApi([
             {
                 name: 'page',
                 type: 'Query',
-                schema: z.number().gte(1).optional().default(1),
+                schema: z.number().min(1).optional().default(1),
             },
             {
                 name: 'perPage',
                 type: 'Query',
-                schema: z.number().gte(1).lte(1000).optional().default(100),
+                schema: z.number().min(1).max(1000).optional().default(100),
             },
             {
                 name: 'sortBy',
                 type: 'Query',
-                schema: z.string().optional().default('createdAt'),
+                schema: z
+                    .enum([
+                        'createdAt',
+                        'updatedAt',
+                        'name',
+                        'key',
+                        'createdBy',
+                        'propertyKey',
+                    ])
+                    .optional()
+                    .default('createdAt'),
             },
             {
                 name: 'sortOrder',
@@ -1934,7 +1945,20 @@ const endpoints = makeApi([
             {
                 name: 'search',
                 type: 'Query',
-                schema: z.string().optional(),
+                schema: z.string().min(3).optional(),
+            },
+            {
+                name: 'staleness',
+                type: 'Query',
+                schema: z
+                    .enum([
+                        'all',
+                        'unused',
+                        'released',
+                        'unmodified',
+                        'notStale',
+                    ])
+                    .optional(),
             },
             {
                 name: 'createdBy',
@@ -1947,6 +1971,11 @@ const endpoints = makeApi([
                 schema: z
                     .enum(['release', 'experiment', 'permission', 'ops'])
                     .optional(),
+            },
+            {
+                name: 'status',
+                type: 'Query',
+                schema: z.enum(['active', 'complete', 'archived']).optional(),
             },
             {
                 name: 'project',
@@ -3904,6 +3933,57 @@ const v2Endpoints = makeApi([
             {
                 status: 404,
                 schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'patch',
+        path: '/v2/projects/:project/features/:feature/status',
+        alias: 'FeaturesController_updateStatus',
+        description: `Update a Feature's status`,
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: UpdateFeatureStatusDto,
+            },
+            {
+                name: 'feature',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: FeatureV2,
+        errors: [
+            {
+                status: 400,
+                schema: BadRequestErrorResponse,
+            },
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+            {
+                status: 409,
+                schema: ConflictErrorResponse,
+            },
+            {
+                status: 412,
+                schema: PreconditionFailedErrorResponse,
             },
         ],
     },
