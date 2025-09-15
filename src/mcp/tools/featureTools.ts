@@ -455,13 +455,18 @@ export function registerFeatureTools(
         },
     )
 
+    const featureDescription = [
+        'Features are the main logical container for variables and targeting rules, defining what values variables will be served to users across environments.',
+        'Features can contin multiple variables, and many variations, defined by the targeting rules to determine how variable values are distributed to users.',
+        'Feature configurations determine the targeting rules applied for a user per environment. Configurations that are "active" will serve the feature to configured users.',
+    ]
+
     serverInstance.registerToolWithErrorHandling(
         'create_feature',
         {
             description: [
                 'Create a new DevCycle feature. Include dashboard link in the response.',
-                'Features are the main logical container for variables and targeting rules, defining what values variables will be served to users across environments.',
-                'Features can contin multiple variables, and many variations, defined by the targeting rules to determine how variable values are distributed to users.',
+                ...featureDescription,
                 'If a user is creating a feature, you should follow these steps and ask users for input on these steps:',
                 '1. create a variable and associate it with this feature. (default to creating a "boolean" variable with the same key as the feature)',
                 '2. create variations for the feature. (default to creating an "on" and "off" variation)',
@@ -483,9 +488,10 @@ export function registerFeatureTools(
         {
             description: [
                 'Update an existing feature flag.',
-                'Also accepts partial PATCH updates to the feature, to update feature configuration, variables, variations, and targeting rules.',
-                '⚠️ IMPORTANT: Changes to feature flags may affect production environments.',
-                'Always confirm with the user before making changes to features that are active in production.',
+                'Consider this a PATCH request to the feature, to update feature configuration, variables, variations, and targeting rules. Be careful to not overwrite existing data with the PATCH request.',
+                ...featureDescription,
+                '⚠️ IMPORTANT: Changes to feature flags may affect production environments if production environment configurations are "active".',
+                'Always confirm with the user before making changes to features that have production environment configurations that are "active".',
                 'Include dashboard link in the response.',
             ].join('\n'),
             annotations: {

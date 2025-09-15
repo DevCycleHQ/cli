@@ -5,7 +5,6 @@ import {
     UpdateFeatureDto as UpdateFeatureDtoV2,
     Feature as FeatureV2,
     Variable as VariableV2,
-    Feature,
 } from './zodClientV2'
 
 /**
