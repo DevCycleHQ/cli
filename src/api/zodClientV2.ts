@@ -276,9 +276,6 @@ import { z } from 'zod'
 //     .passthrough()
 const FeatureStalenessEntity = z
     .object({
-        key: z.string(),
-        name: z.string(),
-        _feature: z.string(),
         stale: z.boolean(),
         updatedAt: z.string().datetime({ offset: true }).optional(),
         disabled: z.boolean(),
@@ -745,7 +742,7 @@ const CreateVariationDto = z
     .passthrough()
 const FeatureSettingsDto = z
     .object({
-        publicName: z.string().min(1).max(100),
+        publicName: z.string().max(100),
         publicDescription: z.string().max(1000),
         optInEnabled: z.boolean(),
     })
@@ -796,7 +793,7 @@ const Variation = z
     .passthrough()
 const FeatureSettings = z
     .object({
-        publicName: z.string().min(1).max(100),
+        publicName: z.string().max(100),
         publicDescription: z.string().max(1000),
         optInEnabled: z.boolean(),
     })
