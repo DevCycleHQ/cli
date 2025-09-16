@@ -1,187 +1,199 @@
 /**
- * NOTE: this file is a new export from generate-zodios-client.sh
- * Using it to selectivly switch over to the new zod schemas,
- * as there are a bunch of conflicts with the old schemas that are still mostly working.
+ * IMPORTANT: MCP Schema Compatibility
+ *
+ * The MCP (Model Context Protocol) requires that all array types in JSON schemas
+ * have an 'items' property. When using Zod schemas that will be converted to JSON
+ * schemas for MCP tools:
+ *
+ * ❌ NEVER use: z.array(z.any()) - This doesn't generate the required 'items' property
+ * ✅ ALWAYS use: z.array(z.unknown()) - This generates proper JSON schemas
+ *
+ * Similarly:
+ * ❌ NEVER use: z.record(z.any())
+ * ✅ ALWAYS use: z.record(z.unknown())
+ *
+ * The z.unknown() type provides the same runtime flexibility as z.any() but
+ * generates valid JSON schemas that pass MCP validation.
  */
-
-// import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core'
 import { z } from 'zod'
 
-// const EdgeDBSettingsDTO = z.object({ enabled: z.boolean() }).passthrough()
-// const ColorSettingsDTO = z
-//     .object({
-//         primary: z
-//             .string()
-//             .max(9)
-//             .regex(
-//                 /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
-//             ),
-//         secondary: z
-//             .string()
-//             .max(9)
-//             .regex(
-//                 /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
-//             ),
-//     })
-//     .passthrough()
-// const OptInSettingsDTO = z
-//     .object({
-//         title: z.string().min(1).max(100),
-//         description: z.string().max(1000),
-//         enabled: z.boolean(),
-//         imageURL: z.string(),
-//         colors: ColorSettingsDTO,
-//         poweredByAlignment: z.enum(['center', 'left', 'right', 'hidden']),
-//     })
-//     .passthrough()
-// const SDKTypeVisibilitySettingsDTO = z
-//     .object({ enabledInFeatureSettings: z.boolean() })
-//     .passthrough()
-// const LifeCycleSettingsDTO = z
-//     .object({ disableCodeRefChecks: z.boolean() })
-//     .passthrough()
-// const ObfuscationSettingsDTO = z
-//     .object({ enabled: z.boolean(), required: z.boolean() })
-//     .passthrough()
-// const DynatraceProjectSettingsDTO = z
-//     .object({
-//         enabled: z.boolean(),
-//         environmentMap: z.object({}).partial().passthrough(),
-//     })
-//     .partial()
-//     .passthrough()
-// const ProjectSettingsDTO = z
-//     .object({
-//         edgeDB: EdgeDBSettingsDTO,
-//         optIn: OptInSettingsDTO,
-//         sdkTypeVisibility: SDKTypeVisibilitySettingsDTO,
-//         lifeCycle: LifeCycleSettingsDTO,
-//         obfuscation: ObfuscationSettingsDTO,
-//         disablePassthroughRollouts: z.boolean(),
-//         dynatrace: DynatraceProjectSettingsDTO,
-//     })
-//     .passthrough()
-// const CreateProjectDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000).optional(),
-//         color: z
-//             .string()
-//             .max(9)
-//             .regex(
-//                 /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
-//             )
-//             .optional(),
-//         settings: ProjectSettingsDTO.optional(),
-//     })
-//     .passthrough()
-// const EdgeDBSettings = z.object({ enabled: z.boolean() }).passthrough()
-// const ColorSettings = z
-//     .object({ primary: z.string(), secondary: z.string() })
-//     .passthrough()
-// const OptInSettings = z
-//     .object({
-//         enabled: z.boolean(),
-//         title: z.string(),
-//         description: z.string(),
-//         imageURL: z.string(),
-//         colors: ColorSettings,
-//         poweredByAlignment: z.object({}).partial().passthrough(),
-//     })
-//     .passthrough()
-// const SDKTypeVisibilitySettings = z
-//     .object({ enabledInFeatureSettings: z.boolean() })
-//     .passthrough()
-// const LifeCycleSettings = z
-//     .object({ disableCodeRefChecks: z.boolean() })
-//     .passthrough()
-// const ObfuscationSettings = z
-//     .object({ enabled: z.boolean(), required: z.boolean() })
-//     .passthrough()
-// const FeatureApprovalWorkflowSettings = z
-//     .object({
-//         enabled: z.boolean(),
-//         allowPublisherBypass: z.boolean(),
-//         defaultReviewers: z.array(z.string()),
-//     })
-//     .passthrough()
-// const ReleasedStalenessSettings = z
-//     .object({ enabled: z.boolean() })
-//     .passthrough()
-// const UnmodifiedLongStalenessSettings = z
-//     .object({ enabled: z.boolean() })
-//     .passthrough()
-// const UnmodifiedShortStalenessSettings = z
-//     .object({ enabled: z.boolean() })
-//     .passthrough()
-// const UnusedStalenessSettings = z.object({ enabled: z.boolean() }).passthrough()
-// const StalenessEmailSettings = z
-//     .object({
-//         enabled: z.boolean(),
-//         frequency: z.enum(['weekly', 'biweekly', 'monthly']),
-//         users: z.array(z.string()),
-//         lastNotification: z.string().datetime({ offset: true }),
-//     })
-//     .passthrough()
-// const StalenessSettings = z
-//     .object({
-//         enabled: z.boolean(),
-//         released: ReleasedStalenessSettings,
-//         unmodifiedLong: UnmodifiedLongStalenessSettings,
-//         unmodifiedShort: UnmodifiedShortStalenessSettings,
-//         unused: UnusedStalenessSettings,
-//         email: StalenessEmailSettings,
-//     })
-//     .passthrough()
-// const DynatraceProjectSettings = z
-//     .object({
-//         enabled: z.boolean(),
-//         environmentMap: z.object({}).partial().passthrough(),
-//     })
-//     .passthrough()
-// const ProjectSettings = z
-//     .object({
-//         edgeDB: EdgeDBSettings,
-//         optIn: OptInSettings,
-//         sdkTypeVisibility: SDKTypeVisibilitySettings,
-//         lifeCycle: LifeCycleSettings,
-//         obfuscation: ObfuscationSettings,
-//         featureApprovalWorkflow: FeatureApprovalWorkflowSettings,
-//         disablePassthroughRollouts: z.boolean(),
-//         staleness: StalenessSettings,
-//         dynatrace: DynatraceProjectSettings,
-//     })
-//     .passthrough()
-// const VercelEdgeConfigConnection = z
-//     .object({ edgeConfigName: z.string(), configurationId: z.string() })
-//     .passthrough()
-// const Project = z
-//     .object({
-//         _id: z.string(),
-//         _organization: z.string(),
-//         _createdBy: z.string(),
-//         name: z.string(),
-//         key: z.string(),
-//         description: z.string().optional(),
-//         color: z.string().optional(),
-//         settings: ProjectSettings,
-//         createdAt: z.string().datetime({ offset: true }),
-//         updatedAt: z.string().datetime({ offset: true }),
-//         hasJiraIntegration: z.boolean(),
-//         hasReceivedCodeUsages: z.boolean(),
-//         hasUserConfigFetch: z.boolean(),
-//         jiraBaseUrl: z.string(),
-//         readonly: z.boolean(),
-//         vercelEdgeConfigConnections: z
-//             .array(VercelEdgeConfigConnection)
-//             .optional(),
-//     })
-//     .passthrough()
+export const ResultSummaryDto = z.object({
+    result: z
+        .object({
+            counts: z
+                .object({
+                    total: z.number(),
+                    withFeature: z.number(),
+                    accessedFeature: z.number(),
+                })
+                .partial(),
+        })
+        .partial(),
+    cached: z.boolean(),
+    updatedAt: z.string().datetime(),
+})
+
+// Zod Schemas
+const EdgeDBSettingsDTO = z.object({ enabled: z.boolean() })
+const ColorSettingsDTO = z.object({
+    primary: z
+        .string()
+        .max(9)
+        .regex(
+            /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
+        ),
+    secondary: z
+        .string()
+        .max(9)
+        .regex(
+            /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
+        ),
+})
+const OptInSettingsDTO = z
+    .object({
+        title: z.string().min(1).max(100),
+        description: z.string().max(1000),
+        enabled: z.boolean(),
+        imageURL: z.string(),
+        colors: ColorSettingsDTO,
+        poweredByAlignment: z.enum(['center', 'left', 'right', 'hidden']),
+    })
+    .passthrough()
+const SDKTypeVisibilitySettingsDTO = z
+    .object({ enabledInFeatureSettings: z.boolean() })
+    .passthrough()
+const LifeCycleSettingsDTO = z
+    .object({ disableCodeRefChecks: z.boolean() })
+    .passthrough()
+const ObfuscationSettingsDTO = z
+    .object({ enabled: z.boolean(), required: z.boolean() })
+    .passthrough()
+const DynatraceProjectSettingsDTO = z
+    .object({
+        enabled: z.boolean(),
+        environmentMap: z.object({}).partial().passthrough(),
+    })
+    .partial()
+    .passthrough()
+export const ProjectSettingsDTO = z
+    .object({
+        edgeDB: EdgeDBSettingsDTO,
+        optIn: OptInSettingsDTO,
+        sdkTypeVisibility: SDKTypeVisibilitySettingsDTO,
+        lifeCycle: LifeCycleSettingsDTO,
+        obfuscation: ObfuscationSettingsDTO,
+        disablePassthroughRollouts: z.boolean(),
+        dynatrace: DynatraceProjectSettingsDTO,
+    })
+    .passthrough()
+export const CreateProjectDto = z
+    .object({
+        name: z.string().min(1).max(100),
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/),
+        description: z.string().max(1000).optional(),
+        color: z
+            .string()
+            .max(9)
+            .regex(
+                /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
+            )
+            .optional(),
+        settings: ProjectSettingsDTO.optional(),
+    })
+    .passthrough()
+const EdgeDBSettings = z.object({ enabled: z.boolean() })
+const ColorSettings = z.object({ primary: z.string(), secondary: z.string() })
+const OptInSettings = z.object({
+    enabled: z.boolean(),
+    title: z.string(),
+    description: z.string(),
+    imageURL: z.string(),
+    colors: ColorSettings,
+    poweredByAlignment: z.object({}).partial().passthrough(),
+})
+const SDKTypeVisibilitySettings = z.object({
+    enabledInFeatureSettings: z.boolean(),
+})
+const LifeCycleSettings = z.object({ disableCodeRefChecks: z.boolean() })
+const ObfuscationSettings = z.object({
+    enabled: z.boolean(),
+    required: z.boolean(),
+})
+const FeatureApprovalWorkflowSettings = z
+    .object({
+        enabled: z.boolean(),
+        allowPublisherBypass: z.boolean(),
+        defaultReviewers: z.array(z.string()),
+    })
+    .passthrough()
+const ReleasedStalenessSettings = z.object({ enabled: z.boolean() })
+const UnmodifiedLongStalenessSettings = z.object({ enabled: z.boolean() })
+const UnmodifiedShortStalenessSettings = z.object({ enabled: z.boolean() })
+const UnusedStalenessSettings = z.object({ enabled: z.boolean() })
+const StalenessEmailSettings = z.object({
+    enabled: z.boolean(),
+    frequency: z.enum(['weekly', 'biweekly', 'monthly']),
+    users: z.array(z.string()),
+    lastNotification: z.string().datetime({ offset: true }),
+})
+const StalenessSettings = z
+    .object({
+        enabled: z.boolean(),
+        released: ReleasedStalenessSettings,
+        unmodifiedLong: UnmodifiedLongStalenessSettings,
+        unmodifiedShort: UnmodifiedShortStalenessSettings,
+        unused: UnusedStalenessSettings,
+        email: StalenessEmailSettings,
+    })
+    .passthrough()
+const DynatraceProjectSettings = z
+    .object({
+        enabled: z.boolean(),
+        environmentMap: z.object({}).partial().passthrough(),
+    })
+    .passthrough()
+export const ProjectSettings = z
+    .object({
+        edgeDB: EdgeDBSettings,
+        optIn: OptInSettings,
+        sdkTypeVisibility: SDKTypeVisibilitySettings,
+        lifeCycle: LifeCycleSettings,
+        obfuscation: ObfuscationSettings,
+        featureApprovalWorkflow: FeatureApprovalWorkflowSettings,
+        disablePassthroughRollouts: z.boolean(),
+        staleness: StalenessSettings,
+        dynatrace: DynatraceProjectSettings,
+    })
+    .passthrough()
+const VercelEdgeConfigConnection = z
+    .object({ edgeConfigName: z.string(), configurationId: z.string() })
+    .passthrough()
+export const Project = z
+    .object({
+        _id: z.string(),
+        _organization: z.string(),
+        _createdBy: z.string(),
+        name: z.string(),
+        key: z.string(),
+        description: z.string().optional(),
+        color: z.string().optional(),
+        settings: ProjectSettings,
+        createdAt: z.string().datetime({ offset: true }),
+        updatedAt: z.string().datetime({ offset: true }),
+        hasJiraIntegration: z.boolean(),
+        hasReceivedCodeUsages: z.boolean(),
+        hasUserConfigFetch: z.boolean(),
+        jiraBaseUrl: z.string(),
+        readonly: z.boolean(),
+        vercelEdgeConfigConnections: z
+            .array(VercelEdgeConfigConnection)
+            .optional(),
+    })
+    .passthrough()
 // const BadRequestErrorResponse = z
 //     .object({
 //         statusCode: z.number(),
@@ -204,25 +216,24 @@ import { z } from 'zod'
 //         error: z.string(),
 //     })
 //     .passthrough()
-// const UpdateProjectDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000),
-//         color: z
-//             .string()
-//             .max(9)
-//             .regex(
-//                 /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
-//             ),
-//         settings: ProjectSettingsDTO,
-//     })
-//     .partial()
-//     .passthrough()
+export const UpdateProjectDto = z
+    .object({
+        name: z.string().min(1).max(100),
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/),
+        description: z.string().max(1000),
+        color: z
+            .string()
+            .max(9)
+            .regex(
+                /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
+            ),
+        settings: ProjectSettingsDTO,
+    })
+    .partial()
 // const CannotDeleteLastItemErrorResponse = z
 //     .object({
 //         statusCode: z.number(),
@@ -286,111 +297,96 @@ const FeatureStalenessEntity = z
         metaData: z.object({}).partial().passthrough().optional(),
     })
     .passthrough()
-// const EnvironmentSettings = z
-//     .object({ appIconURI: z.string().max(2048) })
-//     .partial()
-//     .passthrough()
-// const CreateEnvironmentDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000).optional(),
-//         color: z
-//             .string()
-//             .max(9)
-//             .regex(
-//                 /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
-//             )
-//             .optional(),
-//         type: z.enum([
-//             'development',
-//             'staging',
-//             'production',
-//             'disaster_recovery',
-//         ]),
-//         settings: EnvironmentSettings.optional(),
-//     })
-//     .passthrough()
-// const APIKey = z.object({}).partial().passthrough()
-// const SDKKeys = z
-//     .object({
-//         mobile: z.array(APIKey),
-//         client: z.array(APIKey),
-//         server: z.array(APIKey),
-//     })
-//     .passthrough()
-// const Environment = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000).optional(),
-//         color: z
-//             .string()
-//             .max(9)
-//             .regex(
-//                 /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
-//             )
-//             .optional(),
-//         _id: z.string(),
-//         _project: z.string(),
-//         type: z.enum([
-//             'development',
-//             'staging',
-//             'production',
-//             'disaster_recovery',
-//         ]),
-//         _createdBy: z.string(),
-//         createdAt: z.string().datetime({ offset: true }),
-//         updatedAt: z.string().datetime({ offset: true }),
-//         sdkKeys: SDKKeys.optional(),
-//         settings: EnvironmentSettings.optional(),
-//         readonly: z.boolean(),
-//     })
-//     .passthrough()
-// const UpdateEnvironmentDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000),
-//         color: z
-//             .string()
-//             .max(9)
-//             .regex(
-//                 /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
-//             ),
-//         type: z.enum([
-//             'development',
-//             'staging',
-//             'production',
-//             'disaster_recovery',
-//         ]),
-//         settings: EnvironmentSettings,
-//     })
-//     .partial()
-//     .passthrough()
-// const GenerateSdkTokensDto = z
-//     .object({ client: z.boolean(), server: z.boolean(), mobile: z.boolean() })
-//     .partial()
-//     .passthrough()
-const AllFilter = z.object({ type: z.literal('all').default('all') })
-const OptInFilter = z.object({
+const EnvironmentSettings = z
+    .object({ appIconURI: z.string().max(2048) })
+    .partial()
+export const CreateEnvironmentDto = z.object({
+    name: z.string().min(1).max(100),
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    description: z.string().max(1000).optional(),
+    color: z
+        .string()
+        .max(9)
+        .regex(
+            /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
+        )
+        .optional(),
+    type: z.enum(['development', 'staging', 'production', 'disaster_recovery']),
+    settings: EnvironmentSettings.optional(),
+})
+const APIKey = z.object({
+    key: z.string(),
+    createdAt: z.string().datetime(),
+    compromised: z.boolean(),
+})
+export const SDKKeys = z.object({
+    mobile: z.array(APIKey),
+    client: z.array(APIKey),
+    server: z.array(APIKey),
+})
+export const Environment = z.object({
+    _id: z.string(),
+    _project: z.string(),
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
+    description: z.string().max(1000).optional(),
+    color: z
+        .string()
+        .max(9)
+        .regex(
+            /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
+        )
+        .optional(),
+    type: z.enum(['development', 'staging', 'production', 'disaster_recovery']),
+    _createdBy: z.string(),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+    sdkKeys: SDKKeys,
+    settings: EnvironmentSettings.optional(),
+    readonly: z.boolean(),
+})
+export const UpdateEnvironmentDto = z
+    .object({
+        name: z.string().min(1).max(100),
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/),
+        description: z.string().max(1000),
+        color: z
+            .string()
+            .max(9)
+            .regex(
+                /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
+            ),
+        type: z.enum([
+            'development',
+            'staging',
+            'production',
+            'disaster_recovery',
+        ]),
+        settings: EnvironmentSettings,
+    })
+    .partial()
+export const GenerateSdkTokensDto = z
+    .object({ client: z.boolean(), server: z.boolean(), mobile: z.boolean() })
+    .partial()
+export const AllFilter = z.object({ type: z.literal('all').default('all') })
+export const OptInFilter = z.object({
     type: z.literal('optIn').default('optIn'),
     _audiences: z.array(z.string()).optional(),
     values: z.array(z.string()).optional(),
 })
-const UserFilter = z.object({
+export const UserFilter = z.object({
     subType: z.enum(['user_id', 'email', 'platform', 'deviceModel']),
     comparator: z.enum([
         '=',
@@ -407,7 +403,7 @@ const UserFilter = z.object({
     values: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
 })
-const UserCountryFilter = z
+export const UserCountryFilter = z
     .object({
         subType: z.literal('country').default('country'),
         comparator: z.enum([
@@ -426,7 +422,7 @@ const UserCountryFilter = z
         type: z.literal('user').default('user'),
     })
     .describe('values must be valid ISO31661 Alpha2 country codes')
-const UserAppVersionFilter = z
+export const UserAppVersionFilter = z
     .object({
         comparator: z.enum([
             '=',
@@ -443,13 +439,13 @@ const UserAppVersionFilter = z
         subType: z.literal('appVersion').default('appVersion'),
     })
     .describe('values must be valid semver versions')
-const UserPlatformVersionFilter = z.object({
+export const UserPlatformVersionFilter = z.object({
     comparator: z.enum(['=', '!=', '>', '>=', '<', '<=', 'exist', '!exist']),
     values: z.array(z.string()).optional(),
     type: z.literal('user').default('user'),
-    subType: z.literal('appVersion').default('appVersion'),
+    subType: z.literal('platformVersion').default('platformVersion'),
 })
-const UserCustomFilter = z
+export const UserCustomFilter = z
     .object({
         comparator: z.enum([
             '=',
@@ -478,88 +474,82 @@ const UserCustomFilter = z
     .describe(
         'Filters users by comparing customData[dataKey] (coerced to dataKeyType) to values using the specified comparator',
     )
+export const AudienceOperator = z.object({
+    filters: z.array(
+        z.union([
+            AllFilter.passthrough(),
+            UserFilter.passthrough(),
+            UserCountryFilter.passthrough(),
+            UserAppVersionFilter.passthrough(),
+            UserPlatformVersionFilter.passthrough(),
+            UserCustomFilter.passthrough(),
+        ]),
+    ),
+    operator: z.enum(['and', 'or']),
+})
+export const CreateAudienceDto = z.object({
+    name: z.string().min(1).max(100).optional(),
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/)
+        .optional(),
+    description: z.string().max(1000).optional(),
+    filters: AudienceOperator,
+    tags: z.array(z.string()).optional(),
+})
+export const Audience = z
+    .object({
+        _id: z.string(),
+        _project: z.string(),
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/)
+            .optional(),
+        name: z.string().min(1).max(100).optional(),
+        description: z.string().max(1000).optional(),
+        filters: AudienceOperator,
+        source: z
+            .enum([
+                'api',
+                'dashboard',
+                'importer',
+                'github.code_usages',
+                'github.pr_insights',
+                'gitlab.code_usages',
+                'gitlab.pr_insights',
+                'bitbucket.code_usages',
+                'bitbucket.pr_insights',
+                'terraform',
+                'cli',
+                'slack',
+                'mcp',
+            ])
+            .optional(),
+        _createdBy: z.string().optional(),
+        createdAt: z.string().datetime({ offset: true }),
+        updatedAt: z.string().datetime({ offset: true }),
+        tags: z.array(z.string()).optional(),
+        readonly: z.boolean(),
+        hasUsage: z.boolean().optional(),
+    })
     .passthrough()
-// const AudienceOperator = z
-//     .object({
-//         filters: z.array(
-//             z.union([
-//                 AllFilter,
-//                 UserFilter,
-//                 UserCountryFilter,
-//                 UserAppVersionFilter,
-//                 UserPlatformVersionFilter,
-//                 UserCustomFilter,
-//             ]),
-//         ),
-//         operator: z.enum(['and', 'or']),
-//     })
-//     .passthrough()
-// const CreateAudienceDto = z
-//     .object({
-//         name: z.string().min(1).max(100).optional(),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/)
-//             .optional(),
-//         description: z.string().max(1000).optional(),
-//         filters: AudienceOperator,
-//         tags: z.array(z.string()).optional(),
-//     })
-//     .passthrough()
-// const Audience = z
-//     .object({
-//         name: z.string().min(1).max(100).optional(),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/)
-//             .optional(),
-//         description: z.string().max(1000).optional(),
-//         _id: z.string(),
-//         _project: z.string(),
-//         filters: AudienceOperator,
-//         source: z
-//             .enum([
-//                 'api',
-//                 'dashboard',
-//                 'importer',
-//                 'github.code_usages',
-//                 'github.pr_insights',
-//                 'gitlab.code_usages',
-//                 'gitlab.pr_insights',
-//                 'bitbucket.code_usages',
-//                 'bitbucket.pr_insights',
-//                 'terraform',
-//                 'cli',
-//                 'slack',
-//                 'mcp',
-//             ])
-//             .optional(),
-//         _createdBy: z.string().optional(),
-//         createdAt: z.string().datetime({ offset: true }),
-//         updatedAt: z.string().datetime({ offset: true }),
-//         tags: z.array(z.string()).optional(),
-//         readonly: z.boolean(),
-//         hasUsage: z.boolean().optional(),
-//     })
-//     .passthrough()
-// const UpdateAudienceDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000),
-//         filters: AudienceOperator,
-//         tags: z.array(z.string()),
-//     })
-//     .partial()
-//     .passthrough()
+export const UpdateAudienceDto = z
+    .object({
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/),
+        name: z.string().min(1).max(100),
+        description: z.string().max(1000),
+        filters: AudienceOperator,
+        tags: z.array(z.string()),
+    })
+    .partial()
 // const AudienceEnvironments = z.object({}).partial().passthrough()
 // const AudienceFeature = z
 //     .object({
@@ -638,32 +628,24 @@ export const Variable = z
         tags: z.array(z.string()).optional(),
     })
     .passthrough()
-// const UpdateVariableDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         description: z.string().max(1000),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
-//         validationSchema: VariableValidationEntity,
-//         persistent: z.boolean(),
-//         tags: z.array(z.string()),
-//     })
-//     .partial()
-//     .passthrough()
-// const PreconditionFailedErrorResponse = z
-//     .object({
-//         statusCode: z.number(),
-//         message: z.object({}).partial().passthrough(),
-//         error: z.string(),
-//     })
-//     .passthrough()
-// const UpdateVariableStatusDto = z
-//     .object({ status: z.enum(['active', 'archived']) })
-//     .passthrough()
+export const UpdateVariableDto = z
+    .object({
+        name: z.string().min(1).max(100),
+        description: z.string().max(1000),
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/),
+        type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
+        validationSchema: VariableValidationEntity,
+        persistent: z.boolean(),
+        tags: z.array(z.string()),
+    })
+    .partial()
+export const UpdateVariableStatusDto = z.object({
+    status: z.enum(['active', 'archived']),
+})
 const RolloutStage = z.object({
     percentage: z.number().gte(0).lte(1),
     type: z.enum(['linear', 'discrete']),
@@ -679,12 +661,12 @@ const TargetDistribution = z.object({
     percentage: z.number().gte(0).lte(1),
     _variation: z.string(),
 })
-const AudienceMatchFilter = z.object({
+export const AudienceMatchFilter = z.object({
     type: z.literal('audienceMatch').default('audienceMatch'),
     comparator: z.enum(['=', '!=']).optional(),
     _audiences: z.array(z.string()).optional(),
 })
-const AudienceOperatorWithAudienceMatchFilter = z.object({
+export const AudienceOperatorWithAudienceMatchFilter = z.object({
     filters: z.array(
         z.union([
             AllFilter.passthrough(),
@@ -703,16 +685,14 @@ const TargetAudience = z.object({
     name: z.string().min(1).max(100).optional(),
     filters: AudienceOperatorWithAudienceMatchFilter,
 })
-const UpdateTargetDto = z
-    .object({
-        _id: z.string().optional(),
-        name: z.string().optional(),
-        rollout: Rollout.optional(),
-        distribution: z.array(TargetDistribution),
-        audience: TargetAudience,
-    })
-    .passthrough()
-const UpdateFeatureConfigDto = z
+export const UpdateTargetDto = z.object({
+    _id: z.string().optional(),
+    name: z.string().optional(),
+    rollout: Rollout.nullable().optional(),
+    distribution: z.array(TargetDistribution),
+    audience: TargetAudience,
+})
+export const UpdateFeatureConfigDto = z
     .object({
         status: z.enum(['active', 'inactive']).default('inactive'),
         targets: z
@@ -723,8 +703,7 @@ const UpdateFeatureConfigDto = z
             ),
     })
     .partial()
-    .passthrough()
-const CreateVariationDto = z.object({
+export const CreateVariationDto = z.object({
     key: z
         .string()
         .min(1)
@@ -737,20 +716,22 @@ const CreateVariationDto = z.object({
                 z.string(),
                 z.number(),
                 z.boolean(),
-                z.array(z.any()),
+                z.array(z.unknown()),
                 z.object({}).partial().passthrough(),
             ]),
         )
         .optional(),
 })
-const FeatureSettingsDto = z.object({
+export const FeatureSettingsDto = z.object({
     publicName: z.string().max(100),
     publicDescription: z.string().max(1000),
     optInEnabled: z.boolean(),
 })
-const FeatureSDKVisibilityDto = z
-    .object({ mobile: z.boolean(), client: z.boolean(), server: z.boolean() })
-    .passthrough()
+export const FeatureSDKVisibilityDto = z.object({
+    mobile: z.boolean(),
+    client: z.boolean(),
+    server: z.boolean(),
+})
 
 export const CreateFeatureDto = z.object({
     key: z
@@ -770,61 +751,55 @@ export const CreateFeatureDto = z.object({
     sdkVisibility: FeatureSDKVisibilityDto.optional(),
 })
 
-const Variation = z
-    .object({
-        key: z
-            .string()
-            .min(1)
-            .max(100)
-            .regex(/^[a-z0-9-_.]+$/),
-        name: z.string().min(1).max(100),
-        variables: z
-            .record(
-                z.union([
-                    z.string(),
-                    z.number(),
-                    z.boolean(),
-                    z.array(z.any()),
-                    z.object({}).partial().passthrough(),
-                ]),
-            )
-            .optional(),
-        _id: z.string(),
-    })
-    .passthrough()
-const FeatureSettings = z
-    .object({
-        publicName: z.string().max(100),
-        publicDescription: z.string().max(1000),
-        optInEnabled: z.boolean(),
-    })
-    .passthrough()
-const FeatureSDKVisibility = z
-    .object({ mobile: z.boolean(), client: z.boolean(), server: z.boolean() })
-    .passthrough()
-const Target = z
-    .object({
-        _id: z.string(),
-        name: z.string().optional(),
-        audience: TargetAudience,
-        rollout: Rollout.optional(),
-        distribution: z.array(TargetDistribution),
-        bucketingKey: z.string().optional(),
-    })
-    .passthrough()
-const FeatureConfig = z
-    .object({
-        _feature: z.string(),
-        _environment: z.string(),
-        _createdBy: z.string().optional(),
-        status: z.enum(['active', 'inactive']),
-        startedAt: z.string().datetime({ offset: true }).optional(),
-        updatedAt: z.string().datetime({ offset: true }),
-        targets: z.array(Target),
-        readonly: z.boolean(),
-        hasStaticConfig: z.boolean(),
-    })
-    .passthrough()
+export const Variation = z.object({
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
+    variables: z
+        .record(
+            z.union([
+                z.string(),
+                z.number(),
+                z.boolean(),
+                z.array(z.unknown()),
+                z.object({}).partial().passthrough(),
+            ]),
+        )
+        .optional(),
+    _id: z.string(),
+})
+const FeatureSettings = z.object({
+    publicName: z.string().max(100),
+    publicDescription: z.string().max(1000),
+    optInEnabled: z.boolean(),
+})
+const FeatureSDKVisibility = z.object({
+    mobile: z.boolean(),
+    client: z.boolean(),
+    server: z.boolean(),
+})
+export const Target = z.object({
+    _id: z.string(),
+    name: z.string().optional(),
+    audience: TargetAudience,
+    rollout: Rollout.nullable().optional(),
+    distribution: z.array(TargetDistribution),
+    bucketingKey: z.string().optional(),
+})
+export const FeatureConfig = z.object({
+    _feature: z.string(),
+    _environment: z.string(),
+    _createdBy: z.string().optional(),
+    status: z.enum(['active', 'inactive']),
+    startedAt: z.string().datetime({ offset: true }).optional(),
+    updatedAt: z.string().datetime({ offset: true }),
+    targets: z.array(Target),
+    readonly: z.boolean(),
+    hasStaticConfig: z.boolean(),
+})
 const AuditLogEntity = z
     .object({
         date: z.string().datetime({ offset: true }),
@@ -904,7 +879,7 @@ const UpdateVariationDto = z
                     z.string(),
                     z.number(),
                     z.boolean(),
-                    z.array(z.any()),
+                    z.array(z.unknown()),
                     z.object({}).partial().passthrough(),
                 ]),
             )
@@ -987,323 +962,301 @@ export const UpdateFeatureStatusDto = z.object({
 //     })
 //     .partial()
 //     .passthrough()
-// const LinkJiraIssueDto = z.object({ issueId: z.string() }).passthrough()
-// const JiraIssueLink = z.object({ issueId: z.string() }).passthrough()
-// const FeatureVariationDto = z
-//     .object({
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         name: z.string().min(1).max(100),
-//         variables: z
-//             .record(
-//                 z.union([
-//                     z.string(),
-//                     z.number(),
-//                     z.boolean(),
-//                     z.array(z.any()),
-//                     z.object({}).partial().passthrough(),
-//                 ]),
-//             )
-//             .optional(),
-//     })
-//     .passthrough()
-// const UpdateFeatureVariationDto = z
-//     .object({
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         name: z.string().min(1).max(100),
-//         variables: z.record(
-//             z.union([
-//                 z.string(),
-//                 z.number(),
-//                 z.boolean(),
-//                 z.array(z.any()),
-//                 z.object({}).partial().passthrough(),
-//             ]),
-//         ),
-//         _id: z.string(),
-//     })
-//     .partial()
-//     .passthrough()
-// const FeatureDataPoint = z
-//     .object({
-//         values: z.object({}).partial().passthrough(),
-//         date: z.string().datetime({ offset: true }),
-//     })
-//     .passthrough()
-// const ResultWithFeatureData = z
-//     .object({ evaluations: z.array(FeatureDataPoint) })
-//     .passthrough()
-// const ResultEvaluationsByHourDto = z
-//     .object({
-//         result: ResultWithFeatureData,
-//         cached: z.boolean(),
-//         updatedAt: z.string().datetime({ offset: true }),
-//     })
-//     .passthrough()
-// const ProjectDataPoint = z
-//     .object({ date: z.string().datetime({ offset: true }), value: z.number() })
-//     .passthrough()
-// const ResultsWithProjectData = z
-//     .object({ evaluations: z.array(ProjectDataPoint) })
-//     .passthrough()
-// const ResultProjectEvaluationsByHourDto = z
-//     .object({
-//         result: ResultsWithProjectData,
-//         cached: z.boolean(),
-//         updatedAt: z.string().datetime({ offset: true }),
-//     })
-//     .passthrough()
-// const ProjectUserProfile = z
-//     .object({
-//         _id: z.string(),
-//         _project: z.string(),
-//         a0_user: z.string(),
-//         dvcUserId: z.string().nullish(),
-//         createdAt: z.string().datetime({ offset: true }),
-//         updatedAt: z.string().datetime({ offset: true }),
-//     })
-//     .passthrough()
-// const UpdateUserProfileDto = z
-//     .object({ dvcUserId: z.string().nullable() })
-//     .partial()
-//     .passthrough()
-// const AllowedValue = z
-//     .object({ label: z.string(), value: z.object({}).partial().passthrough() })
-//     .passthrough()
-// const EnumSchema = z
-//     .object({
-//         allowedValues: z.array(AllowedValue),
-//         allowAdditionalValues: z.boolean(),
-//     })
-//     .passthrough()
-// const PropertySchema = z
-//     .object({
-//         schemaType: z.enum(['enum', null]),
-//         required: z.boolean(),
-//         enumSchema: EnumSchema,
-//     })
-//     .partial()
-//     .passthrough()
-// const CreateCustomPropertyDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         type: z.enum(['String', 'Boolean', 'Number']),
-//         propertyKey: z.string(),
-//         schema: PropertySchema.optional(),
-//     })
-//     .passthrough()
-// const CustomProperty = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         _id: z.string(),
-//         _project: z.string(),
-//         _createdBy: z.string(),
-//         propertyKey: z.string(),
-//         type: z.enum(['String', 'Boolean', 'Number']),
-//         createdAt: z.string().datetime({ offset: true }),
-//         updatedAt: z.string().datetime({ offset: true }),
-//         schema: PropertySchema.optional(),
-//         hasUsage: z.boolean().optional(),
-//     })
-//     .passthrough()
-// const UpdateCustomPropertyDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         propertyKey: z.string(),
-//         type: z.enum(['String', 'Boolean', 'Number']),
-//         schema: PropertySchema,
-//     })
-//     .partial()
-//     .passthrough()
-// const CreateMetricDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000).optional(),
-//         event: z.string(),
-//         dimension: z.enum([
-//             'COUNT_PER_UNIQUE_USER',
-//             'COUNT_PER_VARIABLE_EVALUATION',
-//             'SUM_PER_UNIQUE_USER',
-//             'AVERAGE_PER_UNIQUE_USER',
-//             'TOTAL_AVERAGE',
-//             'TOTAL_SUM',
-//         ]),
-//         optimize: z.enum(['increase', 'decrease']),
-//     })
-//     .passthrough()
-// const Metric = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000).optional(),
-//         _id: z.string(),
-//         _project: z.string(),
-//         source: z
-//             .enum([
-//                 'api',
-//                 'dashboard',
-//                 'importer',
-//                 'github.code_usages',
-//                 'github.pr_insights',
-//                 'gitlab.code_usages',
-//                 'gitlab.pr_insights',
-//                 'bitbucket.code_usages',
-//                 'bitbucket.pr_insights',
-//                 'terraform',
-//                 'cli',
-//                 'slack',
-//                 'mcp',
-//             ])
-//             .optional(),
-//         event: z.string(),
-//         dimension: z.enum([
-//             'COUNT_PER_UNIQUE_USER',
-//             'COUNT_PER_VARIABLE_EVALUATION',
-//             'SUM_PER_UNIQUE_USER',
-//             'AVERAGE_PER_UNIQUE_USER',
-//             'TOTAL_AVERAGE',
-//             'TOTAL_SUM',
-//         ]),
-//         optimize: z.enum(['increase', 'decrease']),
-//         createdAt: z.string().datetime({ offset: true }),
-//         updatedAt: z.string().datetime({ offset: true }),
-//     })
-//     .passthrough()
-// const UpdateMetricDto = z
-//     .object({
-//         name: z.string().min(1).max(100),
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000),
-//         event: z.string(),
-//         dimension: z.enum([
-//             'COUNT_PER_UNIQUE_USER',
-//             'COUNT_PER_VARIABLE_EVALUATION',
-//             'SUM_PER_UNIQUE_USER',
-//             'AVERAGE_PER_UNIQUE_USER',
-//             'TOTAL_AVERAGE',
-//             'TOTAL_SUM',
-//         ]),
-//         optimize: z.enum(['increase', 'decrease']),
-//     })
-//     .partial()
-//     .passthrough()
-// const VariationValues = z.object({}).partial().passthrough()
-// const DataPoint = z
-//     .object({
-//         date: z.string().datetime({ offset: true }),
-//         values: VariationValues,
-//     })
-//     .passthrough()
-// const VariationResult = z
-//     .object({
-//         key: z.string(),
-//         name: z.string(),
-//         numerator: z.number(),
-//         denominator: z.number(),
-//         rate: z.number(),
-//         avgValue: z.number().optional(),
-//         totalValue: z.number().optional(),
-//         stdev: z.number().optional(),
-//         percentDifference: z.number().nullable(),
-//         chanceToBeatControl: z.number().nullable(),
-//     })
-//     .passthrough()
-// const Result = z
-//     .object({
-//         dataSeries: z.array(DataPoint),
-//         variations: z.array(VariationResult),
-//     })
-//     .passthrough()
-// const MetricResult = z
-//     .object({
-//         result: Result,
-//         cached: z.boolean(),
-//         updatedAt: z.string().datetime({ offset: true }),
-//     })
-//     .passthrough()
-// const MetricAssociation = z
-//     .object({
-//         _project: z.string(),
-//         feature: Feature,
-//         metric: Metric,
-//         createdAt: z.string().datetime({ offset: true }),
-//     })
-//     .passthrough()
-// const CreateMetricAssociationDto = z
-//     .object({ metric: z.string(), feature: z.string() })
-//     .passthrough()
-// const UpdateOverrideDto = z
-//     .object({ environment: z.string(), variation: z.string() })
-//     .passthrough()
-// const Override = z
-//     .object({
-//         _project: z.string(),
-//         _environment: z.string(),
-//         _feature: z.string(),
-//         _variation: z.string(),
-//         dvcUserId: z.string(),
-//         createdAt: z.number(),
-//         updatedAt: z.number(),
-//         a0_user: z.string().optional(),
-//     })
-//     .passthrough()
-// const FeatureOverride = z
-//     .object({ _environment: z.string(), _variation: z.string() })
-//     .passthrough()
-// const OverrideResponse = z
-//     .object({ overrides: z.array(FeatureOverride) })
-//     .passthrough()
-// const FeatureOverrides = z
-//     .object({
-//         overrides: z.record(z.array(Override)),
-//         uniqueTeamMembers: z.number(),
-//     })
-//     .passthrough()
-// const UserOverride = z
-//     .object({
-//         _feature: z.string(),
-//         featureName: z.string(),
-//         _environment: z.string(),
-//         environmentName: z.string(),
-//         _variation: z.string(),
-//         variationName: z.string(),
-//     })
-//     .passthrough()
+const LinkJiraIssueDto = z.object({ issueId: z.string() })
+export const JiraIssueLink = z.object({ issueId: z.string() })
+export const FeatureVariationDto = z.object({
+    _id: z.string(),
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
+    variables: z
+        .record(
+            z.union([
+                z.string(),
+                z.number(),
+                z.boolean(),
+                z.array(z.unknown()),
+                z.object({}).partial().passthrough(),
+            ]),
+        )
+        .optional(),
+})
+export const UpdateFeatureVariationDto = z
+    .object({
+        _id: z.string(),
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/),
+        name: z.string().min(1).max(100),
+        variables: z.record(
+            z.union([
+                z.string(),
+                z.number(),
+                z.boolean(),
+                z.array(z.unknown()),
+                z.object({}).partial().passthrough(),
+            ]),
+        ),
+    })
+    .partial()
+const FeatureDataPoint = z.object({
+    values: z.object({}).partial().passthrough(),
+    date: z.string().datetime({ offset: true }),
+})
+const ResultWithFeatureData = z
+    .object({
+        evaluations: z.array(FeatureDataPoint),
+    })
+    .partial()
+export const ResultEvaluationsByHourDto = z.object({
+    result: ResultWithFeatureData,
+    cached: z.boolean(),
+    updatedAt: z.string().datetime({ offset: true }),
+})
+const ProjectDataPoint = z.object({
+    date: z.string().datetime({ offset: true }),
+    value: z.number(),
+})
+const ResultsWithProjectData = z
+    .object({
+        evaluations: z.array(ProjectDataPoint),
+    })
+    .partial()
+export const ResultProjectEvaluationsByHourDto = z.object({
+    result: ResultsWithProjectData,
+    cached: z.boolean(),
+    updatedAt: z.string().datetime({ offset: true }),
+})
+export const ProjectUserProfile = z.object({
+    _id: z.string(),
+    _project: z.string(),
+    a0_user: z.string(),
+    dvcUserId: z.string().nullish(),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+})
+export const UpdateProjectUserProfileDto = z.object({
+    dvcUserId: z.string().nullable(),
+})
+const UpdateUserProfileDto = z
+    .object({ dvcUserId: z.string().nullable() })
+    .partial()
+const AllowedValue = z.object({
+    label: z.string(),
+    value: z.object({}).partial().passthrough(),
+})
+const EnumSchema = z.object({
+    allowedValues: z.array(AllowedValue),
+    allowAdditionalValues: z.boolean(),
+})
+const PropertySchema = z
+    .object({
+        schemaType: z.enum(['enum']),
+        required: z.boolean(),
+        enumSchema: EnumSchema,
+    })
+    .partial()
+export const CreateCustomPropertyDto = z.object({
+    name: z.string().min(1).max(100),
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    type: z.enum(['String', 'Boolean', 'Number']),
+    propertyKey: z.string(),
+    schema: PropertySchema.optional(),
+})
+export const CustomProperty = z.object({
+    _id: z.string(),
+    _project: z.string(),
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
+    _createdBy: z.string(),
+    propertyKey: z.string(),
+    type: z.enum(['String', 'Boolean', 'Number']),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+    schema: PropertySchema.optional(),
+    hasUsage: z.boolean().optional(),
+})
+export const UpdateCustomPropertyDto = z
+    .object({
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/),
+        name: z.string().min(1).max(100),
+        propertyKey: z.string(),
+        type: z.enum(['String', 'Boolean', 'Number']),
+        schema: PropertySchema,
+    })
+    .partial()
+export const CreateMetricDto = z.object({
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
+    description: z.string().max(1000).optional(),
+    event: z.string(),
+    dimension: z.enum([
+        'COUNT_PER_UNIQUE_USER',
+        'COUNT_PER_VARIABLE_EVALUATION',
+        'SUM_PER_UNIQUE_USER',
+        'AVERAGE_PER_UNIQUE_USER',
+        'TOTAL_AVERAGE',
+        'TOTAL_SUM',
+    ]),
+    optimize: z.enum(['increase', 'decrease']),
+})
+export const Metric = z.object({
+    _id: z.string(),
+    _project: z.string(),
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
+    description: z.string().max(1000).optional(),
+    source: z
+        .enum([
+            'api',
+            'dashboard',
+            'importer',
+            'github.code_usages',
+            'github.pr_insights',
+            'gitlab.code_usages',
+            'gitlab.pr_insights',
+            'bitbucket.code_usages',
+            'bitbucket.pr_insights',
+            'terraform',
+            'cli',
+            'slack',
+            'mcp',
+        ])
+        .optional(),
+    event: z.string(),
+    dimension: z.enum([
+        'COUNT_PER_UNIQUE_USER',
+        'COUNT_PER_VARIABLE_EVALUATION',
+        'SUM_PER_UNIQUE_USER',
+        'AVERAGE_PER_UNIQUE_USER',
+        'TOTAL_AVERAGE',
+        'TOTAL_SUM',
+    ]),
+    optimize: z.enum(['increase', 'decrease']),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+})
+export const UpdateMetricDto = z
+    .object({
+        key: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(/^[a-z0-9-_.]+$/),
+        name: z.string().min(1).max(100),
+        description: z.string().max(1000),
+        event: z.string(),
+        dimension: z.enum([
+            'COUNT_PER_UNIQUE_USER',
+            'COUNT_PER_VARIABLE_EVALUATION',
+            'SUM_PER_UNIQUE_USER',
+            'AVERAGE_PER_UNIQUE_USER',
+            'TOTAL_AVERAGE',
+            'TOTAL_SUM',
+        ]),
+        optimize: z.enum(['increase', 'decrease']),
+    })
+    .partial()
+const VariationValues = z.object({}).partial()
+const DataPoint = z.object({
+    date: z.string().datetime({ offset: true }),
+    values: VariationValues,
+})
+const VariationResult = z.object({
+    key: z.string(),
+    name: z.string(),
+    numerator: z.number(),
+    denominator: z.number(),
+    rate: z.number(),
+    avgValue: z.number().optional(),
+    totalValue: z.number().optional(),
+    stdev: z.number().optional(),
+    percentDifference: z.number().nullable(),
+    chanceToBeatControl: z.number().nullable(),
+})
+const Result = z
+    .object({
+        dataSeries: z.array(DataPoint),
+        variations: z.array(VariationResult),
+    })
+    .partial()
+export const MetricResult = z.object({
+    result: Result,
+    cached: z.boolean(),
+    updatedAt: z.string().datetime({ offset: true }),
+})
+export const MetricAssociation = z.object({
+    _project: z.string(),
+    feature: Feature,
+    metric: Metric,
+    createdAt: z.string().datetime({ offset: true }),
+})
+export const CreateMetricAssociationDto = z.object({
+    metric: z.string(),
+    feature: z.string(),
+})
+export const DeleteMetricAssociationDto = z.object({
+    metric: z.string(),
+    feature: z.string(),
+})
+export const UpdateUserOverrideDto = z.object({
+    environment: z.string(),
+    variation: z.string(),
+})
+export const Override = z.object({
+    _project: z.string(),
+    _environment: z.string(),
+    _feature: z.string(),
+    _variation: z.string(),
+    dvcUserId: z.string(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    a0_user: z.string().optional(),
+})
+export const FeatureOverride = z.object({
+    _environment: z.string(),
+    _variation: z.string(),
+})
+export const OverrideResponse = z.object({
+    overrides: z.array(FeatureOverride),
+})
+export const FeatureOverrideResponse = z.object({
+    overrides: z.record(z.array(Override)),
+    uniqueTeamMembers: z.number(),
+})
+export const UserOverride = z.object({
+    _feature: z.string(),
+    featureName: z.string(),
+    _environment: z.string(),
+    environmentName: z.string(),
+    _variation: z.string(),
+    variationName: z.string(),
+})
 // const AudiencePatchAction = z
 //     .object({
 //         values: z.object({}).partial().passthrough(),
@@ -1490,12 +1443,10 @@ export const UpdateFeatureStatusDto = z.object({
 // const DynatraceIntegration = z
 //     .object({ environments: z.array(DynatraceEnvironment) })
 //     .passthrough()
-// const ReassociateVariableDto = z
-//     .object({
-//         key: z
-//             .string()
-//             .min(1)
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//     })
-//     .passthrough()
+export const ReassociateVariableDto = z.object({
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+})

@@ -1,8 +1,6 @@
 import { z } from 'zod'
+import { GetProjectsParams } from '../api/zodClientAPI'
 import {
-    CreateVariableDto,
-    UpdateVariableDto,
-    GetProjectsParams,
     CreateProjectDto,
     UpdateProjectDto,
     CreateEnvironmentDto,
@@ -14,7 +12,9 @@ import {
     UpdateFeatureConfigDto,
     CreateCustomPropertyDto,
     UpdateCustomPropertyDto,
-} from '../api/zodClientAPI'
+    CreateVariableDto,
+    UpdateVariableDto,
+} from '../api/zodSchemas'
 import { UpdateFeatureStatusDto } from '../api/schemas'
 
 // Zod schemas for MCP tool arguments

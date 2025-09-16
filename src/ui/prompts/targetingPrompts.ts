@@ -4,7 +4,7 @@ import { isRequired } from '../../utils/validators'
 import { variationChoices } from './variationPrompts'
 
 export const comparatorChoices = (input: Record<string, any>) => {
-    if (input.subType === 'appVersion') {
+    if (input.subType === 'appVersion' || input.subType === 'platformVersion') {
         return ['=', '!=', '>', '>=', '<', '<=', 'exist', '!exist']
     } else if (input.subType === 'audienceMatch') {
         return ['=', '!=']
