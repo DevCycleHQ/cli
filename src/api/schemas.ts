@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { GetProjectsParams } from './zodClientAPI'
 import {
     Variable,
     Variation,
@@ -36,6 +35,7 @@ import {
     CreateFeatureDto,
     UpdateFeatureDto,
     CreateVariableDto,
+    GetProjectsParams,
 } from './zodSchemas'
 
 export type Project = z.infer<typeof Project>

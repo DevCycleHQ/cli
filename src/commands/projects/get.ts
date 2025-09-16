@@ -1,5 +1,5 @@
 import { fetchProjects } from '../../api/projects'
-import { GetProjectsParams } from '../../api/zodClientAPI'
+import { GetProjectsParams } from '../../api/zodSchemas'
 import type { Project } from '../../api/schemas'
 import GetCommand from '../getCommand'
 
