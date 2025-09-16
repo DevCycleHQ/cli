@@ -135,11 +135,8 @@ export const ListVariablesArgsSchema = z.object({
         .describe('Filter by variable status'),
 })
 
-export const CreateVariableArgsSchema = z.object({
+export const CreateVariableArgsSchema = CreateVariableDto.extend({
     key: CreateVariableDto.shape.key.describe('Unique variable key'),
-    name: CreateVariableDto.shape.name,
-    description: CreateVariableDto.shape.description,
-    type: CreateVariableDto.shape.type,
     defaultValue: CreateVariableDto.shape.defaultValue.describe(
         'Default value for the variable, the data type of the defaultValue must match the variable.type',
     ),
