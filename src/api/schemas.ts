@@ -1,8 +1,6 @@
 import { z } from 'zod'
+import { GetProjectsParams } from './zodClientAPI'
 import {
-    Project,
-    Environment,
-    SDKKeys,
     Variable,
     Variation,
     Feature,
@@ -11,14 +9,14 @@ import {
     Target,
     Override,
     CustomProperty,
-    GetProjectsParams,
+    Environment,
+    SDKKeys,
+    UpdateFeatureStatusDto,
+    Project,
     CreateProjectDto,
     UpdateProjectDto,
     CreateEnvironmentDto,
     UpdateEnvironmentDto,
-    CreateFeatureDto,
-    UpdateFeatureDto,
-    CreateVariableDto,
     UpdateVariableDto,
     CreateVariationDto,
     UpdateFeatureConfigDto,
@@ -35,8 +33,10 @@ import {
     UpdateUserOverrideDto,
     UserOverride,
     FeatureOverride,
-} from './zodClientAPI'
-import { UpdateFeatureStatusDto } from './zodSchemas'
+    CreateFeatureDto,
+    UpdateFeatureDto,
+    CreateVariableDto,
+} from './zodSchemas'
 
 export type Project = z.infer<typeof Project>
 export type Environment = z.infer<typeof Environment>
