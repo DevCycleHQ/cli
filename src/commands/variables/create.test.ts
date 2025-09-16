@@ -74,6 +74,7 @@ describe('variables create', () => {
             server: true,
         },
         settings: {},
+        tags: [],
     }
     // Headless mode
     dvcTest()

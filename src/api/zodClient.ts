@@ -1,5 +1,11 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core'
 import { z } from 'zod'
+import {
+    CreateFeatureDto as CreateFeatureDtoV2,
+    UpdateFeatureDto as UpdateFeatureDtoV2,
+    Feature as FeatureV2,
+    Variable as VariableV2,
+} from './zodClientV2'
 
 /**
  * IMPORTANT: MCP Schema Compatibility
@@ -390,36 +396,40 @@ const CreateVariableDto = z.object({
     defaultValue: z.any().optional(),
     validationSchema: VariableValidationEntity.optional(),
 })
-const Variable = z.object({
-    name: z.string().max(100).optional(),
-    description: z.string().max(1000).optional(),
-    key: z
-        .string()
-        .max(100)
-        .regex(/^[a-z0-9-_.]+$/),
-    _id: z.string(),
-    _project: z.string(),
-    _feature: z.string().optional(),
-    type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
-    status: z.enum(['active', 'archived']),
-    defaultValue: z.any().optional(),
-    source: z.enum([
-        'api',
-        'dashboard',
-        'importer',
-        'github.code_usages',
-        'github.pr_insights',
-        'bitbucket.code_usages',
-        'bitbucket.pr_insights',
-        'terraform',
-        'cli',
-    ]),
-    _createdBy: z.string().optional(),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    validationSchema: VariableValidationEntity.optional(),
-    persistent: z.boolean().optional(),
-})
+// const Variable = z.object({
+//     name: z.string().max(100).optional(),
+//     description: z.string().max(1000).optional(),
+//     key: z
+//         .string()
+//         .max(100)
+//         .regex(/^[a-z0-9-_.]+$/),
+//     _id: z.string(),
+//     _project: z.string(),
+//     _feature: z.string().optional(),
+//     type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
+//     status: z.enum(['active', 'archived']),
+//     defaultValue: z.any().optional(),
+//     source: z.enum([
+//         'api',
+//         'dashboard',
+//         'importer',
+//         'github.code_usages',
+//         'github.pr_insights',
+//         'gitlab.code_usages',
+//         'gitlab.pr_insights',
+//         'bitbucket.code_usages',
+//         'bitbucket.pr_insights',
+//         'terraform',
+//         'cli',
+//         'slack',
+//         'mcp',
+//     ]),
+//     _createdBy: z.string().optional(),
+//     createdAt: z.string().datetime(),
+//     updatedAt: z.string().datetime(),
+//     validationSchema: VariableValidationEntity.optional(),
+//     persistent: z.boolean().optional(),
+// })
 const UpdateVariableDto = z
     .object({
         name: z.string().max(100),
@@ -470,32 +480,32 @@ const FeatureSDKVisibilityDto = z.object({
     client: z.boolean(),
     server: z.boolean(),
 })
-const CreateFeatureDto = z.object({
-    name: z.string().max(100),
-    key: z
-        .string()
-        .max(100)
-        .regex(/^[a-z0-9-_.]+$/),
-    description: z.string().max(1000).optional(),
-    variables: z
-        .array(z.union([CreateVariableDto, ReassociateVariableDto]))
-        .optional(),
-    configurations: z
-        .record(
-            z.string(),
-            z.object({
-                targets: z.array(z.unknown()).optional(),
-                status: z.string().optional(),
-            }),
-        )
-        .optional(),
-    variations: z.array(FeatureVariationDto.partial()).optional(),
-    controlVariation: z.string().optional(),
-    settings: FeatureSettingsDto.optional(),
-    sdkVisibility: FeatureSDKVisibilityDto.optional(),
-    type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
-    tags: z.array(z.string()).optional(),
-})
+// const CreateFeatureDto = z.object({
+//     name: z.string().max(100),
+//     key: z
+//         .string()
+//         .max(100)
+//         .regex(/^[a-z0-9-_.]+$/),
+//     description: z.string().max(1000).optional(),
+//     variables: z
+//         .array(z.union([CreateVariableDto, ReassociateVariableDto]))
+//         .optional(),
+//     configurations: z
+//         .record(
+//             z.string(),
+//             z.object({
+//                 targets: z.array(z.unknown()).optional(),
+//                 status: z.string().optional(),
+//             }),
+//         )
+//         .optional(),
+//     variations: z.array(FeatureVariationDto.partial()).optional(),
+//     controlVariation: z.string().optional(),
+//     settings: FeatureSettingsDto.optional(),
+//     sdkVisibility: FeatureSDKVisibilityDto.optional(),
+//     type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
+//     tags: z.array(z.string()).optional(),
+// })
 const Variation = z.object({
     key: z
         .string()
@@ -538,25 +548,25 @@ const PreconditionFailedErrorResponse = z.object({
     message: z.object({}).partial(),
     error: z.string(),
 })
-const UpdateFeatureDto = z
-    .object({
-        name: z.string().max(100),
-        key: z
-            .string()
-            .max(100)
-            .regex(/^[a-z0-9-_.]+$/),
-        description: z.string().max(1000),
-        variables: z.array(
-            z.union([CreateVariableDto, ReassociateVariableDto]),
-        ),
-        variations: z.array(FeatureVariationDto),
-        settings: FeatureSettingsDto,
-        sdkVisibility: FeatureSDKVisibilityDto,
-        type: z.enum(['release', 'experiment', 'permission', 'ops']),
-        tags: z.array(z.string()),
-        controlVariation: z.string(),
-    })
-    .partial()
+// const UpdateFeatureDto = z
+//     .object({
+//         name: z.string().max(100),
+//         key: z
+//             .string()
+//             .max(100)
+//             .regex(/^[a-z0-9-_.]+$/),
+//         description: z.string().max(1000),
+//         variables: z.array(
+//             z.union([CreateVariableDto, ReassociateVariableDto]),
+//         ),
+//         variations: z.array(FeatureVariationDto),
+//         settings: FeatureSettingsDto,
+//         sdkVisibility: FeatureSDKVisibilityDto,
+//         type: z.enum(['release', 'experiment', 'permission', 'ops']),
+//         tags: z.array(z.string()),
+//         controlVariation: z.string(),
+//     })
+//     .partial()
 const LinkJiraIssueDto = z.object({ issueId: z.string() })
 const JiraIssueLink = z.object({ issueId: z.string() })
 const UpdateFeatureVariationDto = z
@@ -665,51 +675,51 @@ const ResultSummaryDto = z.object({
     cached: z.boolean(),
     updatedAt: z.string().datetime(),
 })
-const Feature = z.object({
-    name: z.string().max(100),
-    key: z
-        .string()
-        .max(100)
-        .regex(/^[a-z0-9-_.]+$/),
-    description: z.string().max(1000).optional(),
-    _id: z.string(),
-    _project: z.string(),
-    source: z.enum([
-        'api',
-        'dashboard',
-        'importer',
-        'github.code_usages',
-        'github.pr_insights',
-        'bitbucket.code_usages',
-        'bitbucket.pr_insights',
-        'terraform',
-        'cli',
-    ]),
-    type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
-    status: z.enum(['active', 'complete', 'archived']).optional(),
-    configurations: z.array(FeatureConfig.partial()).optional(),
-    _createdBy: z.string().optional(),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    variations: z.array(Variation),
-    controlVariation: z.string(),
-    variables: z.array(Variable),
-    tags: z.array(z.string()).optional(),
-    ldLink: z.string().optional(),
-    readonly: z.boolean(),
-    settings: FeatureSettings.partial().optional(),
-    sdkVisibility: FeatureSDKVisibility.optional(),
-    staleness: z
-        .object({
-            stale: z.boolean(),
-            updatedAt: z.string().datetime().optional(),
-            disabled: z.boolean().optional(),
-            snoozedUntil: z.string().datetime().optional(),
-            reason: z.string().optional(),
-            metaData: z.record(z.string(), z.unknown()).optional(),
-        })
-        .optional(),
-})
+// const Feature = z.object({
+//     name: z.string().max(100),
+//     key: z
+//         .string()
+//         .max(100)
+//         .regex(/^[a-z0-9-_.]+$/),
+//     description: z.string().max(1000).optional(),
+//     _id: z.string(),
+//     _project: z.string(),
+//     source: z.enum([
+//         'api',
+//         'dashboard',
+//         'importer',
+//         'github.code_usages',
+//         'github.pr_insights',
+//         'bitbucket.code_usages',
+//         'bitbucket.pr_insights',
+//         'terraform',
+//         'cli',
+//     ]),
+//     type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
+//     status: z.enum(['active', 'complete', 'archived']).optional(),
+//     configurations: z.array(FeatureConfig.partial()).optional(),
+//     _createdBy: z.string().optional(),
+//     createdAt: z.string().datetime(),
+//     updatedAt: z.string().datetime(),
+//     variations: z.array(Variation),
+//     controlVariation: z.string(),
+//     variables: z.array(Variable),
+//     tags: z.array(z.string()).optional(),
+//     ldLink: z.string().optional(),
+//     readonly: z.boolean(),
+//     settings: FeatureSettings.partial().optional(),
+//     sdkVisibility: FeatureSDKVisibility.optional(),
+//     staleness: z
+//         .object({
+//             stale: z.boolean(),
+//             updatedAt: z.string().datetime().optional(),
+//             disabled: z.boolean().optional(),
+//             snoozedUntil: z.string().datetime().optional(),
+//             reason: z.string().optional(),
+//             metaData: z.record(z.string(), z.unknown()).optional(),
+//         })
+//         .optional(),
+// })
 const FeatureDataPoint = z.object({
     values: z.object({}).partial(),
     date: z.string().datetime(),
@@ -881,7 +891,7 @@ const MetricResult = z.object({
 })
 const MetricAssociation = z.object({
     _project: z.string(),
-    feature: Feature,
+    feature: FeatureV2,
     metric: Metric,
     createdAt: z.string().datetime(),
 })
@@ -936,7 +946,7 @@ const UserOverride = z.object({
 })
 const UserOverrides = z.array(UserOverride)
 
-export const schemas = {
+export {
     EdgeDBSettings,
     ColorSettings,
     OptInSettings,
@@ -970,21 +980,21 @@ export const schemas = {
     UpdateAudienceDto,
     VariableValidationEntity,
     CreateVariableDto,
-    Variable,
+    VariableV2 as Variable,
     UpdateVariableDto,
     UpdateVariableStatusDto,
     ReassociateVariableDto,
     FeatureVariationDto,
     FeatureSettingsDto,
     FeatureSDKVisibilityDto,
-    CreateFeatureDto,
+    CreateFeatureDtoV2 as CreateFeatureDto,
     Variation,
     CreateVariationDto,
     FeatureSettings,
     FeatureSDKVisibility,
-    Feature,
+    FeatureV2 as Feature,
     PreconditionFailedErrorResponse,
-    UpdateFeatureDto,
+    UpdateFeatureDtoV2 as UpdateFeatureDto,
     LinkJiraIssueDto,
     JiraIssueLink,
     UpdateFeatureVariationDto,
@@ -1021,6 +1031,7 @@ export const schemas = {
     UpdateUserOverrideDto,
     Override,
     Overrides,
+    FeatureOverride,
     FeatureOverrideResponse,
     UserOverride,
     UserOverrides,
@@ -1861,7 +1872,7 @@ const endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: CreateFeatureDto,
+                schema: CreateFeatureDtoV2,
             },
             {
                 name: 'project',
@@ -1869,7 +1880,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Feature,
+        response: FeatureV2,
         errors: [
             {
                 status: 400,
@@ -1943,7 +1954,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: z.array(Feature),
+        response: z.array(FeatureV2),
         errors: [
             {
                 status: 400,
@@ -2270,7 +2281,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Feature,
+        response: FeatureV2,
         errors: [
             {
                 status: 400,
@@ -2372,7 +2383,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Feature,
+        response: FeatureV2,
         errors: [
             {
                 status: 400,
@@ -2410,7 +2421,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Feature,
+        response: FeatureV2,
         errors: [
             {
                 status: 401,
@@ -2432,7 +2443,7 @@ const endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: UpdateFeatureDto,
+                schema: UpdateFeatureDtoV2,
             },
             {
                 name: 'key',
@@ -2445,7 +2456,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Feature,
+        response: FeatureV2,
         errors: [
             {
                 status: 400,
@@ -2635,7 +2646,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: z.array(Feature),
+        response: z.array(FeatureV2),
         errors: [
             {
                 status: 400,
@@ -3220,7 +3231,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Variable,
+        response: VariableV2,
         errors: [
             {
                 status: 400,
@@ -3294,7 +3305,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: z.array(Variable),
+        response: z.array(VariableV2),
         errors: [
             {
                 status: 400,
@@ -3327,7 +3338,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Variable,
+        response: VariableV2,
         errors: [
             {
                 status: 401,
@@ -3361,7 +3372,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Variable,
+        response: VariableV2,
         errors: [
             {
                 status: 400,
@@ -3432,7 +3443,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Variable,
+        response: VariableV2,
         errors: [
             {
                 status: 400,
@@ -3692,7 +3703,7 @@ const v2Endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: CreateFeatureDto,
+                schema: CreateFeatureDtoV2,
             },
             {
                 name: 'project',
@@ -3700,7 +3711,7 @@ const v2Endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Feature,
+        response: FeatureV2,
         errors: [
             {
                 status: 400,
@@ -3799,7 +3810,7 @@ const v2Endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: z.array(Feature),
+        response: z.array(FeatureV2),
         errors: [
             {
                 status: 400,
@@ -3825,7 +3836,7 @@ const v2Endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: UpdateFeatureDto,
+                schema: UpdateFeatureDtoV2,
             },
             {
                 name: 'feature',
@@ -3838,7 +3849,7 @@ const v2Endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Feature,
+        response: FeatureV2,
         errors: [
             {
                 status: 400,
@@ -3884,7 +3895,7 @@ const v2Endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: Feature,
+        response: FeatureV2,
         errors: [
             {
                 status: 401,
@@ -3898,13 +3909,42 @@ const v2Endpoints = makeApi([
     },
 ])
 
-export const api = new Zodios(endpoints)
-export const v2Api = new Zodios(v2Endpoints)
+/**
+ * TypeScript workaround for large Zodios endpoint definitions.
+ *
+ * Our ~80+ endpoints exceed TypeScript's inference limits, causing "type exceeds
+ * maximum length" errors. This pattern breaks the inference chain while maintaining
+ * full type safety through ReturnType<> extraction.
+ */
+const _createApiClient: (baseUrl?: string, options?: ZodiosOptions) => any = (
+    baseUrl?: string,
+    options?: ZodiosOptions,
+) => (baseUrl ? new Zodios(baseUrl, endpoints, options) : new Zodios(endpoints))
+const _createV2ApiClient: (baseUrl?: string, options?: ZodiosOptions) => any = (
+    baseUrl?: string,
+    options?: ZodiosOptions,
+) =>
+    baseUrl
+        ? new Zodios(baseUrl, v2Endpoints, options)
+        : new Zodios(v2Endpoints)
 
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-    return new Zodios(baseUrl, endpoints, options)
+type ApiClientType = ReturnType<typeof _createApiClient>
+type V2ApiClientType = ReturnType<typeof _createV2ApiClient>
+
+// Create the actual instances with explicit type annotation
+export const api: ApiClientType = _createApiClient()
+export const v2Api: V2ApiClientType = _createV2ApiClient()
+
+export function createApiClient(
+    baseUrl: string,
+    options?: ZodiosOptions,
+): ApiClientType {
+    return _createApiClient(baseUrl, options)
 }
 
-export function createV2ApiClient(baseUrl: string, options?: ZodiosOptions) {
-    return new Zodios(baseUrl, v2Endpoints, options)
+export function createV2ApiClient(
+    baseUrl: string,
+    options?: ZodiosOptions,
+): V2ApiClientType {
+    return _createV2ApiClient(baseUrl, options)
 }

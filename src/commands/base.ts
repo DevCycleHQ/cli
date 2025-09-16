@@ -15,6 +15,7 @@ import {
 import { ConfigManager } from '../utils/configManager'
 import { ApiAuth } from '../auth/ApiAuth'
 import { fetchProjects } from '../api/projects'
+import type { Project } from '../api/schemas'
 import { promptForProject } from '../ui/promptForProject'
 import inquirer from 'inquirer'
 import Writer from '../ui/writer'
@@ -25,7 +26,6 @@ import z, { ZodObject, ZodTypeAny, ZodError } from 'zod'
 import { getTokenExpiry } from '../auth/utils'
 import SSOAuth from '../auth/SSOAuth'
 import TableOutput from '../ui/tableOutput'
-import { Project } from '../api/schemas'
 
 export default abstract class Base extends Command {
     static hidden = true
@@ -237,7 +237,7 @@ export default abstract class Base extends Command {
         const projects = await fetchProjects(this.authToken)
 
         const findProjectByKey = (key: string) => {
-            const project = projects.find((proj) => proj.key === key)
+            const project = projects.find((proj: Project) => proj.key === key)
             if (!project) {
                 throw new Error(
                     `Project details could not be retrieved for configured project: ${key}`,

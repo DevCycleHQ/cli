@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import { fetchProjects } from '../../api/projects'
+import type { Project } from '../../api/schemas'
 import Base from '../base'
 
 export default class ListProjects extends Base {
@@ -11,7 +12,7 @@ export default class ListProjects extends Base {
 
     public async run(): Promise<void> {
         const projects = await fetchProjects(this.authToken)
-        const projectsKeys = projects.map((project) => {
+        const projectsKeys = projects.map((project: Project) => {
             if (project.key === this.projectKey) {
                 return chalk.green(`  "${project.key}"`)
             }

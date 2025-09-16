@@ -33,7 +33,7 @@ export const environmentChoices = async (
             input.projectKey,
         )
         choices = environments
-            .map((environment) => {
+            .map((environment: Environment) => {
                 const name = environment.name
                     ? `${environment.name} ${chalk.dim(`(${environment.key})`)}`
                     : environment.key
@@ -43,7 +43,7 @@ export const environmentChoices = async (
                 }
             })
             .sort(
-                (a, b) =>
+                (a: { value: Environment }, b: { value: Environment }) =>
                     EnvironmentTypeValue[a.value.type] -
                     EnvironmentTypeValue[b.value.type],
             )

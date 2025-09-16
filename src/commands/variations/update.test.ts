@@ -119,8 +119,8 @@ describe('variations update', () => {
         readonly: false,
         settings: {
             optInEnabled: false,
-            publicName: '',
-            publicDescription: '',
+            publicName: 'Public Feature Name',
+            publicDescription: 'Public Feature Description',
         },
         sdkVisibility: {
             client: false,

@@ -1,41 +1,73 @@
 import { z } from 'zod'
-import { schemas } from './zodClient'
+import {
+    Project,
+    Environment,
+    SDKKeys,
+    Variable,
+    Variation,
+    Feature,
+    FeatureConfig,
+    Audience,
+    Target,
+    Override,
+    CustomProperty,
+    GetProjectsParams,
+    CreateProjectDto,
+    UpdateProjectDto,
+    CreateEnvironmentDto,
+    UpdateEnvironmentDto,
+    CreateFeatureDto,
+    UpdateFeatureDto,
+    CreateVariableDto,
+    UpdateVariableDto,
+    CreateVariationDto,
+    UpdateFeatureConfigDto,
+    UpdateTargetDto,
+    AudienceOperatorWithAudienceMatchFilter,
+    AllFilter,
+    OptInFilter,
+    UserFilter,
+    UserCountryFilter,
+    UserAppVersionFilter,
+    UserPlatformVersionFilter,
+    UserCustomFilter,
+    AudienceMatchFilter,
+    UpdateUserOverrideDto,
+    UserOverride,
+    FeatureOverride,
+} from './zodClient'
 
-export type Project = z.infer<typeof schemas.Project>
-export type Environment = z.infer<typeof schemas.Environment>
-export type SDKKeys = z.infer<typeof schemas.SDKKeys>
-export type Variable = z.infer<typeof schemas.Variable>
-export type Variation = z.infer<typeof schemas.Variation>
-export type Feature = z.infer<typeof schemas.Feature>
-export type FeatureConfig = z.infer<typeof schemas.FeatureConfig>
-export type Audience = z.infer<typeof schemas.Audience>
-export type Target = z.infer<typeof schemas.Target>
-export type Override = z.infer<typeof schemas.Override>
-export type CustomProperty = z.infer<typeof schemas.CustomProperty>
-export type GetProjectsParams = z.infer<typeof schemas.GetProjectsParams>
-export const GetProjectsParams = schemas.GetProjectsParams
+export type Project = z.infer<typeof Project>
+export type Environment = z.infer<typeof Environment>
+export type SDKKeys = z.infer<typeof SDKKeys>
+export type Variable = z.infer<typeof Variable>
+export type Variation = z.infer<typeof Variation>
+export type Feature = z.infer<typeof Feature>
+export type FeatureConfig = z.infer<typeof FeatureConfig>
+export type Audience = z.infer<typeof Audience>
+export type Target = z.infer<typeof Target>
+export type Override = z.infer<typeof Override>
+export type CustomProperty = z.infer<typeof CustomProperty>
+export type GetProjectsParams = z.infer<typeof GetProjectsParams>
+export { GetProjectsParams }
 
-export type CreateProjectParams = z.infer<typeof schemas.CreateProjectDto>
-export const CreateProjectDto = schemas.CreateProjectDto
+export type CreateProjectParams = z.infer<typeof CreateProjectDto>
+export { CreateProjectDto }
 
-export type UpdateProjectParams = z.infer<typeof schemas.UpdateProjectDto>
-export const UpdateProjectDto = schemas.UpdateProjectDto
+export type UpdateProjectParams = z.infer<typeof UpdateProjectDto>
+export { UpdateProjectDto }
 
-export type CreateEnvironmentParams = z.infer<
-    typeof schemas.CreateEnvironmentDto
->
-export const CreateEnvironmentDto = schemas.CreateEnvironmentDto
+export type CreateEnvironmentParams = z.infer<typeof CreateEnvironmentDto>
+export { CreateEnvironmentDto }
 
-export type UpdateEnvironmentParams = z.infer<
-    typeof schemas.UpdateEnvironmentDto
->
-export const UpdateEnvironmentDto = schemas.UpdateEnvironmentDto
+export type UpdateEnvironmentParams = z.infer<typeof UpdateEnvironmentDto>
+export { UpdateEnvironmentDto }
 
-export type CreateFeatureParams = z.infer<typeof schemas.CreateFeatureDto>
-export const CreateFeatureDto = schemas.CreateFeatureDto
+export type CreateFeatureParams = z.infer<typeof CreateFeatureDto>
+export { CreateFeatureDto }
 
-export type UpdateFeatureParams = z.infer<typeof schemas.UpdateFeatureDto>
-export const UpdateFeatureDto = schemas.UpdateFeatureDto
+export type UpdateFeatureParams = z.infer<typeof UpdateFeatureDto>
+export { UpdateFeatureDto }
 
 export const UpdateFeatureStatusDto = z.object({
     status: z.enum(['active', 'complete', 'archived']),
@@ -44,60 +76,58 @@ export const UpdateFeatureStatusDto = z.object({
 
 export type UpdateFeatureStatusParams = z.infer<typeof UpdateFeatureStatusDto>
 
-export type CreateVariableParams = z.infer<typeof schemas.CreateVariableDto>
-export const CreateVariableDto = schemas.CreateVariableDto
+export type CreateVariableParams = z.infer<typeof CreateVariableDto>
+export { CreateVariableDto }
 
-export type UpdateVariableParams = z.infer<typeof schemas.UpdateVariableDto>
-export const UpdateVariableDto = schemas.UpdateVariableDto
+export type UpdateVariableParams = z.infer<typeof UpdateVariableDto>
+export { UpdateVariableDto }
 
-export type CreateVariationParams = z.infer<typeof schemas.CreateVariationDto>
-export const CreateVariationDto = schemas.CreateVariationDto
+export type CreateVariationParams = z.infer<typeof CreateVariationDto>
+export { CreateVariationDto }
 
 export type UpdateVariationParams = Partial<CreateVariationParams>
 
-export type UpdateFeatureConfigDto = z.infer<
-    typeof schemas.UpdateFeatureConfigDto
->
-export const UpdateFeatureConfigDto = schemas.UpdateFeatureConfigDto
+export type UpdateFeatureConfigDto = z.infer<typeof UpdateFeatureConfigDto>
+export { UpdateFeatureConfigDto }
 
-export type UpdateTargetParams = z.infer<typeof schemas.UpdateTargetDto>
-export const UpdateTargetDto = schemas.UpdateTargetDto
+export type UpdateTargetParams = z.infer<typeof UpdateTargetDto>
+export { UpdateTargetDto }
 
 export type AudienceOperatorWithAudienceMatchFilter = z.infer<
-    typeof schemas.AudienceOperatorWithAudienceMatchFilter
+    typeof AudienceOperatorWithAudienceMatchFilter
 >
 export type Filters = z.infer<
-    typeof schemas.AudienceOperatorWithAudienceMatchFilter.shape.filters
+    typeof AudienceOperatorWithAudienceMatchFilter.shape.filters
 >
 
-export type AllFilter = z.infer<typeof schemas.AllFilter>
-export const AllFilterSchema = schemas.AllFilter
+export type AllFilter = z.infer<typeof AllFilter>
+export const AllFilterSchema = AllFilter
 
-export type OptInFilter = z.infer<typeof schemas.OptInFilter>
-export const OptInFilterSchema = schemas.OptInFilter
+export type OptInFilter = z.infer<typeof OptInFilter>
+export const OptInFilterSchema = OptInFilter
 
-export type UserFilter = z.infer<typeof schemas.UserFilter>
-export const UserFilterSchema = schemas.UserFilter
+export type UserFilter = z.infer<typeof UserFilter>
+export const UserFilterSchema = UserFilter
 
-export type UserCountryFilter = z.infer<typeof schemas.UserCountryFilter>
-export const UserCountryFilterSchema = schemas.UserCountryFilter
+export type UserCountryFilter = z.infer<typeof UserCountryFilter>
+export const UserCountryFilterSchema = UserCountryFilter
 
-export type UserAppVersionFilter = z.infer<typeof schemas.UserAppVersionFilter>
-export const UserAppVersionFilterSchema = schemas.UserAppVersionFilter
+export type UserAppVersionFilter = z.infer<typeof UserAppVersionFilter>
+export const UserAppVersionFilterSchema = UserAppVersionFilter
 
 export type UserPlatformVersionFilter = z.infer<
-    typeof schemas.UserPlatformVersionFilter
+    typeof UserPlatformVersionFilter
 >
-export const UserPlatformVersionFilterSchema = schemas.UserPlatformVersionFilter
+export const UserPlatformVersionFilterSchema = UserPlatformVersionFilter
 
-export type UserCustomFilter = z.infer<typeof schemas.UserCustomFilter>
-export const UserCustomFilterSchema = schemas.UserCustomFilter
+export type UserCustomFilter = z.infer<typeof UserCustomFilter>
+export const UserCustomFilterSchema = UserCustomFilter
 
-export type AudienceMatchFilter = z.infer<typeof schemas.AudienceMatchFilter>
-export const AudienceMatchFilterSchema = schemas.AudienceMatchFilter
+export type AudienceMatchFilter = z.infer<typeof AudienceMatchFilter>
+export const AudienceMatchFilterSchema = AudienceMatchFilter
 
-export type UpdateOverrideParams = z.infer<typeof schemas.UpdateUserOverrideDto>
-export const UpdateOverrideDto = schemas.UpdateUserOverrideDto
+export type UpdateOverrideParams = z.infer<typeof UpdateUserOverrideDto>
+export const UpdateOverrideDto = UpdateUserOverrideDto
 
 export type Filter =
     | AllFilter
@@ -109,4 +139,5 @@ export type Filter =
     | UserCustomFilter
     | AudienceMatchFilter
 
-export type UserOverride = z.infer<typeof schemas.UserOverride>
+export type UserOverride = z.infer<typeof UserOverride>
+export type FeatureOverride = z.infer<typeof FeatureOverride>

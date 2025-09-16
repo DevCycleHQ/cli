@@ -10,7 +10,7 @@ import Base from '../base'
 import { fetchFeatureOverridesForUser } from '../../api/overrides'
 import { fetchEnvironmentByKey } from '../../api/environments'
 import { fetchVariationByKey } from '../../api/variations'
-import { UserOverride } from '../../api/schemas'
+import { UserOverride, FeatureOverride } from '../../api/schemas'
 import { fetchUserProfile } from '../../api/userProfile'
 
 export default class DetailedOverrides extends Base {
@@ -93,7 +93,8 @@ export default class DetailedOverrides extends Base {
             environmentKey,
         )
         const override = overrides.overrides.find(
-            (override) => override._environment === environment._id,
+            (override: FeatureOverride) =>
+                override._environment === environment._id,
         )
 
         if (!override) {
