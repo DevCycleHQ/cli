@@ -180,7 +180,7 @@ export function registerVariableTools(
         'delete_variable',
         {
             description: [
-                'Delete a variable.',
+                'Delete a variable. Variable must be removed from its associated _feature before it can be deleted.',
                 '⚠️ CRITICAL: Deleting a variable will remove it from ALL environments including production.',
                 'ALWAYS confirm with the user before deleting any variable.',
                 'Include dashboard link in the response.',
