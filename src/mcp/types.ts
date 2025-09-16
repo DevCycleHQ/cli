@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { GetProjectsParams } from '../api/zodClientAPI'
 import {
+    GetProjectsParams,
     CreateProjectDto,
     UpdateProjectDto,
     CreateEnvironmentDto,
@@ -135,38 +135,40 @@ export const ListVariablesArgsSchema = z.object({
         .describe('Filter by variable status'),
 })
 
-export const CreateVariableArgsSchema = z.object({
+export const CreateVariableArgsSchema = CreateVariableDto.extend({
     key: CreateVariableDto.shape.key.describe('Unique variable key'),
-    name: CreateVariableDto.shape.name,
-    description: CreateVariableDto.shape.description.optional(),
-    type: CreateVariableDto.shape.type,
-    defaultValue: CreateVariableDto.shape.defaultValue
-        .optional()
-        .describe(
-            'Default value for the variable, the data type of the defaultValue must match the variable.type',
-        ),
-    _feature: CreateVariableDto.shape._feature
-        .optional()
-        .describe(
-            'Feature key or ID to associate with this variable, only set if variable is associated with a feature',
-        ),
-    validationSchema: VariableValidationSchema.optional().describe(
+    defaultValue: CreateVariableDto.shape.defaultValue.describe(
+        'Default value for the variable, the data type of the defaultValue must match the variable.type',
+    ),
+    _feature: CreateVariableDto.shape._feature.describe(
+        'Feature key or ID to associate with this variable, only set if variable is associated with a feature',
+    ),
+    validationSchema: CreateVariableDto.shape.validationSchema.describe(
         'Validation schema for variable values',
     ),
+    persistent: CreateVariableDto.shape.persistent.describe(
+        'indicating if the variable is intended to be long-lived within a feature',
+    ),
+    tags: CreateVariableDto.shape.tags.describe('Tags to organize variables'),
 })
 
-export const UpdateVariableArgsSchema = z.object({
+export const UpdateVariableArgsSchema = UpdateVariableDto.extend({
     key: z
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
         .describe('key to identify variable'),
-    name: UpdateVariableDto.shape.name.optional(),
-    description: UpdateVariableDto.shape.description.optional(),
-    type: UpdateVariableDto.shape.type.optional(),
-    validationSchema: VariableValidationSchema.optional().describe(
-        'Validation schema for variable values',
-    ),
+    validationSchema: UpdateVariableDto.shape.validationSchema
+        .optional()
+        .describe('Validation schema for variable values'),
+    persistent: UpdateVariableDto.shape.persistent
+        .optional()
+        .describe(
+            'indicating if the variable is intended to be long-lived within a feature',
+        ),
+    tags: UpdateVariableDto.shape.tags
+        .optional()
+        .describe('Tags to organize variables'),
 })
 
 export const DeleteVariableArgsSchema = z.object({
@@ -177,13 +179,11 @@ export const DeleteFeatureArgsSchema = z.object({
     key: z.string().describe('key to identify feature to delete'),
 })
 
-export const ListProjectsArgsSchema = z.object({
+export const ListProjectsArgsSchema = GetProjectsParams.extend({
     page: GetProjectsParams.shape.page.describe('Page number for pagination'),
     perPage: GetProjectsParams.shape.perPage.describe(
         'Number of items per page',
     ),
-    sortBy: GetProjectsParams.shape.sortBy,
-    sortOrder: GetProjectsParams.shape.sortOrder,
     search: GetProjectsParams.shape.search.describe(
         'Search term to filter projects by "name" or "key"',
     ),
@@ -192,30 +192,22 @@ export const ListProjectsArgsSchema = z.object({
     ),
 })
 
-export const CreateProjectArgsSchema = z.object({
-    name: CreateProjectDto.shape.name,
-    key: CreateProjectDto.shape.key.describe(
-        'Unique project key (lowercase letters, numbers, dots, dashes, underscores only)',
-    ),
-    description: CreateProjectDto.shape.description,
+export const CreateProjectArgsSchema = CreateProjectDto.extend({
+    key: CreateProjectDto.shape.key.describe('Unique project key'),
     color: CreateProjectDto.shape.color.describe(
         'Project color in hex format (e.g., #FF0000)',
     ),
-    settings: CreateProjectDto.shape.settings,
 })
 
-export const UpdateProjectArgsSchema = z.object({
+export const UpdateProjectArgsSchema = UpdateProjectDto.extend({
     key: z
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
         .describe('key to identify project to update'),
-    name: UpdateProjectDto.shape.name,
-    description: UpdateProjectDto.shape.description,
-    color: UpdateProjectDto.shape.color.describe(
-        'Updated project color in hex format (e.g., #FF0000)',
-    ),
-    settings: UpdateProjectDto.shape.settings,
+    color: UpdateProjectDto.shape.color
+        .describe('Updated project color in hex format (e.g., #FF0000)')
+        .optional(),
 })
 
 export const ListEnvironmentsArgsSchema = z.object({
@@ -254,28 +246,18 @@ export const GetSdkKeysArgsSchema = z.object({
         .describe('type of SDK key to retrieve'),
 })
 
-export const CreateEnvironmentArgsSchema = z.object({
-    name: CreateEnvironmentDto.shape.name,
-    key: CreateEnvironmentDto.shape.key.describe(
-        'Unique environment key (lowercase letters, numbers, dots, dashes, underscores only)',
-    ),
-    description: CreateEnvironmentDto.shape.description,
+export const CreateEnvironmentArgsSchema = CreateEnvironmentDto.extend({
+    key: CreateEnvironmentDto.shape.key.describe('Unique environment key'),
     color: CreateEnvironmentDto.shape.color.describe(
         'Environment color in hex format (e.g., #FF0000)',
     ),
-    type: CreateEnvironmentDto.shape.type,
-    settings: CreateEnvironmentDto.shape.settings,
 })
 
-export const UpdateEnvironmentArgsSchema = z.object({
+export const UpdateEnvironmentArgsSchema = UpdateEnvironmentDto.extend({
     key: z.string().describe('key to identify environment to update'),
-    name: UpdateEnvironmentDto.shape.name,
-    description: UpdateEnvironmentDto.shape.description,
-    color: UpdateEnvironmentDto.shape.color.describe(
-        'color in hex format (e.g., #FF0000)',
-    ),
-    type: UpdateEnvironmentDto.shape.type,
-    settings: UpdateEnvironmentDto.shape.settings,
+    color: UpdateEnvironmentDto.shape.color
+        .describe('color in hex format (e.g., #FF0000)')
+        .optional(),
 })
 
 export const SetFeatureTargetingArgsSchema = z.object({
@@ -286,12 +268,8 @@ export const SetFeatureTargetingArgsSchema = z.object({
     enabled: z.boolean().describe('enable or disable targeting'),
 })
 
-export const CreateFeatureArgsSchema = z.object({
-    name: CreateFeatureDto.shape.name,
-    key: CreateFeatureDto.shape.key.describe(
-        'Unique feature key (lowercase letters, numbers, dots, dashes, underscores only)',
-    ),
-    description: CreateFeatureDto.shape.description,
+export const CreateFeatureArgsSchema = CreateFeatureDto.extend({
+    key: CreateFeatureDto.shape.key.describe('Unique feature key'),
     variables: CreateFeatureDto.shape.variables.describe(
         'Array of variables to create or reassociate with this feature',
     ),
@@ -310,57 +288,56 @@ export const CreateFeatureArgsSchema = z.object({
     sdkVisibility: CreateFeatureDto.shape.sdkVisibility.describe(
         'SDK Type Visibility Settings for mobile, client, and server SDKs',
     ),
-    type: CreateFeatureDto.shape.type,
     tags: CreateFeatureDto.shape.tags.describe('Tags to organize features'),
 })
 
-export const UpdateFeatureArgsSchema = z.object({
+export const UpdateFeatureArgsSchema = UpdateFeatureDto.extend({
     key: z
         .string()
         .min(1)
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
         .describe('key to identify feature to update'),
-    name: UpdateFeatureDto.shape.name,
-    description: UpdateFeatureDto.shape.description,
-    type: UpdateFeatureDto.shape.type,
-    tags: UpdateFeatureDto.shape.tags.describe(
-        'Updated tags to organize features',
-    ),
-    configurations: UpdateFeatureDto.shape.configurations.describe(
-        'Updated environment-specific targeting configurations (key-value map of environment keys to config)',
-    ),
-    variables: UpdateFeatureDto.shape.variables.describe(
-        'Updated array of variables for this feature',
-    ),
-    variations: UpdateFeatureDto.shape.variations.describe(
-        'Updated array of variations for this feature',
-    ),
-    settings: UpdateFeatureDto.shape.settings.describe(
-        'Updated feature-level settings configuration',
-    ),
-    sdkVisibility: UpdateFeatureDto.shape.sdkVisibility.describe(
-        'Updated SDK Type Visibility Settings for mobile, client, and server SDKs',
-    ),
-    controlVariation: UpdateFeatureDto.shape.controlVariation.describe(
-        'Updated control variation key for Metrics',
-    ),
-    // summary: UpdateFeatureDto.shape.summary.describe(
+    configurations: UpdateFeatureDto.shape.configurations
+        .optional()
+        .describe(
+            'Updated environment-specific targeting configurations (key-value map of environment keys to config)',
+        ),
+    variables: UpdateFeatureDto.shape.variables
+        .optional()
+        .describe('Updated array of variables for this feature'),
+    variations: UpdateFeatureDto.shape.variations
+        .optional()
+        .describe('Updated array of variations for this feature'),
+    settings: UpdateFeatureDto.shape.settings
+        .optional()
+        .describe('Updated feature-level settings configuration'),
+    sdkVisibility: UpdateFeatureDto.shape.sdkVisibility
+        .optional()
+        .describe(
+            'Updated SDK Type Visibility Settings for mobile, client, and server SDKs',
+        ),
+    controlVariation: UpdateFeatureDto.shape.controlVariation
+        .optional()
+        .describe('Updated control variation key for Metrics'),
+    tags: UpdateFeatureDto.shape.tags
+        .optional()
+        .describe('Updated tags to organize features'),
+    // summary: UpdateFeatureDto.shape.summary.optional().describe(
     //     'Updated feature summary',
     // ),
-    // staleness: UpdateFeatureDto.shape.staleness.describe(
+    // staleness: UpdateFeatureDto.shape.staleness.optional().describe(
     //     'Updated feature staleness configuration',
     // ),
 })
 
-export const UpdateFeatureStatusArgsSchema = z.object({
+export const UpdateFeatureStatusArgsSchema = UpdateFeatureStatusDto.extend({
     key: z
         .string()
         .min(1)
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
         .describe('key to identify feature to update'),
-    status: UpdateFeatureStatusDto.shape.status,
     staticVariation: UpdateFeatureStatusDto.shape.staticVariation.describe(
         'The variation key or ID to serve if the status is set to complete',
     ),
@@ -396,34 +373,20 @@ export const ListVariationsArgsSchema = z.object({
 const variablesDescription =
     'key-value map of variable keys to their values for this variation. { "variableKey1": "value1", "variableKey2": false }'
 
-export const CreateVariationArgsSchema = z.object({
+export const CreateVariationArgsSchema = CreateVariationDto.extend({
     feature_key: z.string().describe('Feature key to create variation for'),
-    key: CreateVariationDto.shape.key.describe(
-        'Unique variation key (lowercase letters, numbers, dots, dashes, underscores only)',
-    ),
-    name: CreateVariationDto.shape.name,
+    key: CreateVariationDto.shape.key.describe('Unique variation key'),
     variables:
         CreateVariationDto.shape.variables.describe(variablesDescription),
 })
 
-export const UpdateVariationArgsSchema = z.object({
+export const UpdateVariationArgsSchema = UpdateFeatureVariationDto.extend({
+    key: UpdateFeatureVariationDto.shape.key.describe('Updated variation key'),
     feature_key: z
         .string()
         .describe('Feature key that the variation belongs to'),
     variation_key: z.string().describe('key to identify variation to update'),
-    key: UpdateFeatureVariationDto.shape.key.describe(
-        'Updated variation key (lowercase letters, numbers, dots, dashes, underscores only)',
-    ),
-    name: UpdateFeatureVariationDto.shape.name,
-    variables: z
-        .record(
-            z.union([
-                z.string(),
-                z.number(),
-                z.boolean(),
-                z.record(z.unknown()),
-            ]),
-        )
+    variables: UpdateFeatureVariationDto.shape.variables
         .optional()
         .describe(`Updated ${variablesDescription}`),
 })
@@ -436,15 +399,14 @@ export const ListFeatureTargetingArgsSchema = z.object({
         .describe('Optional environment key to filter targeting by'),
 })
 
-export const UpdateFeatureTargetingArgsSchema = z.object({
+export const UpdateFeatureTargetingArgsSchema = UpdateFeatureConfigDto.extend({
     feature_key: z.string().describe('Feature key to update targeting for'),
     environment_key: z
         .string()
         .describe('Environment key to update targeting in'),
-    status: UpdateFeatureConfigDto.shape.status,
-    targets: UpdateFeatureConfigDto.shape.targets.describe(
-        'Updated array of targeting rules/targets for the feature',
-    ),
+    targets: UpdateFeatureConfigDto.shape.targets
+        .optional()
+        .describe('Updated array of targeting rules/targets for the feature'),
 })
 
 export const GetFeatureAuditLogHistoryArgsSchema = z.object({
@@ -573,26 +535,21 @@ export const ListCustomPropertiesArgsSchema = z.object({
     createdBy: z.string().optional().describe('Filter by creator user ID'),
 })
 
-export const UpsertCustomPropertyArgsSchema = z.object({
-    name: CreateCustomPropertyDto.shape.name,
+export const UpsertCustomPropertyArgsSchema = CreateCustomPropertyDto.extend({
     key: CreateCustomPropertyDto.shape.key.describe(
-        'Unique custom property key (lowercase letters, numbers, dots, dashes, underscores only)',
+        'Unique custom property key',
     ),
-    type: CreateCustomPropertyDto.shape.type,
     propertyKey: CreateCustomPropertyDto.shape.propertyKey.describe(
         'Property key to associate with the custom property',
     ),
 })
 
-export const UpdateCustomPropertyArgsSchema = z.object({
+export const UpdateCustomPropertyArgsSchema = UpdateCustomPropertyDto.extend({
     key: z
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
         .describe('key to identify property to update'),
-    name: UpdateCustomPropertyDto.shape.name,
-    propertyKey: UpdateCustomPropertyDto.shape.propertyKey,
-    type: UpdateCustomPropertyDto.shape.type,
 })
 
 export const DeleteCustomPropertyArgsSchema = z.object({

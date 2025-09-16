@@ -17,6 +17,24 @@
  */
 import { z } from 'zod'
 
+export const GetProjectsParams = z.object({
+    page: z.number().gte(1).optional().default(1),
+    perPage: z.number().gte(1).lte(1000).optional().default(100),
+    sortBy: z
+        .enum([
+            'createdAt',
+            'updatedAt',
+            'name',
+            'key',
+            'createdBy',
+            'propertyKey',
+        ])
+        .optional()
+        .default('createdAt'),
+    sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
+    search: z.string().optional(),
+    createdBy: z.string().optional(),
+})
 export const ResultSummaryDto = z.object({
     result: z
         .object({
@@ -71,7 +89,7 @@ const ObfuscationSettingsDTO = z
 const DynatraceProjectSettingsDTO = z
     .object({
         enabled: z.boolean(),
-        environmentMap: z.object({}).partial().passthrough(),
+        environmentMap: z.record(z.unknown()),
     })
     .partial()
     .passthrough()
@@ -86,25 +104,23 @@ export const ProjectSettingsDTO = z
         dynatrace: DynatraceProjectSettingsDTO,
     })
     .passthrough()
-export const CreateProjectDto = z
-    .object({
-        name: z.string().min(1).max(100),
-        key: z
-            .string()
-            .min(1)
-            .max(100)
-            .regex(/^[a-z0-9-_.]+$/),
-        description: z.string().max(1000).optional(),
-        color: z
-            .string()
-            .max(9)
-            .regex(
-                /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
-            )
-            .optional(),
-        settings: ProjectSettingsDTO.optional(),
-    })
-    .passthrough()
+export const CreateProjectDto = z.object({
+    key: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
+    description: z.string().max(1000).optional(),
+    color: z
+        .string()
+        .max(9)
+        .regex(
+            /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/,
+        )
+        .optional(),
+    settings: ProjectSettingsDTO.optional(),
+})
 const EdgeDBSettings = z.object({ enabled: z.boolean() })
 const ColorSettings = z.object({ primary: z.string(), secondary: z.string() })
 const OptInSettings = z.object({
@@ -113,7 +129,7 @@ const OptInSettings = z.object({
     description: z.string(),
     imageURL: z.string(),
     colors: ColorSettings,
-    poweredByAlignment: z.object({}).partial().passthrough(),
+    poweredByAlignment: z.record(z.unknown()),
 })
 const SDKTypeVisibilitySettings = z.object({
     enabledInFeatureSettings: z.boolean(),
@@ -153,7 +169,7 @@ const StalenessSettings = z
 const DynatraceProjectSettings = z
     .object({
         enabled: z.boolean(),
-        environmentMap: z.object({}).partial().passthrough(),
+        environmentMap: z.record(z.unknown()),
     })
     .passthrough()
 export const ProjectSettings = z
@@ -194,36 +210,14 @@ export const Project = z
             .optional(),
     })
     .passthrough()
-// const BadRequestErrorResponse = z
-//     .object({
-//         statusCode: z.number(),
-//         message: z.object({}).partial().passthrough(),
-//         error: z.string(),
-//     })
-//     .passthrough()
-// const ConflictErrorResponse = z
-//     .object({
-//         statusCode: z.number(),
-//         message: z.object({}).partial().passthrough(),
-//         error: z.string(),
-//         errorType: z.string(),
-//     })
-//     .passthrough()
-// const NotFoundErrorResponse = z
-//     .object({
-//         statusCode: z.number(),
-//         message: z.object({}).partial().passthrough(),
-//         error: z.string(),
-//     })
-//     .passthrough()
 export const UpdateProjectDto = z
     .object({
-        name: z.string().min(1).max(100),
         key: z
             .string()
             .min(1)
             .max(100)
             .regex(/^[a-z0-9-_.]+$/),
+        name: z.string().min(1).max(100),
         description: z.string().max(1000),
         color: z
             .string()
@@ -234,13 +228,6 @@ export const UpdateProjectDto = z
         settings: ProjectSettingsDTO,
     })
     .partial()
-// const CannotDeleteLastItemErrorResponse = z
-//     .object({
-//         statusCode: z.number(),
-//         message: z.object({}).partial().passthrough(),
-//         error: z.string(),
-//     })
-//     .passthrough()
 // const UpdateProjectSettingsDto = z
 //     .object({ settings: ProjectSettings })
 //     .passthrough()
@@ -294,19 +281,19 @@ const FeatureStalenessEntity = z
         reason: z
             .enum(['released', 'unused', 'unmodifiedShort', 'unmodifiedLong'])
             .optional(),
-        metaData: z.object({}).partial().passthrough().optional(),
+        metaData: z.record(z.unknown()).optional(),
     })
     .passthrough()
 const EnvironmentSettings = z
     .object({ appIconURI: z.string().max(2048) })
     .partial()
 export const CreateEnvironmentDto = z.object({
-    name: z.string().min(1).max(100),
     key: z
         .string()
         .min(1)
         .max(100)
         .regex(/^[a-z0-9-_.]+$/),
+    name: z.string().min(1).max(100),
     description: z.string().max(1000).optional(),
     color: z
         .string()
@@ -355,12 +342,12 @@ export const Environment = z.object({
 })
 export const UpdateEnvironmentDto = z
     .object({
-        name: z.string().min(1).max(100),
         key: z
             .string()
             .min(1)
             .max(100)
             .regex(/^[a-z0-9-_.]+$/),
+        name: z.string().min(1).max(100),
         description: z.string().max(1000),
         color: z
             .string()
@@ -550,7 +537,7 @@ export const UpdateAudienceDto = z
         tags: z.array(z.string()),
     })
     .partial()
-// const AudienceEnvironments = z.object({}).partial().passthrough()
+// const AudienceEnvironments = z.record(z.unknown())
 // const AudienceFeature = z
 //     .object({
 //         key: z
@@ -575,17 +562,18 @@ const VariableValidationEntity = z.object({
     exampleValue: z.any(),
 })
 export const CreateVariableDto = z.object({
-    name: z.string().min(1).max(100).optional(),
-    description: z.string().max(1000).optional(),
     key: z
         .string()
         .min(1)
         .max(100)
         .regex(/^[a-z0-9-_.]+$/),
-    _feature: z.string().optional(),
+    name: z.string().min(1).max(100).optional(),
+    description: z.string().max(1000).optional(),
     type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
     defaultValue: z.any().optional(),
+    _feature: z.string().optional(),
     validationSchema: VariableValidationEntity.optional(),
+    persistent: z.boolean().optional(),
     tags: z.array(z.string()).optional(),
 })
 // Remove defaultValue from CreateVariableDto for Features V2 endpoints
@@ -630,13 +618,13 @@ export const Variable = z
     .passthrough()
 export const UpdateVariableDto = z
     .object({
-        name: z.string().min(1).max(100),
-        description: z.string().max(1000),
         key: z
             .string()
             .min(1)
             .max(100)
             .regex(/^[a-z0-9-_.]+$/),
+        name: z.string().min(1).max(100),
+        description: z.string().max(1000),
         type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
         validationSchema: VariableValidationEntity,
         persistent: z.boolean(),
@@ -697,7 +685,6 @@ export const UpdateFeatureConfigDto = z
         status: z.enum(['active', 'inactive']).default('inactive'),
         targets: z
             .array(UpdateTargetDto)
-            .optional()
             .describe(
                 'Setting an empty array will remove all targets for this configuration',
             ),
@@ -717,7 +704,7 @@ export const CreateVariationDto = z.object({
                 z.number(),
                 z.boolean(),
                 z.array(z.unknown()),
-                z.object({}).partial().passthrough(),
+                z.record(z.unknown()),
             ]),
         )
         .optional(),
@@ -765,7 +752,7 @@ export const Variation = z.object({
                 z.number(),
                 z.boolean(),
                 z.array(z.unknown()),
-                z.object({}).partial().passthrough(),
+                z.record(z.unknown()),
             ]),
         )
         .optional(),
@@ -804,10 +791,10 @@ const AuditLogEntity = z
     .object({
         date: z.string().datetime({ offset: true }),
         a0_user: z.string(),
-        changes: z.array(z.object({}).partial().passthrough()),
+        changes: z.array(z.record(z.unknown())),
     })
     .passthrough()
-// const FeatureStaleness = z.object({}).partial().passthrough()
+// const FeatureStaleness = z.record(z.unknown())
 const Link = z.object({ url: z.string(), title: z.string() }).passthrough()
 const FeatureSummary = z
     .object({
@@ -858,9 +845,7 @@ export const Feature = z
         sdkVisibility: FeatureSDKVisibility.optional(),
         configurations: z.array(FeatureConfig.partial()).optional(),
         latestUpdate: AuditLogEntity.optional(),
-        changeRequests: z
-            .array(z.object({}).partial().passthrough())
-            .optional(),
+        changeRequests: z.array(z.record(z.unknown())).optional(),
         staleness: FeatureStalenessEntity.optional(),
         summary: FeatureSummary.partial().optional(),
     })
@@ -880,7 +865,7 @@ const UpdateVariationDto = z
                     z.number(),
                     z.boolean(),
                     z.array(z.unknown()),
-                    z.object({}).partial().passthrough(),
+                    z.record(z.unknown()),
                 ]),
             )
             .optional(),
@@ -929,15 +914,15 @@ export const UpdateFeatureStatusDto = z.object({
 //             .optional(),
 //         name: z.string().min(1).max(100).optional(),
 //         description: z.string().max(1000).optional(),
-//         variables: z.object({}).partial().passthrough(),
-//         environments: z.object({}).partial().passthrough(),
+//         variables: z.record(z.unknown()),
+//         environments: z.record(z.unknown()),
 //         readonly: z.boolean(),
 //         type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
 //         tags: z.array(z.string()).optional(),
 //         controlVariation: z.string().optional(),
 //         settings: FeatureSettingsDto.optional(),
 //         sdkVisibility: FeatureSDKVisibilityDto.optional(),
-//         staleness: z.object({}).partial().passthrough().optional(),
+//         staleness: z.record(z.unknown()).optional(),
 //         summary: UpdateFeatureSummaryDto.optional(),
 //     })
 //     .passthrough()
@@ -955,10 +940,10 @@ export const UpdateFeatureStatusDto = z.object({
 //         controlVariation: z.string(),
 //         settings: FeatureSettingsDto,
 //         sdkVisibility: FeatureSDKVisibilityDto,
-//         staleness: z.object({}).partial().passthrough(),
+//         staleness: z.record(z.unknown()),
 //         summary: UpdateFeatureSummaryDto,
-//         variables: z.object({}).partial().passthrough(),
-//         environments: z.object({}).partial().passthrough(),
+//         variables: z.record(z.unknown()),
+//         environments: z.record(z.unknown()),
 //     })
 //     .partial()
 //     .passthrough()
@@ -979,7 +964,7 @@ export const FeatureVariationDto = z.object({
                 z.number(),
                 z.boolean(),
                 z.array(z.unknown()),
-                z.object({}).partial().passthrough(),
+                z.record(z.unknown()),
             ]),
         )
         .optional(),
@@ -999,13 +984,13 @@ export const UpdateFeatureVariationDto = z
                 z.number(),
                 z.boolean(),
                 z.array(z.unknown()),
-                z.object({}).partial().passthrough(),
+                z.record(z.unknown()),
             ]),
         ),
     })
     .partial()
 const FeatureDataPoint = z.object({
-    values: z.object({}).partial().passthrough(),
+    values: z.record(z.unknown()),
     date: z.string().datetime({ offset: true }),
 })
 const ResultWithFeatureData = z
@@ -1048,7 +1033,7 @@ const UpdateUserProfileDto = z
     .partial()
 const AllowedValue = z.object({
     label: z.string(),
-    value: z.object({}).partial().passthrough(),
+    value: z.record(z.unknown()),
 })
 const EnumSchema = z.object({
     allowedValues: z.array(AllowedValue),
@@ -1259,7 +1244,7 @@ export const UserOverride = z.object({
 })
 // const AudiencePatchAction = z
 //     .object({
-//         values: z.object({}).partial().passthrough(),
+//         values: z.record(z.unknown()),
 //         filterIndex: z.string(),
 //     })
 //     .passthrough()
@@ -1276,12 +1261,12 @@ export const UserOverride = z.object({
 //     .object({
 //         snoozedUntil: z.string(),
 //         disabled: z.boolean(),
-//         metaData: z.object({}).partial().passthrough(),
+//         metaData: z.record(z.unknown()),
 //     })
 //     .partial()
 //     .passthrough()
-// const Reviewers = z.object({}).partial().passthrough()
-// const ReviewReason = z.object({}).partial().passthrough()
+// const Reviewers = z.record(z.unknown())
+// const ReviewReason = z.record(z.unknown())
 // const FeatureDetails = z
 //     .object({
 //         key: z
@@ -1325,7 +1310,7 @@ export const UserOverride = z.object({
 //     .object({
 //         path: z.string(),
 //         method: z.literal('PATCH'),
-//         body: z.object({}).partial().passthrough(),
+//         body: z.record(z.unknown()),
 //     })
 //     .passthrough()
 // const FeatureChangeRequest = z
@@ -1342,7 +1327,7 @@ export const UserOverride = z.object({
 //             'rejected',
 //             'cancelled',
 //         ]),
-//         changes: z.array(z.object({}).partial().passthrough()).optional(),
+//         changes: z.array(z.record(z.unknown())).optional(),
 //         operation: z.enum([
 //             'featureUpdate',
 //             'featureStatusUpdate',
@@ -1373,7 +1358,7 @@ export const UserOverride = z.object({
 //     .object({
 //         name: z.string().min(1).max(100),
 //         description: z.string().max(1000).optional(),
-//         outputFormat: z.object({}).partial().passthrough().optional(),
+//         outputFormat: z.record(z.unknown()).optional(),
 //         _feature: z.string().optional(),
 //         _environments: z.array(z.string()).optional(),
 //         events: z.array(z.string()),
@@ -1410,7 +1395,7 @@ export const UserOverride = z.object({
 //         createdBy: z.string().optional(),
 //         createdAt: z.string().datetime({ offset: true }),
 //         updatedAt: z.string().datetime({ offset: true }),
-//         outputFormat: z.object({}).partial().passthrough().optional(),
+//         outputFormat: z.record(z.unknown()).optional(),
 //         _slackIntegration: z.string().optional(),
 //     })
 //     .passthrough()
@@ -1422,7 +1407,7 @@ export const UserOverride = z.object({
 //         _environments: z.array(z.string()),
 //         events: z.array(z.string()).optional(),
 //         url: z.string().optional(),
-//         outputFormat: z.object({}).partial().passthrough().optional(),
+//         outputFormat: z.record(z.unknown()).optional(),
 //     })
 //     .passthrough()
 // const CreateDynatraceIntegrationDto = z
