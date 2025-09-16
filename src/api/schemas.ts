@@ -35,7 +35,8 @@ import {
     UpdateUserOverrideDto,
     UserOverride,
     FeatureOverride,
-} from './zodClient'
+} from './zodClientAPI'
+import { UpdateFeatureStatusDto } from './zodSchemas'
 
 export type Project = z.infer<typeof Project>
 export type Environment = z.infer<typeof Environment>
@@ -69,12 +70,8 @@ export { CreateFeatureDto }
 export type UpdateFeatureParams = z.infer<typeof UpdateFeatureDto>
 export { UpdateFeatureDto }
 
-export const UpdateFeatureStatusDto = z.object({
-    status: z.enum(['active', 'complete', 'archived']),
-    staticVariation: z.string().optional(),
-})
-
 export type UpdateFeatureStatusParams = z.infer<typeof UpdateFeatureStatusDto>
+export { UpdateFeatureStatusDto }
 
 export type CreateVariableParams = z.infer<typeof CreateVariableDto>
 export { CreateVariableDto }

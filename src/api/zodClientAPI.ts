@@ -1,11 +1,13 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core'
 import { z } from 'zod'
 import {
-    CreateFeatureDto as CreateFeatureDtoV2,
-    UpdateFeatureDto as UpdateFeatureDtoV2,
-    Feature as FeatureV2,
-    Variable as VariableV2,
-} from './zodClientV2'
+    CreateFeatureDto,
+    UpdateFeatureDto,
+    Feature,
+    Variable,
+    UpdateFeatureStatusDto,
+    CreateVariableDto,
+} from './zodSchemas'
 
 /**
  * IMPORTANT: MCP Schema Compatibility
@@ -384,52 +386,6 @@ const VariableValidationEntity = z.object({
     description: z.string(),
     exampleValue: z.any(),
 })
-const CreateVariableDto = z.object({
-    name: z.string().max(100).optional(),
-    description: z.string().max(1000).optional(),
-    key: z
-        .string()
-        .max(100)
-        .regex(/^[a-z0-9-_.]+$/),
-    _feature: z.string().optional(),
-    type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
-    defaultValue: z.any().optional(),
-    validationSchema: VariableValidationEntity.optional(),
-})
-// const Variable = z.object({
-//     name: z.string().max(100).optional(),
-//     description: z.string().max(1000).optional(),
-//     key: z
-//         .string()
-//         .max(100)
-//         .regex(/^[a-z0-9-_.]+$/),
-//     _id: z.string(),
-//     _project: z.string(),
-//     _feature: z.string().optional(),
-//     type: z.enum(['String', 'Boolean', 'Number', 'JSON']),
-//     status: z.enum(['active', 'archived']),
-//     defaultValue: z.any().optional(),
-//     source: z.enum([
-//         'api',
-//         'dashboard',
-//         'importer',
-//         'github.code_usages',
-//         'github.pr_insights',
-//         'gitlab.code_usages',
-//         'gitlab.pr_insights',
-//         'bitbucket.code_usages',
-//         'bitbucket.pr_insights',
-//         'terraform',
-//         'cli',
-//         'slack',
-//         'mcp',
-//     ]),
-//     _createdBy: z.string().optional(),
-//     createdAt: z.string().datetime(),
-//     updatedAt: z.string().datetime(),
-//     validationSchema: VariableValidationEntity.optional(),
-//     persistent: z.boolean().optional(),
-// })
 const UpdateVariableDto = z
     .object({
         name: z.string().max(100),
@@ -480,32 +436,6 @@ const FeatureSDKVisibilityDto = z.object({
     client: z.boolean(),
     server: z.boolean(),
 })
-// const CreateFeatureDto = z.object({
-//     name: z.string().max(100),
-//     key: z
-//         .string()
-//         .max(100)
-//         .regex(/^[a-z0-9-_.]+$/),
-//     description: z.string().max(1000).optional(),
-//     variables: z
-//         .array(z.union([CreateVariableDto, ReassociateVariableDto]))
-//         .optional(),
-//     configurations: z
-//         .record(
-//             z.string(),
-//             z.object({
-//                 targets: z.array(z.unknown()).optional(),
-//                 status: z.string().optional(),
-//             }),
-//         )
-//         .optional(),
-//     variations: z.array(FeatureVariationDto.partial()).optional(),
-//     controlVariation: z.string().optional(),
-//     settings: FeatureSettingsDto.optional(),
-//     sdkVisibility: FeatureSDKVisibilityDto.optional(),
-//     type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
-//     tags: z.array(z.string()).optional(),
-// })
 const Variation = z.object({
     key: z
         .string()
@@ -548,25 +478,6 @@ const PreconditionFailedErrorResponse = z.object({
     message: z.object({}).partial(),
     error: z.string(),
 })
-// const UpdateFeatureDto = z
-//     .object({
-//         name: z.string().max(100),
-//         key: z
-//             .string()
-//             .max(100)
-//             .regex(/^[a-z0-9-_.]+$/),
-//         description: z.string().max(1000),
-//         variables: z.array(
-//             z.union([CreateVariableDto, ReassociateVariableDto]),
-//         ),
-//         variations: z.array(FeatureVariationDto),
-//         settings: FeatureSettingsDto,
-//         sdkVisibility: FeatureSDKVisibilityDto,
-//         type: z.enum(['release', 'experiment', 'permission', 'ops']),
-//         tags: z.array(z.string()),
-//         controlVariation: z.string(),
-//     })
-//     .partial()
 const LinkJiraIssueDto = z.object({ issueId: z.string() })
 const JiraIssueLink = z.object({ issueId: z.string() })
 const UpdateFeatureVariationDto = z
@@ -675,51 +586,6 @@ const ResultSummaryDto = z.object({
     cached: z.boolean(),
     updatedAt: z.string().datetime(),
 })
-// const Feature = z.object({
-//     name: z.string().max(100),
-//     key: z
-//         .string()
-//         .max(100)
-//         .regex(/^[a-z0-9-_.]+$/),
-//     description: z.string().max(1000).optional(),
-//     _id: z.string(),
-//     _project: z.string(),
-//     source: z.enum([
-//         'api',
-//         'dashboard',
-//         'importer',
-//         'github.code_usages',
-//         'github.pr_insights',
-//         'bitbucket.code_usages',
-//         'bitbucket.pr_insights',
-//         'terraform',
-//         'cli',
-//     ]),
-//     type: z.enum(['release', 'experiment', 'permission', 'ops']).optional(),
-//     status: z.enum(['active', 'complete', 'archived']).optional(),
-//     configurations: z.array(FeatureConfig.partial()).optional(),
-//     _createdBy: z.string().optional(),
-//     createdAt: z.string().datetime(),
-//     updatedAt: z.string().datetime(),
-//     variations: z.array(Variation),
-//     controlVariation: z.string(),
-//     variables: z.array(Variable),
-//     tags: z.array(z.string()).optional(),
-//     ldLink: z.string().optional(),
-//     readonly: z.boolean(),
-//     settings: FeatureSettings.partial().optional(),
-//     sdkVisibility: FeatureSDKVisibility.optional(),
-//     staleness: z
-//         .object({
-//             stale: z.boolean(),
-//             updatedAt: z.string().datetime().optional(),
-//             disabled: z.boolean().optional(),
-//             snoozedUntil: z.string().datetime().optional(),
-//             reason: z.string().optional(),
-//             metaData: z.record(z.string(), z.unknown()).optional(),
-//         })
-//         .optional(),
-// })
 const FeatureDataPoint = z.object({
     values: z.object({}).partial(),
     date: z.string().datetime(),
@@ -891,7 +757,7 @@ const MetricResult = z.object({
 })
 const MetricAssociation = z.object({
     _project: z.string(),
-    feature: FeatureV2,
+    feature: Feature,
     metric: Metric,
     createdAt: z.string().datetime(),
 })
@@ -980,21 +846,21 @@ export {
     UpdateAudienceDto,
     VariableValidationEntity,
     CreateVariableDto,
-    VariableV2 as Variable,
+    Variable,
     UpdateVariableDto,
     UpdateVariableStatusDto,
     ReassociateVariableDto,
     FeatureVariationDto,
     FeatureSettingsDto,
     FeatureSDKVisibilityDto,
-    CreateFeatureDtoV2 as CreateFeatureDto,
+    CreateFeatureDto,
     Variation,
     CreateVariationDto,
     FeatureSettings,
     FeatureSDKVisibility,
-    FeatureV2 as Feature,
+    Feature,
     PreconditionFailedErrorResponse,
-    UpdateFeatureDtoV2 as UpdateFeatureDto,
+    UpdateFeatureDto,
     LinkJiraIssueDto,
     JiraIssueLink,
     UpdateFeatureVariationDto,
@@ -1872,7 +1738,7 @@ const endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: CreateFeatureDtoV2,
+                schema: CreateFeatureDto,
             },
             {
                 name: 'project',
@@ -1880,7 +1746,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: FeatureV2,
+        response: Feature,
         errors: [
             {
                 status: 400,
@@ -1914,17 +1780,27 @@ const endpoints = makeApi([
             {
                 name: 'page',
                 type: 'Query',
-                schema: z.number().gte(1).optional().default(1),
+                schema: z.number().min(1).optional().default(1),
             },
             {
                 name: 'perPage',
                 type: 'Query',
-                schema: z.number().gte(1).lte(1000).optional().default(100),
+                schema: z.number().min(1).max(1000).optional().default(100),
             },
             {
                 name: 'sortBy',
                 type: 'Query',
-                schema: z.string().optional().default('createdAt'),
+                schema: z
+                    .enum([
+                        'createdAt',
+                        'updatedAt',
+                        'name',
+                        'key',
+                        'createdBy',
+                        'propertyKey',
+                    ])
+                    .optional()
+                    .default('createdAt'),
             },
             {
                 name: 'sortOrder',
@@ -1934,7 +1810,20 @@ const endpoints = makeApi([
             {
                 name: 'search',
                 type: 'Query',
-                schema: z.string().optional(),
+                schema: z.string().min(3).optional(),
+            },
+            {
+                name: 'staleness',
+                type: 'Query',
+                schema: z
+                    .enum([
+                        'all',
+                        'unused',
+                        'released',
+                        'unmodified',
+                        'notStale',
+                    ])
+                    .optional(),
             },
             {
                 name: 'createdBy',
@@ -1949,12 +1838,17 @@ const endpoints = makeApi([
                     .optional(),
             },
             {
+                name: 'status',
+                type: 'Query',
+                schema: z.enum(['active', 'complete', 'archived']).optional(),
+            },
+            {
                 name: 'project',
                 type: 'Path',
                 schema: z.string(),
             },
         ],
-        response: z.array(FeatureV2),
+        response: z.array(Feature),
         errors: [
             {
                 status: 400,
@@ -2281,7 +2175,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: FeatureV2,
+        response: Feature,
         errors: [
             {
                 status: 400,
@@ -2383,7 +2277,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: FeatureV2,
+        response: Feature,
         errors: [
             {
                 status: 400,
@@ -2421,7 +2315,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: FeatureV2,
+        response: Feature,
         errors: [
             {
                 status: 401,
@@ -2443,7 +2337,7 @@ const endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: UpdateFeatureDtoV2,
+                schema: UpdateFeatureDto,
             },
             {
                 name: 'key',
@@ -2456,7 +2350,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: FeatureV2,
+        response: Feature,
         errors: [
             {
                 status: 400,
@@ -2646,7 +2540,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: z.array(FeatureV2),
+        response: z.array(Feature),
         errors: [
             {
                 status: 400,
@@ -3231,7 +3125,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: VariableV2,
+        response: Variable,
         errors: [
             {
                 status: 400,
@@ -3305,7 +3199,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: z.array(VariableV2),
+        response: z.array(Variable),
         errors: [
             {
                 status: 400,
@@ -3338,7 +3232,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: VariableV2,
+        response: Variable,
         errors: [
             {
                 status: 401,
@@ -3372,7 +3266,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: VariableV2,
+        response: Variable,
         errors: [
             {
                 status: 400,
@@ -3443,7 +3337,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: VariableV2,
+        response: Variable,
         errors: [
             {
                 status: 400,
@@ -3703,7 +3597,7 @@ const v2Endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: CreateFeatureDtoV2,
+                schema: CreateFeatureDto,
             },
             {
                 name: 'project',
@@ -3711,7 +3605,7 @@ const v2Endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: FeatureV2,
+        response: Feature,
         errors: [
             {
                 status: 400,
@@ -3810,7 +3704,7 @@ const v2Endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: z.array(FeatureV2),
+        response: z.array(Feature),
         errors: [
             {
                 status: 400,
@@ -3836,7 +3730,7 @@ const v2Endpoints = makeApi([
             {
                 name: 'body',
                 type: 'Body',
-                schema: UpdateFeatureDtoV2,
+                schema: UpdateFeatureDto,
             },
             {
                 name: 'feature',
@@ -3849,7 +3743,7 @@ const v2Endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: FeatureV2,
+        response: Feature,
         errors: [
             {
                 status: 400,
@@ -3895,7 +3789,7 @@ const v2Endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: FeatureV2,
+        response: Feature,
         errors: [
             {
                 status: 401,
@@ -3904,6 +3798,57 @@ const v2Endpoints = makeApi([
             {
                 status: 404,
                 schema: NotFoundErrorResponse,
+            },
+        ],
+    },
+    {
+        method: 'patch',
+        path: '/v2/projects/:project/features/:feature/status',
+        alias: 'FeaturesController_updateStatus',
+        description: `Update a Feature's status`,
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: UpdateFeatureStatusDto,
+            },
+            {
+                name: 'feature',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'project',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: Feature,
+        errors: [
+            {
+                status: 400,
+                schema: BadRequestErrorResponse,
+            },
+            {
+                status: 401,
+                schema: z.void(),
+            },
+            {
+                status: 403,
+                schema: z.void(),
+            },
+            {
+                status: 404,
+                schema: NotFoundErrorResponse,
+            },
+            {
+                status: 409,
+                schema: ConflictErrorResponse,
+            },
+            {
+                status: 412,
+                schema: PreconditionFailedErrorResponse,
             },
         ],
     },
