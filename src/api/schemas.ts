@@ -35,8 +35,8 @@ import {
     UpdateUserOverrideDto,
     UserOverride,
     FeatureOverride,
-} from './zodClient'
-import { UpdateFeatureStatusDto } from './zodClientV2'
+} from './zodClientAPI'
+import { UpdateFeatureStatusDto } from './zodSchemas'
 
 export type Project = z.infer<typeof Project>
 export type Environment = z.infer<typeof Environment>

@@ -14,7 +14,7 @@ import {
     UpdateFeatureConfigDto,
     CreateCustomPropertyDto,
     UpdateCustomPropertyDto,
-} from '../api/zodClient'
+} from '../api/zodClientAPI'
 import { UpdateFeatureStatusDto } from '../api/schemas'
 
 // Zod schemas for MCP tool arguments
@@ -317,6 +317,7 @@ export const CreateFeatureArgsSchema = z.object({
 export const UpdateFeatureArgsSchema = z.object({
     key: z
         .string()
+        .min(1)
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
         .describe('key to identify feature to update'),
@@ -355,6 +356,7 @@ export const UpdateFeatureArgsSchema = z.object({
 export const UpdateFeatureStatusArgsSchema = z.object({
     key: z
         .string()
+        .min(1)
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
         .describe('key to identify feature to update'),
