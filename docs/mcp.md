@@ -18,8 +18,8 @@ Both implementations share the same underlying tools, schemas, and utilities, en
 - [Available Tools](#available-tools)
   - [Feature Management](#feature-management)
   - [Variable Management](#variable-management)
-  - [Environment Management](#environment-management)
   - [Project Management](#project-management)
+  - [SDK Installation](#sdk-installation)
   - [Self-Targeting & Overrides](#self-targeting--overrides)
   - [Results & Analytics](#results--analytics)
 - [Error Handling](#error-handling)
@@ -218,66 +218,13 @@ Delete a feature flag from ALL environments.
 
 - `key`: Feature key to delete
 
-#### `fetch_feature_variations`
+#### `cleanup_feature`
 
-Get all variations for a feature.
-
-**Parameters:**
-
-- `feature_key`: Feature key
-
-#### `create_feature_variation`
-
-Create a new variation within a feature.
+Fetch the DevCycle Feature Cleanup prompt and return its markdown content to guide safe cleanup of a completed feature and its variables in codebases.
 
 **Parameters:**
 
-- `feature_key`: Feature key
-- `key`: Unique variation key
-- `name`: Variation name
-- `variables`: Key-value map of variable keys to their values for this variation
-
-#### `update_feature_variation`
-
-Update an existing variation by key. ⚠️ WARNING: Updating a feature variation may affect production environments.
-
-**Parameters:**
-
-- `feature_key`: Feature key
-- `variation_key`: Variation to update
-- `key` (optional): New variation key
-- `name` (optional): New variation name
-- `variables` (optional): Updated variable values
-
-#### `set_feature_targeting` ⚠️
-
-Set targeting status (enable or disable) for a feature in an environment.
-
-**Parameters:**
-
-- `feature_key`: Feature key
-- `environment_key`: Environment key
-- `enabled`: Boolean - true to enable targeting, false to disable
-
-#### `list_feature_targeting`
-
-List targeting rules for a feature.
-
-**Parameters:**
-
-- `feature_key`: Feature key
-- `environment_key` (optional): Specific environment (returns all if omitted)
-
-#### `update_feature_targeting` ⚠️
-
-Update targeting rules for a feature in an environment.
-
-**Parameters:**
-
-- `feature_key`: Feature key
-- `environment_key`: Environment key
-- `status` (optional): Targeting status (`active`, `inactive`, `archived`)
-- `targets` (optional): Array of targeting rules with audience filters and distributions
+- `featureKey`: The feature key you plan to clean up (used for context in the prompt)
 
 #### `get_feature_audit_log_history`
 
@@ -347,44 +294,7 @@ Delete a variable from ALL environments.
 
 - `key`: Variable key to delete
 
-### Environment Management
-
-#### `list_environments`
-
-List all environments in the current project.
-
-**Parameters:**
-
-- `search` (optional): Search query (min 3 chars)
-- `page` (optional): Page number
-- `perPage` (optional): Items per page
-- `sortBy` (optional): Sort field
-- `sortOrder` (optional): Sort order (`asc`, `desc`)
-- `createdBy` (optional): Filter by creator user ID
-
-#### `get_sdk_keys`
-
-Get SDK keys for an environment.
-
-**Parameters:**
-
-- `environmentKey`: Environment key
-- `keyType` (optional): Specific key type (`mobile`, `server`, `client`)
-
 ### Project Management
-
-#### `list_projects`
-
-List all projects in the organization.
-
-**Parameters:**
-
-- `search` (optional): Search query
-- `page` (optional): Page number (default: 1)
-- `perPage` (optional): Items per page (default: 100, max: 1000)
-- `sortBy` (optional): Sort field (`createdAt`, `updatedAt`, `name`, `key`, `createdBy`)
-- `sortOrder` (optional): Sort order (`asc`, `desc`)
-- `createdBy` (optional): Filter by creator user ID
 
 #### `get_current_project`
 
@@ -397,13 +307,30 @@ Returns the project defined by your current MCP context. If no project is select
 
 **Parameters:** None
 
-#### `select_project` (Local MCP only)
+#### `select_project`
 
-Select a project to use for subsequent MCP operations. This tool is only available in the local MCP server, not the remote worker.
+Select a project to use for subsequent MCP operations.
+
+- Local MCP: updates your local DevCycle configuration at `~/.config/devcycle/user.yml`
+- Remote MCP: stores the selection in the worker state for your session
 
 **Parameters:**
 
 - `projectKey` (optional): The project key to select. If not provided, lists available projects
+
+### SDK Installation
+
+#### `install_devcycle_sdk`
+
+Fetch DevCycle SDK installation instructions for your platform/language and follow the steps to install. Returns the corresponding guide markdown.
+
+**Parameters:**
+
+- `guide`: Install guide identifier
+
+Supported guide identifiers:
+
+- `android`, `android-openfeature`, `angular`, `dotnet`, `dotnet-openfeature`, `flutter`, `go`, `go-openfeature`, `ios`, `ios-openfeature`, `java`, `java-openfeature`, `javascript`, `javascript-openfeature`, `nestjs`, `nestjs-openfeature`, `nextjs`, `nodejs`, `nodejs-openfeature`, `php`, `php-openfeature`, `python`, `python-openfeature`, `react`, `react-native`, `react-openfeature`, `roku`, `ruby`, `ruby-openfeature`
 
 ### Self-Targeting & Overrides
 
@@ -530,10 +457,7 @@ Create a feature flag for the new checkout flow with variations for A/B testing
 
 The AI assistant will use:
 
-1. `create_feature` to create the feature with guided setup
-2. `create_variable` to associate a variable with the feature
-3. `create_feature_variation` to add variations
-4. `set_feature_targeting` to enable targeting in development
+1. `create_feature` to create the feature, providing variables, variations, and initial environment configurations in one step
 
 ### Viewing Analytics
 
@@ -566,7 +490,6 @@ Show me the recent changes to the checkout_flow feature
 The AI assistant will use:
 
 1. `get_feature_audit_log_history` to retrieve change history
-2. `list_feature_targeting` to show current configuration
 
 ## Best Practices
 
@@ -619,6 +542,10 @@ Key differences:
 - **Authentication**: Local uses API keys/CLI auth, Remote uses OAuth 2.0
 - **Transport**: Local uses stdio, Remote uses SSE/HTTP
 - **State Storage**: Local uses file system, Remote uses Durable Objects
+
+### Notes on Environments
+
+- Dedicated environment tools are not exposed via MCP. Use `get_current_project` or `select_project` to retrieve environments and SDK keys for the selected project.
 
 ## Development & Local Testing
 
