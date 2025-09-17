@@ -1,3 +1,5 @@
+# MCP validation schema cache
+.schema/
 .DS_Store
 .idea
 .devcycle

@@ -9,6 +9,7 @@
     },
     "homepage": "https://github.com/DevCycleHQ/cli",
     "license": "MIT",
+    "mcpName": "io.github.DevCycleHQ/devcycle-mcp",
     "main": "dist/index.js",
     "repository": "DevCycleHQ/cli",
     "files": [
@@ -34,6 +35,7 @@
         "pretest": "yarn format:check",
         "test": "mocha -r ts-node/register test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
         "test:ci": "mocha --forbid-only -r ts-node/register test/*.ts \"src/**/*.test.ts\" && yarn workspace @devcycle/mcp-worker test",
+        "validate:server": "mkdir -p .schema && curl -sSf https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json -o .schema/server.schema.json && ajv validate -c ajv-formats --spec=draft7 --strict=false -s .schema/server.schema.json -d server.json",
         "test:update-snapshots": "UPDATE_SNAPSHOT=1 yarn test",
         "version": "oclif readme --multi && git add README.md"
     },
@@ -84,6 +86,9 @@
         "@types/node": "^18.19.68",
         "@typescript-eslint/eslint-plugin": "^8.21.0",
         "@typescript-eslint/parser": "^8.21.0",
+        "ajv": "^8.17.1",
+        "ajv-cli": "^5.0.0",
+        "ajv-formats": "^3.0.1",
         "chai": "^5.1.2",
         "eslint": "^9.18.0",
         "eslint-config-prettier": "^9.1.0",
