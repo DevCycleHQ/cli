@@ -42,7 +42,7 @@ jobs:
       - name: Set Secrets
         uses: DevCycleHQ/aws-secrets-action@main
         with:
-          secrets_map: '{"CLI_NPMJS_TOKEN": "DEVCYCLE_GITHUB_CLI_NPM_TOKEN"}'
+          secrets_map: '{"CLI_NPMJS_TOKEN": "DEVCYCLE_GITHUB_CLI_NPM_TOKEN", "MCP_KEY": "DEVCYCLE_GITHUB_MCP_REGISTRY_PKEY"}'
           aws_account_id: '134377926370'
       - name: Set Git author
         run: |
@@ -72,6 +72,13 @@ jobs:
       - name: Bump CLI version
         run: npm version ${{ inputs.npm-version }} --force
 
+      - name: Update server.json version (pre-commit)
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          jq --arg v "$VERSION" '.version = $v' server.json > server.json.tmp
+          mv server.json.tmp server.json
+          git add server.json
+
       - name: Get latest tag
         run: echo "LATEST_TAG=$(git describe --abbrev=0 --tags)" >> $GITHUB_ENV
 
@@ -91,6 +98,29 @@ jobs:
           draft: ${{ inputs.draft-release }}
           prerelease: ${{ inputs.prerelease }}
           node-auth-token: ${{ env.CLI_NPMJS_TOKEN }}
+
+      # --- Official MCP Registry (registry.modelcontextprotocol.io) Publish ---
+      - name: Install MCP Publisher (registry.modelcontextprotocol.io)
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.0.0/mcp-publisher_1.0.0_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          chmod +x mcp-publisher
+
+      - name: Sync server.json version to tag
+        run: |
+          VERSION=${LATEST_TAG#v}
+          jq --arg v "$VERSION" '.version = $v' server.json > server.json.tmp
+          mv server.json.tmp server.json
+
+      - name: Validate server.json schema
+        run: yarn validate:server
+
+      - name: Login to MCP Registry (DNS)
+        run: ./mcp-publisher login dns --domain devcycle.com --private-key "${MCP_KEY}"
+        env:
+          MCP_KEY: ${{ env.MCP_KEY }}
+
+      - name: Publish to MCP Registry
+        run: ./mcp-publisher publish
 
       - name: Update Doc
         uses: ./.github/actions/update-doc

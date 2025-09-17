@@ -115,7 +115,7 @@ All DevCycle CLI MCP tools are available. See [complete reference](../docs/mcp.m
 
 **Project**: `select_project`, `list_projects`, `get_current_project`
 
-**Features**: `list_features`, `create_feature`, `update_feature`, `update_feature_status`, `delete_feature`, `fetch_feature_variations`, `create_feature_variation`, `update_feature_variation`
+**Features**: `list_features`, `create_feature`, `update_feature`, `update_feature_status`, `delete_feature`
 
 **Targeting**: `set_feature_targeting`, `list_feature_targeting`, `update_feature_targeting`
 
