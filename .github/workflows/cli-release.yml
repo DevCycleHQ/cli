@@ -42,7 +42,7 @@ jobs:
       - name: Set Secrets
         uses: DevCycleHQ/aws-secrets-action@main
         with:
-          secrets_map: '{"CLI_NPMJS_TOKEN": "DEVCYCLE_GITHUB_CLI_NPM_TOKEN", "MCP_KEY": "DEVCYCLE_GITHUB_MCP_REGISTRY_PKEY"}'
+          secrets_map: '{"CLI_NPMJS_TOKEN": "DEVCYCLE_GITHUB_CLI_NPM_TOKEN", "MCP_KEY": "DEVCYCLE_GITHUB_cli_MCP_REGISTRY_PKEY"}'
           aws_account_id: '134377926370'
       - name: Set Git author
         run: |
