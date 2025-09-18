@@ -172,6 +172,6 @@
         "tmp": "0.2.5",
         "@types/estree": "1.0.5",
         "estraverse": "5.3.0",
-        "@types/estraverse": "5.1.7"
+        "fast-json-patch": "3.1.1"
     }
 }
