@@ -21,7 +21,14 @@ describe('features get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features`)
-                .query(true)
+                .query((q) => {
+                    // default values when no explicit pagination/search provided
+                    // we only assert that no unexpected specific params are forced
+                    return (
+                        (q.page === undefined || String(q.page) === '1') &&
+                        (q.perPage === undefined || String(q.perPage) === '100')
+                    )
+                })
                 .reply(200, mockFeatures),
         )
         .stdout()
@@ -39,7 +46,9 @@ describe('features get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features`)
-                .query(true)
+                .query(
+                    (q) => String(q.page) === '2' && String(q.perPage) === '10',
+                )
                 .reply(200, mockFeatures),
         )
         .stdout()
