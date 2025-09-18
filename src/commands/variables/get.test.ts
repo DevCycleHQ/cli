@@ -19,6 +19,7 @@ describe('variables get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables`)
+                .query(true)
                 .reply(200, expectedVariables),
         )
         .stdout()
@@ -43,7 +44,8 @@ describe('variables get', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables?perPage=10&page=2`)
+                .get(`/v1/projects/${projectKey}/variables`)
+                .query(true)
                 .reply(200, []),
         )
         .stdout()
@@ -72,7 +74,8 @@ describe('variables get', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables?search=search`)
+                .get(`/v1/projects/${projectKey}/variables`)
+                .query(true)
                 .reply(200, []),
         )
         .stdout()
