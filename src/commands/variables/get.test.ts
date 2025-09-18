@@ -1,7 +1,6 @@
 import { expect } from 'vitest'
 import { dvcTest } from '../../../test-utils'
-import { AUTH_URL, BASE_URL } from '../../api/common'
-import axios from 'axios'
+import { BASE_URL } from '../../api/common'
 import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variables get', () => {
@@ -14,7 +13,6 @@ describe('variables get', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api
@@ -45,7 +43,6 @@ describe('variables get', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api
@@ -77,7 +74,6 @@ describe('variables get', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api
@@ -105,7 +101,6 @@ describe('variables get', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api

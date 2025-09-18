@@ -3,7 +3,6 @@ import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import { AUTH_URL, BASE_URL } from '../../api/common'
 import axios from 'axios'
 import { tokenCacheStub_get } from '../../../test/setup'
-import * as chai from 'chai'
 import inquirer from 'inquirer'
 
 describe('targeting update', () => {

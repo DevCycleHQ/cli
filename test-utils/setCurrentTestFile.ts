@@ -1,4 +1,4 @@
-import { HookFunction } from 'mocha'
+type HookFunction = (this: any) => void
 
 /**
  * When creating a snapshot the testFile name is incorrect

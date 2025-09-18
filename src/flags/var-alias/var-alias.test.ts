@@ -1,6 +1,5 @@
 import { getVariableAliasesFromTypeGeneratorFile } from './index'
-import { expect } from '@oclif/test'
-import chai from 'chai'
+import { expect } from 'vitest'
 
 const unobfuscatedFile = `
 /**
@@ -48,7 +47,7 @@ describe('var-alias', () => {
                 unobfuscatedFile,
                 variableAliases,
             )
-            expect(variableAliases).to.deep.equal({
+            expect(variableAliases).to.eql({
                 enabledFeature: 'enabled-feature',
                 disabledFeature: 'disabled-feature',
             })
@@ -59,7 +58,7 @@ describe('var-alias', () => {
                 obfuscatedFile,
                 variableAliases,
             )
-            expect(variableAliases).to.deep.equal({
+            expect(variableAliases).to.eql({
                 enabledFeature: 'enabled-feature',
                 disabledFeature: 'disabled-feature',
             })
@@ -71,7 +70,7 @@ describe('var-alias', () => {
                     unparseableObfuscated,
                     variableAliases,
                 ),
-            ).to.throw(
+            ).toThrow(
                 'Could not find key for obfuscated variable disabledFeature',
             )
         })
