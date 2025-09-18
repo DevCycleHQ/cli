@@ -21,6 +21,7 @@ describe('features get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features`)
+                .query(true)
                 .reply(200, mockFeatures),
         )
         .stdout()
@@ -38,7 +39,7 @@ describe('features get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features`)
-                .query({ page: 2, perPage: 10 })
+                .query(true)
                 .reply(200, mockFeatures),
         )
         .stdout()
