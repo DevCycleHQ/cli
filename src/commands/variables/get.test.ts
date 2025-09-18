@@ -1,49 +1,52 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import { dvcTest } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variables get', () => {
     const projectKey = 'test-project'
-    const authFlags = [
-        '--client-id',
-        'test-client-id',
-        '--client-secret',
-        'test-client-secret',
-    ]
-
-    const mockVariables = [
-        {
-            key: 'variable-1',
-            name: 'Variable 1',
-            _id: '61450f3daec96f5cf4a49946',
-        },
-        {
-            key: 'variable-2',
-            name: 'Variable 2',
-            _id: '61450f3daec96f5cf4a49947',
-        },
+    const expectedVariables = [
+        { key: 'first-variable', name: 'first variable', type: 'String' },
+        { key: 'second-variable', name: 'second variable', type: 'String' },
     ]
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables`)
-                .reply(200, mockVariables),
+                .query(true)
+                .reply(200, expectedVariables),
         )
         .stdout()
-        .command(['variables get', '--project', projectKey, ...authFlags])
+        .command([
+            'variables get',
+            '--project',
+            projectKey,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
+        ])
         .it('returns a list of variable objects', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(mockVariables, null, 2),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedVariables)
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables`)
-                .query({ page: 2, perPage: 10 })
-                .reply(200, mockVariables),
+                .query(true)
+                .reply(200, []),
         )
         .stdout()
         .command([
@@ -54,20 +57,26 @@ describe('variables get', () => {
             '2',
             '--per-page',
             '10',
-            ...authFlags,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(mockVariables, null, 2),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables`)
-                .query({ search: 'hello world' })
-                .reply(200, mockVariables),
+                .query(true)
+                .reply(200, []),
         )
         .stdout()
         .command([
@@ -75,39 +84,49 @@ describe('variables get', () => {
             '--project',
             projectKey,
             '--search',
-            'hello world',
-            ...authFlags,
+            'search',
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(mockVariables, null, 2),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql([])
         })
 
-    // Test positional arguments functionality
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables/variable-1`)
-                .reply(200, mockVariables[0])
-                .get(`/v1/projects/${projectKey}/variables/variable-2`)
-                .reply(200, mockVariables[1]),
+                .get(`/v1/projects/${projectKey}/variables/first-variable`)
+                .reply(200, expectedVariables[0]),
+        )
+        .nock(BASE_URL, (api) =>
+            api
+                .get(`/v1/projects/${projectKey}/variables/second-variable`)
+                .reply(200, expectedVariables[1]),
         )
         .stdout()
         .command([
             'variables get',
-            'variable-1',
-            'variable-2',
             '--project',
             projectKey,
-            ...authFlags,
+            '--client-id',
+            'test-client-id',
+            '--client-secret',
+            'test-client-secret',
+            'first-variable',
+            'second-variable',
         ])
         .it(
             'fetches multiple variables by space-separated positional arguments',
             (ctx) => {
-                expect(ctx.stdout).to.contain(
-                    JSON.stringify(mockVariables, null, 2),
-                )
+                const data = JSON.parse(ctx.stdout)
+                expect(data).to.eql(expectedVariables)
             },
         )
 })

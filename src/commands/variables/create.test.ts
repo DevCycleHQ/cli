@@ -1,7 +1,9 @@
-import { expect } from '@oclif/test'
+import { expect, vi } from 'vitest'
 import inquirer from 'inquirer'
 import { dvcTest } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variables create', () => {
     const projectKey = 'test-project'
@@ -78,6 +80,10 @@ describe('variables create', () => {
     }
     // Headless mode
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .post(`/v1/projects/${projectKey}/variables`, requestBody)
@@ -101,7 +107,16 @@ describe('variables create', () => {
             expect(JSON.parse(ctx.stdout)).to.eql(mockVariable)
         })
 
+    let stderrSpy: ReturnType<typeof vi.spyOn> | undefined
+    let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+            stderrSpy = vi.spyOn(process.stderr, 'write' as any)
+            consoleErrorSpy = vi.spyOn(console, 'error')
+        })
+        .stdout()
         .stderr()
         .command([
             'variables create',
@@ -114,13 +129,24 @@ describe('variables create', () => {
             '--headless',
             ...authFlags,
         ])
-        .it('Errors when called in headless mode with no key', (ctx) => {
-            expect(ctx.stderr).to.contain(
+        .it('Errors when called in headless mode with no key', () => {
+            const stderrCalls = (stderrSpy?.mock.calls || []).flat().join('')
+            const consoleErrCalls = (consoleErrorSpy?.mock.calls || [])
+                .flat()
+                .join('')
+            const combined = `${stderrCalls}${consoleErrCalls}`
+            expect(combined).toContain(
                 'The key, name, and type flags are required',
             )
+            stderrSpy?.mockRestore()
+            consoleErrorSpy?.mockRestore()
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .post(`/v1/projects/${projectKey}/variables`, requestBody)
@@ -152,6 +178,10 @@ describe('variables create', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             // Get a feature that has no variables that will be patched with a variable afterwards
             api

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`diff enriches output with API data 1`] = `
+exports[`diff > enriches output with API data 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -11,7 +11,7 @@ DevCycle Variable Changes:
 
 ⚠️  Notices
 
-  1. Variable \\"no-exists\\" does not exist on DevCycle
+  1. Variable "no-exists" does not exist on DevCycle
 
 🟢 Added
 
@@ -37,7 +37,7 @@ The following variables that do not exist in DevCycle were cleaned up:
 "
 `;
 
-exports[`diff enriches output with API data when caller is github.pr_insights without outputting API Errors 1`] = `
+exports[`diff > enriches output with API data when caller is github.pr_insights without outputting API Errors 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -48,7 +48,7 @@ DevCycle Variable Changes:
 
 ⚠️  Notices
 
-  1. Variable \\"no-exists\\" does not exist on DevCycle
+  1. Variable "no-exists" does not exist on DevCycle
 
 🟢 Added
 
@@ -74,9 +74,9 @@ The following variables that do not exist in DevCycle were cleaned up:
 "
 `;
 
-exports[`diff formats the output as markdown 1`] = `
+exports[`diff > formats the output as markdown 1`] = `
 "
-## <img src=\\"https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg#gh-light-mode-only\\" height=\\"31px\\" align=\\"center\\"/><img src=\\"https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot-white.svg#gh-dark-mode-only\\" height=\\"31px\\" align=\\"center\\"/> DevCycle Variable Changes:
+## <img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot.svg#gh-light-mode-only" height="31px" align="center"/><img src="https://github.com/DevCycleHQ/cli/raw/main/assets/togglebot-white.svg#gh-dark-mode-only" height="31px" align="center"/> DevCycle Variable Changes:
 
 🟢  2 Variables Added
 🔴  0 Variables Removed
@@ -90,7 +90,7 @@ exports[`diff formats the output as markdown 1`] = `
 "
 `;
 
-exports[`diff formats the output as markdown without html 1`] = `
+exports[`diff > formats the output as markdown without html 1`] = `
 "
 ## DevCycle Variable Changes:
 
@@ -106,7 +106,7 @@ exports[`diff formats the output as markdown without html 1`] = `
 "
 `;
 
-exports[`diff identifies aliased variables 1`] = `
+exports[`diff > identifies aliased variables 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -125,7 +125,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff identifies aliased variables specified in config file 1`] = `
+exports[`diff > identifies aliased variables specified in config file 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -144,7 +144,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff identifies an aliased variable value with a custom matcher 1`] = `
+exports[`diff > identifies an aliased variable value with a custom matcher 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -158,7 +158,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff identifies an aliased variable with a custom matcher 1`] = `
+exports[`diff > identifies an aliased variable with a custom matcher 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -172,7 +172,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff identifies unknown variables and warns about them 1`] = `
+exports[`diff > identifies unknown variables and warns about them 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -182,8 +182,8 @@ DevCycle Variable Changes:
 
 ⚠️  Notices
 
-  1. Variable \\"SOME_ADDITION\\" could not be identified. Try adding an alias.
-  2. Variable \\"VARIABLES.SOME_REMOVAL\\" could not be identified. Try adding an alias.
+  1. Variable "SOME_ADDITION" could not be identified. Try adding an alias.
+  2. Variable "VARIABLES.SOME_REMOVAL" could not be identified. Try adding an alias.
 
 🟢 Added
 
@@ -197,14 +197,14 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff returns "No DevCycle Variables Changed" when there are no changes 1`] = `
+exports[`diff > returns "No DevCycle Variables Changed" when there are no changes 1`] = `
 "
 No DevCycle Variables Changed
 
 "
 `;
 
-exports[`diff runs against a test file 1`] = `
+exports[`diff > runs against a test file 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -235,7 +235,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff runs against a test file and linkifies the output 1`] = `
+exports[`diff > runs against a test file and linkifies the output 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -266,7 +266,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff runs against a test file and linkifies the output for a bitbucket PR 1`] = `
+exports[`diff > runs against a test file and linkifies the output for a bitbucket PR 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -297,7 +297,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff runs against a test file and linkifies the output for a gitlab MR 1`] = `
+exports[`diff > runs against a test file and linkifies the output for a gitlab MR 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -328,7 +328,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff runs against a test file with a custom matcher 1`] = `
+exports[`diff > runs against a test file with a custom matcher 1`] = `
 "
 DevCycle Variable Changes:
 
@@ -361,7 +361,7 @@ DevCycle Variable Changes:
 "
 `;
 
-exports[`diff runs against a test file with a custom matcher specified in a config file 1`] = `
+exports[`diff > runs against a test file with a custom matcher specified in a config file 1`] = `
 "
 DevCycle Variable Changes:
 
