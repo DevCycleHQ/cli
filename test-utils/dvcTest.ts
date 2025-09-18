@@ -11,7 +11,7 @@ Nock(AUTH_URL).persist().post('/oauth/token').reply(200, {
 export const dvcTest = () =>
     test.nock(BASE_URL, (api) => {
         api.get('/v1/projects')
-            .query(true)
+            .query((q) => true)
             .reply(200, [
                 {
                     key: 'project',
