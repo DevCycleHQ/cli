@@ -1,9 +1,8 @@
 import { expect, afterAll } from 'vitest'
-import { AUTH_URL, BASE_URL } from '../../api/common'
+import { BASE_URL } from '../../api/common'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
 import * as fs from 'fs'
 import Nock, { Body, ReplyHeaders } from 'nock'
-import axios from 'axios'
 import { tokenCacheStub_get } from '../../../test/setup'
 
 const mockVariablesResponse = [
@@ -190,7 +189,6 @@ describe('generate types', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
@@ -216,7 +214,6 @@ describe('generate types', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
@@ -248,7 +245,6 @@ describe('generate types', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
@@ -275,7 +271,6 @@ describe('generate types', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
@@ -302,7 +297,6 @@ describe('generate types', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, setupNockMock([]))
         .stdout()
@@ -336,7 +330,6 @@ describe('generate types', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, setupNockMock([]))
         .stdout()
