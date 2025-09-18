@@ -1,8 +1,7 @@
 import { expect } from 'vitest'
 import inquirer from 'inquirer'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
-import { AUTH_URL, BASE_URL } from '../../api/common'
-import axios from 'axios'
+import { BASE_URL } from '../../api/common'
 import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variations create', () => {
@@ -121,7 +120,6 @@ describe('variations create', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api
@@ -156,7 +154,6 @@ describe('variations create', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api
@@ -190,7 +187,6 @@ describe('variations create', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api
@@ -237,7 +233,6 @@ describe('variations create', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .stub(inquirer, 'registerPrompt', () => {
             return

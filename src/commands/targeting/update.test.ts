@@ -1,7 +1,6 @@
 import { expect, vi } from 'vitest'
 import { dvcTest, setCurrentTestFile } from '../../../test-utils'
-import { AUTH_URL, BASE_URL } from '../../api/common'
-import axios from 'axios'
+import { BASE_URL } from '../../api/common'
 import { tokenCacheStub_get } from '../../../test/setup'
 import inquirer from 'inquirer'
 
@@ -233,7 +232,6 @@ describe('targeting update', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api
@@ -281,7 +279,6 @@ describe('targeting update', () => {
         .do(async () => {
             // No feature/env provided; still satisfy oauth
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
             stderrSpy = vi.spyOn(process.stderr, 'write' as any)
             consoleErrorSpy = vi.spyOn(console, 'error')
         })
@@ -318,7 +315,6 @@ describe('targeting update', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .stub(inquirer, 'registerPrompt', () => {
             return
@@ -403,7 +399,6 @@ describe('targeting update', () => {
     dvcTest()
         .do(async () => {
             tokenCacheStub_get.returns('mock-cached-token')
-            await axios.post(new URL('/oauth/token', AUTH_URL).href)
         })
         .nock(BASE_URL, (api) =>
             api
