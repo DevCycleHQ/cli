@@ -12,8 +12,16 @@ describe('environments get', () => {
         'test-client-secret',
     ]
     const expectedEnvironments = [
-        { key: 'first-env', name: 'first env' },
-        { key: 'second-env', name: 'second env' },
+        {
+            key: 'development',
+            name: 'Development',
+            _id: '61450f3daec96f5cf4a49960',
+        },
+        {
+            key: 'production',
+            name: 'Production',
+            _id: '61450f3daec96f5cf4a49961',
+        },
     ]
 
     dvcTest()
@@ -41,12 +49,12 @@ describe('environments get', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/environments/first-env`)
+                .get(`/v1/projects/${projectKey}/environments/development`)
                 .reply(200, expectedEnvironments[0]),
         )
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/environments/second-env`)
+                .get(`/v1/projects/${projectKey}/environments/production`)
                 .reply(200, expectedEnvironments[1]),
         )
         .stdout()
@@ -55,8 +63,8 @@ describe('environments get', () => {
             '--project',
             projectKey,
             ...authFlags,
-            'first-env',
-            'second-env',
+            'development',
+            'production',
         ])
         .it(
             'fetches multiple environments by space-separated positional arguments',
