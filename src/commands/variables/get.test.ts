@@ -32,12 +32,6 @@ describe('variables get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables`)
-                .query((q) => {
-                    return (
-                        (q.page === undefined || String(q.page) === '1') &&
-                        (q.perPage === undefined || String(q.perPage) === '100')
-                    )
-                })
                 .reply(200, mockVariables),
         )
         .stdout()
@@ -54,10 +48,8 @@ describe('variables get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables`)
-                .query(
-                    (q) => String(q.page) === '2' && String(q.perPage) === '10',
-                )
-                .reply(200, []),
+                .query({ page: 2, perPage: 10 })
+                .reply(200, mockVariables),
         )
         .stdout()
         .command([
@@ -72,7 +64,7 @@ describe('variables get', () => {
         ])
         .it('passes pagination params to api', (ctx) => {
             const data = JSON.parse(ctx.stdout)
-            expect(data).to.eql([])
+            expect(data).to.eql(mockVariables)
         })
 
     dvcTest()
@@ -82,8 +74,8 @@ describe('variables get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables`)
-                .query((q) => q.search === 'search')
-                .reply(200, []),
+                .query({ search: 'search' })
+                .reply(200, mockVariables),
         )
         .stdout()
         .command([
@@ -96,7 +88,7 @@ describe('variables get', () => {
         ])
         .it('passes search param to api', (ctx) => {
             const data = JSON.parse(ctx.stdout)
-            expect(data).to.eql([])
+            expect(data).to.eql(mockVariables)
         })
 
     dvcTest()
