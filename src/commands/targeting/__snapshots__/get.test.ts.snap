@@ -1,18 +1,85 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`targeting get > includes environment in query params 1`] = `
-"[{"_feature":"642d9de38bbfc09ad0657e05","_environment":"637cfe8195279288bc08cb61","_createdBy":"google-oauth2|112946554154333301873","status":"active","startedAt":"2023-04-05T16:12:19.911Z","updatedAt":"2023-04-05T16:12:19.922Z","targets":[]}]
+"├─ Production
+│  ├─ status
+│  │  └─ enabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Staging
+│  ├─ status
+│  │  └─ disabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Testing
+│  └─ status
+│     └─ disabled
+└─ Development
+   └─ status
+      └─ disabled
 "
 `;
 
 exports[`targeting get > returns all targeting for a feature 1`] = `
-"[{"_feature":"642d9de38bbfc09ad0657e05","_environment":"637cfe8195279288bc08cb61","_createdBy":"google-oauth2|112946554154333301873","status":"active","startedAt":"2023-04-05T16:12:19.911Z","updatedAt":"2023-04-05T16:12:19.922Z","targets":[]}]
+"├─ Production
+│  ├─ status
+│  │  └─ enabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Staging
+│  ├─ status
+│  │  └─ disabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Testing
+│  └─ status
+│     └─ disabled
+└─ Development
+   └─ status
+      └─ disabled
 "
 `;
 
 exports[`targeting get > uses prompts when feature is not provided 1`] = `
-"└─ 637cfe8195279288bc08cb61
+"├─ Production
+│  ├─ status
+│  │  └─ enabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Staging
+│  ├─ status
+│  │  └─ disabled
+│  └─ rules
+│     └─ 1. All Users
+│        ├─ definition
+│        │  └─ All Users
+│        └─ serve
+│           └─ Variation ON
+├─ Testing
+│  └─ status
+│     └─ disabled
+└─ Development
    └─ status
-      └─ enabled
+      └─ disabled
 "
 `;
