@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`usages runs against a dart test file 1`] = `
+exports[`usages > runs against a dart test file 1`] = `
 "
 DevCycle Variable Usage:
 
@@ -19,7 +19,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against a dart test file with special characters in the path 1`] = `
+exports[`usages > runs against a dart test file with special characters in the path 1`] = `
 "
 DevCycle Variable Usage:
 
@@ -38,7 +38,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against a go test file 1`] = `
+exports[`usages > runs against a go test file 1`] = `
 "
 DevCycle Variable Usage:
 
@@ -47,7 +47,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against a node test file 1`] = `
+exports[`usages > runs against a node test file 1`] = `
 "
 DevCycle Variable Usage:
 
@@ -73,7 +73,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against a node test file and only returns variables not found as a variable in the api 1`] = `
+exports[`usages > runs against a node test file and only returns variables not found as a variable in the api 1`] = `
 "
 DevCycle Variable Usage:
 
@@ -97,7 +97,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against a node test file with special characters in the path 1`] = `
+exports[`usages > runs against a node test file with special characters in the path 1`] = `
 "
 DevCycle Variable Usage:
 
@@ -123,7 +123,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against a react test file 1`] = `
+exports[`usages > runs against a react test file 1`] = `
 "
 DevCycle Variable Usage:
 
@@ -134,7 +134,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against a react test file with special characters in the path 1`] = `
+exports[`usages > runs against a react test file with special characters in the path 1`] = `
 "
 DevCycle Variable Usage:
 
@@ -145,7 +145,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against a react test file with special characters in the path 2`] = `
+exports[`usages > runs against a react test file with special characters in the path 2`] = `
 "
 DevCycle Variable Usage:
 
@@ -154,7 +154,7 @@ DevCycle Variable Usage:
 "
 `;
 
-exports[`usages runs against all js files 1`] = `
+exports[`usages > runs against all js files 1`] = `
 "
 DevCycle Variable Usage:
 

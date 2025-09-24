@@ -1,14 +1,10 @@
-import { expect } from '@oclif/test'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { expect, vi } from 'vitest'
+import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
-import * as chai from 'chai'
+import { tokenCacheStub_get } from '../../../test/setup'
 import inquirer from 'inquirer'
 
 describe('targeting update', () => {
-    beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
-
     const projectKey = 'test-project'
     const authFlags = [
         '--client-id',
@@ -34,10 +30,11 @@ describe('targeting update', () => {
         },
         distribution: [
             {
-                _variation: '647e36gg16c1d4814fe3f962',
+                _variation: '63b8677a7a95e795ac9146ce',
                 percentage: 1,
             },
         ],
+        name: 'Mutation targeting rule',
     }
 
     const mockTargetingRules = [
@@ -231,6 +228,9 @@ describe('targeting update', () => {
     }
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/environments/${envKey}`)
@@ -271,7 +271,16 @@ describe('targeting update', () => {
             expect(ctx.stdout).toMatchSnapshot()
         })
 
+    let stderrSpy: ReturnType<typeof vi.spyOn> | undefined
+    let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined
     dvcTest()
+        .do(async () => {
+            // No feature/env provided; still satisfy oauth
+            tokenCacheStub_get.returns('mock-cached-token')
+            stderrSpy = vi.spyOn(process.stderr, 'write' as any)
+            consoleErrorSpy = vi.spyOn(console, 'error')
+        })
+        .stdout()
         .stderr()
         .command([
             'targeting update',
@@ -284,15 +293,27 @@ describe('targeting update', () => {
         ])
         .it(
             'fails to update a target in headless mode without feature key',
-            (ctx) => {
-                expect(ctx.stderr).contains(
+            () => {
+                const stderrCalls = (stderrSpy?.mock.calls || [])
+                    .flat()
+                    .join('')
+                const consoleErrCalls = (consoleErrorSpy?.mock.calls || [])
+                    .flat()
+                    .join(' ')
+                const combined = `${stderrCalls}${consoleErrCalls}`
+                expect(combined).toContain(
                     'Feature and environment arguments are required',
                 )
+                stderrSpy?.mockRestore()
+                consoleErrorSpy?.mockRestore()
             },
         )
 
     let promptCount = 0
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .stub(inquirer, 'registerPrompt', () => {
             return
         })
@@ -374,6 +395,9 @@ describe('targeting update', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/environments/${envKey}`)

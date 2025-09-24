@@ -1,13 +1,12 @@
-import { expect } from '@oclif/test'
-import chai from 'chai'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
+import { expect, vi } from 'vitest'
 import inquirer from 'inquirer'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('targeting get', () => {
-    beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
+    let stderrSpy: ReturnType<typeof vi.spyOn> | undefined
+    let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined
 
     const projectKey = 'test-project'
     const featureKey = 'test-feature'
@@ -114,6 +113,7 @@ describe('targeting get', () => {
             _id: '637cfe8195279288bc08cb61',
         },
     ]
+
     const mockVariations = [
         {
             key: 'variation-on',
@@ -124,6 +124,9 @@ describe('targeting get', () => {
     ]
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
@@ -153,6 +156,9 @@ describe('targeting get', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
@@ -182,6 +188,12 @@ describe('targeting get', () => {
         })
 
     dvcTest()
+        .stub(inquirer, 'prompt', () =>
+            Promise.resolve({ feature: { key: 'prompted-feature-id' } }),
+        )
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
@@ -204,9 +216,6 @@ describe('targeting get', () => {
         .nock(BASE_URL, (api) =>
             api.get(`/v1/projects/${projectKey}/audiences`).reply(200, []),
         )
-        .stub(inquirer, 'prompt', () => {
-            return { feature: { key: 'prompted-feature-id' } }
-        })
         .stdout()
         .command(['targeting get', ...authFlags])
         .it('uses prompts when feature is not provided', (ctx) => {
@@ -214,9 +223,22 @@ describe('targeting get', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            stderrSpy = vi.spyOn(process.stderr, 'write' as any)
+            consoleErrorSpy = vi.spyOn(console, 'error')
+        })
+        .stdout()
         .stderr()
         .command(['targeting get', '--headless', ...authFlags])
-        .it('does not prompt when using --headless', (ctx) => {
-            expect(ctx.stderr).to.contain('Feature argument is required')
+        .it('does not prompt when using --headless', () => {
+            const stderrCalls = (stderrSpy?.mock.calls || []).flat().join('')
+            const consoleErrCalls = (consoleErrorSpy?.mock.calls || [])
+                .flat()
+                .join('')
+            const combined = `${stderrCalls}${consoleErrCalls}`
+            expect(combined).toContain('Feature argument is required')
+            stderrSpy?.mockRestore()
+            consoleErrorSpy?.mockRestore()
         })
 })

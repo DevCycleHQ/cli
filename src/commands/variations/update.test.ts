@@ -1,13 +1,10 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import inquirer from 'inquirer'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
-import chai from 'chai'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variations update', () => {
-    beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
     const projectKey = 'test-project'
     const authFlags = [
         '--client-id',
@@ -129,6 +126,10 @@ describe('variations update', () => {
         },
     }
     dvcTest()
+        .do(async () => {
+            // Satisfy the OAuth nock added by dvcTest and use cache to avoid a second call
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
@@ -180,6 +181,11 @@ describe('variations update', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            // Ensure no pending OAuth expectation; command will fetch token normally
+            // Do not stub cache here so command path remains the same
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
@@ -230,6 +236,10 @@ describe('variations update', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            // Satisfy OAuth expectation upfront and use cached token to skip another call
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(

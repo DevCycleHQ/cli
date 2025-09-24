@@ -1,0 +1,4 @@
+sso:
+  accessToken: mock-refreshed-token
+  refreshToken: mock-new-refresh-token
+  orgs: {}

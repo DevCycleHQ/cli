@@ -1,10 +1,9 @@
-import { expect } from '@oclif/test'
+import { expect, afterAll } from 'vitest'
 import { BASE_URL } from '../../api/common'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
+import { dvcTest } from '../../../test-utils'
 import * as fs from 'fs'
-import * as chai from 'chai'
 import Nock, { Body, ReplyHeaders } from 'nock'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 const mockVariablesResponse = [
     {
@@ -181,14 +180,14 @@ const setupNockMock = (customProperties: unknown[]) => (api: Nock.Scope) => {
 }
 
 describe('generate types', () => {
-    beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
-
-    after(() => {
+    afterAll(() => {
         fs.rmSync(artifactsDir, { recursive: true })
     })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
@@ -211,6 +210,9 @@ describe('generate types', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
@@ -239,6 +241,9 @@ describe('generate types', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
@@ -262,6 +267,9 @@ describe('generate types', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, setupNockMock(mockCustomPropertiesResponse))
         .stdout()
         .command([
@@ -285,6 +293,9 @@ describe('generate types', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, setupNockMock([]))
         .stdout()
         .command([
@@ -315,6 +326,9 @@ describe('generate types', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, setupNockMock([]))
         .stdout()
         .command([

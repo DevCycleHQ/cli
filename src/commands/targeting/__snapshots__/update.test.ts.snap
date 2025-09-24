@@ -1,11 +1,11 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`targeting update update a target in headless mode with a custom data key 1`] = `
-"{\\"_feature\\":\\"647e36gg16d9k4815fi3f97d\\",\\"_environment\\":\\"648b421gg3f682869c0f22f8\\",\\"_createdBy\\":\\"test\\",\\"status\\":\\"inactive\\",\\"updatedAt\\":\\"2023-06-27T03:19:58.541Z\\",\\"targets\\":[{\\"distribution\\":[{\\"_variation\\":\\"variation-on\\",\\"percentage\\":1}],\\"audience\\":{\\"name\\":\\"Shrek Fans\\",\\"filters\\":{\\"filters\\":[{\\"type\\":\\"user\\",\\"subType\\":\\"customData\\",\\"comparator\\":\\"=\\",\\"values\\":[true],\\"dataKey\\":\\"isShrek\\",\\"dataKeyType\\":\\"Boolean\\"}],\\"operator\\":\\"and\\"}}}]}
+exports[`targeting update > update a target in headless mode with a custom data key 1`] = `
+"{"_feature":"647e36gg16d9k4815fi3f97d","_environment":"648b421gg3f682869c0f22f8","_createdBy":"test","status":"inactive","updatedAt":"2023-06-27T03:19:58.541Z","targets":[{"distribution":[{"_variation":"variation-on","percentage":1}],"audience":{"name":"Shrek Fans","filters":{"filters":[{"type":"user","subType":"customData","comparator":"=","values":[true],"dataKey":"isShrek","dataKeyType":"Boolean"}],"operator":"and"}}}]}
 "
 `;
 
-exports[`targeting update updates a target by adding a filter in interactive mode 1`] = `
+exports[`targeting update > updates a target by adding a filter in interactive mode 1`] = `
 "
 
 🤖 Manage your Targeting
@@ -14,7 +14,7 @@ exports[`targeting update updates a target by adding a filter in interactive mod
    ├─ definition
    │  └─ All Users
    └─ serve
-      └─ Variation On
+      └─ 63b8677a7a95e795ac9146ce
 
 
 
@@ -96,7 +96,7 @@ To enable this feature on this environment, use:
 "
 `;
 
-exports[`targeting update updates a target in headless mode 1`] = `
-"{\\"_feature\\":\\"647e36gg16d9k4815fi3f97d\\",\\"_environment\\":\\"648b421gg3f682869c0f22f8\\",\\"_createdBy\\":\\"test\\",\\"status\\":\\"inactive\\",\\"updatedAt\\":\\"2023-06-27T03:19:58.541Z\\",\\"targets\\":[{\\"_id\\":\\"647e36gg16d9k2814fc3f15e\\",\\"audience\\":{\\"name\\":\\"All Users\\",\\"filters\\":{\\"operator\\":\\"and\\",\\"filters\\":[{\\"type\\":\\"all\\"}]}},\\"distribution\\":[{\\"_variation\\":\\"647e36gg16c1d4814fe3f962\\",\\"percentage\\":1}]}],\\"readonly\\":false}
+exports[`targeting update > updates a target in headless mode 1`] = `
+"{"_feature":"647e36gg16d9k4815fi3f97d","_environment":"648b421gg3f682869c0f22f8","_createdBy":"test","status":"inactive","updatedAt":"2023-06-27T03:19:58.541Z","targets":[{"_id":"647e36gg16d9k2814fc3f15e","audience":{"name":"All Users","filters":{"operator":"and","filters":[{"type":"all"}]}},"distribution":[{"_variation":"647e36gg16c1d4814fe3f962","percentage":1}]}],"readonly":false}
 "
 `;

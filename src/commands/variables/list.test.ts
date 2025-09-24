@@ -1,6 +1,7 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variables list', () => {
     const projectKey = 'test-project'
@@ -11,6 +12,7 @@ describe('variables list', () => {
         'test-client-secret',
     ]
 
+    const expectedVariableKeys = ['variable-1', 'variable-2']
     const mockVariables = [
         {
             key: 'variable-1',
@@ -25,6 +27,9 @@ describe('variables list', () => {
     ]
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/variables`)
@@ -33,16 +38,17 @@ describe('variables list', () => {
         .stdout()
         .command(['variables list', '--project', projectKey, ...authFlags])
         .it('returns a list of variable keys', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(['variable-1', 'variable-2'], null, 2),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedVariableKeys)
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables`)
-                .query({ page: 2, perPage: 10 })
+                .get(`/v1/projects/${projectKey}/variables?page=2&perPage=10`)
                 .reply(200, mockVariables),
         )
         .stdout()
@@ -57,16 +63,17 @@ describe('variables list', () => {
             ...authFlags,
         ])
         .it('passes pagination params to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(['variable-1', 'variable-2'], null, 2),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedVariableKeys)
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables`)
-                .query({ search: 'hello world' })
+                .get(`/v1/projects/${projectKey}/variables?search=search`)
                 .reply(200, mockVariables),
         )
         .stdout()
@@ -75,12 +82,11 @@ describe('variables list', () => {
             '--project',
             projectKey,
             '--search',
-            'hello world',
+            'search',
             ...authFlags,
         ])
         .it('passes search param to api', (ctx) => {
-            expect(ctx.stdout).to.contain(
-                JSON.stringify(['variable-1', 'variable-2'], null, 2),
-            )
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedVariableKeys)
         })
 })

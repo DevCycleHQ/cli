@@ -1,6 +1,7 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('environments get', () => {
     const projectKey = 'test-project'
@@ -10,8 +11,7 @@ describe('environments get', () => {
         '--client-secret',
         'test-client-secret',
     ]
-
-    const mockEnvironments = [
+    const expectedEnvironments = [
         {
             key: 'development',
             name: 'Development',
@@ -28,7 +28,7 @@ describe('environments get', () => {
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/environments`)
-                .reply(200, mockEnvironments),
+                .reply(200, expectedEnvironments),
         )
         .stdout()
         .command([
@@ -39,33 +39,38 @@ describe('environments get', () => {
             ...authFlags,
         ])
         .it('returns a list of environment objects in headless mode', (ctx) => {
-            expect(ctx.stdout).to.contain(JSON.stringify(mockEnvironments))
+            const data = JSON.parse(ctx.stdout)
+            expect(data).to.eql(expectedEnvironments)
         })
 
-    // Test positional arguments functionality
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v1/projects/${projectKey}/environments/development`)
-                .reply(200, mockEnvironments[0])
+                .reply(200, expectedEnvironments[0]),
+        )
+        .nock(BASE_URL, (api) =>
+            api
                 .get(`/v1/projects/${projectKey}/environments/production`)
-                .reply(200, mockEnvironments[1]),
+                .reply(200, expectedEnvironments[1]),
         )
         .stdout()
         .command([
             'environments get',
-            'development',
-            'production',
             '--project',
             projectKey,
             ...authFlags,
+            'development',
+            'production',
         ])
         .it(
             'fetches multiple environments by space-separated positional arguments',
             (ctx) => {
-                expect(ctx.stdout).to.contain(
-                    JSON.stringify(mockEnvironments, null, 2),
-                )
+                const data = JSON.parse(ctx.stdout)
+                expect(data).to.eql(expectedEnvironments)
             },
         )
 })

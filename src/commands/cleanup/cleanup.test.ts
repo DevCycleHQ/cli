@@ -1,12 +1,7 @@
-import { expect, test } from '@oclif/test'
-import chai from 'chai'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
-import { setCurrentTestFile } from '../../../test-utils'
+import { test } from '@oclif/test'
+import { expect } from 'vitest'
 
 describe('cleanup', () => {
-    beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
-
     test.stdout()
         .command([
             'cleanup',

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`targeting get includes environment in query params 1`] = `
+exports[`targeting get > includes environment in query params 1`] = `
 "├─ Production
 │  ├─ status
 │  │  └─ enabled
@@ -28,7 +28,7 @@ exports[`targeting get includes environment in query params 1`] = `
 "
 `;
 
-exports[`targeting get returns all targeting for a feature 1`] = `
+exports[`targeting get > returns all targeting for a feature 1`] = `
 "├─ Production
 │  ├─ status
 │  │  └─ enabled
@@ -56,7 +56,7 @@ exports[`targeting get returns all targeting for a feature 1`] = `
 "
 `;
 
-exports[`targeting get uses prompts when feature is not provided 1`] = `
+exports[`targeting get > uses prompts when feature is not provided 1`] = `
 "├─ Production
 │  ├─ status
 │  │  └─ enabled

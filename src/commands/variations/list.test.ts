@@ -1,7 +1,8 @@
-import { expect } from '@oclif/test'
+import { expect, vi } from 'vitest'
 import inquirer from 'inquirer'
 import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variations list', () => {
     const projectKey = 'test-project'
@@ -35,6 +36,9 @@ describe('variations list', () => {
     ]
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
@@ -57,6 +61,9 @@ describe('variations list', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
@@ -75,7 +82,15 @@ describe('variations list', () => {
             )
         })
 
+    let stderrSpy: ReturnType<typeof vi.spyOn> | undefined
+    let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            stderrSpy = vi.spyOn(process.stderr, 'write' as any)
+            consoleErrorSpy = vi.spyOn(console, 'error')
+        })
+        .stdout()
         .stderr()
         .command([
             'variations list',
@@ -84,9 +99,14 @@ describe('variations list', () => {
             projectKey,
             ...authFlags,
         ])
-        .it('does not prompt when using --headless', (ctx) => {
-            expect(ctx.stderr).to.contain(
-                'In headless mode, feature is required',
-            )
+        .it('does not prompt when using --headless', () => {
+            const stderrCalls = (stderrSpy?.mock.calls || []).flat().join('')
+            const consoleErrCalls = (consoleErrorSpy?.mock.calls || [])
+                .flat()
+                .join('')
+            const combined = `${stderrCalls}${consoleErrCalls}`
+            expect(combined).toContain('In headless mode, feature is required')
+            stderrSpy?.mockRestore()
+            consoleErrorSpy?.mockRestore()
         })
 })

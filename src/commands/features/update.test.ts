@@ -1,14 +1,11 @@
-import { expect } from '@oclif/test'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
-import { BASE_URL } from '../../api/common'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
-import chai from 'chai'
+import { expect, vi } from 'vitest'
+import { dvcTest } from '../../../test-utils'
+import { AUTH_URL, BASE_URL } from '../../api/common'
+import axios from 'axios'
+import { tokenCacheStub_get } from '../../../test/setup'
 import inquirer from 'inquirer'
 
 describe('features update', () => {
-    beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
-
     const projectKey = 'test-project'
     const authFlags = [
         '--client-id',
@@ -72,6 +69,10 @@ describe('features update', () => {
 
     // headless mode:
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(`/v2/projects/${projectKey}/features/${mockFeature.key}`)
@@ -108,7 +109,16 @@ describe('features update', () => {
             expect(ctx.stdout).toMatchSnapshot()
         })
 
+    let stderrSpy: ReturnType<typeof vi.spyOn> | undefined
+    let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+            stderrSpy = vi.spyOn(process.stderr, 'write' as any)
+            consoleErrorSpy = vi.spyOn(console, 'error')
+        })
+        .stdout()
         .stderr()
         .command([
             'features update',
@@ -116,8 +126,6 @@ describe('features update', () => {
             projectKey,
             '--name',
             requestBodyWithVariables.name,
-            '--key',
-            requestBodyWithVariables.key,
             '--description',
             requestBodyWithVariables.description,
             '--variables',
@@ -127,15 +135,23 @@ describe('features update', () => {
             '--headless',
             ...authFlags,
         ])
-        .it(
-            'returns an error if key is not provided in headless mode',
-            (ctx) => {
-                expect(ctx.stderr).to.contain('The key argument is required')
-            },
-        )
+        .it('returns an error if key is not provided in headless mode', () => {
+            const stderrCalls = (stderrSpy?.mock.calls || []).flat().join('')
+            const consoleErrCalls = (consoleErrorSpy?.mock.calls || [])
+                .flat()
+                .join(' ')
+            const combined = `${stderrCalls}${consoleErrCalls}`
+            expect(combined).toContain('The key argument is required')
+            stderrSpy?.mockRestore()
+            consoleErrorSpy?.mockRestore()
+        })
 
     // interactive mode:
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .stub(inquirer, 'prompt', () => ({
             ...requestBodyWithVariations,
             sdkVisibility: ['mobile', 'server'],
@@ -168,6 +184,10 @@ describe('features update', () => {
         })
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+            await axios.post(new URL('/oauth/token', AUTH_URL).href)
+        })
         .stub(inquirer, 'prompt', () => ({
             ...requestBody,
             name: null,

@@ -1,15 +1,10 @@
-import { expect, test } from '@oclif/test'
-import chai from 'chai'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
-import { setCurrentTestFile } from '../../../test-utils'
+import { test } from '@oclif/test'
+import { expect, vi } from 'vitest'
 import { AUTH_URL, BASE_URL } from '../../api/common'
 
 process.env = {}
 
 describe('diff', () => {
-    beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
-
     test.stdout()
         .command([
             'diff',
@@ -83,6 +78,8 @@ describe('diff', () => {
             },
         )
 
+    let stderrSpy: ReturnType<typeof vi.spyOn> | undefined
+    let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined
     test.nock(AUTH_URL, (api) => {
         api.post('/oauth/token', {
             grant_type: 'client_credentials',
@@ -93,6 +90,11 @@ describe('diff', () => {
             message: 'Failed auth',
         })
     })
+        .do(() => {
+            stderrSpy = vi.spyOn(process.stderr, 'write' as any)
+            consoleErrorSpy = vi.spyOn(console, 'error')
+        })
+        .stdout()
         .stderr()
         .command([
             'diff',
@@ -106,10 +108,17 @@ describe('diff', () => {
             'project',
         ])
         .catch((error) => null)
-        .it('runs with failed api authorization', (ctx) => {
-            expect(ctx.stderr).to.contain(
+        .it('runs with failed api authorization', () => {
+            const stderrCalls = (stderrSpy?.mock.calls || []).flat().join('')
+            const consoleErrCalls = (consoleErrorSpy?.mock.calls || [])
+                .flat()
+                .join(' ')
+            const combined = `${stderrCalls}${consoleErrCalls}`
+            expect(combined).toContain(
                 'Failed to authenticate with the DevCycle API. Check your credentials.',
             )
+            stderrSpy?.mockRestore()
+            consoleErrorSpy?.mockRestore()
         })
 
     test.stdout()

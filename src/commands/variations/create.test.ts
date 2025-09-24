@@ -1,13 +1,10 @@
-import { expect } from '@oclif/test'
+import { expect } from 'vitest'
 import inquirer from 'inquirer'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
-import chai from 'chai'
-import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
+import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variations create', () => {
-    beforeEach(setCurrentTestFile(__filename))
-    chai.use(jestSnapshotPlugin())
     const projectKey = 'test-project'
     const authFlags = [
         '--client-id',
@@ -120,6 +117,9 @@ describe('variations create', () => {
         },
     }
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .post(
@@ -151,6 +151,9 @@ describe('variations create', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .post(
@@ -181,6 +184,9 @@ describe('variations create', () => {
         )
 
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .nock(BASE_URL, (api) =>
             api
                 .get(
@@ -224,6 +230,9 @@ describe('variations create', () => {
             expect(ctx.stdout).toMatchSnapshot()
         })
     dvcTest()
+        .do(async () => {
+            tokenCacheStub_get.returns('mock-cached-token')
+        })
         .stub(inquirer, 'registerPrompt', () => {
             return
         })
