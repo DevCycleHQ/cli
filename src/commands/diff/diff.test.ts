@@ -1,13 +1,10 @@
 import { test } from '@oclif/test'
 import { expect, vi } from 'vitest'
-import { setCurrentTestFile } from '../../../test-utils'
 import { AUTH_URL, BASE_URL } from '../../api/common'
 
 process.env = {}
 
 describe('diff', () => {
-    beforeEach(setCurrentTestFile(__filename))
-
     test.stdout()
         .command([
             'diff',

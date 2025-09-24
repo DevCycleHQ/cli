@@ -1,11 +1,8 @@
 import { test } from '@oclif/test'
 import { expect } from 'vitest'
-import { setCurrentTestFile } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 
 describe('usages', () => {
-    beforeEach(setCurrentTestFile(__filename))
-
     const projectKey = 'test-project'
     const mockVariable = {
         _id: '648a0d55c4e88cd4c4544c58',

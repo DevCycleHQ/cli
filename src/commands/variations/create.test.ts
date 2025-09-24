@@ -1,11 +1,10 @@
 import { expect } from 'vitest'
 import inquirer from 'inquirer'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('variations create', () => {
-    beforeEach(setCurrentTestFile(__filename))
     const projectKey = 'test-project'
     const authFlags = [
         '--client-id',

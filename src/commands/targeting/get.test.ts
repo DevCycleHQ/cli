@@ -1,12 +1,10 @@
 import { expect, vi } from 'vitest'
 import inquirer from 'inquirer'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 import { tokenCacheStub_get } from '../../../test/setup'
 
 describe('targeting get', () => {
-    beforeEach(setCurrentTestFile(__filename))
-
     let stderrSpy: ReturnType<typeof vi.spyOn> | undefined
     let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined
 

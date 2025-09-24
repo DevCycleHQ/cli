@@ -1,10 +1,7 @@
 import { test } from '@oclif/test'
 import { expect } from 'vitest'
-import { setCurrentTestFile } from '../../../test-utils'
 
 describe('cleanup', () => {
-    beforeEach(setCurrentTestFile(__filename))
-
     test.stdout()
         .command([
             'cleanup',

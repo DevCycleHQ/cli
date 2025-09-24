@@ -1,6 +1,6 @@
 import { expect, afterAll } from 'vitest'
 import { BASE_URL } from '../../api/common'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { dvcTest } from '../../../test-utils'
 import * as fs from 'fs'
 import Nock, { Body, ReplyHeaders } from 'nock'
 import { tokenCacheStub_get } from '../../../test/setup'
@@ -180,8 +180,6 @@ const setupNockMock = (customProperties: unknown[]) => (api: Nock.Scope) => {
 }
 
 describe('generate types', () => {
-    beforeEach(setCurrentTestFile(__filename))
-
     afterAll(() => {
         fs.rmSync(artifactsDir, { recursive: true })
     })

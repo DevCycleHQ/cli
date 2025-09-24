@@ -1,12 +1,10 @@
 import { expect, vi } from 'vitest'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { dvcTest } from '../../../test-utils'
 import { BASE_URL } from '../../api/common'
 import { tokenCacheStub_get } from '../../../test/setup'
 import inquirer from 'inquirer'
 
 describe('targeting update', () => {
-    beforeEach(setCurrentTestFile(__filename))
-
     const projectKey = 'test-project'
     const authFlags = [
         '--client-id',

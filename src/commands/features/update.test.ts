@@ -1,13 +1,11 @@
 import { expect, vi } from 'vitest'
-import { dvcTest, setCurrentTestFile } from '../../../test-utils'
+import { dvcTest } from '../../../test-utils'
 import { AUTH_URL, BASE_URL } from '../../api/common'
 import axios from 'axios'
 import { tokenCacheStub_get } from '../../../test/setup'
 import inquirer from 'inquirer'
 
 describe('features update', () => {
-    beforeEach(setCurrentTestFile(__filename))
-
     const projectKey = 'test-project'
     const authFlags = [
         '--client-id',

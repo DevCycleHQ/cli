@@ -48,8 +48,7 @@ describe('variables list', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables`)
-                .query({ page: 2, perPage: 10 })
+                .get(`/v1/projects/${projectKey}/variables?page=2&perPage=10`)
                 .reply(200, mockVariables),
         )
         .stdout()
@@ -65,7 +64,7 @@ describe('variables list', () => {
         ])
         .it('passes pagination params to api', (ctx) => {
             const data = JSON.parse(ctx.stdout)
-            expect(data).to.eql(mockVariables)
+            expect(data).to.eql(expectedVariableKeys)
         })
 
     dvcTest()
@@ -74,8 +73,7 @@ describe('variables list', () => {
         })
         .nock(BASE_URL, (api) =>
             api
-                .get(`/v1/projects/${projectKey}/variables`)
-                .query({ search: 'search' })
+                .get(`/v1/projects/${projectKey}/variables?search=search`)
                 .reply(200, mockVariables),
         )
         .stdout()
@@ -89,6 +87,6 @@ describe('variables list', () => {
         ])
         .it('passes search param to api', (ctx) => {
             const data = JSON.parse(ctx.stdout)
-            expect(data).to.eql(mockVariables)
+            expect(data).to.eql(expectedVariableKeys)
         })
 })
