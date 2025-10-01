@@ -116,4 +116,8 @@ const apiClient: ApiClientType = _createApiClient(BASE_URL, {
 export { apiClient }
 export default apiClient
 
-export const v2ApiClient = createV2ApiClient(BASE_URL)
+// Create v2 API client using the same shared axiosClient instance to preserve MCP headers
+export const v2ApiClient = createV2ApiClient(BASE_URL, {
+    axiosInstance: axiosClient,
+    validate: 'request',
+})

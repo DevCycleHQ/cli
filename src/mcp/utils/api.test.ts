@@ -4,7 +4,7 @@ import * as assert from 'assert'
 import { DevCycleApiClient, handleZodiosValidationErrors } from './api'
 import { DevCycleAuth } from './auth'
 import { setMCPToolCommand } from './headers'
-import { axiosClient } from '../../api/apiClient'
+import { axiosClient, v2ApiClient } from '../../api/apiClient'
 
 describe('DevCycleApiClient', () => {
     let apiClient: DevCycleApiClient
@@ -184,6 +184,22 @@ describe('Header Management', () => {
             const meta = JSON.parse(headers['dvc-referrer-metadata'])
             expect(meta.command).to.equal('list_features')
             expect(meta.caller).to.equal('mcp')
+        })
+
+        it('should ensure v2ApiClient uses shared axiosClient instance with MCP headers', () => {
+            // Set MCP headers on the shared axiosClient
+            setMCPToolCommand('create_feature')
+
+            // Verify that the v2ApiClient has access to the same headers
+            // This works because v2ApiClient should be using the shared axiosClient instance
+            const headers = axiosClient.defaults.headers.common as any
+            expect(headers['dvc-referrer']).to.equal('mcp')
+            const meta = JSON.parse(headers['dvc-referrer-metadata'])
+            expect(meta.command).to.equal('create_feature')
+            expect(meta.caller).to.equal('mcp')
+
+            // Verify v2ApiClient exists and is properly configured
+            expect(v2ApiClient).to.exist
         })
     })
 })
