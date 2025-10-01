@@ -1,4 +1,4 @@
-import OAuthProvider from '@cloudflare/workers-oauth-provider'
+import OAuthProvider, { OAuthHelpers } from '@cloudflare/workers-oauth-provider'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
 import type { ZodRawShape } from 'zod'
@@ -54,6 +54,9 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
         WorkerApiClient.initializeMCPHeaders(this.version)
 
         // Initialize the Worker-specific API client with OAuth tokens and state management
+        if (!this.props) {
+            throw new Error('User props not available')
+        }
         this.apiClient = new WorkerApiClient(
             this.props,
             this.env,
@@ -158,12 +161,10 @@ export default {
         // Create OAuth provider with env access
         const provider = new OAuthProvider({
             apiHandlers: {
-                // @ts-expect-error - type errors with the OAuthProvider
                 '/sse': DevCycleMCP.serveSSE('/sse'),
-                // @ts-expect-error - type errors with the OAuthProvider
                 '/mcp': DevCycleMCP.serve('/mcp'),
             },
-            // @ts-expect-error - type erorrs with the OAuthProvider
+            // @ts-expect-error - Hono's fetch signature is compatible but TypeScript can't verify exact type match
             defaultHandler: app,
             authorizeEndpoint: '/oauth/authorize',
             tokenEndpoint: '/oauth/token',

@@ -41,7 +41,7 @@
     },
     "dependencies": {
         "@babel/parser": "^7.28.0",
-        "@modelcontextprotocol/sdk": "^1.17.1",
+        "@modelcontextprotocol/sdk": "^1.18.1",
         "@oclif/core": "^2.16.0",
         "@oclif/plugin-autocomplete": "^2.3.10",
         "@oclif/plugin-help": "^6.2.27",
