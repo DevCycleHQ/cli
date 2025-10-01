@@ -44,7 +44,7 @@ DESCRIPTION
   Create a new Variable for an existing Feature.
 ```
 
-_See code: [src/commands/variables/create.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.0/src/commands/variables/create.ts)_
+_See code: [src/commands/variables/create.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.1/src/commands/variables/create.ts)_
 
 ## `dvc variables get [KEYS]`
 
@@ -91,7 +91,7 @@ EXAMPLES
   $ dvc variables get --keys=var-one,var-two
 ```
 
-_See code: [src/commands/variables/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.0/src/commands/variables/get.ts)_
+_See code: [src/commands/variables/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.1/src/commands/variables/get.ts)_
 
 ## `dvc variables list`
 
@@ -121,7 +121,7 @@ ALIASES
   $ dvc variables ls
 ```
 
-_See code: [src/commands/variables/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.0/src/commands/variables/list.ts)_
+_See code: [src/commands/variables/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.1/src/commands/variables/list.ts)_
 
 ## `dvc variables ls`
 
@@ -180,4 +180,4 @@ DESCRIPTION
   Update a Variable.
 ```
 
-_See code: [src/commands/variables/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.0/src/commands/variables/update.ts)_
+_See code: [src/commands/variables/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.1/src/commands/variables/update.ts)_

@@ -1,21 +1,21 @@
 {
-    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
-    "name": "com.devcycle/mcp",
-    "description": "DevCycle MCP server for feature flag management",
-    "version": "6.1.0",
-    "repository": {
-        "url": "https://github.com/DevCycleHQ/cli",
-        "source": "github"
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "com.devcycle/mcp",
+  "description": "DevCycle MCP server for feature flag management",
+  "version": "6.1.1",
+  "repository": {
+    "url": "https://github.com/DevCycleHQ/cli",
+    "source": "github"
+  },
+  "website_url": "https://docs.devcycle.com/cli-mcp/mcp-getting-started",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.devcycle.com/mcp"
     },
-    "website_url": "https://docs.devcycle.com/cli-mcp/mcp-getting-started",
-    "remotes": [
-        {
-            "type": "streamable-http",
-            "url": "https://mcp.devcycle.com/mcp"
-        },
-        {
-            "type": "sse",
-            "url": "https://mcp.devcycle.com/sse"
-        }
-    ]
+    {
+      "type": "sse",
+      "url": "https://mcp.devcycle.com/sse"
+    }
+  ]
 }
