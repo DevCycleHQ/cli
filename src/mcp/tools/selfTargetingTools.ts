@@ -5,7 +5,6 @@ import {
     fetchProjectOverridesForUser,
     updateOverride,
     deleteFeatureOverrides,
-    deleteAllProjectOverrides,
 } from '../../api/overrides'
 import {
     UpdateSelfTargetingIdentityArgsSchema,
@@ -146,28 +145,6 @@ export async function clearFeatureSelfTargetingOverridesHandler(
     )
 }
 
-export async function clearAllSelfTargetingOverridesHandler(
-    apiClient: IDevCycleApiClient,
-) {
-    return await apiClient.executeWithDashboardLink(
-        'clearAllSelfTargetingOverrides',
-        null,
-        async (authToken: string, projectKey: string | undefined) => {
-            if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
-            }
-            await handleZodiosValidationErrors(
-                () => deleteAllProjectOverrides(authToken, projectKey),
-                'deleteAllProjectOverrides',
-            )
-            return { message: 'Cleared all overrides for the project' }
-        },
-        dashboardLinks.organization.profileOverrides,
-    )
-}
-
 /**
  * Register self-targeting tools with the MCP server using the new direct registration pattern
  */
@@ -207,7 +184,7 @@ export function registerSelfTargetingTools(
             },
             inputSchema: UpdateSelfTargetingIdentityArgsSchema.shape,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs =
                 UpdateSelfTargetingIdentityArgsSchema.parse(args)
             return await updateSelfTargetingIdentityHandler(
@@ -249,7 +226,7 @@ export function registerSelfTargetingTools(
             },
             inputSchema: SetSelfTargetingOverrideArgsSchema.shape,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs = SetSelfTargetingOverrideArgsSchema.parse(args)
             return await setSelfTargetingOverrideHandler(
                 validatedArgs,
@@ -272,7 +249,7 @@ export function registerSelfTargetingTools(
             },
             inputSchema: ClearSelfTargetingOverridesArgsSchema.shape,
         },
-        async (args: any) => {
+        async (args: unknown) => {
             const validatedArgs =
                 ClearSelfTargetingOverridesArgsSchema.parse(args)
             return await clearFeatureSelfTargetingOverridesHandler(
@@ -281,21 +258,4 @@ export function registerSelfTargetingTools(
             )
         },
     )
-
-    // DISABLED: Clear all self-targeting overrides tool
-    // serverInstance.registerToolWithErrorHandling(
-    //     'clear_all_self_targeting_overrides',
-    //     {
-    //         description:
-    //             'Clear all self-targeting overrides for the current project. ⚠️ IMPORTANT: Always confirm with the user before clearing all overrides as it can clear production environments (environments where type = "production"). Include dashboard link in the response.',
-    //         annotations: {
-    //             title: 'Clear All Self-Targeting Overrides',
-    //             destructiveHint: true,
-    //         },
-    //         inputSchema: {}, // No parameters needed
-    //     },
-    //     async () => {
-    //         return await clearAllSelfTargetingOverridesHandler(apiClient)
-    //     },
-    // )
 }
