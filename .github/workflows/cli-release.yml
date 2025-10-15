@@ -42,7 +42,7 @@ jobs:
       - name: Set Secrets
         uses: DevCycleHQ/aws-secrets-action@main
         with:
-          secrets_map: '{"CLI_NPMJS_TOKEN": "DEVCYCLE_GITHUB_CLI_NPM_TOKEN", "MCP_KEY": "DEVCYCLE_GITHUB_cli_MCP_REGISTRY_PKEY"}'
+          secrets_map: '{"MCP_KEY": "DEVCYCLE_GITHUB_cli_MCP_REGISTRY_PKEY"}'
           aws_account_id: '134377926370'
       - name: Set Git author
         run: |
@@ -97,7 +97,6 @@ jobs:
           release-tag: ${{ env.LATEST_TAG }}
           draft: ${{ inputs.draft-release }}
           prerelease: ${{ inputs.prerelease }}
-          node-auth-token: ${{ env.CLI_NPMJS_TOKEN }}
 
       # --- Official MCP Registry (registry.modelcontextprotocol.io) Publish ---
       - name: Install MCP Publisher (registry.modelcontextprotocol.io)
