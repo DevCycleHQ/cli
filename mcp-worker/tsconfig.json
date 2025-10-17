@@ -4,10 +4,7 @@
         "outDir": "./dist",
         "rootDir": "../",
         "noEmit": true,
-        "types": [
-            "vitest/globals",
-            "node"
-        ],
+        "types": ["vitest/globals", "node"],
         "lib": ["ES2022"],
         "module": "ESNext",
         "target": "ES2022",
@@ -33,4 +30,4 @@
         "../src/**/__snapshots__/**",
         "src/**/*.test.ts"
     ]
-} 
+}
