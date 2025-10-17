@@ -40,8 +40,8 @@ TypeScript CLI application built with oclif framework for DevCycle feature flag 
 - Use Aviator CLI (`av`) for managing stacked branches: `av branch chore-fix-invalid-input`
 - Sync and push changes: `av sync --push=yes`
 - Create PR: `av pr --title "<title>" --body "<body>"`
-  - Title follows Conventional Commits, body uses markdown/bullets
-  - `av pr` will push the branch
+    - Title follows Conventional Commits, body uses markdown/bullets
+    - `av pr` will push the branch
 - GitHub PR descriptions should be short and focus on why changes were made, not what changed, limit describing files and tests changed.
 
 ## Naming Conventions
