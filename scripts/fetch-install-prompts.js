@@ -13,7 +13,8 @@ const fs = require('fs')
 const path = require('path')
 
 // Keep a single constant for clarity and reuse
-const TREE_URL = 'https://api.github.com/repos/DevCycleHQ/AI-Prompts-And-Rules/git/trees/main?recursive=1'
+const TREE_URL =
+    'https://api.github.com/repos/DevCycleHQ/AI-Prompts-And-Rules/git/trees/main?recursive=1'
 
 function fetchJson(url, headers = {}) {
     const requestHeaders = {
@@ -26,7 +27,11 @@ function fetchJson(url, headers = {}) {
             let data = ''
             res.on('data', (chunk) => (data += chunk))
             res.on('end', () => {
-                if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+                if (
+                    res.statusCode &&
+                    res.statusCode >= 200 &&
+                    res.statusCode < 300
+                ) {
                     try {
                         resolve(JSON.parse(data))
                     } catch (err) {
@@ -80,7 +85,9 @@ async function main() {
         // Build safe slugs (relative paths within install-prompts without extension)
         const slugSet = new Set()
         for (const p of mdFiles) {
-            const raw = p.replace(/^install-prompts\//, '').replace(/\.md$/i, '')
+            const raw = p
+                .replace(/^install-prompts\//, '')
+                .replace(/\.md$/i, '')
             // extra guards on the slug
             if (!raw || raw.includes('..') || raw.startsWith('/')) continue
             const cleaned = raw
@@ -133,4 +140,3 @@ main().catch((err) => {
     console.error(err)
     process.exit(1)
 })
-
