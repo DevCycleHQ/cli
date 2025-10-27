@@ -4,24 +4,24 @@ on:
   workflow_dispatch:
     inputs:
       draft-release:
-        description: 'Draft release?'
+        description: "Draft release?"
         required: false
         type: boolean
         default: true
       prerelease:
-        description: 'Prerelease?'
+        description: "Prerelease?"
         required: false
         type: boolean
         default: true
       npm-version:
-        description: 'NPM version bump?'
+        description: "NPM version bump?"
         required: false
         type: choice
         options:
           - major
           - minor
           - patch
-        default: 'patch'
+        default: "patch"
 
   # schedule:
   #   - cron: '0 12 * * 2'  # Runs every Tuesday at 12:00 PM (noon) ET
@@ -43,7 +43,7 @@ jobs:
         uses: DevCycleHQ/aws-secrets-action@main
         with:
           secrets_map: '{"MCP_KEY": "DEVCYCLE_GITHUB_cli_MCP_REGISTRY_PKEY"}'
-          aws_account_id: '134377926370'
+          aws_account_id: "134377926370"
       - name: Set Git author
         run: |
           git config --global user.email "foundation-admin@devcycle.com"
@@ -60,8 +60,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "${{ steps.get_node_version.outputs.NVMRC }}"
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'yarn'
+          registry-url: "https://registry.npmjs.org"
+          cache: "yarn"
 
       - name: Install dependencies
         run: yarn install
@@ -99,9 +99,10 @@ jobs:
           prerelease: ${{ inputs.prerelease }}
 
       # --- Official MCP Registry (registry.modelcontextprotocol.io) Publish ---
-      - name: Install MCP Publisher (registry.modelcontextprotocol.io)
+      # See docs here: https://raw.githubusercontent.com/modelcontextprotocol/registry/refs/heads/main/docs/guides/publishing/github-actions.md
+      - name: Install MCP Publisher
         run: |
-          curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.0.0/mcp-publisher_1.0.0_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
           chmod +x mcp-publisher
 
       - name: Sync server.json version to tag
