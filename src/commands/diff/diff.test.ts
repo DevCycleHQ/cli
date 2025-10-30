@@ -12,13 +12,9 @@ describe('diff', () => {
             './test-utils/fixtures/diff/e2e',
             '--no-api',
         ])
-        .it(
-            'runs against a test file',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            },
-            60000,
-        )
+        .it('runs against a test file', (ctx) => {
+            expect(ctx.stdout).toMatchSnapshot()
+        })
 
     test.stdout()
         .command([
@@ -29,13 +25,9 @@ describe('diff', () => {
             'js=checkVariable\\(\\w*,\\s*([^,)]*)',
             '--no-api',
         ])
-        .it(
-            'runs against a test file with a custom matcher',
-            (ctx) => {
-                expect(ctx.stdout).toMatchSnapshot()
-            },
-            60000,
-        )
+        .it('runs against a test file with a custom matcher', (ctx) => {
+            expect(ctx.stdout).toMatchSnapshot()
+        })
 
     test.stdout()
         .command([
