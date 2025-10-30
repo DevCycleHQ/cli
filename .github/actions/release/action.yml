@@ -39,6 +39,26 @@ runs:
         upload-url: ${{ steps.create_release.outputs.upload_url }}
         release-tag: ${{ env.LATEST_TAG }}
         
+    - name: Set up Node.js for npm publish
+      uses: actions/setup-node@v4
+      with:
+        registry-url: "https://registry.npmjs.org"
+        scope: "@devcycle"
+
+    - name: Update npm for OIDC support
+      shell: bash
+      run: npm install -g npm@11.6.2
+
+    - name: Verify npm version for OIDC
+      shell: bash
+      run: |
+        npm_version=$(npm --version)
+        echo "npm version: $npm_version"
+        if [ "$(printf '%s\n' "11.5.1" "$npm_version" | sort -V | head -n1)" != "11.5.1" ]; then
+          echo "Error: npm version $npm_version is below 11.5.1 required for OIDC trusted publishing"
+          exit 1
+        fi
+
     - name: Publish to NPM
       shell: bash
       run: npm publish --access public
