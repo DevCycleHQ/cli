@@ -39,7 +39,7 @@ DESCRIPTION
   Clear Overrides for a given Feature or Project.
 ```
 
-_See code: [src/commands/overrides/clear.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.2/src/commands/overrides/clear.ts)_
+_See code: [src/commands/overrides/clear.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.3/src/commands/overrides/clear.ts)_
 
 ## `dvc overrides get`
 
@@ -70,7 +70,7 @@ DESCRIPTION
   View the Overrides associated with your DevCycle Identity in your current project.
 ```
 
-_See code: [src/commands/overrides/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.2/src/commands/overrides/get.ts)_
+_See code: [src/commands/overrides/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.3/src/commands/overrides/get.ts)_
 
 ## `dvc overrides list`
 
@@ -111,7 +111,7 @@ ALIASES
   $ dvc overrides ls
 ```
 
-_See code: [src/commands/overrides/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.2/src/commands/overrides/list.ts)_
+_See code: [src/commands/overrides/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.3/src/commands/overrides/list.ts)_
 
 ## `dvc overrides ls`
 
@@ -185,4 +185,4 @@ EXAMPLES
   $ dvc overrides update --feature feature-key --environment env-key --variation variation-key
 ```
 
-_See code: [src/commands/overrides/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.2/src/commands/overrides/update.ts)_
+_See code: [src/commands/overrides/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.1.3/src/commands/overrides/update.ts)_
