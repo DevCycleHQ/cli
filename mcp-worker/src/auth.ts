@@ -103,7 +103,6 @@ export async function authorize(
     // Extract client information for the consent screen
     const clientName = client.clientName || client.clientId
     const clientLogo = client.logoUri || '' // No default logo
-    const clientUri = client.clientUri || '#'
     const requestedScopes = (c.env.AUTH0_SCOPE || '').split(' ')
 
     // Render the consent screen with CSRF protection
@@ -111,9 +110,7 @@ export async function authorize(
         renderConsentScreen({
             clientLogo,
             clientName,
-            clientUri,
             consentToken,
-            redirectUri: mcpClientAuthRequest.redirectUri,
             requestedScopes,
             transactionState,
         }),

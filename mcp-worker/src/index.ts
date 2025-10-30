@@ -1,4 +1,4 @@
-import OAuthProvider, { OAuthHelpers } from '@cloudflare/workers-oauth-provider'
+import OAuthProvider from '@cloudflare/workers-oauth-provider'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
 import type { ZodRawShape } from 'zod'
