@@ -9,7 +9,9 @@ process.env.OCLIF_NEXT_VERSION = '1'
 // Ensure TypeScript files required by @oclif/test are compiled at runtime
 try {
     require('ts-node/register')
-} catch {}
+} catch {
+    // ts-node may not be available in all environments, ignore error
+}
 
 global.oclif = global.oclif || {}
 global.oclif.columns = 80

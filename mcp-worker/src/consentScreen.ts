@@ -6,16 +6,12 @@ import { html, raw } from 'hono/html'
 export function renderConsentScreen({
     clientName,
     clientLogo,
-    clientUri,
-    redirectUri,
     requestedScopes,
     transactionState,
     consentToken,
 }: {
     clientName: string
     clientLogo: string
-    clientUri: string
-    redirectUri: string
     requestedScopes: string[]
     transactionState: string
     consentToken: string
