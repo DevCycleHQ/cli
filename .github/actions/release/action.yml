@@ -54,8 +54,8 @@ runs:
       run: |
         npm_version=$(npm --version)
         echo "npm version: $npm_version"
-        if [ "$(printf '%s\n' "11.5.1" "$npm_version" | sort -V | head -n1)" != "11.5.1" ]; then
-          echo "Error: npm version $npm_version is below 11.5.1 required for OIDC trusted publishing"
+        if [ "$(printf '%s\n' "11.6.2" "$npm_version" | sort -V | head -n1)" != "11.6.2" ]; then
+          echo "Error: npm version $npm_version is below 11.6.2 required for OIDC trusted publishing"
           exit 1
         fi
 
