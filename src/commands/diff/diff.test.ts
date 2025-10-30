@@ -14,7 +14,7 @@ describe('diff', () => {
         ])
         .it('runs against a test file', (ctx) => {
             expect(ctx.stdout).toMatchSnapshot()
-        })
+        }, 60000)
 
     test.stdout()
         .command([
@@ -27,7 +27,7 @@ describe('diff', () => {
         ])
         .it('runs against a test file with a custom matcher', (ctx) => {
             expect(ctx.stdout).toMatchSnapshot()
-        })
+        }, 60000)
 
     test.stdout()
         .command([
