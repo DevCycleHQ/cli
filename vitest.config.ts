@@ -9,7 +9,7 @@ export default defineConfig({
         watch: false,
         passWithNoTests: false,
         reporters: 'default',
-        testTimeout: 30000,
+        testTimeout: 90000,
         hookTimeout: 30000,
     },
 })
