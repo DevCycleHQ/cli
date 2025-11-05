@@ -1,0 +1,13 @@
+project: "test-project"
+org:
+  id: "org_test"
+  name: "test-org"
+
+typeGenerator:
+  outputPath: "./test-utils/fixtures/configs/mockTypes.ts"
+
+codeInsights:
+  matchPatterns:
+    ts:
+      - ":\\s*([a-z][a-z0-9-]*)"
+
