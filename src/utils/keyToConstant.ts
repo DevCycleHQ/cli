@@ -1,8 +1,7 @@
 import { upperCase } from 'lodash'
 
 /**
- * Transforms a variable key into the constant name format used by the generate command.
- * This matches the logic in src/commands/generate/types.ts getVariableGeneratedName()
+ * Converts a variable key to its generated constant name format.
  *
  * Example: 'my-variable' -> 'MY_VARIABLE'
  */
