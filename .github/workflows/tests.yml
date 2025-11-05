@@ -7,6 +7,14 @@ permissions:
   contents: read
 
 jobs:
+  license-check:
+    name: License Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DevCycleHQ/license-action@main
+        with:
+          language: "javascript"
   run-tests:
     runs-on: ubicloud-standard-4
     strategy:
