@@ -17,7 +17,7 @@ DevCycle Variable Changes:
 🔴 Removed
 
   1. removed-variable
-	   Location: test-utils/fixtures/diff/sampleDiff.ts:L1
+	   Location: test-utils/fixtures/diff/sampleDiff.ts:L0
 "
 `;
 

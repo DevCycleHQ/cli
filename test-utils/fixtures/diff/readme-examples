@@ -3,8 +3,7 @@ new file mode 100644
 index 00000000..ed8ee4ab
 --- /dev/null
 +++ b/test-utils/fixtures/diff/sampleDiff.ts
-
-@@ -1,1 +1,21 @@
+@@ -0,0 +1,3 @@
 +const flag1 = getFeatureFlag('my-variable', defaultValue)
 +const flag2 = isFeatureEnabled('enable-feature')
 -const oldFlag = getFeatureFlag('removed-variable', defaultValue)
