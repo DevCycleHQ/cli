@@ -166,8 +166,7 @@ export default class Diff extends Base {
                 // Try to find alias by direct match first, then by transformed constant name
                 // This handles cases where the generated types file creates constants like MY_VARIABLE
                 // for a variable key like 'my-variable'
-                const aliasedName =
-                    aliasMap[match.name] 
+                const aliasedName = aliasMap[match.name]
                 if (match.isUnknown && aliasedName) {
                     match.alias = match.name
                     match.name = aliasedName
