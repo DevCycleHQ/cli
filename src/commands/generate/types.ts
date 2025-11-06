@@ -4,9 +4,9 @@ import { fetchAllVariables } from '../../api/variables'
 import { Flags } from '@oclif/core'
 import { Feature, Project, Variable, CustomProperty } from '../../api/schemas'
 import { OrganizationMember, fetchOrganizationMembers } from '../../api/members'
+import { upperCase } from 'lodash'
 import { createHash } from 'crypto'
 import path from 'path'
-import { keyToConstant } from '../../utils/keyToConstant'
 import {
     fetchAllCompletedOrArchivedFeatures,
     fetchFeatures,
@@ -353,7 +353,7 @@ export const ${constantName} = '${hashedKey}' as const`
     }
 
     getVariableGeneratedName(variable: Variable) {
-        let constantName = keyToConstant(variable.key)
+        let constantName = upperCase(variable.key).replace(/\s/g, '_')
 
         if (this.methodNames[constantName]?.length) {
             constantName = `${constantName}_${this.methodNames[constantName].length}`
