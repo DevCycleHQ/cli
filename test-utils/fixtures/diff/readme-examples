@@ -1,0 +1,11 @@
+diff --git a/test-utils/fixtures/diff/sampleDiff.ts b/test-utils/fixtures/diff/sampleDiff.ts
+new file mode 100644
+index 00000000..ed8ee4ab
+--- /dev/null
++++ b/test-utils/fixtures/diff/sampleDiff.ts
+
+@@ -1,1 +1,21 @@
++const flag1 = getFeatureFlag('my-variable', defaultValue)
++const flag2 = isFeatureEnabled('enable-feature')
+-const oldFlag = getFeatureFlag('removed-variable', defaultValue)
+

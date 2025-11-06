@@ -1,5 +1,26 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`diff > correctly matches using custom patterns from README examples 1`] = `
+"
+DevCycle Variable Changes:
+
+🟢  2 Variables Added
+🔴  1 Variable Removed
+
+🟢 Added
+
+  1. my-variable
+	   Location: test-utils/fixtures/diff/sampleDiff.ts:L1
+  2. enable-feature
+	   Location: test-utils/fixtures/diff/sampleDiff.ts:L2
+
+🔴 Removed
+
+  1. removed-variable
+	   Location: test-utils/fixtures/diff/sampleDiff.ts:L1
+"
+`;
+
 exports[`diff > enriches output with API data 1`] = `
 "
 DevCycle Variable Changes:
