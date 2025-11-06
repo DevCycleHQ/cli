@@ -313,6 +313,7 @@ describe('diff', () => {
                 expect(ctx.stdout).toContain('removed-variable')
             },
         )
+
     test.stdout()
         .command([
             'diff',

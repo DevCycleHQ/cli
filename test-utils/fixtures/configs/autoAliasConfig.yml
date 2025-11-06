@@ -6,8 +6,4 @@ org:
 typeGenerator:
   outputPath: "./test-utils/fixtures/configs/mockTypes.ts"
 
-codeInsights:
-  matchPatterns:
-    ts:
-      - ":\\s*([a-z][a-z0-9-]*)"
 
