@@ -14,7 +14,6 @@ import VarAliasFlag, { getVariableAliases } from '../../flags/var-alias'
 import ShowRegexFlag, { showRegex } from '../../flags/show-regex'
 import { Variable } from '../../api/schemas'
 import { FileFilters } from '../../utils/FileFilters'
-import { keyToConstant } from '../../utils/keyToConstant'
 
 const EMOJI = {
     add: '🟢',
@@ -163,11 +162,7 @@ export default class Diff extends Base {
         Object.values(matchesBySdk).forEach((matches) => {
             matches.forEach((m) => {
                 const match = { ...m }
-                // Try to find alias by direct match first, then by transformed constant name
-                // This handles cases where the generated types file creates constants like MY_VARIABLE
-                // for a variable key like 'my-variable'
-                const aliasedName =
-                    aliasMap[match.name] || aliasMap[keyToConstant(match.name)]
+                const aliasedName = aliasMap[match.name]
                 if (match.isUnknown && aliasedName) {
                     match.alias = match.name
                     match.name = aliasedName

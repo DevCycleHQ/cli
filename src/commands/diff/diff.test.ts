@@ -292,27 +292,6 @@ describe('diff', () => {
         .it('identifies aliased variables specified in config file', (ctx) => {
             expect(ctx.stdout).toMatchSnapshot()
         })
-
-    test.stdout()
-        .command([
-            'diff',
-            '--file',
-            'test-utils/fixtures/diff/auto-alias-transform',
-            '--no-api',
-            '--repo-config-path',
-            './test-utils/fixtures/configs/autoAliasConfig.yml',
-        ])
-        .it(
-            'resolves aliases from generated types file using key transformation',
-            (ctx) => {
-                // Should NOT show "could not be identified" warnings
-                expect(ctx.stdout).not.toContain('could not be identified')
-                // Should identify the variables
-                expect(ctx.stdout).toContain('my-test-variable')
-                expect(ctx.stdout).toContain('enable-feature')
-                expect(ctx.stdout).toContain('removed-variable')
-            },
-        )
     test.stdout()
         .command([
             'diff',
