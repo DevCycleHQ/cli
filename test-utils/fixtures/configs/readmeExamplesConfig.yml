@@ -1,0 +1,13 @@
+project: "test-project"
+org:
+  id: "org_test"
+  name: "test-org"
+
+codeInsights:
+  matchPatterns:
+    ts:
+      # Matches: getFeatureFlag('my-variable', defaultValue)
+      - getFeatureFlag\(\s*([^,)]*)\s*,
+      # Matches: isFeatureEnabled('my-variable')
+      - isFeatureEnabled\(\s*([^,)]*)\s*\)
+

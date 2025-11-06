@@ -292,6 +292,22 @@ describe('diff', () => {
         .it('identifies aliased variables specified in config file', (ctx) => {
             expect(ctx.stdout).toMatchSnapshot()
         })
+
+    test.stdout()
+        .command([
+            'diff',
+            '--file',
+            'test-utils/fixtures/diff/readme-examples',
+            '--no-api',
+            '--repo-config-path',
+            './test-utils/fixtures/configs/readmeExamplesConfig.yml',
+        ])
+        .it(
+            'correctly matches using custom patterns from README examples',
+            (ctx) => {
+                expect(ctx.stdout).toMatchSnapshot()
+            },
+        )
     test.stdout()
         .command([
             'diff',

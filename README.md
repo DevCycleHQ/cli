@@ -239,12 +239,15 @@ codeInsights:
     - "dist/*"
 ```
 
-### Match Patterns
+### Match Patterns and Aliases
 
 When identifying variable usages in the code, the CLI will identify DevCycle SDK methods by default. To capture
-other usages you may define match patterns. Match patterns are defined by file extension, and each pattern should
-contain exactly one capture group which matches the key of the variable. Make sure the captured value contains the
-entire key parameter (including quotes, if applicable).
+other usages you may define match patterns. Match patterns are defined by file extension.
+
+:::note
+Each pattern must include exactly one capture group for the variable key. Capture the entire key value
+(including surrounding quotes if you choose the “with quotes” pattern).
+:::
 
 Match patterns can be defined in the configuration file, for example:
 
@@ -263,14 +266,57 @@ codeInsights:
       - customVariableGetter\(\s*["']([^"']*)["']
 ```
 
+#### Capturing with or without quotes
+
+Match patterns can capture variable keys with or without quotes, which affects whether aliases are needed:
+
+With quotes:
+
+```yml
+# Pattern captures the key including surrounding quotes
+- dvcClient\.variable\(\s*(["'][^"']*["'])\s*,
+```
+
+- Matches: `dvcClient.variable('my-variable', default)`
+- Captures: `'my-variable'` (with quotes)
+
+Without quotes (aliases or generated constants required):
+
+```yml
+# Pattern strips quotes, capturing only the content
+- dvcClient\.variable\(\s*["']([^"']*)["']
+```
+
+- Matches: `dvcClient.variable('my-variable', default)`
+- Captures: `my-variable`
+
 Match patterns can also be passed directly to relevant commands using the `--match-pattern` flag:
 
 ```bash
-dvc usages --match-pattern ts="customVariableGetter\(\s*[\"']([^\"']*)[\"']" js="customVariableGetter\(\s*[\"']([^\"']*)[\"']"
+dvc usages --match-pattern ts="customVariableGetter\(\s*["']([^"']*)["']" js="customVariableGetter\(\s*["']([^"']*)["']"
 ```
 
 When testing your regex the `--show-regex` flag can be helpful. This will print all patterns used to find matches in your codebase.
 
 ```bash
 dvc usages --show-regex
+```
+
+#### Custom Wrapper Functions
+
+If you use wrapper functions around the SDK, add patterns for them.
+
+**Example: Custom wrapper functions**
+
+```yml
+codeInsights:
+  matchPatterns:
+    ts:
+      # Matches: getFeatureFlag('my-variable', defaultValue)
+      - getFeatureFlag\(\s*([^,)]*)\s*,
+      # Matches: isFeatureEnabled('my-variable')
+      - isFeatureEnabled\(\s*([^,)]*)\s*\)
+    tsx:
+      # Matches: useFeatureFlag('my-variable', defaultValue)
+      - useFeatureFlag\(\s*([^,)]*)\s*,
 ```
