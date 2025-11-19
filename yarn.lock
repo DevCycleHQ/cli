@@ -597,7 +597,6 @@ __metadata:
     "@types/estraverse": "npm:^5.1.7"
     "@types/inquirer": "npm:^8.2.10"
     "@types/inquirer-autocomplete-prompt": "npm:^2.0.2"
-    "@types/js-yaml": "npm:^4.0.9"
     "@types/minimatch": "npm:^5.1.2"
     "@types/node": "npm:^18.19.68"
     "@types/validator": "npm:^13.12.2"
@@ -619,7 +618,6 @@ __metadata:
     inquirer: "npm:^8.2.6"
     inquirer-autocomplete-prompt: "npm:^2.0.1"
     js-sha256: "npm:^0.11.0"
-    js-yaml: "npm:^4.1.0"
     lodash: "npm:^4.17.21"
     minimatch: "npm:^9.0.5"
     nock: "npm:^13.5.6"
@@ -2458,13 +2456,6 @@ __metadata:
     "@types/through": "npm:*"
     rxjs: "npm:^7.2.0"
   checksum: 10c0/c39c3a792b5f95727842277c25ca4b2ce3f3f8e7897e51c571ba919ea35587fce81f2b0d1d75747f6f54a7d79b0efe95430fd1fe7f5b81d07af81b2c2fc1fb5d
-  languageName: node
-  linkType: hard
-
-"@types/js-yaml@npm:^4.0.9":
-  version: 4.0.9
-  resolution: "@types/js-yaml@npm:4.0.9"
-  checksum: 10c0/24de857aa8d61526bbfbbaa383aa538283ad17363fcd5bb5148e2c7f604547db36646440e739d78241ed008702a8920665d1add5618687b6743858fae00da211
   languageName: node
   linkType: hard
 
