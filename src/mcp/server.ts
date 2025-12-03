@@ -93,33 +93,37 @@ export class DevCycleMCPServer {
             toolConfig.outputSchema = config.outputSchema
         }
 
-        this.server.registerTool(name, toolConfig, async (args: unknown) => {
-            try {
-                const result = await handler(args)
+        this.server.registerTool(
+            name,
+            toolConfig as any,
+            async (args: unknown) => {
+                try {
+                    const result = await handler(args)
 
-                // If the handler returned a plain string, send it as-is
-                if (typeof result === 'string') {
+                    // If the handler returned a plain string, send it as-is
+                    if (typeof result === 'string') {
+                        return {
+                            content: [
+                                {
+                                    type: 'text' as const,
+                                    text: result,
+                                },
+                            ],
+                        }
+                    }
+
                     return {
                         content: [
                             {
                                 type: 'text' as const,
-                                text: result,
+                                text: JSON.stringify(result, null, 2),
                             },
                         ],
                     }
+                } catch (error) {
+                    return handleToolError(error, name)
                 }
-
-                return {
-                    content: [
-                        {
-                            type: 'text' as const,
-                            text: JSON.stringify(result, null, 2),
-                        },
-                    ],
-                }
-            } catch (error) {
-                return handleToolError(error, name)
-            }
-        })
+            },
+        )
     }
 }
