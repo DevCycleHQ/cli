@@ -600,7 +600,6 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/minimatch": "npm:^5.1.2"
     "@types/node": "npm:^18.19.68"
-    "@types/validator": "npm:^13.12.2"
     "@typescript-eslint/eslint-plugin": "npm:^8.21.0"
     "@typescript-eslint/parser": "npm:^8.21.0"
     "@zodios/core": "npm:^10.9.6"
@@ -2600,13 +2599,6 @@ __metadata:
   version: 13.11.9
   resolution: "@types/validator@npm:13.11.9"
   checksum: 10c0/856ebfcfe25d6c91a90235e0eb27302a737832530898195bbfb265da52ae7fe6d68f684942574f8818d3c262cae7a1de99f145dac73fc57217933af1bfc199cb
-  languageName: node
-  linkType: hard
-
-"@types/validator@npm:^13.12.2":
-  version: 13.12.2
-  resolution: "@types/validator@npm:13.12.2"
-  checksum: 10c0/64f1326c768947d756ab5bcd73f3f11a6f07dc76292aea83890d0390a9b9acb374f8df6b24af2c783271f276d3d613b78fc79491fe87edee62108d54be2e3c31
   languageName: node
   linkType: hard
 
