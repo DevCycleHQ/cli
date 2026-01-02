@@ -19,6 +19,8 @@ The CLI can be customized in several ways using command-line args or by creating
 
 <!-- toc -->
 * [Command Topics](#command-topics)
+* [Pattern captures the key including surrounding quotes](#pattern-captures-the-key-including-surrounding-quotes)
+* [Pattern strips quotes, capturing only the content](#pattern-strips-quotes-capturing-only-the-content)
 <!-- tocstop -->
 
 ## MCP Server for AI Assistants
@@ -160,7 +162,7 @@ $ npm install -g @devcycle/cli
 $ dvc COMMAND
 running command...
 $ dvc (--version)
-@devcycle/cli/6.1.4 linux-x64 node-v22.20.0
+@devcycle/cli/6.2.0 linux-x64 node-v22.21.1
 $ dvc --help [COMMAND]
 USAGE
   $ dvc COMMAND
