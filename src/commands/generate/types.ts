@@ -12,64 +12,19 @@ import {
     fetchFeatures,
 } from '../../api/features'
 import { fetchCustomProperties } from '../../api/customProperties'
-
-const reactImports = (oldRepos: boolean, strictCustomData: boolean) => {
-    if (oldRepos) {
-        return `import { DVCVariable, DVCVariableValue } from '@devcycle/devcycle-js-sdk'
 import {
-    useVariable as originalUseVariable,
-    useVariableValue as originalUseVariableValue
-} from '@devcycle/devcycle-react-sdk'
-
-export type DevCycleJSON = { [key: string]: string | boolean | number }
-
-`
-    } else {
-        return `import {
-    useVariable as originalUseVariable,
-    useVariableValue as originalUseVariableValue,
-    DVCVariable,
-    DVCVariableValue,${!strictCustomData ? '\n    DVCCustomDataJSON,' : ''}
-    DevCycleJSON
-} from '@devcycle/react-client-sdk'
-
-`
-    }
-}
-
-const nextImports = (strictCustomData: boolean) => {
-    return `import {
-    useVariable as originalUseVariable,
-    useVariableValue as originalUseVariableValue,
-    DVCVariable,
-    DVCVariableValue,${!strictCustomData ? '\n    DVCCustomDataJSON,' : ''}
-    DevCycleJSON
-} from '@devcycle/nextjs-sdk'
-
-`
-}
-
-const reactOverrides = `
-export type UseVariableValue = <
-    K extends string & keyof DVCVariableTypes
->(
-    key: K,
-    defaultValue: DVCVariableTypes[K]
-) => DVCVariableTypes[K]
-
-export const useVariableValue = originalUseVariableValue as UseVariableValue
-
-export type UseVariable = <
-    K extends string & keyof DVCVariableTypes,
-    T extends DVCVariableValue & DVCVariableTypes[K],
->(
-    key: K,
-    defaultValue: DVCVariableTypes[K]
-) => DVCVariable<T>
-
-export const useVariable = originalUseVariable as UseVariable
-
-`
+    blockComment,
+    findCreatorName,
+    generateCustomDataType,
+    getRecommendedValueForStale,
+    getVariableType,
+    isVariableDeprecated,
+    isVariableStale,
+    nextImports,
+    reactImports,
+    reactOverrides,
+    sanitizeDescription,
+} from '../../utils/types'
 
 export default class GenerateTypes extends Base {
     static hidden = false
@@ -324,8 +279,38 @@ export default class GenerateTypes extends Base {
                 variable,
                 staleInfo.feature as Feature,
             )
+
+            const formatRecommendedValueForComment = (
+                recommendedValue: string,
+            ) => {
+                if (recommendedValue) {
+                    try {
+                        const parsed = JSON.parse(recommendedValue)
+                        if (typeof parsed === 'object' && parsed !== null) {
+                            const indentation = indent ? '    ' : ''
+                            const jsonString = JSON.stringify(parsed, null, 4)
+                            return (
+                                '\n' +
+                                jsonString
+                                    .split('\n')
+                                    .map((line) =>
+                                        line ? indentation + line : line,
+                                    )
+                                    .join('\n') +
+                                '\n'
+                            )
+                        }
+                    } catch {
+                        return recommendedValue
+                    }
+                }
+                return recommendedValue
+            }
+
+            const formattedRecommendedValue =
+                formatRecommendedValueForComment(recommendedValue)
             staleWarning = staleInfo.stale
-                ? `@stale This variable is part of "${staleInfo.feature?.name}" feature with stale reason: ${staleInfo.feature?.staleness?.reason}. ${recommendedValue ? `Recommended value to set it to: ${recommendedValue}` : ''}\n`
+                ? `@stale This variable is part of "${staleInfo.feature?.name}" feature with stale reason: ${staleInfo.feature?.staleness?.reason}. ${recommendedValue ? `Recommended value to set it to: ${formattedRecommendedValue}` : ''}\n`
                 : ''
         }
 
@@ -391,135 +376,4 @@ export const ${constantName} = '${hashedKey}' as const`
             )
         }
     }
-}
-
-export function sanitizeDescription(description: string) {
-    // Remove newlines, tabs, and carriage returns for proper display
-    return description.replace(/[\r\n\t]/g, ' ').trim()
-}
-
-export function findCreatorName(
-    orgMembers: OrganizationMember[],
-    creatorId: string,
-) {
-    return (
-        orgMembers.find((member) => member.user_id === creatorId)?.name ||
-        'Unknown User'
-    )
-}
-
-export const blockComment = (
-    description: string,
-    creator: string,
-    createdDate: string,
-    indent: boolean,
-    key?: string,
-    deprecationWarning?: string,
-    staleWarning?: string,
-) => {
-    const indentString = indent ? '    ' : ''
-    return (
-        indentString +
-        '/**\n' +
-        (key ? `${indentString} * key: ${key}\n` : '') +
-        (description !== ''
-            ? `${indentString} * description: ${description}\n`
-            : '') +
-        `${indentString} * created by: ${creator}\n` +
-        `${indentString} * created on: ${createdDate}\n` +
-        (deprecationWarning
-            ? `${indentString} * ${deprecationWarning}\n`
-            : '') +
-        (staleWarning ? `${indentString} * ${staleWarning}\n` : '') +
-        indentString +
-        '*/'
-    )
-}
-
-export function getVariableType(variable: Variable) {
-    if (
-        variable.validationSchema &&
-        variable.validationSchema.schemaType === 'enum'
-    ) {
-        // TODO fix the schema so it doesn't think enumValues is an object
-        const enumValues = variable.validationSchema.enumValues as
-            | string[]
-            | number[]
-        if (enumValues === undefined || enumValues.length === 0) {
-            return variable.type.toLocaleLowerCase()
-        }
-        return enumValues.map((value) => `'${value}'`).join(' | ')
-    }
-    if (variable.type === 'JSON') {
-        return 'DevCycleJSON'
-    }
-    return variable.type.toLocaleLowerCase()
-}
-
-function isVariableDeprecated(variable: Variable, features: Feature[]) {
-    if (!variable._feature || variable.persistent) return { deprecated: false }
-    const feature = features.find((f) => f._id === variable._feature)
-    return { deprecated: feature && feature.status !== 'active', feature }
-}
-
-function isVariableStale(variable: Variable, features: Feature[]) {
-    if (!variable._feature || variable.persistent) return { stale: false }
-    const feature = features.find((f) => f._id === variable._feature)
-    return { stale: feature && feature.staleness, feature }
-}
-
-function getRecommendedValueForStale(variable: Variable, feature: Feature) {
-    if (!feature) {
-        return variable.defaultValue
-    }
-    const reason = feature.staleness?.reason
-    if (reason === 'unused') {
-        return variable.defaultValue
-    } else if (reason === 'released') {
-        if (feature.staleness?.metaData?.releaseVariation) {
-            const stalenessMetaData = feature.staleness?.metaData
-                ?.releaseVariation as {
-                _variation: string
-                variationKey: string
-                variationName: string
-            }
-            const releaseVariation = feature.variations?.find(
-                (v) => v._id === stalenessMetaData._variation,
-            )
-            return (
-                releaseVariation?.variables?.[variable.key] ||
-                variable.defaultValue
-            )
-        }
-    }
-    return variable.defaultValue
-}
-
-const generateCustomDataType = (
-    customProperties: CustomProperty[],
-    strict: boolean,
-) => {
-    const properties = customProperties
-        .map((prop) => {
-            const propType = prop.type.toLowerCase()
-            const schema = prop.schema?.enumSchema
-            const isRequired = prop.schema?.required ?? false
-            const optionalMarker = isRequired ? '' : '?'
-            if (schema) {
-                const enumValues = schema.allowedValues
-                    .map(({ label, value }) => {
-                        const valueStr =
-                            typeof value === 'number' ? value : `'${value}'`
-                        return `        // ${label}\n        ${valueStr}`
-                    })
-                    .join(' | \n')
-                return `    '${prop.propertyKey}'${optionalMarker}: | \n${enumValues}${schema.allowAdditionalValues ? ` |\n        ${propType}` : ''}`
-            }
-            return `    '${prop.propertyKey}'${optionalMarker}: ${propType}`
-        })
-        .join('\n')
-
-    return `export type CustomData = {
-${properties}
-}${!strict ? ' & DVCCustomDataJSON' : ''}\n`
 }
