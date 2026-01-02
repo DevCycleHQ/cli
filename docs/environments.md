@@ -41,7 +41,7 @@ DESCRIPTION
   Create a new Environment for an existing Feature.
 ```
 
-_See code: [src/commands/environments/create.ts](https://github.com/DevCycleHQ/cli/blob/v6.2.0/src/commands/environments/create.ts)_
+_See code: [src/commands/environments/create.ts](https://github.com/DevCycleHQ/cli/blob/v6.2.1/src/commands/environments/create.ts)_
 
 ## `dvc environments get [KEYS]`
 
@@ -84,7 +84,7 @@ EXAMPLES
   $ dvc environments get --keys=environment-one,environment-two
 ```
 
-_See code: [src/commands/environments/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.2.0/src/commands/environments/get.ts)_
+_See code: [src/commands/environments/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.2.1/src/commands/environments/get.ts)_
 
 ## `dvc environments list`
 
@@ -108,7 +108,7 @@ ALIASES
   $ dvc environments ls
 ```
 
-_See code: [src/commands/environments/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.2.0/src/commands/environments/list.ts)_
+_See code: [src/commands/environments/list.ts](https://github.com/DevCycleHQ/cli/blob/v6.2.1/src/commands/environments/list.ts)_
 
 ## `dvc environments ls`
 
@@ -164,4 +164,4 @@ DESCRIPTION
   Update a Environment.
 ```
 
-_See code: [src/commands/environments/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.2.0/src/commands/environments/update.ts)_
+_See code: [src/commands/environments/update.ts](https://github.com/DevCycleHQ/cli/blob/v6.2.1/src/commands/environments/update.ts)_
