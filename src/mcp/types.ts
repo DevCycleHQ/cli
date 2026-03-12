@@ -17,6 +17,9 @@ import {
 } from '../api/zodSchemas'
 import { UpdateFeatureStatusDto } from '../api/schemas'
 
+const VARIATION_VARIABLES_TYPE_HINT =
+    'Variable values must use native JSON types: true/false for booleans, numbers for numeric values, strings only for string values. e.g. { "boolVar": false, "numVar": 42, "stringVar": "value" }'
+
 // Zod schemas for MCP tool arguments
 export const VariableValidationSchema = z.object({
     schemaType: z
@@ -277,7 +280,7 @@ export const CreateFeatureArgsSchema = CreateFeatureDto.extend({
         'Environment-specific configurations (key-value map of environment keys to config)',
     ),
     variations: CreateFeatureDto.shape.variations.describe(
-        'Array of variations for this feature',
+        `Array of variations for this feature. ${VARIATION_VARIABLES_TYPE_HINT}`,
     ),
     controlVariation: CreateFeatureDto.shape.controlVariation.describe(
         'The key of the variation that is used as the control variation for Metrics',
@@ -308,7 +311,9 @@ export const UpdateFeatureArgsSchema = UpdateFeatureDto.extend({
         .describe('Updated array of variables for this feature'),
     variations: UpdateFeatureDto.shape.variations
         .optional()
-        .describe('Updated array of variations for this feature'),
+        .describe(
+            `Updated array of variations for this feature. ${VARIATION_VARIABLES_TYPE_HINT}`,
+        ),
     settings: UpdateFeatureDto.shape.settings
         .optional()
         .describe('Updated feature-level settings configuration'),
@@ -370,8 +375,7 @@ export const ListVariationsArgsSchema = z.object({
     feature_key: z.string().describe('Feature key to list variations for'),
 })
 
-const variablesDescription =
-    'key-value map of variable keys to their values for this variation. { "variableKey1": "value1", "variableKey2": false }'
+const variablesDescription = `key-value map of variable keys to their values for this variation. ${VARIATION_VARIABLES_TYPE_HINT}`
 
 export const CreateVariationArgsSchema = CreateVariationDto.extend({
     feature_key: z.string().describe('Feature key to create variation for'),

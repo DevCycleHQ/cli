@@ -700,9 +700,9 @@ export const CreateVariationDto = z.object({
     variables: z
         .record(
             z.union([
-                z.string(),
-                z.number(),
                 z.boolean(),
+                z.number(),
+                z.string(),
                 z.array(z.unknown()),
                 z.record(z.unknown()),
             ]),
@@ -748,9 +748,9 @@ export const Variation = z.object({
     variables: z
         .record(
             z.union([
-                z.string(),
-                z.number(),
                 z.boolean(),
+                z.number(),
+                z.string(),
                 z.array(z.unknown()),
                 z.record(z.unknown()),
             ]),
@@ -861,9 +861,9 @@ const UpdateVariationDto = z
         variables: z
             .record(
                 z.union([
-                    z.string(),
-                    z.number(),
                     z.boolean(),
+                    z.number(),
+                    z.string(),
                     z.array(z.unknown()),
                     z.record(z.unknown()),
                 ]),
@@ -960,9 +960,9 @@ export const FeatureVariationDto = z.object({
     variables: z
         .record(
             z.union([
-                z.string(),
-                z.number(),
                 z.boolean(),
+                z.number(),
+                z.string(),
                 z.array(z.unknown()),
                 z.record(z.unknown()),
             ]),
@@ -980,9 +980,9 @@ export const UpdateFeatureVariationDto = z
         name: z.string().min(1).max(100),
         variables: z.record(
             z.union([
-                z.string(),
-                z.number(),
                 z.boolean(),
+                z.number(),
+                z.string(),
                 z.array(z.unknown()),
                 z.record(z.unknown()),
             ]),
