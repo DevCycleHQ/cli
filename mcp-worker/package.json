@@ -16,7 +16,7 @@
     "dependencies": {
         "@cloudflare/workers-oauth-provider": "^0.0.13",
         "ably": "^1.2.48",
-        "agents": "^0.2.19",
+        "agents": "^0.3.10",
         "hono": "^4.12.7",
         "jose": "^6.1.0",
         "oauth4webapi": "^3.8.1"
