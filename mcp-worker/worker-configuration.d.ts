@@ -38,10 +38,6 @@ declare namespace Cloudflare {
         AUTH0_SCOPE?: 'openid profile email offline_access'
         ENABLE_OUTPUT_SCHEMAS?: 'false'
         MCP_OBJECT?: DurableObjectNamespace<import('./src/index').DevCycleMCP>
-        // Secrets (set via `wrangler secret put`, not included by `wrangler types`)
-        AUTH0_CLIENT_ID: string
-        AUTH0_CLIENT_SECRET: string
-        ABLY_API_KEY: string
     }
 }
 interface Env extends Cloudflare.Env {}
