@@ -1,4 +1,4 @@
-import Ably from 'ably/build/ably-webworker.min'
+import Ably from 'ably'
 import type { DevCycleJWTClaims } from './types'
 
 export async function publishMCPInstallEvent(
@@ -17,7 +17,7 @@ export async function publishMCPInstallEvent(
     const channel = `${claims.org_id}-mcp-install`
 
     try {
-        const ably = new Ably.Rest.Promise({ key: env.ABLY_API_KEY })
+        const ably = new Ably.Rest({ key: env.ABLY_API_KEY })
         const ablyChannel = ably.channels.get(channel)
         const payload = {
             org_id: claims.org_id,

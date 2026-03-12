@@ -14,17 +14,17 @@
         "test:watch": "vitest"
     },
     "dependencies": {
-        "@cloudflare/workers-oauth-provider": "^0.0.13",
-        "ably": "^1.2.48",
-        "agents": "^0.3.10",
+        "@cloudflare/workers-oauth-provider": "^0.3.0",
+        "ably": "^2.19.0",
+        "agents": "^0.7.6",
         "hono": "^4.12.7",
-        "jose": "^6.1.0",
-        "oauth4webapi": "^3.8.1"
+        "jose": "^6.2.1",
+        "oauth4webapi": "^3.8.5"
     },
     "devDependencies": {
-        "@types/node": "^24.5.2",
+        "@types/node": "^25.4.0",
         "vitest": "^3.2.4",
-        "wrangler": "^4.38.0"
+        "wrangler": "^4.72.0"
     },
     "packageManager": "yarn@4.9.2"
 }
