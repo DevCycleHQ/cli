@@ -88,7 +88,7 @@ describe('publishMCPInstallEvent', () => {
 
         // Arrange the mock chain to throw on publish
         const Rest = (await import('ably')).default.Rest as any
-        const instance = Rest()
+        const instance = new Rest()
         const channelsGet = vi.spyOn(instance.channels, 'get')
         channelsGet.mockReturnValue({
             publish: vi.fn(async () => {
