@@ -40,6 +40,10 @@ tag = "v1"
 [observability]
 enabled = true
 
+# Alias unused peer dependencies of agents to stubs
+[alias]
+"ai" = "./src/stubs/ai.ts"
+
 # Development configuration for local testing
 [dev]
 port = 8787

@@ -164,7 +164,6 @@ export default {
                 '/sse': DevCycleMCP.serveSSE('/sse'),
                 '/mcp': DevCycleMCP.serve('/mcp'),
             },
-            // @ts-expect-error - Hono's fetch signature is compatible but TypeScript can't verify exact type match
             defaultHandler: app,
             authorizeEndpoint: '/oauth/authorize',
             tokenEndpoint: '/oauth/token',
