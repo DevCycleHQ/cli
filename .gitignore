@@ -1,3 +1,8 @@
+# Generated at publish time by `npm shrinkwrap`; not committed (yarn.lock is source of truth)
+npm-shrinkwrap.json
+package-lock.json
+yarn.lock.shrinkwrap-bak
+
 # MCP validation schema cache
 .schema/
 .DS_Store
