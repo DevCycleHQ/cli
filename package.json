@@ -61,7 +61,7 @@
         "inquirer-autocomplete-prompt": "^2.0.1",
         "js-sha256": "^0.11.0",
         "js-yaml": "^4.1.0",
-        "lodash": "^4.17.23",
+        "lodash": "^4.18.1",
         "minimatch": "^9.0.7",
         "open": "^8.4.2",
         "parse-diff": "^0.9.0",
@@ -192,6 +192,11 @@
         "brace-expansion@npm:^2.0.2": "2.0.3",
         "picomatch@npm:^2.3.1": "2.3.2",
         "picomatch@npm:^4.0.2": "4.0.4",
-        "picomatch@npm:^4.0.3": "4.0.4"
+        "picomatch@npm:^4.0.3": "4.0.4",
+        "hono": "4.12.12",
+        "@hono/node-server": "1.19.13",
+        "vite@npm:^5.0.0 || ^6.0.0 || ^7.0.0-0": "7.3.2",
+        "lodash": "4.18.1",
+        "lodash.template": "4.18.1"
     }
 }
