@@ -75,7 +75,7 @@ jobs:
       - name: Update server.json version (pre-commit)
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          jq --arg v "$VERSION" '.version = $v' server.json > server.json.tmp
+          jq --indent 4 --arg v "$VERSION" '.version = $v' server.json > server.json.tmp
           mv server.json.tmp server.json
           git add server.json
 
@@ -108,7 +108,7 @@ jobs:
       - name: Sync server.json version to tag
         run: |
           VERSION=${LATEST_TAG#v}
-          jq --arg v "$VERSION" '.version = $v' server.json > server.json.tmp
+          jq --indent 4 --arg v "$VERSION" '.version = $v' server.json > server.json.tmp
           mv server.json.tmp server.json
 
       - name: Validate server.json schema
