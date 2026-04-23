@@ -164,8 +164,8 @@
         "mcp-worker"
     ],
     "resolutions": {
-        "axios@npm:^1.13.6": "^1.15.0",
-        "axios@npm:^1.6.0": "^1.15.0",
+        "axios@npm:^1.13.6": "1.15.0",
+        "axios@npm:^1.6.0": "1.15.0",
         "nanoid@3.3.1": "3.3.8",
         "serialize-javascript@6.0.0": "^6.0.2",
         "tmp": "0.2.5",
