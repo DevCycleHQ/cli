@@ -23,7 +23,7 @@
     },
     "devDependencies": {
         "@types/node": "^25.4.0",
-        "vitest": "^3.2.4",
+        "vitest": "^4.1.0",
         "wrangler": "^4.72.0"
     },
     "packageManager": "yarn@4.9.2"

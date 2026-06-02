@@ -10,7 +10,13 @@ vi.mock('ably', () => {
         public channels = channels
     }
 
-    return { default: { Rest: vi.fn(() => new RestMock()) } }
+    return {
+        default: {
+            Rest: vi.fn(function () {
+                return new RestMock()
+            }),
+        },
+    }
 })
 
 import Ably from 'ably'
