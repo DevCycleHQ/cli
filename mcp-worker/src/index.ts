@@ -167,7 +167,6 @@ export default {
             defaultHandler: app,
             authorizeEndpoint: '/oauth/authorize',
             tokenEndpoint: '/oauth/token',
-            clientRegistrationEndpoint: '/oauth/register',
             tokenExchangeCallback: createTokenExchangeCallback(env),
         })
 
