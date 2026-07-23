@@ -482,7 +482,7 @@ __metadata:
     inquirer: "npm:8.2.6"
     inquirer-autocomplete-prompt: "npm:2.0.1"
     js-sha256: "npm:0.11.0"
-    js-yaml: "npm:4.2.0"
+    js-yaml: "npm:^4.2.0"
     lodash: "npm:4.18.1"
     minimatch: "npm:9.0.9"
     nock: "npm:^13.5.6"
@@ -6602,17 +6602,6 @@ __metadata:
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
   checksum: 10c0/e248708d377aa058eacf2037b07ded847790e6de892bbad3dac0abba2e759cb9f121b00099a65195616badcb6eca8d14d975cb3e89eb1cfda644756402c8aeed
-  languageName: node
-  linkType: hard
-
-"js-yaml@npm:4.2.0":
-  version: 4.2.0
-  resolution: "js-yaml@npm:4.2.0"
-  dependencies:
-    argparse: "npm:^2.0.1"
-  bin:
-    js-yaml: bin/js-yaml.js
-  checksum: 10c0/1916456c118746603b067d74bbcbb0445d9a1d5e474ad4ae775e7b20525bed902e01d9d97dd0c81fcd8d4f596162309d0eb057f4aa38f3e9647f14075e9dea45
   languageName: node
   linkType: hard
 
