@@ -23,3 +23,6 @@ mcp-worker/.wrangler/
 
 # MCP Worker environment variables
 .dev.vars
+
+# git worktrees
+.worktrees/
