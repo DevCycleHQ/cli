@@ -167,6 +167,11 @@ export default {
             defaultHandler: app,
             authorizeEndpoint: '/oauth/authorize',
             tokenEndpoint: '/oauth/token',
+            // Enables RFC 7591 Dynamic Client Registration. MCP clients such as
+            // Claude Code and `mcp-remote` require a `registration_endpoint` in the
+            // OAuth discovery metadata to obtain a client_id; without it they fail
+            // with "does not support dynamic client registration". See PR #577.
+            clientRegistrationEndpoint: '/oauth/register',
             tokenExchangeCallback: createTokenExchangeCallback(env),
         })
 
