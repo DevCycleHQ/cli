@@ -105,7 +105,14 @@ export async function authorize(
     const clientLogo = client.logoUri || '' // No default logo
     const requestedScopes = (c.env.AUTH0_SCOPE || '').split(' ')
 
-    // Render the consent screen with CSRF protection
+    // Render the consent screen with CSRF protection.
+    //
+    // The consent page reflects client-supplied metadata (client_name, logo_uri)
+    // from Dynamic Client Registration. It contains no first-party JavaScript, so
+    // we lock it down with a strict CSP: `script-src 'none'` blocks every script
+    // execution path (inline <script>, injected event handlers like onerror/
+    // onload, etc.) independently of HTML escaping, and frame-ancestors/base-uri/
+    // object-src close clickjacking and related vectors.
     return c.html(
         renderConsentScreen({
             clientLogo,
@@ -114,6 +121,11 @@ export async function authorize(
             requestedScopes,
             transactionState,
         }),
+        200,
+        {
+            'Content-Security-Policy':
+                "script-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+        },
     )
 }
 
