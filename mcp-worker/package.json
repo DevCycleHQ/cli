@@ -17,14 +17,14 @@
         "@cloudflare/workers-oauth-provider": "^0.3.0",
         "ably": "^2.19.0",
         "agents": "^0.7.6",
-        "hono": "^4.12.18",
+        "hono": "^4.12.34",
         "jose": "^6.2.1",
         "oauth4webapi": "^3.8.5"
     },
     "devDependencies": {
         "@types/node": "^25.4.0",
         "vitest": "^4.1.0",
-        "wrangler": "^4.72.0"
+        "wrangler": "~4.116.0"
     },
     "packageManager": "yarn@4.9.2"
 }
