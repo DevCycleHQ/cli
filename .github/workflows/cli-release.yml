@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
       - run: corepack enable
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "${{ steps.get_node_version.outputs.NVMRC }}"
           registry-url: "https://registry.npmjs.org"
@@ -137,7 +137,7 @@ jobs:
 
       - name: Update GitHub Actions
         if: inputs.npm-version == 'minor' || inputs.npm-version == 'patch'
-        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           repository: DevCycleHQ/feature-flag-pr-insights-action
@@ -146,7 +146,7 @@ jobs:
 
       - name: Update GitHub Actions (Code Usages)
         if: inputs.npm-version == 'minor' || inputs.npm-version == 'patch'
-        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           repository: DevCycleHQ/feature-flag-code-usage-action
@@ -155,7 +155,7 @@ jobs:
 
       # Move this to release action yml once it works the first time
       - name: Update Homebrew Formula
-        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           repository: DevCycleHQ/homebrew-cli
