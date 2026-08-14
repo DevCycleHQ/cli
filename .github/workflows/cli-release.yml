@@ -137,7 +137,7 @@ jobs:
 
       - name: Update GitHub Actions
         if: inputs.npm-version == 'minor' || inputs.npm-version == 'patch'
-        uses: peter-evans/repository-dispatch@v4
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.1
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           repository: DevCycleHQ/feature-flag-pr-insights-action
@@ -146,7 +146,7 @@ jobs:
 
       - name: Update GitHub Actions (Code Usages)
         if: inputs.npm-version == 'minor' || inputs.npm-version == 'patch'
-        uses: peter-evans/repository-dispatch@v4
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.1
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           repository: DevCycleHQ/feature-flag-code-usage-action
@@ -155,7 +155,7 @@ jobs:
 
       # Move this to release action yml once it works the first time
       - name: Update Homebrew Formula
-        uses: peter-evans/repository-dispatch@v4
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.1
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           repository: DevCycleHQ/homebrew-cli
