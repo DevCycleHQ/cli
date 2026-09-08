@@ -3689,7 +3689,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.28.7":
+"browserslist@npm:^4.28.9":
   version: 4.28.9
   resolution: "browserslist@npm:4.28.9"
   dependencies:
@@ -8732,7 +8732,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-selector-parser@npm:^7.1.3":
+"postcss-selector-parser@npm:^7.1.6":
   version: 7.1.6
   resolution: "postcss-selector-parser@npm:7.1.6"
   dependencies:
