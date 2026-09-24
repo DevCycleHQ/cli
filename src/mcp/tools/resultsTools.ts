@@ -1,5 +1,9 @@
 import { z } from 'zod'
-import { handleZodiosValidationErrors } from '../utils/api'
+import {
+    handleZodiosValidationErrors,
+    omitProjectKey,
+    MISSING_PROJECT_KEY_ERROR,
+} from '../utils/api'
 import {
     fetchFeatureTotalEvaluations,
     fetchProjectTotalEvaluations,
@@ -22,11 +26,9 @@ export async function getFeatureTotalEvaluationsHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
-            const { featureKey, ...apiQueries } = args
+            const { featureKey, ...apiQueries } = omitProjectKey(args)
 
             return await handleZodiosValidationErrors(
                 () =>
@@ -57,12 +59,15 @@ export async function getProjectTotalEvaluationsHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
-                () => fetchProjectTotalEvaluations(authToken, projectKey, args),
+                () =>
+                    fetchProjectTotalEvaluations(
+                        authToken,
+                        projectKey,
+                        omitProjectKey(args),
+                    ),
                 'fetchProjectTotalEvaluations',
             )
         },

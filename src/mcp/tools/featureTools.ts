@@ -18,7 +18,11 @@ import {
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
-import { handleZodiosValidationErrors } from '../utils/api'
+import {
+    handleZodiosValidationErrors,
+    omitProjectKey,
+    MISSING_PROJECT_KEY_ERROR,
+} from '../utils/api'
 import { dashboardLinks } from '../utils/dashboardLinks'
 import { fetchAiPromptsAndRules } from '../utils/github'
 import { CleanupFeatureArgsSchema } from '../types'
@@ -33,12 +37,11 @@ export async function listFeaturesHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
-                () => fetchFeatures(authToken, projectKey, args),
+                () =>
+                    fetchFeatures(authToken, projectKey, omitProjectKey(args)),
                 'listFeatures',
             )
         },
@@ -59,12 +62,11 @@ export async function createFeatureHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
-                () => createFeature(authToken, projectKey, args),
+                () =>
+                    createFeature(authToken, projectKey, omitProjectKey(args)),
                 'createFeature',
             )
         },
@@ -82,16 +84,14 @@ export async function updateFeatureHandler(
     args: z.infer<typeof UpdateFeatureArgsSchema>,
     apiClient: IDevCycleApiClient,
 ) {
-    const { key, ...updateData } = args
+    const { key, ...updateData } = omitProjectKey(args)
 
     return await apiClient.executeWithDashboardLink(
         'updateFeature',
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
                 () => updateFeature(authToken, projectKey, key, updateData),
@@ -112,16 +112,14 @@ export async function updateFeatureStatusHandler(
     args: z.infer<typeof UpdateFeatureStatusArgsSchema>,
     apiClient: IDevCycleApiClient,
 ) {
-    const { key, ...statusData } = args
+    const { key, ...statusData } = omitProjectKey(args)
 
     return await apiClient.executeWithDashboardLink(
         'updateFeatureStatus',
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -148,9 +146,7 @@ export async function deleteFeatureHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             await handleZodiosValidationErrors(
                 () => deleteFeature(authToken, projectKey, args.key),
@@ -173,11 +169,9 @@ export async function getFeatureAuditLogHistoryHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
-            const { feature_key, ...auditLogOptions } = args
+            const { feature_key, ...auditLogOptions } = omitProjectKey(args)
             return await handleZodiosValidationErrors(
                 () =>
                     getFeatureAuditLogHistory(

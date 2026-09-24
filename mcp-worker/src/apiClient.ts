@@ -1,6 +1,11 @@
 import type { UserProps, DevCycleJWTClaims } from './types'
 import { IDevCycleApiClient } from '../../src/mcp/api/interface'
-import { getErrorMessage, ensureError } from '../../src/mcp/utils/api'
+import {
+    getErrorMessage,
+    ensureError,
+    projectKeyFromArgs,
+    MISSING_PROJECT_KEY_ERROR,
+} from '../../src/mcp/utils/api'
 import { setMCPHeaders, setMCPToolCommand } from '../../src/mcp/utils/headers'
 
 /**
@@ -42,12 +47,10 @@ export class WorkerApiClient implements IDevCycleApiClient {
         requiresProject: boolean = true,
     ): Promise<T> {
         const authToken = this.getAuthToken()
-        const projectKey = await this.getProjectKey()
+        const projectKey = await this.resolveProjectKey(args)
 
         if (requiresProject && !projectKey) {
-            throw new Error(
-                'No project key found, please select a project using the select_project tool first.',
-            )
+            throw new Error(MISSING_PROJECT_KEY_ERROR)
         }
 
         // Set MCP analytics headers for this specific tool operation
@@ -96,7 +99,7 @@ export class WorkerApiClient implements IDevCycleApiClient {
         )
 
         const orgId = this.getOrgId()
-        const projectKey = await this.getProjectKey()
+        const projectKey = await this.resolveProjectKey(args)
         const link = dashboardLink(orgId, projectKey, result)
 
         return {
@@ -113,6 +116,19 @@ export class WorkerApiClient implements IDevCycleApiClient {
             throw new Error('No access token available in user props')
         }
         return this.props.tokenSet.accessToken
+    }
+
+    /**
+     * Resolve the project for a call: the tool's own projectKey argument wins,
+     * otherwise fall back to the session's selected project / JWT claims.
+     *
+     * The argument takes priority because a host may start a new MCP session
+     * per request, in which case nothing survives from a prior select_project.
+     */
+    private async resolveProjectKey(
+        args: unknown,
+    ): Promise<string | undefined> {
+        return projectKeyFromArgs(args) ?? (await this.getProjectKey())
     }
 
     /**
