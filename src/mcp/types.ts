@@ -21,6 +21,26 @@ const VARIATION_VARIABLES_TYPE_HINT =
     'Variable values must use native JSON types: true/false for booleans, numbers for numeric values, strings only for string values. e.g. { "boolVar": false, "numVar": 42, "stringVar": "value" }'
 
 // Zod schemas for MCP tool arguments
+
+/**
+ * Optional per-call project override, shared by every project-scoped tool.
+ *
+ * Tools resolve the project as: this argument first, then the project chosen
+ * via `select_project`. Passing it explicitly keeps a tool call self-contained,
+ * which is what hosts that start a new MCP session per request require.
+ */
+export const ProjectKeyArgShape = {
+    projectKey: z
+        .string()
+        .optional()
+        .describe(
+            'Project to target. Defaults to the project set by select_project.',
+        ),
+}
+
+/** Args for project-scoped tools that take no other parameters. */
+export const ProjectScopedArgsSchema = z.object(ProjectKeyArgShape)
+
 export const VariableValidationSchema = z.object({
     schemaType: z
         .enum(['enum', 'regex', 'jsonSchema'])
@@ -48,6 +68,7 @@ export const VariableValidationSchema = z.object({
 })
 
 export const ListFeaturesArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     page: z
         .number()
         .min(1)
@@ -97,6 +118,7 @@ export const ListFeaturesArgsSchema = z.object({
 })
 
 export const ListVariablesArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     page: z
         .number()
         .min(1)
@@ -139,6 +161,7 @@ export const ListVariablesArgsSchema = z.object({
 })
 
 export const CreateVariableArgsSchema = CreateVariableDto.extend({
+    ...ProjectKeyArgShape,
     key: CreateVariableDto.shape.key.describe('Unique variable key'),
     defaultValue: CreateVariableDto.shape.defaultValue.describe(
         'Default value for the variable, the data type of the defaultValue must match the variable.type',
@@ -156,6 +179,7 @@ export const CreateVariableArgsSchema = CreateVariableDto.extend({
 })
 
 export const UpdateVariableArgsSchema = UpdateVariableDto.extend({
+    ...ProjectKeyArgShape,
     key: z
         .string()
         .max(100)
@@ -175,10 +199,12 @@ export const UpdateVariableArgsSchema = UpdateVariableDto.extend({
 })
 
 export const DeleteVariableArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     key: z.string().describe('key to identify variable to delete'),
 })
 
 export const DeleteFeatureArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     key: z.string().describe('key to identify feature to delete'),
 })
 
@@ -272,6 +298,7 @@ export const SetFeatureTargetingArgsSchema = z.object({
 })
 
 export const CreateFeatureArgsSchema = CreateFeatureDto.extend({
+    ...ProjectKeyArgShape,
     key: CreateFeatureDto.shape.key.describe('Unique feature key'),
     variables: CreateFeatureDto.shape.variables.describe(
         'Array of variables to create or reassociate with this feature',
@@ -295,6 +322,7 @@ export const CreateFeatureArgsSchema = CreateFeatureDto.extend({
 })
 
 export const UpdateFeatureArgsSchema = UpdateFeatureDto.extend({
+    ...ProjectKeyArgShape,
     key: z
         .string()
         .min(1)
@@ -337,6 +365,7 @@ export const UpdateFeatureArgsSchema = UpdateFeatureDto.extend({
 })
 
 export const UpdateFeatureStatusArgsSchema = UpdateFeatureStatusDto.extend({
+    ...ProjectKeyArgShape,
     key: z
         .string()
         .min(1)
@@ -349,6 +378,7 @@ export const UpdateFeatureStatusArgsSchema = UpdateFeatureStatusDto.extend({
 })
 
 export const UpdateSelfTargetingIdentityArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     dvc_user_id: z
         .string()
         .describe(
@@ -357,6 +387,7 @@ export const UpdateSelfTargetingIdentityArgsSchema = z.object({
 })
 
 export const SetSelfTargetingOverrideArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     feature_key: z.string().describe('Feature key to set override for'),
     environment_key: z.string().describe('Environment key to set override in'),
     variation_key: z
@@ -365,6 +396,7 @@ export const SetSelfTargetingOverrideArgsSchema = z.object({
 })
 
 export const ClearSelfTargetingOverridesArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     feature_key: z.string().describe('Feature key to clear overrides for'),
     environment_key: z
         .string()
@@ -414,6 +446,7 @@ export const UpdateFeatureTargetingArgsSchema = UpdateFeatureConfigDto.extend({
 })
 
 export const GetFeatureAuditLogHistoryArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     feature_key: z
         .string()
         .describe('Feature key to get audit log history for'),
@@ -490,6 +523,7 @@ const BaseEvaluationQuerySchema = z.object({
 // MCP argument schemas (using camelCase to match API)
 export const GetFeatureTotalEvaluationsArgsSchema =
     BaseEvaluationQuerySchema.extend({
+        ...ProjectKeyArgShape,
         featureKey: z
             .string()
             .describe('Feature key to get evaluation data for'),
@@ -497,13 +531,18 @@ export const GetFeatureTotalEvaluationsArgsSchema =
         variable: z.string().optional().describe('Variable key to filter by'),
     })
 
-export const GetProjectTotalEvaluationsArgsSchema = BaseEvaluationQuerySchema
+export const GetProjectTotalEvaluationsArgsSchema =
+    BaseEvaluationQuerySchema.extend(ProjectKeyArgShape)
 
-// API query schemas (same as MCP args since we use camelCase throughout)
+// API query schemas (same as MCP args since we use camelCase throughout).
+// projectKey is omitted: it selects the project in the request path, it is not a query param.
 export const FeatureTotalEvaluationsQuerySchema =
-    GetFeatureTotalEvaluationsArgsSchema.omit({ featureKey: true })
+    GetFeatureTotalEvaluationsArgsSchema.omit({
+        featureKey: true,
+        projectKey: true,
+    })
 export const ProjectTotalEvaluationsQuerySchema =
-    GetProjectTotalEvaluationsArgsSchema
+    GetProjectTotalEvaluationsArgsSchema.omit({ projectKey: true })
 
 export const ListCustomPropertiesArgsSchema = z.object({
     page: z

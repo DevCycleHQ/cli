@@ -1,7 +1,13 @@
 import { expect } from '@oclif/test'
 import sinon from 'sinon'
 import * as assert from 'assert'
-import { DevCycleApiClient, handleZodiosValidationErrors } from './api'
+import {
+    DevCycleApiClient,
+    handleZodiosValidationErrors,
+    omitProjectKey,
+    projectKeyFromArgs,
+    MISSING_PROJECT_KEY_ERROR,
+} from './api'
 import { DevCycleAuth } from './auth'
 import { setMCPToolCommand } from './headers'
 import { axiosClient, v2ApiClient } from '../../api/apiClient'
@@ -79,7 +85,6 @@ describe('DevCycleApiClient', () => {
             const mockOperation = sinon.stub().resolves(mockResult)
 
             authStub.requireAuth.returns()
-            authStub.requireProject.returns()
 
             const result = await apiClient.executeWithLogging(
                 'testOperation',
@@ -89,7 +94,6 @@ describe('DevCycleApiClient', () => {
 
             expect(result).to.deep.equal(mockResult)
             sinon.assert.calledOnce(authStub.requireAuth)
-            sinon.assert.calledOnce(authStub.requireProject)
             sinon.assert.calledWith(
                 mockOperation,
                 'mock-auth-token',
@@ -135,7 +139,6 @@ describe('DevCycleApiClient', () => {
                 )
 
             authStub.requireAuth.returns()
-            authStub.requireProject.returns()
 
             const result = await apiClient.executeWithDashboardLink(
                 'createFeature',
@@ -156,6 +159,165 @@ describe('DevCycleApiClient', () => {
                 'test-project',
                 mockResult,
             )
+        })
+    })
+
+    describe('project key resolution', () => {
+        it('should prefer the projectKey argument over the selected project', async () => {
+            const mockOperation = sinon.stub().resolves({})
+            authStub.requireAuth.returns()
+
+            await apiClient.executeWithLogging(
+                'testOperation',
+                { key: 'test-key', projectKey: 'arg-project' },
+                mockOperation,
+            )
+
+            sinon.assert.calledWith(
+                mockOperation,
+                'mock-auth-token',
+                'arg-project',
+            )
+        })
+
+        it('should fall back to the selected project when no argument is given', async () => {
+            const mockOperation = sinon.stub().resolves({})
+            authStub.requireAuth.returns()
+
+            await apiClient.executeWithLogging(
+                'testOperation',
+                { key: 'test-key' },
+                mockOperation,
+            )
+
+            sinon.assert.calledWith(
+                mockOperation,
+                'mock-auth-token',
+                'test-project',
+            )
+        })
+
+        it('should ignore a blank projectKey argument', async () => {
+            const mockOperation = sinon.stub().resolves({})
+            authStub.requireAuth.returns()
+
+            await apiClient.executeWithLogging(
+                'testOperation',
+                { projectKey: '   ' },
+                mockOperation,
+            )
+
+            sinon.assert.calledWith(
+                mockOperation,
+                'mock-auth-token',
+                'test-project',
+            )
+        })
+
+        it('should accept a projectKey argument when no project is selected', async () => {
+            const mockOperation = sinon.stub().resolves({})
+            authStub.requireAuth.returns()
+            authStub.getProjectKey.returns('')
+
+            await apiClient.executeWithLogging(
+                'testOperation',
+                { projectKey: 'arg-project' },
+                mockOperation,
+            )
+
+            sinon.assert.calledWith(
+                mockOperation,
+                'mock-auth-token',
+                'arg-project',
+            )
+        })
+
+        it('should throw when a project is required and none can be resolved', async () => {
+            const mockOperation = sinon.stub().resolves({})
+            authStub.requireAuth.returns()
+            authStub.getProjectKey.returns('')
+
+            try {
+                await apiClient.executeWithLogging(
+                    'testOperation',
+                    {},
+                    mockOperation,
+                )
+                assert.fail('Expected function to throw')
+            } catch (error) {
+                expect((error as Error).message).to.equal(
+                    MISSING_PROJECT_KEY_ERROR,
+                )
+                sinon.assert.notCalled(mockOperation)
+            }
+        })
+
+        it('should not require a project when requiresProject is false', async () => {
+            const mockOperation = sinon.stub().resolves({})
+            authStub.requireAuth.returns()
+            authStub.getProjectKey.returns('')
+
+            await apiClient.executeWithLogging(
+                'listProjects',
+                {},
+                mockOperation,
+                false,
+            )
+
+            sinon.assert.calledWith(mockOperation, 'mock-auth-token', undefined)
+        })
+
+        it('should build the dashboard link from the projectKey argument', async () => {
+            const mockResult = { key: 'test-feature' }
+            const mockOperation = sinon.stub().resolves(mockResult)
+            const dashboardLinkGenerator = sinon.stub().returns('link')
+            authStub.requireAuth.returns()
+
+            await apiClient.executeWithDashboardLink(
+                'createFeature',
+                { key: 'test-feature', projectKey: 'arg-project' },
+                mockOperation,
+                dashboardLinkGenerator,
+            )
+
+            sinon.assert.calledWith(
+                dashboardLinkGenerator,
+                'test-org-id',
+                'arg-project',
+                mockResult,
+            )
+        })
+    })
+
+    describe('projectKeyFromArgs', () => {
+        it('should read a projectKey argument', () => {
+            expect(projectKeyFromArgs({ projectKey: 'my-project' })).to.equal(
+                'my-project',
+            )
+        })
+
+        it('should return undefined for absent, blank or non-string values', () => {
+            expect(projectKeyFromArgs({})).to.equal(undefined)
+            expect(projectKeyFromArgs({ projectKey: '  ' })).to.equal(undefined)
+            expect(projectKeyFromArgs({ projectKey: 7 })).to.equal(undefined)
+            expect(projectKeyFromArgs(null)).to.equal(undefined)
+        })
+    })
+
+    describe('omitProjectKey', () => {
+        it('should strip projectKey before args reach the API', () => {
+            expect(
+                omitProjectKey({
+                    key: 'my-feature',
+                    projectKey: 'my-project',
+                }),
+            ).to.deep.equal({ key: 'my-feature' })
+        })
+
+        it('should leave args without a projectKey untouched', () => {
+            expect(omitProjectKey({ key: 'my-feature' })).to.deep.equal({
+                key: 'my-feature',
+            })
         })
     })
 })

@@ -1,5 +1,9 @@
 import { z } from 'zod'
-import { handleZodiosValidationErrors } from '../utils/api'
+import {
+    handleZodiosValidationErrors,
+    omitProjectKey,
+    MISSING_PROJECT_KEY_ERROR,
+} from '../utils/api'
 import {
     fetchVariables,
     createVariable,
@@ -26,12 +30,11 @@ export async function listVariablesHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
-                () => fetchVariables(authToken, projectKey, args),
+                () =>
+                    fetchVariables(authToken, projectKey, omitProjectKey(args)),
                 'fetchVariables',
             )
         },
@@ -48,12 +51,11 @@ export async function createVariableHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
-                () => createVariable(authToken, projectKey, args),
+                () =>
+                    createVariable(authToken, projectKey, omitProjectKey(args)),
                 'createVariable',
             )
         },
@@ -65,16 +67,14 @@ export async function updateVariableHandler(
     args: z.infer<typeof UpdateVariableArgsSchema>,
     apiClient: IDevCycleApiClient,
 ) {
-    const { key, ...updateData } = args
+    const { key, ...updateData } = omitProjectKey(args)
 
     return await apiClient.executeWithDashboardLink(
         'updateVariable',
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
                 () => updateVariable(authToken, projectKey, key, updateData),
@@ -94,9 +94,7 @@ export async function deleteVariableHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             await handleZodiosValidationErrors(
                 () => deleteVariable(authToken, projectKey, args.key),

@@ -1,5 +1,8 @@
 import { z } from 'zod'
-import { handleZodiosValidationErrors } from '../utils/api'
+import {
+    handleZodiosValidationErrors,
+    MISSING_PROJECT_KEY_ERROR,
+} from '../utils/api'
 import { fetchUserProfile, updateUserProfile } from '../../api/userProfile'
 import {
     fetchProjectOverridesForUser,
@@ -10,6 +13,7 @@ import {
     UpdateSelfTargetingIdentityArgsSchema,
     SetSelfTargetingOverrideArgsSchema,
     ClearSelfTargetingOverridesArgsSchema,
+    ProjectScopedArgsSchema,
 } from '../types'
 import { IDevCycleApiClient } from '../api/interface'
 import { DevCycleMCPServerInstance } from '../server'
@@ -17,16 +21,15 @@ import { dashboardLinks } from '../utils/dashboardLinks'
 
 // Individual handler functions
 export async function getSelfTargetingIdentityHandler(
+    args: z.infer<typeof ProjectScopedArgsSchema>,
     apiClient: IDevCycleApiClient,
 ) {
     return await apiClient.executeWithDashboardLink(
         'getSelfTargetingIdentity',
-        null,
+        args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
                 () => fetchUserProfile(authToken, projectKey),
@@ -46,9 +49,7 @@ export async function updateSelfTargetingIdentityHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -67,16 +68,15 @@ export async function updateSelfTargetingIdentityHandler(
 }
 
 export async function listSelfTargetingOverridesHandler(
+    args: z.infer<typeof ProjectScopedArgsSchema>,
     apiClient: IDevCycleApiClient,
 ) {
     return await apiClient.executeWithDashboardLink(
         'listSelfTargetingOverrides',
-        null,
+        args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
                 () => fetchProjectOverridesForUser(authToken, projectKey),
@@ -96,9 +96,7 @@ export async function setSelfTargetingOverrideHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             return await handleZodiosValidationErrors(
                 () =>
@@ -122,9 +120,7 @@ export async function clearFeatureSelfTargetingOverridesHandler(
         args,
         async (authToken: string, projectKey: string | undefined) => {
             if (!projectKey) {
-                throw new Error(
-                    'Project key is required for this operation. Please select a project using the select_project tool first.',
-                )
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
             await handleZodiosValidationErrors(
                 () =>
@@ -164,10 +160,14 @@ export function registerSelfTargetingTools(
                 title: 'Get Self-Targeting Identity',
                 readOnlyHint: true,
             },
-            inputSchema: {}, // No parameters needed
+            inputSchema: ProjectScopedArgsSchema.shape,
         },
-        async () => {
-            return await getSelfTargetingIdentityHandler(apiClient)
+        async (args: unknown) => {
+            const validatedArgs = ProjectScopedArgsSchema.parse(args)
+            return await getSelfTargetingIdentityHandler(
+                validatedArgs,
+                apiClient,
+            )
         },
     )
 
@@ -205,10 +205,14 @@ export function registerSelfTargetingTools(
                 title: 'List Self-Targeting Overrides',
                 readOnlyHint: true,
             },
-            inputSchema: {}, // No parameters needed
+            inputSchema: ProjectScopedArgsSchema.shape,
         },
-        async () => {
-            return await listSelfTargetingOverridesHandler(apiClient)
+        async (args: unknown) => {
+            const validatedArgs = ProjectScopedArgsSchema.parse(args)
+            return await listSelfTargetingOverridesHandler(
+                validatedArgs,
+                apiClient,
+            )
         },
     )
 

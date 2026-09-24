@@ -115,6 +115,7 @@ export function registerLocalProjectTools(
             description: [
                 'Select a project to use for subsequent MCP operations.',
                 'Call without parameters to list available projects.',
+                'Selection is remembered per session. If your MCP host starts a new session per request, pass a projectKey argument to each tool instead.',
                 'Do not automatically select a project, ask the user which project they want to select.',
                 'This will update your local DevCycle configuration for the MCP and CLI (~/.config/devcycle/user.yml).',
                 'Returns the current project, its environments, and SDK keys.',

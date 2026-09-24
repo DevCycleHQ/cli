@@ -54,6 +54,39 @@ export async function handleZodiosValidationErrors<T>(
     }
 }
 
+/**
+ * Error surfaced when a tool needs a project and none could be resolved.
+ */
+export const MISSING_PROJECT_KEY_ERROR = [
+    'Project key is required for this operation.',
+    'Either pass a "projectKey" argument to this tool, or select a project using the select_project tool first.',
+].join('\n')
+
+/**
+ * Read the optional per-call project override out of a tool's arguments.
+ * Returns undefined when absent or blank so callers can fall back to the
+ * project selected via select_project.
+ */
+export function projectKeyFromArgs(args: unknown): string | undefined {
+    if (!args || typeof args !== 'object') return undefined
+    const value = (args as { projectKey?: unknown }).projectKey
+    if (typeof value !== 'string') return undefined
+    return value.trim() || undefined
+}
+
+/**
+ * Strip the per-call project override before forwarding tool arguments to the
+ * API. The project is passed as a path parameter, so leaving it in the body or
+ * query string would fail request validation.
+ */
+export function omitProjectKey<T extends object>(
+    args: T,
+): Omit<T, 'projectKey'> {
+    const rest = { ...args } as T & { projectKey?: string }
+    delete rest.projectKey
+    return rest
+}
+
 export function getErrorMessage(error: unknown): string {
     if (error instanceof Error && error.message) {
         return error.message
@@ -97,17 +130,16 @@ export class DevCycleApiClient implements IDevCycleApiClient {
     ): Promise<T> {
         try {
             this.auth.requireAuth()
-            if (requiresProject) {
-                this.auth.requireProject()
+
+            const projectKey = this.resolveProjectKey(args)
+            if (requiresProject && !projectKey) {
+                throw new Error(MISSING_PROJECT_KEY_ERROR)
             }
 
             // Set the specific MCP tool command in headers before making API calls
             setMCPToolCommand(operationName)
 
-            return await operation(
-                this.auth.getAuthToken(),
-                this.auth.getProjectKey(),
-            )
+            return await operation(this.auth.getAuthToken(), projectKey)
         } catch (error) {
             console.error(
                 `MCP ${operationName} error:`,
@@ -143,10 +175,20 @@ export class DevCycleApiClient implements IDevCycleApiClient {
 
         const link = dashboardLink(
             this.auth.getOrgId(),
-            this.auth.getProjectKey(),
+            this.resolveProjectKey(args),
             result,
         )
         return { result, dashboardLink: link }
+    }
+
+    /**
+     * Resolve the project for a call: the tool's own projectKey argument wins,
+     * otherwise fall back to the project selected via select_project.
+     */
+    private resolveProjectKey(args: unknown): string | undefined {
+        return (
+            projectKeyFromArgs(args) || this.auth.getProjectKey() || undefined
+        )
     }
 
     public getAuth(): DevCycleAuth {
