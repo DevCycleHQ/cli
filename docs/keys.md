@@ -13,12 +13,12 @@ Retrieve SDK keys from the Management API.
 USAGE
   $ dvc keys get [--config-path <value>] [--auth-path <value>] [--repo-config-path <value>] [--client-id
     <value>] [--client-secret <value>] [--project <value>] [--no-api] [--headless] [--env <value>] [--type
-    mobile|client|server]
+    mobile|client|server|all]
 
 FLAGS
   --env=<value>    Environment to fetch a key for
   --type=<option>  The type of SDK key to retrieve
-                   <options: mobile|client|server>
+                   <options: mobile|client|server|all>
 
 GLOBAL FLAGS
   --auth-path=<value>         Override the default location to look for an auth.yml file
@@ -37,7 +37,7 @@ DESCRIPTION
 EXAMPLES
   $ dvc keys get
 
-  $ dvc keys get --keys=environment-one,environment-two
+  $ dvc keys get --env=production --type=server
 ```
 
 _See code: [src/commands/keys/get.ts](https://github.com/DevCycleHQ/cli/blob/v6.3.2/src/commands/keys/get.ts)_

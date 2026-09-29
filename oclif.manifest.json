@@ -2526,7 +2526,7 @@
       "hiddenAliases": [],
       "examples": [
         "<%= config.bin %> <%= command.id %>",
-        "<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two"
+        "<%= config.bin %> <%= command.id %> --env=production --type=server"
       ],
       "flags": {
         "config-path": {
@@ -2625,7 +2625,8 @@
           "options": [
             "mobile",
             "client",
-            "server"
+            "server",
+            "all"
           ]
         }
       },

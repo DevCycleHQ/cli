@@ -14,7 +14,7 @@ export default class GetEnvironmentKey extends Base {
     static description = 'Retrieve SDK keys from the Management API.'
     static examples = [
         '<%= config.bin %> <%= command.id %>',
-        '<%= config.bin %> <%= command.id %> --keys=environment-one,environment-two',
+        '<%= config.bin %> <%= command.id %> --env=production --type=server',
     ]
     static flags = {
         ...Base.flags,
@@ -22,7 +22,7 @@ export default class GetEnvironmentKey extends Base {
             description: 'Environment to fetch a key for',
         }),
         type: Flags.string({
-            options: ['mobile', 'client', 'server'],
+            options: ['mobile', 'client', 'server', 'all'],
             description: 'The type of SDK key to retrieve',
         }),
     }
@@ -33,8 +33,10 @@ export default class GetEnvironmentKey extends Base {
         const { project, headless } = flags
         await this.requireProject(project, headless)
 
-        if (flags.headless && !flags.env) {
-            throw new Error('In headless mode, the env flag is required')
+        if (flags.headless && (!flags.env || !flags.type)) {
+            throw new Error(
+                'In headless mode, the env and type flags are required',
+            )
         }
 
         const environmentKey = await this.getEnvironmentKey()
@@ -43,22 +45,35 @@ export default class GetEnvironmentKey extends Base {
             this.projectKey,
             environmentKey,
         )
-        if (!environment) {
+        const sdkType = await this.getSdkType()
+        if (sdkType === 'all') {
+            this.writer.showResults(environment.sdkKeys)
             return
         }
-        const sdkType = await this.getSdkType()
-        if (sdkType && sdkType !== 'all') {
-            const activeKeys = environment.sdkKeys[sdkType] as APIKey[]
-            const currentKey = activeKeys[activeKeys.length - 1]
-            if (currentKey.compromised) {
-                this.writer.warningMessage(
-                    `The most recent key for ${environmentKey} ${sdkType} has been compromised}`,
-                )
-            }
-            this.writer.showRawResults(currentKey.key)
-        } else {
-            this.writer.showResults(environment.sdkKeys)
+
+        const activeKeys = environment.sdkKeys[sdkType] as APIKey[]
+        if (!activeKeys?.length) {
+            throw new Error(
+                `No ${sdkType} SDK keys found for environment ${environmentKey}`,
+            )
         }
+
+        // the API appends new keys, so reverse to put the most recent first
+        const keysNewestFirst = [...activeKeys].reverse()
+        if (keysNewestFirst.every(({ key }) => !key)) {
+            throw new Error(
+                `Your credentials do not have permission to view ${sdkType} SDK keys for environment ` +
+                    `${environmentKey}. Publisher permissions are required for protected environments.`,
+            )
+        }
+
+        this.writer.showRawResults(
+            keysNewestFirst
+                .map(({ key, compromised }) =>
+                    compromised ? `${key} (compromised)` : key,
+                )
+                .join('\n'),
+        )
     }
 
     private async getEnvironmentKey(): Promise<string> {
