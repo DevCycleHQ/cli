@@ -5,13 +5,26 @@ import { html, raw } from 'hono/html'
  */
 export function renderConsentScreen({
     clientName,
+    clientDomain,
     clientLogo,
+    redirectHost,
+    redirectIsLoopback,
     requestedScopes,
     transactionState,
     consentToken,
 }: {
     clientName: string
+    /**
+     * For a Client ID Metadata Document client, the hostname of the HTTPS
+     * client_id it published, which it had to control to serve the document.
+     * Absent for dynamically registered clients, whose name is self-asserted.
+     */
+    clientDomain?: string
     clientLogo: string
+    /** Hostname the authorization code will be sent to. The MCP spec requires showing it. */
+    redirectHost: string
+    /** Whether that host is a local app, which the MCP spec says to warn about. */
+    redirectIsLoopback: boolean
     requestedScopes: string[]
     transactionState: string
     consentToken: string
@@ -209,6 +222,17 @@ export function renderConsentScreen({
                         color: #4b5563;
                         line-height: 1.5;
                         margin-top: 0.5rem;
+                    }
+
+                    .client-provenance {
+                        color: #4b5563;
+                        font-size: 0.825rem;
+                        line-height: 1.5;
+                        margin-top: 0.75rem;
+                    }
+
+                    .client-provenance .unverified {
+                        color: #92400e;
                     }
 
                     .permissions {
@@ -439,9 +463,12 @@ export function renderConsentScreen({
                         <div class="consent-wrapper">
                             <div class="consent-container-inner">
                                 ${clientLogo?.length
-                                    ? `<div class="client-logo-section">
-                                        <img src="${clientLogo}" alt="${clientName} logo" />
-                                       </div>`
+                                    ? html`<div class="client-logo-section">
+                                          <img
+                                              src="${clientLogo}"
+                                              alt="${clientName} logo"
+                                          />
+                                      </div>`
                                     : ''}
 
                                 <div class="consent-header">
@@ -458,6 +485,20 @@ export function renderConsentScreen({
                                         requesting permission to access the
                                         <strong>DevCycle API</strong> using your
                                         account credentials.
+                                    </p>
+                                    <p class="client-provenance">
+                                        ${clientDomain
+                                            ? html`Published by
+                                                  <strong
+                                                      >${clientDomain}</strong
+                                                  >.`
+                                            : html`<span class="unverified"
+                                                  >This app registered itself,
+                                                  so its name is not
+                                                  verified.</span
+                                              >`}
+                                        Access will be sent to
+                                        <strong>${redirectHost}</strong>.
                                     </p>
                                 </div>
 
@@ -486,6 +527,18 @@ export function renderConsentScreen({
                                         <strong>${clientName}</strong> you
                                         should deny access.
                                     </p>
+                                    ${redirectIsLoopback
+                                        ? html`<p>
+                                              <strong
+                                                  >This sends access to an app
+                                                  running on your
+                                                  computer.</strong
+                                              >
+                                              Any local program can claim this
+                                              name, so continue only if you just
+                                              started signing in from it.
+                                          </p>`
+                                        : ''}
                                 </div>
 
                                 <form

@@ -127,11 +127,17 @@ dvc projects select
 
 ### Remote MCP Server Authentication
 
-The remote MCP server uses OAuth 2.0 authentication:
+The remote MCP server uses OAuth 2.1 authentication:
 
 - Users authenticate through DevCycle's Auth0 tenant
 - No API keys or local credentials needed
 - Project selection is handled through the `select_project` tool
+
+Clients discover authorization from `/.well-known/oauth-protected-resource`,
+named in the `WWW-Authenticate` challenge on any unauthenticated request. They
+can register through Client ID Metadata Documents (preferred) or dynamic client
+registration at `/oauth/register`. Authorization requires S256 PKCE, and redirect
+URIs must be `https` or loopback `http`.
 
 ## Available Tools
 

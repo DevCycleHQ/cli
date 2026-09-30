@@ -14,7 +14,7 @@
         "test:watch": "vitest"
     },
     "dependencies": {
-        "@cloudflare/workers-oauth-provider": "^0.3.0",
+        "@cloudflare/workers-oauth-provider": "^1.2.1",
         "ably": "^2.19.0",
         "agents": "^0.7.6",
         "hono": "^4.13.5",

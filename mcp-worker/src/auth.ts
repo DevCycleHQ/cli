@@ -4,7 +4,11 @@ import { getCookie, setCookie } from 'hono/cookie'
 import * as oauth from 'oauth4webapi'
 import type { UserProps } from './types'
 import { publishMCPInstallEvent } from './ably'
-import { OAuthHelpers } from '@cloudflare/workers-oauth-provider'
+import {
+    AuthorizationError,
+    CimdFetchError,
+    OAuthHelpers,
+} from '@cloudflare/workers-oauth-provider'
 import type {
     AuthRequest,
     TokenExchangeCallbackOptions,
@@ -62,6 +66,55 @@ export async function getOidcConfig({
 export async function authorize(
     c: any & { env: Env & { OAUTH_PROVIDER: OAuthHelpers } },
 ) {
+    try {
+        return await renderAuthorizeConsent(c)
+    } catch (error) {
+        return handleAuthorizeError(c, error)
+    }
+}
+
+/**
+ * Turn a failed authorization request into an OAuth response.
+ *
+ * Since workers-oauth-provider 1.x, `parseAuthRequest` rejects requests the 0.x
+ * provider accepted: `code_challenge_method=plain`, `response_type=token`, and
+ * redirect URIs that are neither https nor loopback http. Without this these
+ * surface as 500s rather than the errors the spec calls for.
+ *
+ * Redirecting is only safe once the client and its exact redirect URI validated,
+ * which is what `redirectTo` being set means. Everything else renders here.
+ */
+function handleAuthorizeError(
+    c: any & { env: Env & { OAUTH_PROVIDER: OAuthHelpers } },
+    error: unknown,
+) {
+    if (error instanceof AuthorizationError) {
+        if (error.redirectTo) {
+            return Response.redirect(error.redirectTo, 302)
+        }
+        console.warn('Rejected authorization request', {
+            code: error.code,
+            description: error.description,
+        })
+        return c.text(error.description, 400)
+    }
+
+    if (error instanceof CimdFetchError) {
+        // The client's metadata document could not be fetched or did not
+        // validate, so nothing about this client is trustworthy. Never redirect.
+        console.error('CIMD resolution failed', {
+            reason: error.reason,
+            detail: error.detail,
+        })
+        return c.text('This app could not be verified.', 400)
+    }
+
+    throw error
+}
+
+async function renderAuthorizeConsent(
+    c: any & { env: Env & { OAUTH_PROVIDER: OAuthHelpers } },
+) {
     const mcpClientAuthRequest = await c.env.OAUTH_PROVIDER.parseAuthRequest(
         c.req.raw,
     )
@@ -69,10 +122,13 @@ export async function authorize(
         return c.text('Invalid request', 400)
     }
 
-    const client = await c.env.OAUTH_PROVIDER.lookupClient(
-        mcpClientAuthRequest.clientId,
-    )
-    if (!client) {
+    // describeConsent resolves the client and returns exactly the facts the MCP
+    // authorization spec requires the page to show: the client's name, the domain
+    // that verifiably published it (CIMD clients only), where tokens will be sent,
+    // and whether that is a local app.
+    const consent =
+        await c.env.OAUTH_PROVIDER.describeConsent(mcpClientAuthRequest)
+    if (!consent) {
         return c.text('Invalid client', 400)
     }
 
@@ -101,9 +157,9 @@ export async function authorize(
         secure: c.env.NODE_ENV !== 'development',
     })
 
-    // Extract client information for the consent screen
-    const clientName = client.clientName || client.clientId
-    const clientLogo = client.logoUri || '' // No default logo
+    // Client-supplied strings; the consent renderer escapes them.
+    const clientName = consent.clientName
+    const clientLogo = consent.logoUri || '' // No default logo
     const requestedScopes = (c.env.AUTH0_SCOPE || '').split(' ')
 
     // Render the consent screen with CSRF protection.
@@ -116,9 +172,12 @@ export async function authorize(
     // object-src close clickjacking and related vectors.
     return c.html(
         renderConsentScreen({
+            clientDomain: consent.clientDomain,
             clientLogo,
             clientName,
             consentToken,
+            redirectHost: consent.redirectHost,
+            redirectIsLoopback: consent.redirectIsLoopback,
             requestedScopes,
             transactionState,
         }),

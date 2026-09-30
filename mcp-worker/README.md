@@ -16,7 +16,7 @@ This package provides the DevCycle MCP (Model Context Protocol) server as a host
 
 - **Base Class**: Extends `McpAgent` from the `agents` package for MCP protocol handling
 - **Main Class**: `DevCycleMCP` - Manages tool registration and state
-- **Authentication**: OAuth 2.0 flow with Auth0 integration and consent screen
+- **Authentication**: OAuth 2.1 (`@cloudflare/workers-oauth-provider`) with Auth0 as the upstream IdP, a consent screen, and CIMD + dynamic client registration
 - **Transport**: Streamable HTTP (`/mcp`). The legacy HTTP+SSE endpoint (`/sse`) is deprecated
 - **API Client**: `WorkerApiClient` - OAuth-based API client with state management
 - **State Management**: Durable Objects for session and project selection persistence
@@ -37,6 +37,11 @@ The MCP Worker is deployed to Cloudflare Workers on the `devcycle.com` zone at `
 
 - **KV Namespace**: `OAUTH_KV` - Stores OAuth session data
 - **Durable Objects**: `DevCycleMCP` class - Maintains per-session state including project selection
+
+### Notable variables
+
+- `MCP_RESOURCE_URL`: canonical RFC 9728 resource identifier and token audience.
+  Must equal the origin clients connect to, or discovery breaks.
 
 ### Secrets (Configured in Cloudflare Dashboard)
 
@@ -113,7 +118,8 @@ This deploys to the `devcycle-mcp-server` worker with route `mcp.devcycle.com/*`
 
 ## Authentication
 
-The Worker uses OAuth 2.0 with DevCycle's Auth0 tenant. On first connection:
+The Worker is an OAuth 2.1 authorization server and protected resource, backed by
+DevCycle's Auth0 tenant as the upstream identity provider. On first connection:
 
 1. User sees DevCycle consent screen with requested permissions
 2. Authenticates via Auth0
@@ -123,6 +129,33 @@ The Worker uses OAuth 2.0 with DevCycle's Auth0 tenant. On first connection:
    - `email`: User email
    - `name`: Display name
 4. Access token is used for all DevCycle API calls
+
+### Discovery and client registration
+
+Clients discover authorization through RFC 9728 protected resource metadata:
+
+1. An unauthenticated request to `/mcp` returns `401` with a `WWW-Authenticate`
+   challenge naming the metadata document.
+2. `/.well-known/oauth-protected-resource` returns the canonical `resource` and
+   the authorization server issuer.
+3. `/.well-known/oauth-authorization-server` returns the OAuth endpoints.
+
+`MCP_RESOURCE_URL` is that canonical resource, and every access token is bound to
+it as its audience (RFC 8707). It is a bare origin rather than `<origin>/mcp`
+because the deprecated `/sse` route must also sit under it; once `/sse` is
+removed it can narrow to the `/mcp` path.
+
+Clients can obtain a `client_id` two ways:
+
+- **Client ID Metadata Documents** (preferred). The client uses an HTTPS URL it
+  controls as its `client_id`, serving a metadata document there. Because the
+  domain is verified, the consent screen shows it as the publisher.
+- **Dynamic Client Registration** at `/oauth/register`. MCP 2026-07-28 deprecated
+  DCR in favour of CIMD, but it stays enabled for clients that need it. A
+  DCR client's name is self-asserted, and the consent screen says so.
+
+Enforced per OAuth 2.1 and the MCP authorization spec: S256 PKCE only (`plain` is
+refused), no implicit grant, and redirect URIs must be `https` or loopback `http`.
 
 ## Available Tools
 

@@ -422,10 +422,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/workers-oauth-provider@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@cloudflare/workers-oauth-provider@npm:0.3.0"
-  checksum: 10c0/e4f14c91f2d95398b61915918c0281e24fc0a822aa5b715a4ef51e0c00121aae32549b2618fb245ee7eb7c31f898d5c2f7c13eda0ba419f17001351a9d4f49d4
+"@cloudflare/workers-oauth-provider@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@cloudflare/workers-oauth-provider@npm:1.2.1"
+  checksum: 10c0/1a80d508a36f6dba3c598a1a69d3146912158c2b46442ee83111515d9013dc4b12c536a1039e829babe6f94a731e8d629047f2831b71d3dad49508a5731df6f5
   languageName: node
   linkType: hard
 
@@ -510,7 +510,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@devcycle/mcp-worker@workspace:mcp-worker"
   dependencies:
-    "@cloudflare/workers-oauth-provider": "npm:^0.3.0"
+    "@cloudflare/workers-oauth-provider": "npm:^1.2.1"
     "@types/node": "npm:^25.4.0"
     ably: "npm:^2.19.0"
     agents: "npm:^0.7.6"

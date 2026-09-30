@@ -202,6 +202,29 @@ function withSSEDeprecationNotice(handler: {
     }
 }
 
+/**
+ * Resolve the RFC 9728 canonical resource identifier for this deployment.
+ *
+ * Since workers-oauth-provider 1.0 the resource is required and becomes the
+ * audience every access token is bound to, which is the RFC 8707 protection MCP
+ * made mandatory in revision 2025-06-18. Deployed environments pin it through
+ * MCP_RESOURCE_URL so a request arriving with an unexpected Host cannot mint
+ * tokens for another audience.
+ *
+ * The resource must equal the origin clients actually connect to, or the provider
+ * serves no protected resource metadata for that origin and omits
+ * `resource_metadata` from its `401` challenge, breaking discovery. `wrangler dev`
+ * simulates the configured route hostname, so `[dev] local_protocol = "https"`
+ * keeps local runs on the same origin as the deployed environment.
+ *
+ * The resource stays a bare origin rather than `<origin>/mcp` because the provider
+ * requires every `apiHandlers` key to sit at or under the resource path, and we
+ * still serve the deprecated `/sse` route alongside `/mcp`.
+ */
+function resolveResource(request: Request, env: Env): string {
+    return env.MCP_RESOURCE_URL || new URL(request.url).origin
+}
+
 // Export a fetch handler that creates the OAuth provider with proper env access
 export default {
     fetch(
@@ -217,9 +240,7 @@ export default {
             apiHandlers: {
                 // Deprecated HTTP+SSE transport, retained for existing clients.
                 // See SSE_SUNSET above for the removal date.
-                '/sse': withSSEDeprecationNotice(
-                    DevCycleMCP.serveSSE('/sse'),
-                ),
+                '/sse': withSSEDeprecationNotice(DevCycleMCP.serveSSE('/sse')),
                 '/mcp': DevCycleMCP.serve('/mcp'),
             },
             defaultHandler: app,
@@ -230,6 +251,18 @@ export default {
             // OAuth discovery metadata to obtain a client_id; without it they fail
             // with "does not support dynamic client registration". See PR #577.
             clientRegistrationEndpoint: '/oauth/register',
+            // RFC 7591 DCR was deprecated by MCP 2026-07-28 in favour of Client ID
+            // Metadata Documents, which a client presents as an HTTPS client_id it
+            // controls, so its name is verifiable rather than self-asserted. CIMD
+            // also needs the global_fetch_strictly_public compatibility flag, set
+            // in wrangler.toml; the provider only advertises
+            // client_id_metadata_document_supported when both are present.
+            clientIdMetadataDocumentEnabled: true,
+            // Canonical resource identifier and token audience (RFC 9728 / RFC 8707).
+            resourceMetadata: {
+                resource: resolveResource(request, env),
+                resource_name: 'DevCycle MCP Server',
+            },
             tokenExchangeCallback: createTokenExchangeCallback(env),
         })
 

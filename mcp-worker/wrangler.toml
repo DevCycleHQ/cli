@@ -2,7 +2,9 @@
 name = "devcycle-mcp-server"
 main = "src/index.ts"
 compatibility_date = "2026-09-29"
-compatibility_flags = ["nodejs_compat"]
+# global_fetch_strictly_public is required by workers-oauth-provider to fetch
+# Client ID Metadata Documents without legacy same-zone origin routing (SSRF safety).
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
 # Production environment (explicit section for --env prod)
 [env.prod]
@@ -22,6 +24,10 @@ id = "511f2abf74904876ba3e4627154f4d86"
 
 [env.prod.vars]
 NODE_ENV = "production"
+# RFC 9728 canonical resource identifier. Every access token is bound to this as
+# its audience. Kept at the bare origin so it covers both /mcp and the deprecated
+# /sse route (the provider requires every apiHandlers key to sit under it).
+MCP_RESOURCE_URL = "https://mcp.devcycle.com"
 API_BASE_URL = "https://api.devcycle.com"
 AUTH0_DOMAIN = "auth.devcycle.com"
 AUTH0_AUDIENCE = "https://api.devcycle.com/"
@@ -47,7 +53,10 @@ enabled = true
 # Development configuration for local testing
 [dev]
 port = 8787
-local_protocol = "http"
+# https so the origin wrangler simulates for the configured route matches
+# MCP_RESOURCE_URL. Over http the scheme differs, the provider serves no protected
+# resource metadata for that origin, and OAuth discovery fails locally.
+local_protocol = "https"
 
 # Development environment (separate deployment)
 [env.dev]
@@ -71,6 +80,7 @@ id = "511f2abf74904876ba3e4627154f4d86"
 # Development environment variables
 [env.dev.vars]
 NODE_ENV = "development"
+MCP_RESOURCE_URL = "https://mcp-dev.devcycle.com"
 API_BASE_URL = "https://api.devcycle.com"
 AUTH0_DOMAIN = "auth.devcycle.com"
 AUTH0_AUDIENCE = "https://api.devcycle.com/"
