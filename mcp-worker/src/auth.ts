@@ -11,6 +11,7 @@ import type {
     TokenExchangeCallbackResult,
 } from '@cloudflare/workers-oauth-provider'
 import { renderConsentScreen } from './consentScreen'
+import workerVersion from './version'
 
 type Auth0AuthRequest = {
     mcpAuthRequest: AuthRequest
@@ -450,7 +451,7 @@ export function createAuthApp(): Hono<{
     app.get('/info', (c) => {
         return c.json({
             service: 'DevCycle MCP Server',
-            version: '1.0.0',
+            version: workerVersion,
             auth0Domain: c.env.AUTH0_DOMAIN,
             apiBaseUrl: c.env.API_BASE_URL || 'https://api.devcycle.com',
         })

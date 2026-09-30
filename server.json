@@ -12,10 +12,6 @@
         {
             "type": "streamable-http",
             "url": "https://mcp.devcycle.com/mcp"
-        },
-        {
-            "type": "sse",
-            "url": "https://mcp.devcycle.com/sse"
         }
     ]
 }

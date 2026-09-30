@@ -540,7 +540,7 @@ Both the local and remote MCP servers share:
 Key differences:
 
 - **Authentication**: Local uses API keys/CLI auth, Remote uses OAuth 2.0
-- **Transport**: Local uses stdio, Remote uses SSE/HTTP
+- **Transport**: Local uses stdio, Remote uses Streamable HTTP (the legacy `/sse` endpoint is deprecated and will be removed after 2027-04-01)
 - **State Storage**: Local uses file system, Remote uses Durable Objects
 
 ### Notes on Environments

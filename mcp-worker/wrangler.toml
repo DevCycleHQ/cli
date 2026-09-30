@@ -1,7 +1,7 @@
 # Cloudflare Worker configuration for DevCycle MCP Server
 name = "devcycle-mcp-server"
 main = "src/index.ts"
-compatibility_date = "2025-06-28"
+compatibility_date = "2026-09-29"
 compatibility_flags = ["nodejs_compat"]
 
 # Production environment (explicit section for --env prod)

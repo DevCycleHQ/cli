@@ -148,6 +148,60 @@ export class DevCycleMCP extends McpAgent<Env, DevCycleMCPState, UserProps> {
     }
 }
 
+/**
+ * Date after which the deprecated HTTP+SSE transport will be removed.
+ *
+ * HTTP+SSE has been deprecated since MCP revision 2025-03-26 and was formally
+ * reclassified as Deprecated in 2026-07-28 (SEP-2596). Clients should connect to
+ * the Streamable HTTP endpoint at `/mcp` instead.
+ */
+const SSE_SUNSET = 'Thu, 01 Apr 2027 00:00:00 GMT'
+
+/**
+ * Wrap the SSE transport handler so every response advertises its deprecation.
+ *
+ * Signals removal via RFC 9745 `Deprecation` and RFC 8594 `Sunset`/`Link`, which
+ * is the only in-band channel available: the SSE transport has no MCP-level way
+ * to warn a client that the endpoint is going away.
+ */
+function withSSEDeprecationNotice(handler: {
+    fetch: (
+        request: Request,
+        env: Env,
+        ctx: ExecutionContext,
+    ) => Promise<Response>
+}) {
+    return {
+        async fetch(
+            request: Request,
+            env: Env,
+            ctx: ExecutionContext,
+        ): Promise<Response> {
+            console.warn(
+                'Deprecated /sse transport used; client should migrate to /mcp',
+                { userAgent: request.headers.get('user-agent') },
+            )
+
+            const response = await handler.fetch(request, env, ctx)
+
+            // Rebuild the response so the streaming body is preserved untouched.
+            const headers = new Headers(response.headers)
+            headers.set('Deprecation', 'true')
+            headers.set('Sunset', SSE_SUNSET)
+            headers.append(
+                'Link',
+                '<https://docs.devcycle.com/cli-mcp/mcp-getting-started>; rel="deprecation"; type="text/html"',
+            )
+
+            return new Response(response.body, {
+                status: response.status,
+                statusText: response.statusText,
+                headers,
+            })
+        },
+    }
+}
+
 // Export a fetch handler that creates the OAuth provider with proper env access
 export default {
     fetch(
@@ -161,7 +215,11 @@ export default {
         // Create OAuth provider with env access
         const provider = new OAuthProvider({
             apiHandlers: {
-                '/sse': DevCycleMCP.serveSSE('/sse'),
+                // Deprecated HTTP+SSE transport, retained for existing clients.
+                // See SSE_SUNSET above for the removal date.
+                '/sse': withSSEDeprecationNotice(
+                    DevCycleMCP.serveSSE('/sse'),
+                ),
                 '/mcp': DevCycleMCP.serve('/mcp'),
             },
             defaultHandler: app,

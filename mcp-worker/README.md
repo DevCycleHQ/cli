@@ -17,7 +17,7 @@ This package provides the DevCycle MCP (Model Context Protocol) server as a host
 - **Base Class**: Extends `McpAgent` from the `agents` package for MCP protocol handling
 - **Main Class**: `DevCycleMCP` - Manages tool registration and state
 - **Authentication**: OAuth 2.0 flow with Auth0 integration and consent screen
-- **Transport**: Both SSE (`/sse`) and standard HTTP (`/mcp`) endpoints for MCP protocol  
+- **Transport**: Streamable HTTP (`/mcp`). The legacy HTTP+SSE endpoint (`/sse`) is deprecated
 - **API Client**: `WorkerApiClient` - OAuth-based API client with state management
 - **State Management**: Durable Objects for session and project selection persistence
 - **Tool Registration**: Shared tools from CLI with Worker-specific adaptations
@@ -57,10 +57,25 @@ yarn dev
 
 ### Available Endpoints
 
-- `/sse` - MCP Server-Sent Events endpoint
-- `/mcp` - Standard HTTP MCP endpoint
+- `/mcp` - Streamable HTTP MCP endpoint (use this)
+- `/sse` - **Deprecated** HTTP+SSE MCP endpoint. Scheduled for removal on
+  **2027-04-01**; responses carry `Deprecation: true` and a `Sunset` header
 - `/oauth/*` - OAuth flow endpoints (authorize, callback, consent)
 - `/health` - Health check endpoint
+
+### Deprecated: the `/sse` transport
+
+HTTP+SSE has been deprecated since MCP revision 2025-03-26 and was formally
+reclassified as Deprecated in 2026-07-28 (SEP-2596). `/sse` still works, but:
+
+- it is no longer advertised in `server.json`, so registry-driven clients will
+  only ever see `/mcp`
+- every response carries `Deprecation: true` and `Sunset: Thu, 01 Apr 2027
+  00:00:00 GMT`
+- it will be removed after that date
+
+Point clients at `https://mcp.devcycle.com/mcp` instead. Every MCP client that
+supports OAuth also supports Streamable HTTP, so no functionality is lost.
 
 ### Testing with Claude Desktop
 
