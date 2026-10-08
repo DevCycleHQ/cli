@@ -1,3 +1,4 @@
+import './axiosFetchDefaults'
 import OAuthProvider from '@cloudflare/workers-oauth-provider'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
