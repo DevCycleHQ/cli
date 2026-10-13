@@ -10,6 +10,7 @@ describe('getLanguageForExtension', () => {
     it('falls back to the extension for unmapped alphanumeric extensions', () => {
         expect(getLanguageForExtension('html')).toEqual('html')
         expect(getLanguageForExtension('Vue')).toEqual('vue')
+        expect(getLanguageForExtension('constructor')).toEqual('constructor')
     })
 
     it('falls back to unknown for unsafe or empty extensions', () => {

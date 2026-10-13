@@ -63,7 +63,7 @@ const SAFE_EXTENSION_PATTERN = /^[a-z0-9]{1,16}$/i
  * for custom match patterns. Unsafe extensions fall back to 'unknown'.
  */
 export const getLanguageForExtension = (extension: string): string => {
-    if (LANGUAGE_MAP[extension]) return LANGUAGE_MAP[extension]
+    if (Object.hasOwn(LANGUAGE_MAP, extension)) return LANGUAGE_MAP[extension]
     return SAFE_EXTENSION_PATTERN.test(extension)
         ? extension.toLowerCase()
         : 'unknown'

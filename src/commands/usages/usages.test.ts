@@ -139,7 +139,10 @@ describe('usages', () => {
             },
         )
 
-    const htmlOutputPath = path.join(os.tmpdir(), 'dvc-usages-html.json')
+    const htmlOutputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dvc-usages-'))
+    const htmlOutputPath = path.join(htmlOutputDir, 'usages.json')
+    afterAll(() => fs.rmSync(htmlOutputDir, { recursive: true, force: true }))
+
     test.stdout()
         .command([
             'usages',
