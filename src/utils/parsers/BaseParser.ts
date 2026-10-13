@@ -395,7 +395,7 @@ export abstract class BaseParser {
                 },
                 fileName: file.name,
                 content: bufferedContent,
-                language: LANGUAGE_MAP[fileExtension],
+                language: LANGUAGE_MAP[fileExtension] ?? fileExtension,
                 ...(match.isUnknown ? { isUnknown: true } : {}),
             })
         })
