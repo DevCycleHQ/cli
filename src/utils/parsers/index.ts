@@ -55,3 +55,16 @@ export const LANGUAGE_MAP: Record<string, string> = {
     php: 'php',
     dart: 'dart',
 }
+
+const SAFE_EXTENSION_PATTERN = /^[a-z0-9]{1,16}$/i
+
+/**
+ * Map a file extension to a language, falling back to the extension itself
+ * for custom match patterns. Unsafe extensions fall back to 'unknown'.
+ */
+export const getLanguageForExtension = (extension: string): string => {
+    if (Object.hasOwn(LANGUAGE_MAP, extension)) return LANGUAGE_MAP[extension]
+    return SAFE_EXTENSION_PATTERN.test(extension)
+        ? extension.toLowerCase()
+        : 'unknown'
+}

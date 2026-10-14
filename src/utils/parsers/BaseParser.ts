@@ -6,7 +6,7 @@ import {
     VariableUsageMatch,
 } from './types'
 import * as usage from '../../commands/usages/types'
-import { LANGUAGE_MAP } from '../parsers'
+import { getLanguageForExtension } from '../parsers'
 
 type MatchWithRange = {
     // Variable name
@@ -395,7 +395,7 @@ export abstract class BaseParser {
                 },
                 fileName: file.name,
                 content: bufferedContent,
-                language: LANGUAGE_MAP[fileExtension],
+                language: getLanguageForExtension(fileExtension),
                 ...(match.isUnknown ? { isUnknown: true } : {}),
             })
         })

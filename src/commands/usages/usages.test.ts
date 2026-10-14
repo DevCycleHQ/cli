@@ -1,3 +1,6 @@
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
 import { test } from '@oclif/test'
 import { expect } from 'vitest'
 import { BASE_URL } from '../../api/common'
@@ -133,6 +136,33 @@ describe('usages', () => {
             'runs against a dart test file with special characters in the path',
             (ctx) => {
                 expect(ctx.stdout).toMatchSnapshot()
+            },
+        )
+
+    const htmlOutputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dvc-usages-'))
+    const htmlOutputPath = path.join(htmlOutputDir, 'usages.json')
+    afterAll(() => fs.rmSync(htmlOutputDir, { recursive: true, force: true }))
+
+    test.stdout()
+        .command([
+            'usages',
+            '--include',
+            'test-utils/fixtures/usages/sample.html',
+            '--match-pattern',
+            'html=isFeatureEnabled\\("([^"]*)"\\)',
+            '--format',
+            'json',
+            '--output',
+            htmlOutputPath,
+        ])
+        .it(
+            'sets language from the file extension for custom match patterns',
+            () => {
+                const [usage] = JSON.parse(
+                    fs.readFileSync(htmlOutputPath, 'utf-8'),
+                )
+                expect(usage.key).toEqual('html-flag')
+                expect(usage.references[0].language).toEqual('html')
             },
         )
 })
