@@ -187,7 +187,7 @@
         "tar": "^7.5.21",
         "@tootallnate/once": "^3.0.1",
         "diff@npm:^4.0.1": "^4.0.4",
-        "handlebars@npm:^4.7.7": "^4.7.9",
+        "handlebars@npm:^4.7.7": "^4.7.10",
         "path-to-regexp@npm:^8.0.0": "^8.4.0",
         "path-to-regexp@npm:^8.1.0": "^8.4.0",
         "brace-expansion@npm:^1.1.7": "^1.1.21",
