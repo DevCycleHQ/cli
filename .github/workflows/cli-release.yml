@@ -1,53 +1,58 @@
 name: CLI Release
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      draft-release:
-        description: "Draft release?"
-        required: false
-        type: boolean
-        default: true
-      prerelease:
-        description: "Prerelease?"
-        required: false
-        type: boolean
-        default: true
-      npm-version:
-        description: "NPM version bump?"
-        required: false
-        type: choice
-        options:
-          - major
-          - minor
-          - patch
-        default: "patch"
 
-  # schedule:
-  #   - cron: '0 12 * * 2'  # Runs every Tuesday at 12:00 PM (noon) ET
 permissions:
-  id-token: write
-  contents: write
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  cli-release:
+  release-please:
+    name: Release Please
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      upload_url: ${{ steps.release.outputs.upload_url }}
+      major_bump: ${{ steps.release.outputs.minor == '0' && steps.release.outputs.patch == '0' }}
+    steps:
+      # Uses GITHUB_TOKEN, so CI does not run on the release PR by itself.
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: release
+
+  # npm trusted publishing is tied to this workflow file, so publish stays here.
+  cli-release:
+    name: Publish
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    env:
+      LATEST_TAG: ${{ needs.release-please.outputs.tag_name }}
     steps:
       - name: Check out code
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0
-          token: ${{ secrets.AUTOMATION_USER_TOKEN }}
+          ref: ${{ needs.release-please.outputs.tag_name }}
 
       - name: Set Secrets
         uses: DevCycleHQ/aws-secrets-action@main
         with:
           secrets_map: '{"MCP_KEY": "DEVCYCLE_GITHUB_cli_MCP_REGISTRY_PKEY"}'
           aws_account_id: "134377926370"
-      - name: Set Git author
-        run: |
-          git config --global user.email "foundation-admin@devcycle.com"
-          git config --global user.name "DevCycle Automation"
 
       - name: Get node version
         id: get_node_version
@@ -69,47 +74,16 @@ jobs:
       - name: Build
         run: yarn build
 
-      - name: Bump CLI version
-        run: npm version ${{ inputs.npm-version }} --force
-
-      - name: Update server.json version (pre-commit)
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          jq --indent 4 --arg v "$VERSION" '.version = $v' server.json > server.json.tmp
-          mv server.json.tmp server.json
-          git add server.json
-
-      - name: Get latest tag
-        run: echo "LATEST_TAG=$(git describe --abbrev=0 --tags)" >> $GITHUB_ENV
-
-      - name: Commit and push tag to main branch
-        run: |
-          git add .
-          git commit --amend -m "Release $LATEST_TAG"
-          git tag -f $LATEST_TAG
-          git push --atomic origin main $LATEST_TAG
-
-      - name: Release
+      - name: Publish
         uses: ./.github/actions/release
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # cannot read $LATEST_TAG here so using ${{ env.LATEST_TAG }}
+          upload-url: ${{ needs.release-please.outputs.upload_url }}
           release-tag: ${{ env.LATEST_TAG }}
-          draft: ${{ inputs.draft-release }}
-          prerelease: ${{ inputs.prerelease }}
 
-      # --- Official MCP Registry (registry.modelcontextprotocol.io) Publish ---
-      # See docs here: https://raw.githubusercontent.com/modelcontextprotocol/registry/refs/heads/main/docs/guides/publishing/github-actions.md
       - name: Install MCP Publisher
         run: |
           curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
           chmod +x mcp-publisher
-
-      - name: Sync server.json version to tag
-        run: |
-          VERSION=${LATEST_TAG#v}
-          jq --indent 4 --arg v "$VERSION" '.version = $v' server.json > server.json.tmp
-          mv server.json.tmp server.json
 
       - name: Validate server.json schema
         run: yarn validate:server
@@ -129,14 +103,14 @@ jobs:
           access_token: ${{ secrets.AUTOMATION_USER_TOKEN }}
 
       - name: Update VSCode Extension
-        if: inputs.npm-version == 'minor' || inputs.npm-version == 'patch'
+        if: needs.release-please.outputs.major_bump != 'true'
         uses: ./.github/actions/update-vscode-extension
         with:
           latest_tag: $LATEST_TAG
           access_token: ${{ secrets.AUTOMATION_USER_TOKEN }}
 
       - name: Update GitHub Actions
-        if: inputs.npm-version == 'minor' || inputs.npm-version == 'patch'
+        if: needs.release-please.outputs.major_bump != 'true'
         uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.1
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}
@@ -145,7 +119,7 @@ jobs:
           client-payload: '{"version": "${{ env.LATEST_TAG }}"}'
 
       - name: Update GitHub Actions (Code Usages)
-        if: inputs.npm-version == 'minor' || inputs.npm-version == 'patch'
+        if: needs.release-please.outputs.major_bump != 'true'
         uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.1
         with:
           token: ${{ secrets.AUTOMATION_USER_TOKEN }}

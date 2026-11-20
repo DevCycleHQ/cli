@@ -23,8 +23,9 @@ needs to support should be manually added to the zodClient.ts file
 
 ## Publishing a new version
 
-- Run [CLI Release workflow](https://github.com/DevCycleHQ/cli/actions/workflows/cli-release.yml) with desired values (Default values: draft release, prerelease, npm version patch)
-- After running the workflow, go to the [pull requests page](https://github.com/DevCycleHQ/devcycle-docs/pulls) of `devcycle-docs` and merge the pr created by the workflow
+- Releases are managed by [release-please](https://github.com/googleapis/release-please). Merging conventional commits (`fix:`, `feat:`, `feat!:`) to `main` keeps a release PR open with the next version and changelog.
+- Merging the release PR tags the release, publishes to NPM and the MCP Registry, and uploads the release tarballs.
+- After the release, go to the [pull requests page](https://github.com/DevCycleHQ/devcycle-docs/pulls) of `devcycle-docs` and merge the pr created by the workflow
 
 #### publishing manually (not preferred)
 
