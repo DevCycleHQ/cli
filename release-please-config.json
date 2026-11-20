@@ -1,15 +1,23 @@
 {
-  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-  "packages": {
-    ".": {
-      "release-type": "node",
-      "package-name": "@devcycle/cli",
-      "include-component-in-tag": false,
-      "exclude-paths": ["mcp-worker"],
-      "extra-files": [
-        { "type": "json", "path": "server.json", "jsonpath": "$.version" },
-        { "type": "json", "path": "oclif.manifest.json", "jsonpath": "$.version" }
-      ]
+    "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+    "packages": {
+        ".": {
+            "release-type": "node",
+            "package-name": "@devcycle/cli",
+            "include-component-in-tag": false,
+            "exclude-paths": ["mcp-worker"],
+            "extra-files": [
+                {
+                    "type": "json",
+                    "path": "server.json",
+                    "jsonpath": "$.version"
+                },
+                {
+                    "type": "json",
+                    "path": "oclif.manifest.json",
+                    "jsonpath": "$.version"
+                }
+            ]
+        }
     }
-  }
 }
