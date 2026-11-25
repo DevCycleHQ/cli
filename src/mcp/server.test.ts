@@ -129,6 +129,17 @@ describe('DevCycleMCPServer', () => {
             expect(registeredToolNames).to.include(
                 'get_self_targeting_identity',
             )
+            expect(registeredToolNames).to.include.members([
+                'list_custom_properties',
+                'create_custom_property',
+                'update_custom_property',
+                'delete_custom_property',
+                'create_environment',
+                'update_environment',
+            ])
+            // Covered by select_project
+            expect(registeredToolNames).to.not.include('list_environments')
+            expect(registeredToolNames).to.not.include('get_sdk_keys')
         })
 
         it('should register tools with proper configurations', () => {

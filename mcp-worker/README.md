@@ -121,7 +121,9 @@ All DevCycle CLI MCP tools are available. See [complete reference](../docs/mcp.m
 
 **Variables**: `list_variables`, `create_variable`, `update_variable`, `delete_variable`
 
-**Environments**: `list_environments`, `get_sdk_keys`
+**Custom Properties**: `list_custom_properties`, `create_custom_property`, `update_custom_property`, `delete_custom_property`
+
+**Environments**: `create_environment`, `update_environment`
 
 **Self-Targeting**: `get_self_targeting_identity`, `update_self_targeting_identity`, `list_self_targeting_overrides`, `set_self_targeting_override`, `clear_feature_self_targeting_overrides`
 
