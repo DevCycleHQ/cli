@@ -18,6 +18,8 @@ Both implementations share the same underlying tools, schemas, and utilities, en
 - [Available Tools](#available-tools)
   - [Feature Management](#feature-management)
   - [Variable Management](#variable-management)
+  - [Custom Properties](#custom-properties)
+  - [Environment Management](#environment-management)
   - [Project Management](#project-management)
   - [SDK Installation](#sdk-installation)
   - [Self-Targeting & Overrides](#self-targeting--overrides)
@@ -294,6 +296,83 @@ Delete a variable from ALL environments.
 
 - `key`: Variable key to delete
 
+### Custom Properties
+
+Custom properties define the custom user data (`customData`) that audiences and targeting rules can target.
+
+#### `list_custom_properties`
+
+List all custom properties in the current project.
+
+**Parameters:**
+
+- `search` (optional): Search query to filter by name or key
+- `page` (optional): Page number
+- `perPage` (optional): Items per page
+- `sortBy` (optional): Sort field (`createdAt`, `updatedAt`, `name`, `key`, `createdBy`, `propertyKey`)
+- `sortOrder` (optional): Sort order (`asc`, `desc`)
+- `type` (optional): Property type (`String`, `Boolean`, `Number`)
+
+#### `create_custom_property`
+
+Create a new custom property.
+
+**Parameters:**
+
+- `key`: Unique custom property key (pattern: `^[a-z0-9-_.]+$`)
+- `name`: Display name
+- `type`: Property type (`String`, `Boolean`, `Number`)
+- `propertyKey`: The key in the user's `customData` that the SDK sends
+
+#### `update_custom_property` ⚠️
+
+Update an existing custom property.
+
+**Parameters:**
+
+- `key`: Custom property key to update
+- `name` (optional): New name
+- `type` (optional): New type
+- `propertyKey` (optional): New `customData` key
+
+#### `delete_custom_property` ⚠️⚠️
+
+Delete a custom property from ALL environments.
+
+**Parameters:**
+
+- `key`: Custom property key to delete
+
+### Environment Management
+
+Use `select_project` or `get_current_project` to list environments and read their SDK keys.
+
+#### `create_environment`
+
+Create a new environment in the current project.
+
+**Parameters:**
+
+- `key`: Unique environment key (pattern: `^[a-z0-9-_.]+$`)
+- `name`: Environment name
+- `type`: Environment type (`development`, `staging`, `production`, `disaster_recovery`)
+- `description` (optional): Environment description
+- `color` (optional): Hex color (e.g. `#FF0000`)
+- `settings` (optional): Environment settings
+
+#### `update_environment` ⚠️
+
+Update an existing environment.
+
+**Parameters:**
+
+- `key`: Environment key to update
+- `name` (optional): New name
+- `description` (optional): New description
+- `color` (optional): New hex color
+- `type` (optional): New environment type
+- `settings` (optional): New environment settings
+
 ### Project Management
 
 #### `get_current_project`
@@ -545,7 +624,7 @@ Key differences:
 
 ### Notes on Environments
 
-- Dedicated environment tools are not exposed via MCP. Use `get_current_project` or `select_project` to retrieve environments and SDK keys for the selected project.
+- There are no dedicated tools for listing environments or reading SDK keys. Use `get_current_project` or `select_project` to retrieve environments and SDK keys for the selected project, and `create_environment` / `update_environment` to manage them.
 
 ## Development & Local Testing
 

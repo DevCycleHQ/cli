@@ -8,6 +8,8 @@ import { registerFeatureTools } from './featureTools'
 import { registerResultsTools } from './resultsTools'
 import { registerSelfTargetingTools } from './selfTargetingTools'
 import { registerVariableTools } from './variableTools'
+import { registerCustomPropertiesTools } from './customPropertiesTools'
+import { registerEnvironmentTools } from './environmentTools'
 import { registerLocalProjectTools } from './localProjectTools'
 import { DevCycleApiClient } from '../utils/api'
 import { registerInstallTools } from './installTools'
@@ -32,6 +34,8 @@ export function registerAllToolsWithServer(
     registerResultsTools(serverInstance, apiClient)
     registerSelfTargetingTools(serverInstance, apiClient)
     registerVariableTools(serverInstance, apiClient)
+    registerCustomPropertiesTools(serverInstance, apiClient)
+    registerEnvironmentTools(serverInstance, apiClient)
 }
 
 export type { IDevCycleApiClient } from '../api/interface'

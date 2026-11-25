@@ -276,6 +276,7 @@ export const GetSdkKeysArgsSchema = z.object({
 })
 
 export const CreateEnvironmentArgsSchema = CreateEnvironmentDto.extend({
+    ...ProjectKeyArgShape,
     key: CreateEnvironmentDto.shape.key.describe('Unique environment key'),
     color: CreateEnvironmentDto.shape.color.describe(
         'Environment color in hex format (e.g., #FF0000)',
@@ -283,6 +284,7 @@ export const CreateEnvironmentArgsSchema = CreateEnvironmentDto.extend({
 })
 
 export const UpdateEnvironmentArgsSchema = UpdateEnvironmentDto.extend({
+    ...ProjectKeyArgShape,
     key: z.string().describe('key to identify environment to update'),
     color: UpdateEnvironmentDto.shape.color
         .describe('color in hex format (e.g., #FF0000)')
@@ -545,6 +547,7 @@ export const ProjectTotalEvaluationsQuerySchema =
     GetProjectTotalEvaluationsArgsSchema.omit({ projectKey: true })
 
 export const ListCustomPropertiesArgsSchema = z.object({
+    ...ProjectKeyArgShape,
     page: z
         .number()
         .min(1)
@@ -575,26 +578,47 @@ export const ListCustomPropertiesArgsSchema = z.object({
         .min(3)
         .optional()
         .describe('Search term to filter by "name" or "key"'),
-    createdBy: z.string().optional().describe('Filter by creator user ID'),
+    type: z
+        .enum(['String', 'Boolean', 'Number'])
+        .optional()
+        .describe('Filter by custom property type'),
 })
 
-export const UpsertCustomPropertyArgsSchema = CreateCustomPropertyDto.extend({
+const CUSTOM_PROPERTY_KEY_HINT =
+    'The key in the user\'s "customData" that the SDK sends, e.g. "plan" for { customData: { plan: "pro" } }'
+
+// `schema` (enum validation) is omitted: the OpenAPI spec types an enum's
+// allowed `value` as an object, so real string/number values fail validation.
+export const CreateCustomPropertyArgsSchema = CreateCustomPropertyDto.omit({
+    schema: true,
+}).extend({
+    ...ProjectKeyArgShape,
     key: CreateCustomPropertyDto.shape.key.describe(
-        'Unique custom property key',
+        'Unique custom property key used to reference it in DevCycle',
+    ),
+    type: CreateCustomPropertyDto.shape.type.describe(
+        'Data type of the custom property value',
     ),
     propertyKey: CreateCustomPropertyDto.shape.propertyKey.describe(
-        'Property key to associate with the custom property',
+        CUSTOM_PROPERTY_KEY_HINT,
     ),
 })
 
-export const UpdateCustomPropertyArgsSchema = UpdateCustomPropertyDto.extend({
+export const UpdateCustomPropertyArgsSchema = UpdateCustomPropertyDto.omit({
+    schema: true,
+}).extend({
+    ...ProjectKeyArgShape,
     key: z
         .string()
         .max(100)
         .regex(/^[a-z0-9-_.]+$/)
-        .describe('key to identify property to update'),
+        .describe('key to identify the custom property to update'),
+    propertyKey: UpdateCustomPropertyDto.shape.propertyKey.describe(
+        CUSTOM_PROPERTY_KEY_HINT,
+    ),
 })
 
 export const DeleteCustomPropertyArgsSchema = z.object({
-    key: z.string().describe('key to identify property to delete'),
+    ...ProjectKeyArgShape,
+    key: z.string().describe('key to identify the custom property to delete'),
 })
